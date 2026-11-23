@@ -19,6 +19,7 @@ type QuarantineItem struct {
 	When     time.Time `json:"when"`
 	Size     int64     `json:"size"`
 }
+
 type Quarantine struct{ Dir string }
 
 func NewQuarantine() (*Quarantine, error) {
@@ -32,87 +33,117 @@ func NewQuarantine() (*Quarantine, error) {
 	}
 	return &Quarantine{Dir: dir}, nil
 }
+
 func (q *Quarantine) IsQuarantined(path string) bool {
-	abs, _ := filepath.Abs(path)
-	dir, _ := filepath.Abs(q.Dir)
+	abs, e := filepath.Abs(path)
+	if e != nil {
+		return false
+	}
+	dir, e := filepath.Abs(q.Dir)
+	if e != nil {
+		return false
+	}
 	rel, e := filepath.Rel(dir, abs)
 	return e == nil && (rel == "." || (!strings.HasPrefix(rel, ".."+string(os.PathSeparator)) && rel != ".."))
 }
+
+func copyClosed(from, to string) error {
+	src, e := os.Open(from)
+	if e != nil {
+		return e
+	}
+
+	dst, e := os.OpenFile(
+		to,
+		os.O_WRONLY|os.O_CREATE|os.O_EXCL,
+		0600,
+	)
+	if e != nil {
+		src.Close()
+		return e
+	}
+
+	_, copyErr := io.Copy(dst, src)
+
+	var syncErr error
+	if copyErr == nil {
+		syncErr = dst.Sync()
+	}
+
+	dstErr := dst.Close()
+	srcErr := src.Close()
+
+	if e = errors.Join(copyErr, syncErr, dstErr, srcErr); e != nil {
+		return errors.Join(e, os.Remove(to))
+	}
+
+	return nil
+}
+
 func (q *Quarantine) Add(path string) (QuarantineItem, error) {
 	abs, e := filepath.Abs(path)
 	if e != nil {
 		return QuarantineItem{}, e
 	}
+
 	if q.IsQuarantined(abs) {
 		return QuarantineItem{}, errors.New("arquivo já está em quarentena")
 	}
+
 	st, e := os.Lstat(abs)
 	if e != nil {
 		return QuarantineItem{}, e
 	}
+
 	if !st.Mode().IsRegular() {
 		return QuarantineItem{}, errors.New("somente arquivos comuns")
 	}
+
+	if e = os.MkdirAll(q.Dir, 0700); e != nil {
+		return QuarantineItem{}, e
+	}
+
 	var random [16]byte
 	if _, e = rand.Read(random[:]); e != nil {
 		return QuarantineItem{}, e
 	}
+
 	id := hex.EncodeToString(random[:])
-	item := QuarantineItem{ID: id, Original: abs, When: time.Now(), Size: st.Size()}
-	source, e := os.Open(abs)
-	if e != nil {
-		return QuarantineItem{}, e
+
+	item := QuarantineItem{
+		ID:       id,
+		Original: abs,
+		When:     time.Now(),
+		Size:     st.Size(),
 	}
-	defer source.Close()
-	destPath := filepath.Join(q.Dir, id+".bin")
-	dest, e := os.OpenFile(destPath, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
-	if e != nil {
-		return QuarantineItem{}, e
-	}
-	_, e = io.Copy(dest, source)
-	closeErr := dest.Close()
-	if e != nil || closeErr != nil {
-		os.Remove(destPath)
-		return QuarantineItem{}, fmt.Errorf("falha ao copiar: %v %v", e, closeErr)
-	}
+
+	bin := filepath.Join(q.Dir, id+".bin")
+	metaPath := filepath.Join(q.Dir, id+".json")
+
 	meta, e := json.MarshalIndent(item, "", "  ")
 	if e != nil {
-		os.Remove(destPath)
 		return QuarantineItem{}, e
 	}
-	if e = os.WriteFile(filepath.Join(q.Dir, id+".json"), meta, 0600); e != nil {
-		os.Remove(destPath)
+
+	if e = copyClosed(abs, bin); e != nil {
 		return QuarantineItem{}, e
 	}
-	// Original is deleted only after the secure copy and metadata have been persisted.
+
+	if e = os.WriteFile(metaPath, meta, 0600); e != nil {
+		return QuarantineItem{}, errors.Join(e, os.Remove(bin))
+	}
+
 	if e = os.Remove(abs); e != nil {
-		os.Remove(destPath)
-		os.Remove(filepath.Join(q.Dir, id+".json"))
-		return QuarantineItem{}, e
+		return QuarantineItem{}, errors.Join(
+			e,
+			os.Remove(bin),
+			os.Remove(metaPath),
+		)
 	}
+
 	return item, nil
 }
-func (q *Quarantine) List() ([]QuarantineItem, error) {
-	entries, e := os.ReadDir(q.Dir)
-	if e != nil {
-		return nil, e
-	}
-	result := []QuarantineItem{}
-	for _, v := range entries {
-		if !strings.HasSuffix(v.Name(), ".json") {
-			continue
-		}
-		b, e := os.ReadFile(filepath.Join(q.Dir, v.Name()))
-		if e != nil {
-			continue
-		}
-		var item QuarantineItem
-		if json.Unmarshal(b, &item) == nil && validID(item.ID) {
-			result = append(result, item)
-		}
-	}
-	return result, nil
-}
+
 func validID(id string) bool {
 	if len(id) != 32 {
 		return false
@@ -120,46 +151,86 @@ func validID(id string) bool {
 	_, e := hex.DecodeString(id)
 	return e == nil
 }
+
+func (q *Quarantine) List() ([]QuarantineItem, error) {
+	entries, e := os.ReadDir(q.Dir)
+	if e != nil {
+		return nil, e
+	}
+
+	result := []QuarantineItem{}
+
+	for _, v := range entries {
+		if !strings.HasSuffix(v.Name(), ".json") {
+			continue
+		}
+
+		b, e := os.ReadFile(filepath.Join(q.Dir, v.Name()))
+		if e != nil {
+			continue
+		}
+
+		var item QuarantineItem
+
+		if json.Unmarshal(b, &item) == nil &&
+			validID(item.ID) &&
+			v.Name() == item.ID+".json" {
+			result = append(result, item)
+		}
+	}
+
+	return result, nil
+}
+
 func (q *Quarantine) Restore(id string) error {
 	if !validID(id) {
 		return errors.New("identificador inválido")
 	}
-	b, e := os.ReadFile(filepath.Join(q.Dir, id+".json"))
+
+	metaPath := filepath.Join(q.Dir, id+".json")
+	bin := filepath.Join(q.Dir, id+".bin")
+
+	b, e := os.ReadFile(metaPath)
 	if e != nil {
 		return e
 	}
+
 	var item QuarantineItem
+
 	if e = json.Unmarshal(b, &item); e != nil {
 		return e
 	}
-	if item.ID != id || item.Original == "" {
+
+	if item.ID != id ||
+		item.Original == "" ||
+		!filepath.IsAbs(item.Original) ||
+		q.IsQuarantined(item.Original) {
 		return errors.New("metadados inconsistentes")
 	}
+
 	if _, e = os.Lstat(item.Original); e == nil {
 		return errors.New("já existe arquivo no destino; restauração cancelada")
 	}
+
 	if !os.IsNotExist(e) {
 		return e
 	}
-	src, e := os.Open(filepath.Join(q.Dir, id+".bin"))
-	if e != nil {
-		return e
-	}
-	defer src.Close()
+
 	if e = os.MkdirAll(filepath.Dir(item.Original), 0700); e != nil {
 		return e
 	}
-	dst, e := os.OpenFile(item.Original, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
-	if e != nil {
+
+	if e = copyClosed(bin, item.Original); e != nil {
 		return e
 	}
-	_, e = io.Copy(dst, src)
-	ce := dst.Close()
-	if e != nil || ce != nil {
-		os.Remove(item.Original)
-		return fmt.Errorf("restauração incompleta: %v %v", e, ce)
+
+	if e = os.Remove(bin); e != nil {
+		return fmt.Errorf("arquivo restaurado, falha ao limpar cópia: %w", e)
 	}
-	os.Remove(filepath.Join(q.Dir, id+".json"))
-	os.Remove(filepath.Join(q.Dir, id+".bin"))
+
+	if e = os.Remove(metaPath); e != nil {
+		return fmt.Errorf("arquivo restaurado, falha ao limpar metadados: %w", e)
+	}
+
 	return nil
 }

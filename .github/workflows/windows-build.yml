@@ -1,1 +1,53 @@
 
+name: ZEUVORYX Windows Build
+
+'on':
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+          cache: false
+
+      - name: Check Go installation
+        run: go version
+
+      - name: Check project files
+        shell: pwsh
+        run: |
+          Get-ChildItem -Recurse -File
+
+      - name: Test Go project
+        run: go test ./...
+
+      - name: Build Windows executable
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist
+          go build -o dist/ZEUVORYX.exe .
+          if ($LASTEXITCODE -ne 0) {
+            throw "Windows compilation failed."
+          }
+
+      - name: Upload Windows executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: ZEUVORYX-Windows
+          path: dist/ZEUVORYX.exe
+          if-no-files-found: error
+

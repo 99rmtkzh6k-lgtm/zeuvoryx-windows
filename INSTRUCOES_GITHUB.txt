@@ -1,0 +1,11 @@
+ZEUVORYX — PASSO A PASSO DEFINITIVO
+
+1. Extraia o ZIP no celular/computador.
+2. No GitHub, envie TODOS OS ARQUIVOS E PASTAS EXTRAIDOS, inclusive a pasta oculta .github/workflows/windows.yml.
+3. Confira a pasta .github e os diretorios cmd, engine e ui.
+4. Entre em Actions e rode "ZEUVORYX - Testes e executavel Windows".
+5. Ao concluir com sucesso, baixe em Artifacts o ZEUVORYX-Windows-x64.
+6. Extraia o arquivo baixado e clique duas vezes em ZEUVORYX.exe em computador Windows.
+
+Nao misture estes arquivos com versoes anteriores do repositorio. Remova arquivos antigos duplicados que possam causar conflito de pacotes Go.
+Leia README.md para recursos, seguranca e limitacoes. Não afirme cobertura total de malware antes de validação independente.

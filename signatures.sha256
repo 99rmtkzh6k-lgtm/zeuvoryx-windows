@@ -1,0 +1,3 @@
+# Adicione SHA-256 de arquivos efetivamente confirmados como maliciosos.
+# Formato: 64_caracteres_hexadecimais nome_da_ameaca
+# Sem exemplos artificiais ativos para evitar falsos positivos.

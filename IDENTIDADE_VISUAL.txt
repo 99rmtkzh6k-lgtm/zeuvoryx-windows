@@ -1,0 +1,1 @@
+ZEUVORYX: duas novas artes conceituais, arquivos 4K JPEG em ui/assets. Foram ampliadas a partir de imagens geradas em resolução inferior; nao constituem screenshots de funcionalidades implementadas.

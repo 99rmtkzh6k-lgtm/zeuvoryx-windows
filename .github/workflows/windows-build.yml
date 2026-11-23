@@ -1,4 +1,5 @@
 
+
 name: ZEUVORYX Windows Build
 
 on:
@@ -11,12 +12,11 @@ permissions:
 
 jobs:
   build-windows:
-    name: Test and Build Windows
     runs-on: windows-latest
     timeout-minutes: 30
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Go
@@ -25,47 +25,68 @@ jobs:
           go-version: '1.24.x'
           cache: false
 
-      - name: Prepare Go package structure
+      - name: Organize project
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
           New-Item -ItemType Directory -Force engine, ui, ui/assets | Out-Null
-          foreach ($file in @('pe.go','quarantine.go','scanner.go','scanner_test.go','zip_test.go')) {
-            if (Test-Path $file) { Move-Item -LiteralPath $file -Destination (Join-Path 'engine' $file) -Force }
-          }
-          if (Test-Path 'ui.go') { Move-Item 'ui.go' 'ui/ui.go' -Force }
-          if (Test-Path 'index.html') { Move-Item 'index.html' 'ui/index.html' -Force }
-          foreach ($file in @('zeuvoryx_capa_4k.jpg','zeuvoryx_painel_4k.jpg')) {
-            if (Test-Path $file) { Move-Item -LiteralPath $file -Destination (Join-Path 'ui/assets' $file) -Force }
-          }
-          foreach ($required in @('go.mod','main.go','engine/scanner.go','engine/pe.go','engine/quarantine.go','ui/ui.go','ui/index.html','ui/assets/zeuvoryx_capa_4k.jpg','ui/assets/zeuvoryx_painel_4k.jpg')) {
-            if (!(Test-Path $required)) { throw "Missing required file: $required" }
-          }
-          go version
-          go list ./...
-          if ($LASTEXITCODE -ne 0) { throw 'Go package discovery failed' }
 
-      - name: Test Go project
+          foreach ($f in @('scanner.go','scanner_test.go','zip_test.go','pe.go','quarantine.go')) {
+            if (Test-Path $f) {
+              Move-Item $f engine/ -Force
+            }
+          }
+
+          if (Test-Path ui.go) {
+            Move-Item ui.go ui/ui.go -Force
+          }
+          if (Test-Path index.html) {
+            Move-Item index.html ui/index.html -Force
+          }
+
+          foreach ($f in @('zeuvoryx_capa_4k.jpg','zeuvoryx_painel_4k.jpg')) {
+            if (Test-Path $f) {
+              Move-Item $f ui/assets/ -Force
+            }
+          }
+
+          go list ./...
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Package structure error'
+          }
+
+      - name: Run detailed tests
+        id: tests
+        continue-on-error: true
         shell: pwsh
         run: |
-          go test ./...
-          if ($LASTEXITCODE -ne 0) { throw 'Go tests failed' }
+          go test -v -count=1 ./...
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Go tests failed'
+          }
 
-      - name: Build Windows executable
+      - name: Build Windows EXE
+        id: build
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force dist | Out-Null
           go build -trimpath -o dist/ZEUVORYX.exe .
-          if ($LASTEXITCODE -ne 0) { throw 'Windows compilation failed' }
-          if (Test-Path 'signatures.sha256') { Copy-Item 'signatures.sha256' 'dist/signatures.sha256' }
-          if (!(Test-Path 'dist/ZEUVORYX.exe')) { throw 'Executable missing' }
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Windows build failed'
+          }
+          Copy-Item signatures.sha256 dist/ -ErrorAction Stop
 
-      - name: Upload Windows executable
+      - name: Upload EXE
+        if: steps.build.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: ZEUVORYX-Windows
           path: dist/
           if-no-files-found: error
-  
 
+      - name: Verify test result
+        if: steps.tests.outcome == 'failure'
+        shell: pwsh
+        run: |
+          throw 'Tests failed. Review Run detailed tests.'
 

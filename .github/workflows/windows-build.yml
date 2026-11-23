@@ -1,10 +1,9 @@
 
 name: ZEUVORYX Windows Build
 
-'on':
+on:
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -12,7 +11,9 @@ permissions:
 
 jobs:
   build-windows:
+    name: Test and Build Windows
     runs-on: windows-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout repository
@@ -24,30 +25,47 @@ jobs:
           go-version: '1.24.x'
           cache: false
 
-      - name: Check Go installation
-        run: go version
-
-      - name: Check project files
+      - name: Prepare Go package structure
         shell: pwsh
         run: |
-          Get-ChildItem -Recurse -File
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force engine, ui, ui/assets | Out-Null
+          foreach ($file in @('pe.go','quarantine.go','scanner.go','scanner_test.go','zip_test.go')) {
+            if (Test-Path $file) { Move-Item -LiteralPath $file -Destination (Join-Path 'engine' $file) -Force }
+          }
+          if (Test-Path 'ui.go') { Move-Item 'ui.go' 'ui/ui.go' -Force }
+          if (Test-Path 'index.html') { Move-Item 'index.html' 'ui/index.html' -Force }
+          foreach ($file in @('zeuvoryx_capa_4k.jpg','zeuvoryx_painel_4k.jpg')) {
+            if (Test-Path $file) { Move-Item -LiteralPath $file -Destination (Join-Path 'ui/assets' $file) -Force }
+          }
+          foreach ($required in @('go.mod','main.go','engine/scanner.go','engine/pe.go','engine/quarantine.go','ui/ui.go','ui/index.html','ui/assets/zeuvoryx_capa_4k.jpg','ui/assets/zeuvoryx_painel_4k.jpg')) {
+            if (!(Test-Path $required)) { throw "Missing required file: $required" }
+          }
+          go version
+          go list ./...
+          if ($LASTEXITCODE -ne 0) { throw 'Go package discovery failed' }
 
       - name: Test Go project
-        run: go test ./...
+        shell: pwsh
+        run: |
+          go test ./...
+          if ($LASTEXITCODE -ne 0) { throw 'Go tests failed' }
 
       - name: Build Windows executable
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force dist
-          go build -o dist/ZEUVORYX.exe .
-          if ($LASTEXITCODE -ne 0) {
-            throw "Windows compilation failed."
-          }
+          New-Item -ItemType Directory -Force dist | Out-Null
+          go build -trimpath -o dist/ZEUVORYX.exe .
+          if ($LASTEXITCODE -ne 0) { throw 'Windows compilation failed' }
+          if (Test-Path 'signatures.sha256') { Copy-Item 'signatures.sha256' 'dist/signatures.sha256' }
+          if (!(Test-Path 'dist/ZEUVORYX.exe')) { throw 'Executable missing' }
 
       - name: Upload Windows executable
         uses: actions/upload-artifact@v4
         with:
           name: ZEUVORYX-Windows
-          path: dist/ZEUVORYX.exe
+          path: dist/
           if-no-files-found: error
+  
+
 

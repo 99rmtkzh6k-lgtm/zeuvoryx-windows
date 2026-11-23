@@ -1,92 +1,237 @@
+package engine
 
+import (
+	"crypto/rand"
+	"encoding/hex"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
+)
 
-name: ZEUVORYX Windows Build
+type QuarantineItem struct {
+	ID       string    `json:"id"`
+	Original string    `json:"original"`
+	When     time.Time `json:"when"`
+	Size     int64     `json:"size"`
+}
 
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
+type Quarantine struct{ Dir string }
 
-permissions:
-  contents: read
+func NewQuarantine() (*Quarantine, error) {
+	base, e := os.UserConfigDir()
+	if e != nil {
+		return nil, e
+	}
+	dir := filepath.Join(base, "ZEUVORYX", "quarantine")
+	if e = os.MkdirAll(dir, 0700); e != nil {
+		return nil, e
+	}
+	return &Quarantine{Dir: dir}, nil
+}
 
-jobs:
-  build-windows:
-    runs-on: windows-latest
-    timeout-minutes: 30
+func (q *Quarantine) IsQuarantined(path string) bool {
+	abs, e := filepath.Abs(path)
+	if e != nil {
+		return false
+	}
+	dir, e := filepath.Abs(q.Dir)
+	if e != nil {
+		return false
+	}
+	rel, e := filepath.Rel(dir, abs)
+	return e == nil && (rel == "." || (!strings.HasPrefix(rel, ".."+string(os.PathSeparator)) && rel != ".."))
+}
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+func copyClosed(from, to string) error {
+	src, e := os.Open(from)
+	if e != nil {
+		return e
+	}
 
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.24.x'
-          cache: false
+	dst, e := os.OpenFile(
+		to,
+		os.O_WRONLY|os.O_CREATE|os.O_EXCL,
+		0600,
+	)
+	if e != nil {
+		src.Close()
+		return e
+	}
 
-      - name: Organize project
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = 'Stop'
-          New-Item -ItemType Directory -Force engine, ui, ui/assets | Out-Null
+	_, copyErr := io.Copy(dst, src)
 
-          foreach ($f in @('scanner.go','scanner_test.go','zip_test.go','pe.go','quarantine.go')) {
-            if (Test-Path $f) {
-              Move-Item $f engine/ -Force
-            }
-          }
+	var syncErr error
+	if copyErr == nil {
+		syncErr = dst.Sync()
+	}
 
-          if (Test-Path ui.go) {
-            Move-Item ui.go ui/ui.go -Force
-          }
-          if (Test-Path index.html) {
-            Move-Item index.html ui/index.html -Force
-          }
+	dstErr := dst.Close()
+	srcErr := src.Close()
 
-          foreach ($f in @('zeuvoryx_capa_4k.jpg','zeuvoryx_painel_4k.jpg')) {
-            if (Test-Path $f) {
-              Move-Item $f ui/assets/ -Force
-            }
-          }
+	if e = errors.Join(copyErr, syncErr, dstErr, srcErr); e != nil {
+		return errors.Join(e, os.Remove(to))
+	}
 
-          go list ./...
-          if ($LASTEXITCODE -ne 0) {
-            throw 'Package structure error'
-          }
+	return nil
+}
 
-      - name: Run detailed tests
-        id: tests
-        continue-on-error: true
-        shell: pwsh
-        run: |
-          go test -v -count=1 ./...
-          if ($LASTEXITCODE -ne 0) {
-            throw 'Go tests failed'
-          }
+func (q *Quarantine) Add(path string) (QuarantineItem, error) {
+	abs, e := filepath.Abs(path)
+	if e != nil {
+		return QuarantineItem{}, e
+	}
 
-      - name: Build Windows EXE
-        id: build
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Force dist | Out-Null
-          go build -trimpath -o dist/ZEUVORYX.exe .
-          if ($LASTEXITCODE -ne 0) {
-            throw 'Windows build failed'
-          }
-          Copy-Item signatures.sha256 dist/ -ErrorAction Stop
+	if q.IsQuarantined(abs) {
+		return QuarantineItem{}, errors.New("arquivo já está em quarentena")
+	}
 
-      - name: Upload EXE
-        if: steps.build.outcome == 'success'
-        uses: actions/upload-artifact@v4
-        with:
-          name: ZEUVORYX-Windows
-          path: dist/
-          if-no-files-found: error
+	st, e := os.Lstat(abs)
+	if e != nil {
+		return QuarantineItem{}, e
+	}
 
-      - name: Verify test result
-        if: steps.tests.outcome == 'failure'
-        shell: pwsh
-        run: |
-          throw 'Tests failed. Review Run detailed tests.'
+	if !st.Mode().IsRegular() {
+		return QuarantineItem{}, errors.New("somente arquivos comuns")
+	}
+
+	if e = os.MkdirAll(q.Dir, 0700); e != nil {
+		return QuarantineItem{}, e
+	}
+
+	var random [16]byte
+	if _, e = rand.Read(random[:]); e != nil {
+		return QuarantineItem{}, e
+	}
+
+	id := hex.EncodeToString(random[:])
+
+	item := QuarantineItem{
+		ID:       id,
+		Original: abs,
+		When:     time.Now(),
+		Size:     st.Size(),
+	}
+
+	bin := filepath.Join(q.Dir, id+".bin")
+	metaPath := filepath.Join(q.Dir, id+".json")
+
+	meta, e := json.MarshalIndent(item, "", "  ")
+	if e != nil {
+		return QuarantineItem{}, e
+	}
+
+	if e = copyClosed(abs, bin); e != nil {
+		return QuarantineItem{}, e
+	}
+
+	if e = os.WriteFile(metaPath, meta, 0600); e != nil {
+		return QuarantineItem{}, errors.Join(e, os.Remove(bin))
+	}
+
+	if e = os.Remove(abs); e != nil {
+		return QuarantineItem{}, errors.Join(
+			e,
+			os.Remove(bin),
+			os.Remove(metaPath),
+		)
+	}
+
+	return item, nil
+}
+
+func validID(id string) bool {
+	if len(id) != 32 {
+		return false
+	}
+	_, e := hex.DecodeString(id)
+	return e == nil
+}
+
+func (q *Quarantine) List() ([]QuarantineItem, error) {
+	entries, e := os.ReadDir(q.Dir)
+	if e != nil {
+		return nil, e
+	}
+
+	result := []QuarantineItem{}
+
+	for _, v := range entries {
+		if !strings.HasSuffix(v.Name(), ".json") {
+			continue
+		}
+
+		b, e := os.ReadFile(filepath.Join(q.Dir, v.Name()))
+		if e != nil {
+			continue
+		}
+
+		var item QuarantineItem
+
+		if json.Unmarshal(b, &item) == nil &&
+			validID(item.ID) &&
+			v.Name() == item.ID+".json" {
+			result = append(result, item)
+		}
+	}
+
+	return result, nil
+}
+
+func (q *Quarantine) Restore(id string) error {
+	if !validID(id) {
+		return errors.New("identificador inválido")
+	}
+
+	metaPath := filepath.Join(q.Dir, id+".json")
+	bin := filepath.Join(q.Dir, id+".bin")
+
+	b, e := os.ReadFile(metaPath)
+	if e != nil {
+		return e
+	}
+
+	var item QuarantineItem
+
+	if e = json.Unmarshal(b, &item); e != nil {
+		return e
+	}
+
+	if item.ID != id ||
+		item.Original == "" ||
+		!filepath.IsAbs(item.Original) ||
+		q.IsQuarantined(item.Original) {
+		return errors.New("metadados inconsistentes")
+	}
+
+	if _, e = os.Lstat(item.Original); e == nil {
+		return errors.New("já existe arquivo no destino; restauração cancelada")
+	}
+
+	if !os.IsNotExist(e) {
+		return e
+	}
+
+	if e = os.MkdirAll(filepath.Dir(item.Original), 0700); e != nil {
+		return e
+	}
+
+	if e = copyClosed(bin, item.Original); e != nil {
+		return e
+	}
+
+	if e = os.Remove(bin); e != nil {
+		return fmt.Errorf("arquivo restaurado, falha ao limpar cópia: %w", e)
+	}
+
+	if e = os.Remove(metaPath); e != nil {
+		return fmt.Errorf("arquivo restaurado, falha ao limpar metadados: %w", e)
+	}
+
+	return nil
+}
 

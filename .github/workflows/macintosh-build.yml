@@ -18,7 +18,7 @@ jobs:
             arch: amd64
             target: x86_64-apple-macos13.0
     runs-on: ${{ matrix.runner }}
-    timeout-minutes: 25
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,7 +30,25 @@ jobs:
       - name: Validate and test Macintosh modules ten times
         run: |
           go vet ./macintosh/... ./releaseguard ./impact ./remediation ./labcheck ./adaptive
-          go test -count=10 -shuffle=on -cover ./macintosh/... ./releaseguard ./impact ./remediation ./labcheck ./adaptive
+          go test -v -count=10 -shuffle=on -cover ./macintosh/... ./releaseguard ./impact ./remediation ./labcheck ./adaptive
+      - name: Race and fuzz security regressions
+        run: |
+          go test -race -count=10 ./macintosh/... ./releaseguard ./impact ./remediation ./labcheck
+          go test -run '^$' -fuzz '^FuzzSignedManifest$' -fuzztime=10s -parallel=2 ./releaseguard
+          go test -run '^$' -fuzz '^FuzzSignedSnapshot$' -fuzztime=10s -parallel=2 ./impact
+          go test -run '^$' -fuzz '^FuzzMacReadOnly$' -fuzztime=20s -parallel=2 ./macintosh/scanner
+      - name: Repeat Windows shared-model synthetic AI benchmark
+        run: go run ./cmd/adaptive-lab50 -out lab-results/adaptive-report-50m.json
+      - name: Repeat ten million synthetic fraud evaluations
+        env:
+          ZEUVORYX_STRESS: '1'
+        run: go test -v -run '^TestSyntheticFraudMillion$' -count=10 ./macintosh/portable
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Macintosh-QA-${{ matrix.arch }}
+          path: lab-results/
+          if-no-files-found: warn
       - name: Compile native app and read-only engine
         env:
           GOARCH: ${{ matrix.arch }}

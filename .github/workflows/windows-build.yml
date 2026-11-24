@@ -2473,7 +2473,69 @@ jobs:
           $subsystem = [BitConverter]::ToUInt16($bytes, ($pe + 24 + 68))
           if ($subsystem -ne 2) { throw 'Expected Windows GUI executable' }
           Get-FileHash dist/ZEUVORYX.exe -Algorithm SHA256
-      - name: Block packaging until integrated physical validation
+      - name: Verify portable LAB version and desktop startup
         shell: pwsh
         run: |
-          Write-Host 'Validation only; no installer release or download artifact.'
+          $ErrorActionPreference = 'Stop'
+          $exe = (Resolve-Path dist/ZEUVORYX.exe).Path
+          $v = Start-Process -FilePath $exe -ArgumentList '-version' -RedirectStandardOutput version.txt -RedirectStandardError version-error.txt -Wait -PassThru
+          if ($v.ExitCode -ne 0 -or (Get-Content -Raw version.txt).Trim() -ne '3.0.7-lab') { throw 'Portable executable version mismatch' }
+          $logDir = Join-Path $env:APPDATA 'ZEUVORYX/stability-lab'
+          $p = Start-Process -FilePath $exe -WorkingDirectory (Split-Path $exe) -PassThru
+          try {
+            $deadline = (Get-Date).AddSeconds(60)
+            $ready = $false
+            do {
+              $p.Refresh()
+              if ($p.HasExited) { throw "Desktop exited before ready: $($p.ExitCode)" }
+              $logs = @(Get-ChildItem $logDir -Filter "session-*-$($p.Id).log" -ErrorAction SilentlyContinue)
+              if ($logs.Count -eq 1 -and (Select-String -LiteralPath $logs[0].FullName -Pattern 'stability ui_ready version=3.0.7-lab' -Quiet)) { $ready = $true; break }
+              Start-Sleep -Seconds 1
+            } while ((Get-Date) -lt $deadline)
+            if (!$ready) { throw 'WebView2 UI handshake not observed' }
+            Start-Sleep -Seconds 15
+            $p.Refresh()
+            if ($p.HasExited) { throw "Desktop exited during idle test: $($p.ExitCode)" }
+            Write-Host 'Portable desktop rendered and stayed alive for 15 seconds after handshake'
+          } finally {
+            if (!$p.HasExited) {
+              [void]$p.CloseMainWindow()
+              if (!$p.WaitForExit(10000)) { Stop-Process -Id $p.Id -Force }
+            }
+            Get-ChildItem $logDir -Filter "session-*-$($p.Id).log" -ErrorAction SilentlyContinue | Copy-Item -Destination desktop-smoke.log
+          }
+      - name: Prepare portable LAB-only evidence and checksum
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $hash = (Get-FileHash dist/ZEUVORYX.exe -Algorithm SHA256).Hash.ToLowerInvariant()
+          Set-Content -Encoding ascii -Path dist/SHA256SUMS.txt -Value "$hash  ZEUVORYX.exe"
+          @(
+            'ZEUVORYX 3.0.7 LAB - TESTE PORTATIL x64, NAO INSTALADOR'
+            "Commit: $env:GITHUB_SHA"
+            "Execucao: $env:GITHUB_RUN_ID"
+            'Extraia todo o ZIP para uma pasta separada. Feche outras versoes antes de testar.'
+            'Mantenha a protecao do Windows ativa. Use somente em ambiente de teste autorizado.'
+            'Abra ZEUVORYX.exe e execute apenas a varredura rapida para este teste.'
+            'O pacote nao inclui o verificador de video C2PA nem instalador/atualizacao assinada.'
+            'Nao substitui o Microsoft Defender. Validacao fisica e desempenho ainda pendentes.'
+            'Nao instale, nao promova para release, nao desative SmartScreen ou outros controles.'
+          ) | Set-Content -Encoding utf8 -Path dist/LEIA-ME-LAB.txt
+      - name: Upload desktop launch diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ZEUVORYX-3.0.7-desktop-smoke
+          path: desktop-smoke.log
+          if-no-files-found: ignore
+      - name: Upload portable 3.0.7 LAB only for physical quick scan
+        uses: actions/upload-artifact@v4
+        with:
+          name: ZEUVORYX-3.0.7-LAB-PORTATIL-TESTE-Windows-x64
+          path: dist/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Block installer and release until integrated physical validation
+        shell: pwsh
+        run: |
+          Write-Host 'Portable LAB test only; no installer, signed update or public release.'

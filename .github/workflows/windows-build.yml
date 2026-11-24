@@ -1,4 +1,4 @@
-name: ZEUVORYX 2.1 Desktop Windows
+name: ZEUVORYX 2.2 Modern Desktop
 
 on:
   push:
@@ -12,661 +12,335 @@ jobs:
   build-windows:
     runs-on: windows-latest
     timeout-minutes: 30
-
+    env:
+      GOARCH: amd64
+      CGO_ENABLED: '0'
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Go
-        uses: actions/setup-go@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
         with:
           go-version: '1.24.x'
           cache: false
-
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - name: Organize project
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
           New-Item -ItemType Directory -Force engine, ui, ui/assets | Out-Null
-
           foreach ($f in @('scanner.go','scanner_test.go','zip_test.go','pe.go','quarantine.go')) {
             if (Test-Path $f) { Move-Item $f engine/ -Force }
           }
-
           if (Test-Path ui.go) { Move-Item ui.go ui/ui.go -Force }
           if (Test-Path index.html) { Move-Item index.html ui/index.html -Force }
-
           foreach ($f in @('zeuvoryx_capa_4k.jpg','zeuvoryx_painel_4k.jpg')) {
             if (Test-Path $f) { Move-Item $f ui/assets/ -Force }
           }
-
-      - name: Prepare native Windows interface
+      - name: Prepare modern desktop and icon
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
           $utf8 = New-Object System.Text.UTF8Encoding($false)
-
           $source = @'
           package main
-
+          
           import (
-              "context"
-              "crypto/sha256"
-              "encoding/hex"
-              "encoding/json"
-              "fmt"
-              "io"
-              "os"
-              "path/filepath"
-              "runtime"
-              "strings"
-              "syscall"
-              "unsafe"
-
-              "github.com/zeuvoryx/zeuvoryx/engine"
+          	"context"
+          	"crypto/sha256"
+          	_ "embed"
+          	"encoding/hex"
+          	"encoding/json"
+          	"fmt"
+          	"io"
+          	"os"
+          	"runtime"
+          	"strings"
+          	"syscall"
+          	"unsafe"
+          
+          	webview "github.com/jchv/go-webview2"
           )
-
-          var (
-              user32 = syscall.NewLazyDLL("user32.dll")
-              kernel32 = syscall.NewLazyDLL("kernel32.dll")
-              gdi32 = syscall.NewLazyDLL("gdi32.dll")
-              registerClass = user32.NewProc("RegisterClassExW")
-              createWindow = user32.NewProc("CreateWindowExW")
-              defWindow = user32.NewProc("DefWindowProcW")
-              getMessage = user32.NewProc("GetMessageW")
-              translateMessage = user32.NewProc("TranslateMessage")
-              dispatchMessage = user32.NewProc("DispatchMessageW")
-              postQuit = user32.NewProc("PostQuitMessage")
-              showWindow = user32.NewProc("ShowWindow")
-              updateWindow = user32.NewProc("UpdateWindow")
-              setWindowText = user32.NewProc("SetWindowTextW")
-              sendMessage = user32.NewProc("SendMessageW")
-              enableWindow = user32.NewProc("EnableWindow")
-              setTimer = user32.NewProc("SetTimer")
-              killTimer = user32.NewProc("KillTimer")
-              messageBox = user32.NewProc("MessageBoxW")
-              loadCursor = user32.NewProc("LoadCursorW")
-              getModule = kernel32.NewProc("GetModuleHandleW")
-              getLogicalDrives = kernel32.NewProc("GetLogicalDrives")
-              getDriveType = kernel32.NewProc("GetDriveTypeW")
-              getStockObject = gdi32.NewProc("GetStockObject")
-          )
-
-          type desktopClass struct {
-              size, style uint32
-              wndProc uintptr
-              clsExtra, wndExtra int32
-              instance, icon, cursor, background, menu, name, smallIcon uintptr
-          }
-
-          type desktopMsg struct {
-              hwnd uintptr
-              message uint32
-              wParam, lParam uintptr
-              time uint32
-              x, y int32
-              private uint32
-          }
-
-          type desktopUI struct {
-              s *State
-              hwnd, status, summary, roots, alerts, items, detail uintptr
-              scan, stop, quarantine, restore, export uintptr
-              lastReport string
-              findings []engine.Finding
-              quarantined []engine.QuarantineItem
-          }
-
-          var desktop *desktopUI
-
-          func wide(s string) *uint16 {
-              p, _ := syscall.UTF16PtrFromString(strings.ReplaceAll(s, "\x00", ""))
-              return p
-          }
-
-          func setText(h uintptr, s string) {
-              p := wide(s)
-              setWindowText.Call(h, uintptr(unsafe.Pointer(p)))
-          }
-
-          func boxMessage(h uintptr, s string, flags uintptr) uintptr {
-              p, t := wide(s), wide("ZEUVORYX")
-              r, _, _ := messageBox.Call(
-                  h,
-                  uintptr(unsafe.Pointer(p)),
-                  uintptr(unsafe.Pointer(t)),
-                  flags,
-              )
-              return r
-          }
-
-          func addList(h uintptr, s string) {
-              p := wide(s)
-              sendMessage.Call(h, 0x0180, 0, uintptr(unsafe.Pointer(p)))
-          }
-
-          func selected(h uintptr) int {
-              r, _, _ := sendMessage.Call(h, 0x0188, 0, 0)
-              return int(int32(r))
-          }
-
-          func enable(h uintptr, yes bool) {
-              var v uintptr
-              if yes { v = 1 }
-              enableWindow.Call(h, v)
-          }
-
+          
+          //go:embed desktop.html
+          var desktopHTML string
+          
+          var desktopKernel = syscall.NewLazyDLL("kernel32.dll")
+          var desktopUser = syscall.NewLazyDLL("user32.dll")
+          
           func desktopFixedRoots(ctx context.Context) ([]string, error) {
-              if err := ctx.Err(); err != nil {
-                  return nil, err
-              }
-
-              mask, _, err := getLogicalDrives.Call()
-
-              if mask == 0 {
-                  return nil, fmt.Errorf("GetLogicalDrives: %v", err)
-              }
-
-              var roots []string
-
-              for i := 0; i < 26; i++ {
-                  if mask&(1<<i) == 0 {
-                      continue
-                  }
-
-                  root := fmt.Sprintf("%c:\\", 'A'+i)
-                  p := wide(root)
-                  kind, _, _ := getDriveType.Call(uintptr(unsafe.Pointer(p)))
-
-                  if kind == 3 {
-                      roots = append(roots, root)
-                  }
-              }
-
-              if len(roots) == 0 {
-                  return nil, fmt.Errorf("nenhum disco local encontrado")
-              }
-
-              return roots, nil
+          	if err := ctx.Err(); err != nil {
+          		return nil, err
+          	}
+          	mask, _, e := desktopKernel.NewProc("GetLogicalDrives").Call()
+          	if mask == 0 {
+          		return nil, fmt.Errorf("GetLogicalDrives: %v", e)
+          	}
+          	var roots []string
+          	for i := 0; i < 26; i++ {
+          		if mask&(1<<i) == 0 {
+          			continue
+          		}
+          		root := fmt.Sprintf("%c:\\", 'A'+i)
+          		p, _ := syscall.UTF16PtrFromString(root)
+          		kind, _, _ := desktopKernel.NewProc("GetDriveTypeW").Call(uintptr(unsafe.Pointer(p)))
+          		if kind == 3 {
+          			roots = append(roots, root)
+          		}
+          	}
+          	if len(roots) == 0 {
+          		return nil, fmt.Errorf("Nenhum disco local encontrado")
+          	}
+          	return roots, nil
           }
-
-          func (d *desktopUI) control(class, text string, style uintptr, x, y, w, h, id uintptr) uintptr {
-              c, t := wide(class), wide(text)
-              instance, _, _ := getModule.Call(0)
-
-              handle, _, err := createWindow.Call(
-                  0,
-                  uintptr(unsafe.Pointer(c)),
-                  uintptr(unsafe.Pointer(t)),
-                  0x50000000|style,
-                  x, y, w, h,
-                  d.hwnd,
-                  id,
-                  instance,
-                  0,
-              )
-
-              if handle == 0 {
-                  panic(fmt.Sprintf("controle %s: %v", class, err))
-              }
-
-              font, _, _ := getStockObject.Call(17)
-              sendMessage.Call(handle, 0x0030, font, 1)
-
-              return handle
+          
+          func desktopError(text string) {
+          	p, _ := syscall.UTF16PtrFromString(text)
+          	t, _ := syscall.UTF16PtrFromString("ZEUVORYX")
+          	desktopUser.NewProc("MessageBoxW").Call(0, uintptr(unsafe.Pointer(p)), uintptr(unsafe.Pointer(t)), 16)
           }
-
-          func (d *desktopUI) refreshQuarantine() {
-              items, err := d.s.quarantine.List()
-
-              if err != nil {
-                  setText(d.detail, "Quarentena: "+err.Error())
-                  return
-              }
-
-              d.quarantined = items
-              sendMessage.Call(d.items, 0x0184, 0, 0)
-
-              for _, item := range items {
-                  addList(d.items, item.Original)
-              }
-          }
-
-          func (d *desktopUI) refresh() {
-              d.s.mu.Lock()
-
-              running, n, b, r, err := d.s.running, d.s.files, d.s.bytes, d.s.report, d.s.err
-
-              d.s.mu.Unlock()
-
-              status := "Pronto para iniciar a varredura completa."
-
-              if running {
-                  status = "Varredura automatica em andamento. Voce pode minimizar esta janela."
-              } else if err != "" {
-                  status = "Erro: " + err
-              } else if !r.Finished.IsZero() {
-                  if r.Cancelled {
-                      status = "Varredura cancelada."
-                  } else {
-                      status = "Varredura concluida. Confira os alertas e itens ignorados."
-                  }
-              }
-
-              setText(d.status, status)
-
-              setText(d.summary, fmt.Sprintf(
-                  "Arquivos: %d | Analisados: %.1f MB | Alertas: %d | Ignorados: %d",
-                  n,
-                  float64(b)/1048576,
-                  len(r.Findings),
-                  r.Skipped,
-              ))
-
-              if r.Root != "" {
-                  setText(d.roots, "Escopo: "+r.Root)
-              }
-
-              enable(d.scan, !running)
-              enable(d.stop, running)
-              enable(d.quarantine, !running)
-              enable(d.restore, !running)
-              enable(d.export, !running && !r.Finished.IsZero())
-
-              key := fmt.Sprintf("%t/%s/%s", running, r.Started.String(), r.Finished.String())
-
-              if key != d.lastReport {
-                  d.lastReport = key
-                  d.findings = r.Findings
-
-                  sendMessage.Call(d.alerts, 0x0184, 0, 0)
-
-                  for _, f := range r.Findings {
-                      addList(d.alerts, fmt.Sprintf("%d/100 | %s", f.Risk, f.Path))
-                  }
-
-                  if len(r.Errors) > 0 {
-                      setText(d.detail, "Exemplo de item nao lido: "+r.Errors[0])
-                  } else {
-                      setText(d.detail, "Selecione um alerta para conferir os motivos. Ausencia de alertas nao garante ausencia de ameacas.")
-                  }
-              }
-          }
-
-          func (d *desktopUI) command(id, notify uint16) {
-              switch id {
-
-              case 101:
-                  d.s.startScan("", true)
-                  d.refresh()
-
-              case 102:
-                  d.s.mu.Lock()
-
-                  if d.s.cancel != nil {
-                      d.s.cancel()
-                  }
-
-                  d.s.mu.Unlock()
-
-              case 103:
-                  if notify == 1 {
-                      i := selected(d.alerts)
-
-                      if i >= 0 && i < len(d.findings) {
-                          f := d.findings[i]
-                          setText(d.detail, f.Path+"\r\n"+strings.Join(f.Reasons, " | "))
-                      }
-                  }
-
-              case 104:
-                  i := selected(d.alerts)
-
-                  if i < 0 || i >= len(d.findings) {
-                      return
-                  }
-
-                  f := d.findings[i]
-
-                  if strings.Contains(f.Path, " :: ") {
-                      boxMessage(d.hwnd, "Nao e possivel isolar uma entrada interna de ZIP.", 0x30)
-                      return
-                  }
-
-                  if boxMessage(d.hwnd, "Isolar este arquivo? Pode afetar programas legitimos.\n"+f.Path, 0x34) != 6 {
-                      return
-                  }
-
-                  d.s.mu.Lock()
-
-                  if d.s.running {
-                      d.s.mu.Unlock()
-                      return
-                  }
-
-                  var err error
-
-                  if f.SHA256 == "" {
-                      err = fmt.Errorf("alerta sem assinatura; faca uma nova varredura")
-                  } else {
-                      file, e := os.Open(f.Path)
-
-                      if e != nil {
-                          err = e
-                      } else {
-                          h := sha256.New()
-                          _, e = io.Copy(h, file)
-                          ce := file.Close()
-
-                          if e != nil {
-                              err = e
-                          } else if ce != nil {
-                              err = ce
-                          } else if !strings.EqualFold(hex.EncodeToString(h.Sum(nil)), f.SHA256) {
-                              err = fmt.Errorf("arquivo mudou desde a varredura; examine novamente")
-                          }
-                      }
-                  }
-
-                  if err == nil {
-                      _, err = d.s.quarantine.Add(f.Path)
-                  }
-
-                  d.s.mu.Unlock()
-
-                  if err != nil {
-                      boxMessage(d.hwnd, err.Error(), 0x10)
-                  } else {
-                      d.refreshQuarantine()
-                      boxMessage(d.hwnd, "Arquivo isolado.", 0x40)
-                  }
-
-              case 105:
-                  i := selected(d.items)
-
-                  if i < 0 || i >= len(d.quarantined) {
-                      return
-                  }
-
-                  if boxMessage(d.hwnd, "Restaurar arquivo potencialmente perigoso?", 0x34) != 6 {
-                      return
-                  }
-
-                  d.s.mu.Lock()
-
-                  if d.s.running {
-                      d.s.mu.Unlock()
-                      return
-                  }
-
-                  err := d.s.quarantine.Restore(d.quarantined[i].ID)
-
-                  d.s.mu.Unlock()
-
-                  if err != nil {
-                      boxMessage(d.hwnd, err.Error(), 0x10)
-                  } else {
-                      d.refreshQuarantine()
-                  }
-
-              case 106:
-                  d.s.mu.Lock()
-                  r := d.s.report
-                  d.s.mu.Unlock()
-
-                  home, err := os.UserHomeDir()
-
-                  if err != nil {
-                      boxMessage(d.hwnd, err.Error(), 0x10)
-                      return
-                  }
-
-                  f, err := os.CreateTemp(home, "zeuvoryx-report-*.json")
-
-                  if err != nil {
-                      boxMessage(d.hwnd, err.Error(), 0x10)
-                      return
-                  }
-
-                  name := f.Name()
-                  err = json.NewEncoder(f).Encode(r)
-                  ce := f.Close()
-
-                  if err == nil {
-                      err = ce
-                  }
-
-                  if err != nil {
-                      os.Remove(name)
-                      boxMessage(d.hwnd, err.Error(), 0x10)
-                  } else {
-                      boxMessage(d.hwnd, "Relatorio salvo em:\n"+filepath.Clean(name), 0x40)
-                  }
-              }
-          }
-
-          func desktopProc(hwnd uintptr, msg uint32, w, l uintptr) uintptr {
-              d := desktop
-
-              switch msg {
-
-              case 0x0111:
-                  if d != nil {
-                      d.command(uint16(w), uint16(w>>16))
-                      return 0
-                  }
-
-              case 0x0113:
-                  if d != nil {
-                      d.refresh()
-                      return 0
-                  }
-
-              case 0x0010:
-                  if d != nil {
-                      d.s.mu.Lock()
-                      running := d.s.running
-                      d.s.mu.Unlock()
-
-                      if running && boxMessage(hwnd, "Encerrar o ZEUVORYX e interromper a varredura?", 0x34) != 6 {
-                          return 0
-                      }
-
-                      d.s.mu.Lock()
-
-                      if d.s.cancel != nil {
-                          d.s.cancel()
-                      }
-
-                      d.s.mu.Unlock()
-                  }
-
-              case 0x0002:
-                  killTimer.Call(hwnd, 1)
-                  postQuit.Call(0)
-                  return 0
-              }
-
-              r, _, _ := defWindow.Call(hwnd, uintptr(msg), w, l)
-              return r
-          }
-
+          
           func runDesktop(s *State, auto bool) {
-              runtime.LockOSThread()
-              defer runtime.UnlockOSThread()
-
-              instance, _, _ := getModule.Call(0)
-              cursor, _, _ := loadCursor.Call(0, 32512)
-              name := wide("ZEUVORYXDesktopWindow")
-
-              wc := desktopClass{
-                  size: uint32(unsafe.Sizeof(desktopClass{})),
-                  wndProc: syscall.NewCallback(desktopProc),
-                  instance: instance,
-                  cursor: cursor,
-                  background: 6,
-                  name: uintptr(unsafe.Pointer(name)),
-              }
-
-              atom, _, err := registerClass.Call(uintptr(unsafe.Pointer(&wc)))
-
-              if atom == 0 {
-                  boxMessage(0, fmt.Sprint(err), 0x10)
-                  return
-              }
-
-              title := wide("ZEUVORYX 2.1 | AutoScan Desktop")
-
-              hwnd, _, err := createWindow.Call(
-                  0,
-                  uintptr(unsafe.Pointer(name)),
-                  uintptr(unsafe.Pointer(title)),
-                  0x00CA0000,
-                  0x80000000,
-                  0x80000000,
-                  960,
-                  680,
-                  0,
-                  0,
-                  instance,
-                  0,
-              )
-
-              if hwnd == 0 {
-                  boxMessage(0, fmt.Sprint(err), 0x10)
-                  return
-              }
-
-              d := &desktopUI{s: s, hwnd: hwnd}
-              desktop = d
-
-              d.control("STATIC", "ZEUVORYX | CENTRAL DE SEGURANCA", 0, 20, 14, 890, 25, 0)
-
-              d.status = d.control("STATIC", "Inicializando...", 0, 20, 45, 890, 25, 0)
-              d.summary = d.control("STATIC", "", 0, 20, 73, 890, 25, 0)
-              d.roots = d.control("STATIC", "Escopo: discos locais fixos", 0, 20, 100, 890, 25, 0)
-
-              d.scan = d.control("BUTTON", "Nova varredura completa", 0x10000, 20, 131, 220, 34, 101)
-              d.stop = d.control("BUTTON", "Cancelar", 0x10000, 250, 131, 130, 34, 102)
-              d.export = d.control("BUTTON", "Exportar relatorio", 0x10000, 390, 131, 180, 34, 106)
-
-              d.control("STATIC", "ALERTAS - Selecione para conferir detalhes", 0, 20, 180, 890, 24, 0)
-
-              d.alerts = d.control("LISTBOX", "", 0x00A10001, 20, 205, 900, 155, 103)
-              d.detail = d.control("STATIC", "", 0, 20, 365, 900, 65, 0)
-              d.quarantine = d.control("BUTTON", "Isolar alerta selecionado", 0x10000, 20, 430, 220, 32, 104)
-
-              d.control("STATIC", "QUARENTENA", 0, 20, 473, 890, 22, 0)
-
-              d.items = d.control("LISTBOX", "", 0x00A10001, 20, 495, 900, 78, 107)
-              d.restore = d.control("BUTTON", "Restaurar selecionado", 0x10000, 20, 580, 220, 32, 105)
-
-              d.control("STATIC", "Beta: mantenha o Microsoft Defender ativo.", 0, 260, 586, 650, 24, 0)
-
-              d.refreshQuarantine()
-
-              if auto {
-                  s.startScan("", true)
-              }
-
-              d.refresh()
-
-              setTimer.Call(hwnd, 1, 1000, 0)
-              showWindow.Call(hwnd, 5)
-              updateWindow.Call(hwnd)
-
-              var m desktopMsg
-
-              for {
-                  n, _, _ := getMessage.Call(uintptr(unsafe.Pointer(&m)), 0, 0, 0)
-
-                  if int32(n) <= 0 {
-                      break
-                  }
-
-                  translateMessage.Call(uintptr(unsafe.Pointer(&m)))
-                  dispatchMessage.Call(uintptr(unsafe.Pointer(&m)))
-              }
+          	runtime.LockOSThread()
+          	defer runtime.UnlockOSThread()
+          	w := webview.NewWithOptions(webview.WebViewOptions{Debug: false, AutoFocus: true, WindowOptions: webview.WindowOptions{Title: "ZEUVORYX | AutoScan 2.2", Width: 1160, Height: 800, Center: true}})
+          	if w == nil {
+          		desktopError("Não foi possível inicializar a interface. Verifique a instalação do Microsoft WebView2 Runtime.")
+          		return
+          	}
+          	defer w.Destroy()
+          	defer func() {
+          		s.mu.Lock()
+          		if s.cancel != nil {
+          			s.cancel()
+          		}
+          		s.mu.Unlock()
+          	}()
+          	w.SetSize(820, 600, webview.HintMin)
+          	bind := func(name string, fn any) bool {
+          		if e := w.Bind(name, fn); e != nil {
+          			desktopError(e.Error())
+          			return false
+          		}
+          		return true
+          	}
+          	if !bind("getScanState", func() map[string]any {
+          		s.mu.Lock()
+          		defer s.mu.Unlock()
+          		return map[string]any{"running": s.running, "files": s.files, "bytes": s.bytes, "report": s.report, "done": !s.report.Finished.IsZero(), "error": s.err}
+          	}) {
+          		return
+          	}
+          	if !bind("startScan", func() bool { return s.startScan("", true) }) {
+          		return
+          	}
+          	if !bind("stopScan", func() bool {
+          		s.mu.Lock()
+          		defer s.mu.Unlock()
+          		if s.cancel != nil {
+          			s.cancel()
+          			return true
+          		}
+          		return false
+          	}) {
+          		return
+          	}
+          	if !bind("quarantineList", s.quarantine.List) {
+          		return
+          	}
+          	if !bind("isolate", func(path string) (bool, error) {
+          		s.mu.Lock()
+          		defer s.mu.Unlock()
+          		if s.running {
+          			return false, fmt.Errorf("Aguarde a varredura")
+          		}
+          		if strings.Contains(path, " :: ") {
+          			return false, fmt.Errorf("Entrada interna de ZIP")
+          		}
+          		var hash string
+          		for _, f := range s.report.Findings {
+          			if f.Path == path {
+          				hash = f.SHA256
+          				break
+          			}
+          		}
+          		if hash == "" {
+          			return false, fmt.Errorf("Alerta inválido; refaça a análise")
+          		}
+          		info, e := os.Lstat(path)
+          		if e != nil {
+          			return false, e
+          		}
+          		if !info.Mode().IsRegular() {
+          			return false, fmt.Errorf("Arquivo não regular")
+          		}
+          		f, e := os.Open(path)
+          		if e != nil {
+          			return false, e
+          		}
+          		h := sha256.New()
+          		_, e = io.Copy(h, f)
+          		ce := f.Close()
+          		if e != nil {
+          			return false, e
+          		}
+          		if ce != nil {
+          			return false, ce
+          		}
+          		if !strings.EqualFold(hex.EncodeToString(h.Sum(nil)), hash) {
+          			return false, fmt.Errorf("Arquivo alterado desde a análise")
+          		}
+          		_, e = s.quarantine.Add(path)
+          		return e == nil, e
+          	}) {
+          		return
+          	}
+          	if !bind("restoreItem", func(id string) (bool, error) {
+          		s.mu.Lock()
+          		defer s.mu.Unlock()
+          		if s.running {
+          			return false, fmt.Errorf("Aguarde a varredura")
+          		}
+          		e := s.quarantine.Restore(id)
+          		return e == nil, e
+          	}) {
+          		return
+          	}
+          	if !bind("exportReport", func() (string, error) {
+          		s.mu.Lock()
+          		if s.running || s.report.Finished.IsZero() {
+          			s.mu.Unlock()
+          			return "", fmt.Errorf("Relatório ainda indisponível")
+          		}
+          		r := s.report
+          		s.mu.Unlock()
+          		home, e := os.UserHomeDir()
+          		if e != nil {
+          			return "", e
+          		}
+          		f, e := os.CreateTemp(home, "zeuvoryx-report-*.json")
+          		if e != nil {
+          			return "", e
+          		}
+          		name := f.Name()
+          		e = json.NewEncoder(f).Encode(r)
+          		ce := f.Close()
+          		if e == nil {
+          			e = ce
+          		}
+          		if e != nil {
+          			os.Remove(name)
+          			return "", e
+          		}
+          		return name, nil
+          	}) {
+          		return
+          	}
+          	w.SetHtml(desktopHTML)
+          	if auto {
+          		s.startScan("", true)
+          	}
+          	w.Run()
           }
           '@
-
           [IO.File]::WriteAllText((Join-Path $PWD 'desktop_windows.go'), $source, $utf8)
+
+          $source = @'
+          <!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:;"><title>ZEUVORYX</title><style>
+          :root{color-scheme:dark;--bg:#080e1b;--panel:#111c30;--line:#24344f;--muted:#9eafc9;--cyan:#53e4d0;--blue:#628fff}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% 0%,#192b49 0%,#080e1b 55%);color:#eef4ff;font:15px 'Segoe UI',sans-serif}button{font:inherit;cursor:pointer;border:1px solid #3c5275;border-radius:10px;padding:11px 16px;background:#18263d;color:#edf5ff;font-weight:600}button.primary{background:#62dfd1;color:#081e25;border:0}button:disabled{opacity:.4;cursor:default}button:hover:not(:disabled){filter:brightness(1.13)}button:focus-visible{outline:3px solid #86b8ff;outline-offset:3px}.shell{display:grid;grid-template-columns:216px minmax(0,1fr);min-height:100vh}aside{background:#0b1425;padding:26px 17px;border-right:1px solid var(--line)}.brand{display:flex;align-items:center;gap:11px;font-size:19px;font-weight:800;letter-spacing:1px}.brand svg{width:38px;height:42px;flex:none}.tag{font-size:11px;letter-spacing:2px;color:var(--muted);margin:12px 0 34px}.nav{display:grid;gap:9px}.nav button{text-align:left;background:transparent;border-color:transparent;color:#aebed6}.nav button.active{color:#e5fdfb;border-color:#29465a;background:#15313e}.note{font-size:12px;line-height:1.6;color:var(--muted);margin-top:32px}main{padding:29px 30px;min-width:0}header{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:23px}h1,h2,p{margin:0}h1{font-size:28px;letter-spacing:-.6px}h2{font-size:17px}.sub{color:var(--muted);margin-top:7px;font-size:13px}.pill{border:1px solid #344865;padding:8px 12px;border-radius:99px;font-size:12px;color:#b6c7e1;white-space:nowrap}.hero{background:linear-gradient(120deg,#10263b,#182a47 65%,#142038);border:1px solid #304968;border-radius:20px;padding:25px;display:flex;align-items:center;gap:25px;margin-bottom:18px;overflow:hidden}.ring{width:112px;height:112px;flex:none;display:grid;place-items:center;position:relative}.ring svg{width:112px;height:112px;position:absolute;inset:0}.ring .arc{transform-origin:60px 60px;stroke-dasharray:65 211;stroke-dashoffset:0}.scanning .arc{animation:spin 1.8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.scanning .arc{animation:none}}.ring span{font-size:35px;color:var(--cyan)}.hero h2{font-size:24px}.hero p{color:#b7c7e2;line-height:1.5;margin:8px 0 17px}.actions{display:flex;flex-wrap:wrap;gap:8px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:18px}.card{padding:19px;border:1px solid var(--line);border-radius:15px;background:var(--panel)}.label{color:var(--muted);font-size:12px;letter-spacing:.4px}.metric{font-size:30px;font-weight:700;margin-top:8px;overflow-wrap:anywhere}.chart{margin-bottom:16px}.chart svg{width:100%;height:145px;margin-top:15px;display:block}.chart text{fill:#9eafc9;font-size:10px}.list{display:grid;gap:10px;margin-top:15px}.entry{border:1px solid var(--line);border-radius:12px;padding:13px;background:#101a2d;overflow-wrap:anywhere}.entry p{color:var(--muted);font-size:12px;margin:8px 0;line-height:1.5}.entry button{font-size:12px;padding:7px 11px}.risk{color:#ffba88;font-weight:700}.muted{color:var(--muted);font-size:13px}.hidden{display:none!important}#msg{min-height:22px;color:#ffd29b;font-size:13px;margin-top:10px;overflow-wrap:anywhere}dialog{max-width:500px;background:#14233a;color:#edf5ff;border:1px solid #496286;border-radius:16px;padding:24px}dialog::backdrop{background:#000a}dialog p{margin:12px 0 18px;overflow-wrap:anywhere}footer{font-size:12px;color:var(--muted);margin-top:18px;line-height:1.6}@media(max-width:900px){.shell{grid-template-columns:175px minmax(0,1fr)}main{padding:22px 16px}.metric{font-size:23px}.hero{gap:15px;padding:17px}.ring{width:94px;height:94px}.ring svg{width:94px;height:94px}}
+          </style></head><body><div class="shell"><aside><div class="brand"><svg viewBox="0 0 64 72" fill="none" aria-hidden="true"><path d="M32 4 58 14v22c0 16-10 27-26 34C16 63 6 52 6 36V14Z" fill="#15384c" stroke="#53e4d0" stroke-width="3"/><path d="M17 23h30L22 48h25" stroke="#e8fffd" stroke-width="6" stroke-linejoin="round"/></svg>ZEUVORYX</div><div class="tag">AUTOSCAN 2.2</div><nav class="nav"><button class="active" data-page="overview">Visão geral</button><button data-page="alerts">Alertas</button><button data-page="quarantine">Quarentena</button></nav><p class="note">Análise local de arquivos. Esta versão não bloqueia a execução de malware nem substitui o Microsoft Defender.</p></aside><main><header><div><h1>Central de segurança</h1><p class="sub">Varredura automática dos discos locais fixos</p></div><div class="pill" id="badge">Inicializando</div></header><section id="overview"><div class="hero" id="hero"><div class="ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="44" fill="none" stroke="#30445d" stroke-width="6"/><circle class="arc" cx="60" cy="60" r="44" fill="none" stroke="#53e4d0" stroke-width="6" stroke-linecap="round"/></svg><span>⌁</span></div><div><h2 id="stateTitle">Inicializando o motor</h2><p id="stateText">Consultando o estado da análise.</p><div class="actions"><button id="start" class="primary" disabled>Nova varredura</button><button id="stop" disabled>Cancelar</button><button id="export" disabled>Exportar relatório</button></div></div></div><div class="grid"><div class="card"><div class="label">ARQUIVOS ANALISADOS</div><div class="metric" id="files">0</div></div><div class="card"><div class="label">VOLUME ANALISADO</div><div class="metric" id="bytes">0 B</div></div><div class="card"><div class="label">ALERTAS DO RELATÓRIO</div><div class="metric" id="hits">—</div></div></div><div class="card chart"><h2>Atividade da varredura</h2><p class="sub">Arquivos examinados por intervalo de atualização de aproximadamente 2 segundos.</p><svg viewBox="0 0 600 140" preserveAspectRatio="none" role="img" aria-label="Gráfico de arquivos examinados por intervalo"><path d="M35 10H590M35 65H590M35 120H590" stroke="#2c405d" fill="none" stroke-dasharray="4 5"/><text x="0" y="15" id="chartMax">0</text><text x="8" y="123">0</text><polyline id="curve" points="" fill="none" stroke="#53e4d0" stroke-width="2.5" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg><p class="muted" id="activity">Aguardando medições.</p></div><div class="card"><h2>Cobertura da análise</h2><p class="sub" id="scope">Discos locais fixos; arquivos protegidos ou inacessíveis podem ser ignorados.</p><p class="sub" id="skipped"></p></div></section><section id="alerts" class="hidden card"><h2>Alertas e resultados</h2><p class="sub">Os resultados completos aparecem no fim da varredura. Alertas heurísticos não confirmam infecção.</p><div id="findings" class="list"></div></section><section id="quarantine" class="hidden card"><h2>Arquivos em quarentena</h2><p class="sub">O isolamento e a restauração exigem confirmação.</p><div id="qitems" class="list"></div><button id="refreshQ">Atualizar lista</button></section><p id="msg" role="status"></p><footer>ZEUVORYX · Beta experimental · Não desative a proteção do Windows.</footer></main></div><dialog id="confirmBox"><h2>Confirme a operação</h2><p id="confirmText"></p><div class="actions"><button id="no">Cancelar</button><button id="yes" class="primary">Confirmar</button></div></dialog><script>
+          'use strict';const el=id=>document.getElementById(id),fmt=n=>Number(n||0).toLocaleString('pt-BR');let last=null,series=[],key='',busy=false,confirmResolve=null;function volume(n){if(n>=1073741824)return (n/1073741824).toFixed(2)+' GB';if(n>=1048576)return (n/1048576).toFixed(1)+' MB';if(n>=1024)return (n/1024).toFixed(1)+' KB';return fmt(n)+' B'}function node(tag,text,cls){let x=document.createElement(tag);x.textContent=text;if(cls)x.className=cls;return x}function ask(text){el('confirmText').textContent=text;el('confirmBox').showModal();return new Promise(r=>confirmResolve=r)}function closeConfirm(ok){el('confirmBox').close();const r=confirmResolve;confirmResolve=null;if(r)r(ok)}el('yes').onclick=()=>closeConfirm(true);el('no').onclick=()=>closeConfirm(false);el('confirmBox').oncancel=e=>{e.preventDefault();closeConfirm(false)};async function action(fn){try{el('msg').textContent='';await fn()}catch(e){el('msg').textContent=String(e)}}function chart(n,running){if(last!==null&&n<last){series=[];last=null}if(running&&last!==null){series.push(Math.max(0,n-last));if(series.length>40)series.shift()}last=n;const max=Math.max(1,...series);el('chartMax').textContent=fmt(Math.max(0,...series));el('curve').setAttribute('points',series.map((v,i)=>`${35+i*555/Math.max(1,series.length-1)},${120-110*v/max}`).join(' '));el('activity').textContent=series.length?fmt(series.at(-1))+' arquivos no último intervalo medido.':'Aguardando medições.'}function resetChart(){last=null;series=[];el('curve').setAttribute('points','')}function renderFindings(s){let r=s.report||{},box=el('findings');box.replaceChildren();let list=r.findings||[];if(!list.length)box.append(node('p',s.running?'Varredura em andamento.':s.done?'Nenhum alerta neste relatório.':'Nenhum relatório disponível.','muted'));for(const f of list){let row=node('div','','entry');row.append(node('strong',`${f.level} · ${f.risk}/100`,'risk'),node('p',f.path),node('p',(f.reasons||[]).join(' · ')));if(!f.path.includes(' :: ')){let b=node('button','Isolar arquivo');b.disabled=s.running;b.onclick=()=>action(async()=>{if(await ask('Mover para quarentena? Isso pode afetar programas legítimos. '+f.path)){await window.isolate(f.path);await loadQ();el('msg').textContent='Arquivo isolado.'}});row.append(b)}box.append(row)}}async function loadQ(){const items=await window.quarantineList()||[],box=el('qitems');box.replaceChildren();if(!items.length)box.append(node('p','Nenhum arquivo isolado.','muted'));for(const q of items){const row=node('div','','entry');row.append(node('strong',q.original),node('p',new Date(q.when).toLocaleString('pt-BR')));let b=node('button','Restaurar');b.onclick=()=>action(async()=>{if(await ask('Restaurar arquivo potencialmente perigoso? '+q.original)){await window.restoreItem(q.id);await loadQ()}});row.append(b);box.append(row)}}async function refresh(){if(busy)return;busy=true;try{const s=await window.getScanState(),r=s.report||{};let running=s.running;el('hero').classList.toggle('scanning',running);el('badge').textContent=running?'Analisando':s.error?'Erro na análise':s.done?'Análise encerrada':'Pronto';el('stateTitle').textContent=running?'Varredura em andamento':s.error?'A análise encontrou um erro':s.done?(r.cancelled?'Varredura cancelada':'Varredura concluída'):'Pronto para analisar';el('stateText').textContent=s.error|| (running?'Você pode minimizar esta janela enquanto os arquivos são examinados.':'Verifique os resultados e os itens não examinados.');el('files').textContent=fmt(s.files);el('bytes').textContent=volume(s.bytes);el('hits').textContent=s.done?fmt((r.findings||[]).length):'—';el('scope').textContent=r.root||'Discos locais fixos';el('skipped').textContent=s.done?fmt(r.skipped)+' itens ignorados ou não examinados. '+(r.errors?.[0]||''):'A cobertura final será informada após a análise.';el('start').disabled=running;el('stop').disabled=!running;el('export').disabled=running||!s.done;chart(s.files,running);let k=String(r.started)+String(r.finished)+running;if(k!==key){key=k;renderFindings(s)}}catch(e){el('msg').textContent='Interface: '+String(e)}finally{busy=false}}document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x===b));['overview','alerts','quarantine'].forEach(id=>el(id).classList.toggle('hidden',id!==b.dataset.page));if(b.dataset.page==='quarantine')action(loadQ)});el('start').onclick=()=>action(async()=>{if(await window.startScan())resetChart();await refresh()});el('stop').onclick=()=>action(async()=>{await window.stopScan();await refresh()});el('export').onclick=()=>action(async()=>{el('msg').textContent='Relatório salvo em: '+await window.exportReport()});el('refreshQ').onclick=()=>action(loadQ);refresh();setInterval(refresh,2000);
+          </script></body></html>
+          '@
+          [IO.File]::WriteAllText((Join-Path $PWD 'desktop.html'), $source, $utf8)
+
+          $source = @'
+          import struct, zlib, math
+          from pathlib import Path
+          
+          def png(n):
+              def inside(x,y,poly):
+                  c=False
+                  for i,(a,b) in enumerate(poly):
+                      u,v=poly[i-1]
+                      if (b>y)!=(v>y) and x<(u-a)*(y-b)/(v-b)+a:c=not c
+                  return c
+              def seg(x,y,a,b):
+                  dx,dy=b[0]-a[0],b[1]-a[1]
+                  t=max(0,min(1,((x-a[0])*dx+(y-a[1])*dy)/(dx*dx+dy*dy)))
+                  return math.hypot(x-a[0]-t*dx,y-a[1]-t*dy)
+              outer=[(.5,.055),(.92,.225),(.89,.57),(.81,.76),(.66,.90),(.5,.98),(.34,.90),(.19,.76),(.11,.57),(.08,.225)]
+              inner=[(.5,.105),(.87,.255),(.84,.57),(.76,.73),(.63,.85),(.5,.925),(.37,.85),(.24,.73),(.16,.57),(.13,.255)]
+              z=[(.30,.34),(.70,.34),(.33,.69),(.70,.69)]
+              def color(x,y):
+                  if not inside(x,y,outer):return (0,0,0,0)
+                  if not inside(x,y,inner):return (73,232,208,255)
+                  if min(seg(x,y,z[i],z[i+1]) for i in range(3))<.042:return (231,255,252,255)
+                  return (int(16+19*x),int(38+30*(1-y)),int(69+34*x),255)
+              rows=[]
+              for j in range(n):
+                  row=bytearray([0])
+                  for i in range(n):
+                      samples=[color((i+dx)/n,(j+dy)/n) for dx,dy in ((.25,.25),(.25,.75),(.75,.25),(.75,.75))]
+                      alpha=sum(c[3] for c in samples)
+                      row.extend([round(sum(c[k]*c[3] for c in samples)/alpha) if alpha else 0 for k in range(3)]+[round(alpha/4)])
+                  rows.append(row)
+              def chunk(t,b):return struct.pack('>I',len(b))+t+b+struct.pack('>I',zlib.crc32(t+b)&0xffffffff)
+              return b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',n,n,8,6,0,0,0))+chunk(b'IDAT',zlib.compress(b''.join(rows),9))+chunk(b'IEND',b'')
+          
+          sizes=(16,24,32,48,64,128,256)
+          images=[png(n) for n in sizes]; offset=6+16*len(images); header=struct.pack('<HHH',0,1,len(images))
+          for n,data in zip(sizes,images):
+              header+=struct.pack('<BBBBHHII',n%256,n%256,0,0,1,32,len(data),offset);offset+=len(data)
+          Path('ZEUVORYX.ico').write_bytes(header+b''.join(images));Path('ZEUVORYX.png').write_bytes(images[-1])
+          '@
+          [IO.File]::WriteAllText((Join-Path $PWD 'make_icon.py'), $source, $utf8)
 
           $mainPath = Join-Path $PWD 'main.go'
           $main = [IO.File]::ReadAllText($mainPath)
-
           $needle = 'listener, e := net.Listen("tcp", "127.0.0.1:0")'
-
-          if ([regex]::Matches($main, [regex]::Escape($needle)).Count -ne 1) {
-            throw 'Unexpected main.go structure; desktop patch not applied.'
-          }
-
+          if ([regex]::Matches($main, [regex]::Escape($needle)).Count -ne 1) { throw 'Unexpected main.go structure' }
           $main = $main.Replace($needle, "if runtime.GOOS == `"windows`" {`n runDesktop(state, *auto)`n return`n }`n $needle")
-
           $pattern = '(?s)func fixedRoots\(ctx context.Context\) \(\[\]string, error\) \{.*?\r?\n\}\r?\n\r?\nfunc samePath'
-
-          if ([regex]::Matches($main, $pattern).Count -ne 1) {
-            throw 'Unexpected disk discovery function.'
-          }
-
+          if ([regex]::Matches($main, $pattern).Count -ne 1) { throw 'Unexpected disk discovery function' }
           $main = [regex]::Replace($main, $pattern, "func fixedRoots(ctx context.Context) ([]string, error) {`n return desktopFixedRoots(ctx)`n}`n`nfunc samePath")
-
           [IO.File]::WriteAllText($mainPath, $main, $utf8)
-
           gofmt -w main.go desktop_windows.go
-
-          if ($LASTEXITCODE -ne 0) {
-            throw 'Go formatting failed'
-          }
-
+          if ($LASTEXITCODE -ne 0) { throw 'Formatting failed' }
+          go get github.com/jchv/go-webview2@v0.0.0-20260205173254-56598839c808
+          if ($LASTEXITCODE -ne 0) { throw 'WebView2 dependency failed' }
+          go mod tidy
+          if ($LASTEXITCODE -ne 0) { throw 'Module resolution failed' }
+          python make_icon.py
+          if ($LASTEXITCODE -ne 0) { throw 'Icon generation failed' }
+          go run github.com/akavel/rsrc@v0.10.2 -arch amd64 -ico ZEUVORYX.ico -o rsrc_windows_amd64.syso
+          if ($LASTEXITCODE -ne 0) { throw 'Icon embedding failed' }
       - name: Validate source code
         shell: pwsh
         run: |
           go vet ./...
-
-          if ($LASTEXITCODE -ne 0) {
-            throw 'Go validation failed'
-          }
-
+          if ($LASTEXITCODE -ne 0) { throw 'Go validation failed' }
       - name: Run tests five times
         shell: pwsh
         run: |
           go test -v -count=5 ./...
-
-          if ($LASTEXITCODE -ne 0) {
-            throw 'Go tests failed'
-          }
-
+          if ($LASTEXITCODE -ne 0) { throw 'Go tests failed' }
       - name: Build Windows desktop EXE
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-
           New-Item -ItemType Directory -Force dist | Out-Null
-
           go build -trimpath -ldflags '-H=windowsgui' -o dist/ZEUVORYX.exe .
-
-          if ($LASTEXITCODE -ne 0) {
-            throw 'Windows build failed'
-          }
-
-          Copy-Item signatures.sha256 dist/ -ErrorAction Stop
-
+          if ($LASTEXITCODE -ne 0) { throw 'Windows build failed' }
+          Copy-Item signatures.sha256, ZEUVORYX.ico, ZEUVORYX.png dist/ -ErrorAction Stop
           $bytes = [IO.File]::ReadAllBytes((Join-Path $PWD 'dist/ZEUVORYX.exe'))
-
           $pe = [BitConverter]::ToInt32($bytes, 60)
-
           $subsystem = [BitConverter]::ToUInt16($bytes, ($pe + 24 + 68))
-
-          if ($subsystem -ne 2) {
-            throw 'Expected native Windows GUI executable'
-          }
-
+          if ($subsystem -ne 2) { throw 'Expected Windows GUI executable' }
           Get-FileHash dist/ZEUVORYX.exe -Algorithm SHA256
-
-      - name: Upload desktop executable
+      - name: Upload modern desktop executable
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-2.1-Desktop-Windows
+          name: ZEUVORYX-2.2-Modern-Desktop-Windows
           path: dist/
           if-no-files-found: error

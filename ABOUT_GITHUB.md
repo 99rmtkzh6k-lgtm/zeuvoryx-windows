@@ -40,3 +40,16 @@ A integração disponível não oferece operação de edição administrativa de
 Descrição para atualização pública quando o candidato Windows for aprovado: ZEUVORYX — Experimental Windows 3.0.6 LAB R1 security scanner in Go; macOS 3.0.5 LAB candidate. SHA-256, heuristics, reversible quarantine and advisory AI. Complementary to Microsoft Defender; not certified.
 
 Topics sugeridos: zeuvoryx, antivirus, security, windows, golang, malware-scanner, cybersecurity, macos. Website: manter vazio até existir página oficial aprovada. Não promover versão por metadados antes da validação. Campos reais consultados: descrição 3.0.5 LAB R5, topics vazios, homepage vazia; edição administrativa não disponível nesta integração. Caminho: página principal do repositório > About > engrenagem.
+
+## Estado e texto proposto vigente — piloto 3.0.7 / preparação 3.0.8
+
+24/11/2026. Candidato Windows 3.0.7 LAB com CI aprovado e piloto rápido parcial; 3.0.8 apenas preparação. Não anunciar proteção residente, certificação ou versão definitiva. Obrigatório verificar as descrições em toda revisão, sem novo lembrete do titular.
+
+Description (copiar integralmente):
+> ZEUVORYX — Experimental Windows security scanner in Go. 3.0.7 LAB: CI passed, validation ongoing; 3.0.8 in preparation. macOS LAB separate. Complementary to Microsoft Defender; not certified.
+
+Topics: `zeuvoryx antivirus security windows golang malware-scanner cybersecurity macos experimental`
+
+Website: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows#readme
+
+Campos administrativos não editáveis pelo conector atual; titular pode aplicar em About/Sobre > engrenagem. A gravação deste arquivo não altera os campos efetivos. Revalidar após alteração. Nenhuma publicação autorizada.

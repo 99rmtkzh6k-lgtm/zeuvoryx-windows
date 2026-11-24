@@ -265,3 +265,41 @@ O ciclo de evolução aplica-se durante cada retomada e revisão do projeto; nã
 - About: descrição ainda somente Windows; Topics e Website vazios. Ação manual continua registrada em ABOUT_GITHUB.md da main, sem capacidade administrativa de escrita nesta integração.
 - Histórico CHANGELOG da main mantinha a execução LAB original sem registrar a compilação consolidada em main e o candidato Macintosh; complementar o histórico sem apagar a evidência anterior.
 - Esta revisão é documental; nenhuma alteração funcional, novo teste, lançamento ou adoção de ferramenta foi realizada.
+
+## Protocolo permanente de ativação e padrão internacional de engenharia — 24/11/2026
+
+**Expressão de referência do titular:** “memorando da evolução do antivírus”, “memorando da evolução do ZEUVORYX” ou simplesmente “memorando”, quando o assunto for o ZEUVORYX, designam o conjunto completo de regras deste memorando central e dos memorandos específicos Windows e Macintosh. Ao receber a expressão, consultar primeiro os arquivos vigentes no GitHub e o histórico, verificar os resultados atuais e aplicar o ciclo de revisão, pesquisa, correção, testes, sincronização, documentação e verificação anteriormente estabelecido, conforme o escopo solicitado. Quando o pedido for apenas consultar, apresentar ou registrar, não iniciar alteração funcional ou publicação por inferência. Não exigir que o titular repita os requisitos; registrar novas descobertas e propostas úteis, respeitando autorizações e prioridades. Os arquivos Git versionados são a referência durável, não uma promessa de memória ilimitada.
+
+### Referências públicas consultadas em 24/11/2026
+- Microsoft SDL: integrar requisitos de segurança, análise de ameaças e controles no ciclo de engenharia. https://www.microsoft.com/en-us/securityengineering/sdl/practices
+- Google Cloud/SLSA: procedência verificável de compilações e controles de cadeia de suprimentos. https://cloud.google.com/resources/delivering-software-securely ; https://slsa.dev/spec/v1.2/
+- Apple Developer ID: assinatura e notarização de software macOS distribuído fora da App Store. https://developer.apple.com/developer-id/
+- IBM Security and Privacy by Design: segurança e privacidade desde o projeto e revisão antes da disponibilização geral. https://www.ibm.com/trust/security-and-privacy-design
+- Adobe Secure Product Lifecycle: incorporar segurança ao ciclo de vida de produtos e serviços. https://www.adobe.com/trust/security/product-security.html
+- GitHub Secure Use: fixar Actions por SHA integral verificado, minimizar permissões, revisar dependências e evitar injeção em workflows. https://docs.github.com/en/actions/reference/security/secure-use
+- NIST SSDF SP 800-218: estruturar preparação, proteção do software, produção segura e resposta a vulnerabilidades. https://csrc.nist.gov/pubs/sp/800/218/final
+- OWASP SAMM: avaliar maturidade de governança, projeto, implementação, verificação e operações. https://owaspsamm.org/model/
+- Go Vulnerability Management: avaliar govulncheck para identificar vulnerabilidades conhecidas em código e dependências Go. https://go.dev/doc/security/vuln/
+
+São referências públicas selecionadas, não acesso a procedimentos internos de todas as empresas, nem certificação ou conformidade já demonstrada do ZEUVORYX. Revisar vigência, licença, aplicabilidade e custos antes de adotar ferramentas.
+
+### Controles de engenharia a incorporar incrementalmente
+| ID | Controle | Critério de aceitação |
+| --- | --- | --- |
+| ZVX-STD-01 | Fonte única de versão e matriz de compatibilidade | Interface, motor, instalador, workflow e metadados correspondem; versões históricas e candidatos identificados, Intel/ARM64/x64 separados. |
+| ZVX-STD-02 | Modelagem de ameaças e revisão de arquitetura | Registrar ativos, fronteiras de confiança, riscos e mitigação; privilégio mínimo e nenhuma ação destrutiva sem controles. |
+| ZVX-STD-03 | Revisão de código e testes por risco | Testes positivos, negativos, regressão, concorrência, fuzzing e falhas; distinguir testes sintéticos, integração e eficácia real. |
+| ZVX-STD-04 | Cadeia de suprimentos e dependências | Avaliar govulncheck, validação YAML/actionlint, Actions fixadas por SHA verificado, dependências auditadas, inventário SBOM e procedência/atestação de artefatos. Sem desligar checks, sem segredos em logs. |
+| ZVX-STD-05 | Gates de liberação e recuperação | LAB → testes por plataforma → piloto controlado → aprovação do titular → assinatura/release autorizada; testar falhas de atualização, preservação de dados e rollback. |
+| ZVX-STD-06 | Gestão de vulnerabilidades e incidentes | Planejar SECURITY.md, canal responsável, triagem, correção, regressão, registro de causa raiz e comunicação proporcional. Não divulgar segredos ou dados sensíveis. |
+| ZVX-STD-07 | Qualidade mensurável e privacidade | Medir CPU, RAM, disco, tempo, cobertura e falsos positivos em condições reproduzíveis; consentimento, minimização e retenção; não inventar indicadores. |
+| ZVX-STD-08 | Melhoria contínua e documentação | Registrar decisões de arquitetura (ADR), backlog com IDs, revisão de riscos, critérios de aceitação e checklist de encerramento; atualizar About, README, CHANGELOG e memorandos e verificar campos reais. |
+| ZVX-STD-09 | IA responsável | Versionar modelo/dados e critérios de validação; comparar contra referência, medir falsos positivos por categoria, não promover candidato reprovado, não usar IA isoladamente para ação destrutiva. |
+
+Status inicial destes controles: diretrizes adotadas no processo documental; automações, ferramentas e requisitos técnicos adicionais são backlog a avaliar/testar, não implantação já comprovada. Priorizar os controles de consistência e dependências no CI sem aumentar o consumo do aplicativo instalado. A cada revisão, registrar implementado/testado/aprovado/pendente com evidência real e não declarar certificação NIST, OWASP, SLSA ou de laboratório independente.
+
+### Conferência atual do GitHub
+- Windows 3.0.5 R5: compilação 45436304817 aprovada. Fundamentos 45436304993: Windows/Linux aprovados, job macos-updater cancelado, execução global falhou. Não confundir cancelamento com defeito de código comprovado.
+- Macintosh 3.0.3: Intel aprovado, ARM64 cancelado novamente (45396837719). Macintosh 3.0.5 candidato (45437873318): testes portáteis Linux e compilação Intel aprovados; ARM64 na fila. Nenhuma aprovação integral multiplataforma ainda.
+- About: Description ainda apenas Windows; Topics e Website vazios. Ação manual permanece em ABOUT_GITHUB.md; conferir depois da edição.
+- Esta revisão incorpora pesquisa e regras documentais; não instala ferramentas, não altera executáveis, não dispara testes desnecessários nem publica releases.

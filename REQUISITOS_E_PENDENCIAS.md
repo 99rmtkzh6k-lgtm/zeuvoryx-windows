@@ -40,3 +40,7 @@ A cada tarefa, ler o índice e o memorando, identificar requisitos afetados, reg
 ## Situação de referência
 
 Windows 3.0.6 LAB R1: candidato isolado, execução 45479946405 em andamento na consulta inicial. Prioridade atual REQ-002/003/018/025/027: instalação, abertura e fechamento inesperado. Última execução anterior aprovou 60 varreduras de corpus pequeno e compilação, mas reprovou no gate textual de versão do instalador; correção de metadados em 1ecc4e5893615ee07ea7548a6833571949e8a2d4. Cinco ciclos integrados, Windows físico e eficácia independente permanecem pendentes. Macintosh 3.0.5 LAB preservado. Nenhuma nova publicação.
+
+### Evidência atualizada EVO-018
+
+REQ-002/018: migração e abertura de 15 segundos aprovadas no CI, estado E (piloto físico pendente). REQ-003/025/027: 60 testes de raiz controlada aprovados, estabilidade física e cinco ciclos integrados pendentes; não encerrar bloqueadores. REQ-026: pacote 3.0.6 LAB R1, hash verificado; metadados públicos dependem de acesso administrativo e aprovação de promoção. Todos os demais IDs preservados. [CI aprovado](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45479946405).

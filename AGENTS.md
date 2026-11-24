@@ -19,3 +19,7 @@ Aplica-se a toda tarefa ZEUVORYX, sem palavra-chave ou lembrete. Antes de agir, 
 ## ZVX-CP-003 — consistência de versão obrigatória
 
 Em toda nova versão funcional autorizada, incrementar e conferir identidade do motor, UI, idiomas, instalador/registro, atualizador, auditoria, pacote, workflow, README, CHANGELOG, memorandos, links e metadados públicos. Não reutilizar número anterior para atualização que deva ser detectada. Preservar histórico e dados; diferenciar candidato LAB e versão aprovada. Após validação, sincronizar About/Description/Topics/Website e releases autorizadas; se acesso administrativo faltar, registrar impedimento e proposta exata. Não aprovar pacote divergente; verificar migração e execução. CP-001/002 permanecem vigentes.
+
+## ZVX-CP-004 — controle cumulativo de requisitos
+
+Antes de qualquer tarefa, ler também [REQUISITOS_E_PENDENCIAS.md](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/main/REQUISITOS_E_PENDENCIAS.md) da main. Registrar novos pedidos, inclusive próximos ciclos, com ID e status. No fechamento, reconciliar todos os itens afetados, preservar os demais, justificar adiamentos, anexar evidência e verificar gravação do índice e memorando. Histórico original não pode ser apagado. Não aprovar sem evidência. CP-001/002/003 continuam vigentes.

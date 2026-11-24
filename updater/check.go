@@ -20,6 +20,7 @@ type Status struct {
  Latest string `json:"latest"`
  Available bool `json:"available"`
  Found bool `json:"found"`
+ Preview bool `json:"preview"`
 }
 type release struct {
  Tag string `json:"tag_name"`
@@ -43,12 +44,12 @@ func newer(a,b [3]uint64) bool {
  for i:=range a {if a[i]!=b[i]{return a[i]>b[i]}}
  return false
 }
-func selectRelease(list []release, current, platform, arch string) Status {
+func selectRelease(list []release, current, platform, arch string, includePreview bool) Status {
  result:=Status{Current:current}
  installed,ok:=version(current);if !ok{return result}
  var best [3]uint64
  for _,r:=range list {
-  if r.Draft||r.Pre {continue}
+  if r.Draft||(r.Pre&&!includePreview) {continue}
   v,ok:=version(r.Tag);if !ok {continue}
   name:=""
   switch {
@@ -58,18 +59,18 @@ func selectRelease(list []release, current, platform, arch string) Status {
   }
   for _,a:=range r.Assets {
    if a.Name==name && (!result.Found||newer(v,best)){
-    result.Found=true;best=v;result.Latest=strings.TrimPrefix(r.Tag,"v")
+    result.Found=true;result.Preview=r.Pre;best=v;result.Latest=strings.TrimPrefix(r.Tag,"v")
    }
   }
  }
  result.Available=result.Found&&newer(best,installed)
  return result
 }
-func Check(ctx context.Context,platform,arch string)(Status,error){
+func Check(ctx context.Context,platform,arch string,includePreview bool)(Status,error){
  client:=&http.Client{Timeout:8*time.Second,CheckRedirect:func(*http.Request,[]*http.Request)error{return http.ErrUseLastResponse}}
- return check(ctx,client,endpoint,platform,arch)
+ return check(ctx,client,endpoint,platform,arch,includePreview)
 }
-func check(ctx context.Context,client *http.Client,url,platform,arch string)(Status,error){
+func check(ctx context.Context,client *http.Client,url,platform,arch string,includePreview bool)(Status,error){
  result:=Status{Current:Current}
  req,e:=http.NewRequestWithContext(ctx,http.MethodGet,url,nil);if e!=nil{return result,e}
  req.Header.Set("Accept","application/vnd.github+json")
@@ -80,5 +81,5 @@ func check(ctx context.Context,client *http.Client,url,platform,arch string)(Sta
  b,e:=io.ReadAll(io.LimitReader(resp.Body,max+1));if e!=nil{return result,e};if len(b)>max{return result,fmt.Errorf("resposta excede limite")}
  var list []release
  if e=json.Unmarshal(b,&list);e!=nil{return result,e}
- return selectRelease(list,Current,platform,arch),nil
+ return selectRelease(list,Current,platform,arch,includePreview),nil
 }

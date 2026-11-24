@@ -43,7 +43,7 @@ Próximos passos: painel com comandos de varredura e métricas no topo, botões 
 
 A edição macOS permanece na versão **3.0.3 LAB**, com Swift/SwiftUI e motor Go somente leitura. [Documentação Macintosh](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/macintosh-3.0.3-lab). Intel compilado; Apple Silicon teve job cancelado e a tentativa 2 permanece na fila nesta consulta. Não há equivalência funcional integral com Windows. Não confundir os instaladores. 
 
-Para compilar Macintosh em Actions, selecione o workflow Macintosh e a ramificação `macintosh-3.0.3-lab`.
+Candidato Macintosh [3.0.5 LAB](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/macintosh-3.0.5-lab): evolução de links e gate de identidade, em validação. Para novos testes, selecione o workflow Macintosh 3.0.5 e a ramificação `macintosh-3.0.5-lab`. A versão 3.0.3 continua preservada; não confundir candidato com pacote aprovado.
 
 ## Licenciamento, autoria e distribuição
 

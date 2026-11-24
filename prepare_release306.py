@@ -20,8 +20,8 @@ def desktop(s):
     log.Print("stability webview_init")
     w := webview.NewWithOptions(''')
     s=once(s,'webview.WebViewOptions{Debug:', 'webview.WebViewOptions{DataPath:profile, Debug:')
-    s=once(s,'w.SetHtml(desktopHTML)', '''if !bind("zStartupReady",func()bool{log.Print("stability ui_ready version=3.0.6-lab");return true}){return}
-    w.SetHtml(desktopHTML)''')
+    s=once(s,'w.SetHtml(localized)', '''if !bind("zStartupReady",func()bool{log.Print("stability ui_ready version=3.0.6-lab");return true}){return}
+    w.SetHtml(localized)''')
     s=s.replace("windows-build-lab-305.yml","windows-build-lab-306.yml")
     return s
 def html(s):

@@ -19,24 +19,42 @@ jobs:
             python -m unittest -v test_free_feed_policy
             if ($LASTEXITCODE -ne 0) { throw 'Feed policy test failed' }
           }
-      - name: Build and test NSIS fixture
+  build-fixture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile inert fixture with distribution-signed NSIS package
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends nsis
+          dpkg-query -W nsis nsis-common
+          makensis -VERSION
+          cd installer-lab
+          printf '%s\n' 'ZEUVORYX inert component test only' > payload.txt
+          makensis fixture.nsi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: internal-nsis-fixture-not-product
+          path: installer-lab/zeuvoryx-installer-fixture.exe
+          if-no-files-found: error
+          retention-days: 1
+  run-fixture:
+    needs: [verify, build-fixture]
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: internal-nsis-fixture-not-product
+          path: fixture
+      - name: Five installs and safe selective uninstall
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $nsis = Join-Path ${env:ProgramFiles(x86)} 'NSIS/makensis.exe'
-          if (!(Test-Path $nsis)) {
-            $cmd = Get-Command makensis.exe -ErrorAction SilentlyContinue
-            if (!$cmd) { throw 'NSIS unavailable on runner; no automatic third-party installation' }
-            $nsis = $cmd.Source
-          }
-          & $nsis /VERSION
-          Set-Location installer-lab
-          Set-Content payload.txt 'ZEUVORYX inert component test only'
-          & $nsis fixture.nsi
-          if ($LASTEXITCODE -ne 0) { throw 'NSIS compilation failed' }
           $path = Join-Path $env:LOCALAPPDATA 'ZEUVORYX-Installer-Component-EVO030'
           if (Test-Path $path) { throw 'Unexpected existing fixture directory' }
-          $setup = Join-Path $PWD 'zeuvoryx-installer-fixture.exe'
+          $setup = Join-Path $PWD 'fixture/zeuvoryx-installer-fixture.exe'
           for ($i=0;$i -lt 5;$i++) {
             $p=Start-Process -FilePath $setup -ArgumentList '/S' -Wait -PassThru
             if ($p.ExitCode -ne 0 -or !(Test-Path (Join-Path $path 'payload.txt'))) { throw 'Fixture install failed' }

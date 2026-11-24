@@ -12,7 +12,7 @@ def main(s):
     if *showVersion { fmt.Println(engine.ScanEngineVersion); return }''')
     return s
 def desktop(s):
-    s=s.replace("3.0.5","3.0.6")
+    s=s.replace("3.0.5","3.0.7")
     s=once(s,'w := webview.NewWithOptions(','''profileBase,profileErr:=os.UserConfigDir()
     if profileErr!=nil { log.Print("stability webview_profile_unavailable"); desktopError("Não foi possível localizar o perfil local do Windows."); return }
     profile:=filepath.Join(profileBase,"ZEUVORYX","webview-306")
@@ -20,15 +20,15 @@ def desktop(s):
     log.Print("stability webview_init")
     w := webview.NewWithOptions(''')
     s=once(s,'webview.WebViewOptions{Debug:', 'webview.WebViewOptions{DataPath:profile, Debug:')
-    s=once(s,'w.SetHtml(localized)', '''if !bind("zStartupReady",func()bool{log.Print("stability ui_ready version=3.0.6-lab");return true}){return}
+    s=once(s,'w.SetHtml(localized)', '''if !bind("zStartupReady",func()bool{log.Print("stability ui_ready version=3.0.7-lab");return true}){return}
     w.SetHtml(localized)''')
-    s=s.replace("windows-build-lab-305.yml","windows-build-lab-306.yml")
+    s=s.replace("windows-build-lab-305.yml","windows-build-lab-307.yml")
     return s
 def html(s):
-    s=s.replace("3.0.5","3.0.6")
+    s=s.replace("3.0.5","3.0.7")
     s=once(s,"setTimeout(zUpdateRun,1500);","/* Explicit update checks only; no network call during startup. */")
     return once(s,"</script></body></html>",";window.zStartupReady().catch(()=>{});\n</script></body></html>")
 edit("main.go",main)
 edit("desktop_windows.go",desktop)
 edit("desktop.html",html)
-edit("engine/scan_upgrade.go",lambda s:once(s,'const ScanEngineVersion = "3.0.5-lab"','const ScanEngineVersion = "3.0.6-lab"'))
+edit("engine/scan_upgrade.go",lambda s:once(s,'const ScanEngineVersion = "3.0.5-lab"','const ScanEngineVersion = "3.0.7-lab"'))

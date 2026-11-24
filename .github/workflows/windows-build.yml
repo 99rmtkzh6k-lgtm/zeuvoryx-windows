@@ -1,9 +1,9 @@
-name: ZEUVORYX 3.0.2 Competitive - Windows Build
-run-name: ZEUVORYX 3.0.2 Competitive Windows x64
+name: ZEUVORYX 3.0.3 LAB - Windows Build
+run-name: ZEUVORYX 3.0.3 LAB Windows x64
 
 on:
   push:
-    branches: [main, localization-3.0.2]
+    branches: [security-3.0.3-lab]
   workflow_dispatch:
 
 permissions:
@@ -275,7 +275,7 @@ jobs:
           func runDesktop(s *State, _ bool) {
           	runtime.LockOSThread()
           	defer runtime.UnlockOSThread()
-          	w := webview.NewWithOptions(webview.WebViewOptions{Debug: false, AutoFocus: true, WindowOptions: webview.WindowOptions{Title: "ZEUVORYX | Olympus 3.0.2 Competitive", Width: 920, Height: 650, Center: true}})
+          	w := webview.NewWithOptions(webview.WebViewOptions{Debug: false, AutoFocus: true, WindowOptions: webview.WindowOptions{Title: "ZEUVORYX | Olympus 3.0.3 Competitive", Width: 920, Height: 650, Center: true}})
           	if w == nil {
           		desktopError("Não foi possível inicializar a interface. Verifique a instalação do Microsoft WebView2 Runtime.")
           		return
@@ -2252,6 +2252,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Adaptive integration failed' }
           python zeuvoryx_i18n.py
           if ($LASTEXITCODE -ne 0) { throw 'Localization integration failed' }
+          python zeuvoryx_lab303.py
+          if ($LASTEXITCODE -ne 0) { throw 'Laboratory integration failed' }
+          gofmt -w labcheck releaseguard impact remediation
+          if ($LASTEXITCODE -ne 0) { throw 'Laboratory formatting failed' }
           gofmt -w engine/scanner.go desktop_windows.go language_windows.go language_windows_test.go adaptive
           if ($LASTEXITCODE -ne 0) { throw 'Formatting failed' }
           python -c "from pathlib import Path; s=Path('desktop.html').read_text(encoding='utf-8'); Path('desktop-syntax.js').write_text(s.split('<script>',1)[1].split('</script>',1)[0],encoding='utf-8')"
@@ -2271,7 +2275,7 @@ jobs:
       - name: Upload adaptive training and validation evidence
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-Adaptive-Lab-50M
+          name: ZEUVORYX-3.0.3-Adaptive-Lab-50M
           path: lab-results/adaptive-report-50m.json
           if-no-files-found: error
       - name: Install and run static scanner safety regression tests
@@ -2345,19 +2349,19 @@ jobs:
           [IO.File]::WriteAllText((Join-Path $PWD 'dist/desktop.ini'), $ini, [Text.Encoding]::Unicode)
           $source = @'
           [Setup]
-          AppId=ZEUVORYX.Desktop
-          AppName=ZEUVORYX
+          AppId=ZEUVORYX.Desktop.Lab303
+          AppName=ZEUVORYX 3.0.3 LAB
           AppPublisher=Leonardo A Botelho
           VersionInfoCompany=Leonardo A Botelho
           VersionInfoCopyright=Copyright (C) 2026 Leonardo A Botelho
-          AppVersion=3.0.2
-          DefaultDirName={localappdata}\Programs\ZEUVORYX
-          DefaultGroupName=ZEUVORYX
+          AppVersion=3.0.3
+          DefaultDirName={localappdata}\Programs\ZEUVORYX-Lab303
+          DefaultGroupName=ZEUVORYX 3.0.3 LAB
           DisableProgramGroupPage=yes
           PrivilegesRequired=lowest
           ArchitecturesAllowed=x64compatible
           OutputDir=installer
-          OutputBaseFilename=ZEUVORYX-Setup-3.0.2
+          OutputBaseFilename=ZEUVORYX-Setup-3.0.3
           SetupIconFile=dist\ZEUVORYX.ico
           UninstallDisplayIcon={app}\ZEUVORYX.exe
           Compression=lzma2
@@ -2370,8 +2374,8 @@ jobs:
           [Files]
           Source: "dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
           [Icons]
-          Name: "{autoprograms}\ZEUVORYX"; Filename: "{app}\ZEUVORYX.exe"; WorkingDir: "{app}"
-          Name: "{autodesktop}\ZEUVORYX"; Filename: "{app}\ZEUVORYX.exe"; WorkingDir: "{app}"; Tasks: desktopicon
+          Name: "{autoprograms}\ZEUVORYX 3.0.3 LAB"; Filename: "{app}\ZEUVORYX.exe"; WorkingDir: "{app}"
+          Name: "{autodesktop}\ZEUVORYX 3.0.3 LAB"; Filename: "{app}\ZEUVORYX.exe"; WorkingDir: "{app}"; Tasks: desktopicon
           [Run]
           Filename: "{sys}\attrib.exe"; Parameters: "+h +s ""{app}\desktop.ini"""; Flags: runhidden waituntilterminated
           Filename: "{sys}\attrib.exe"; Parameters: "+r ""{app}"""; Flags: runhidden waituntilterminated
@@ -2385,13 +2389,13 @@ jobs:
           if (!(Test-Path $iscc)) { throw 'Inno Setup compiler not found' }
           & $iscc setup.iss
           if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed' }
-          if (!(Test-Path 'installer/ZEUVORYX-Setup-3.0.2.exe')) { throw 'Installer missing' }
-          Get-FileHash installer/ZEUVORYX-Setup-3.0.2.exe -Algorithm SHA256
-      - name: Upload Competitive 3.0.2 installer and portable edition
+          if (!(Test-Path 'installer/ZEUVORYX-Setup-3.0.3.exe')) { throw 'Installer missing' }
+          Get-FileHash installer/ZEUVORYX-Setup-3.0.3.exe -Algorithm SHA256
+      - name: Upload Competitive 3.0.3 installer and portable edition
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.2-Competitive-Windows
+          name: ZEUVORYX-3.0.3-LAB-Windows
           path: |
             dist/
-            installer/ZEUVORYX-Setup-3.0.2.exe
+            installer/ZEUVORYX-Setup-3.0.3.exe
           if-no-files-found: error

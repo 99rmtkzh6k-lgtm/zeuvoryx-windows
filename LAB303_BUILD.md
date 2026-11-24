@@ -1,0 +1,2 @@
+# ZEUVORYX 3.0.3 LAB
+Integração de diagnóstico local dos módulos aprovados, acessível em Motor e IA, em três idiomas. Dados de teste efêmeros, sem chaves oficiais, servidor, transmissão ou ações destrutivas. Não ativa atualizador de produção, telemetria ou motor completo de remediação. O instalador tem identificador e diretório distintos da 3.0.2; as configurações e quarentena existentes do ZEUVORYX podem continuar compartilhadas, portanto testar apenas em Sandbox limpo. Build de laboratório, não distribuição pública.

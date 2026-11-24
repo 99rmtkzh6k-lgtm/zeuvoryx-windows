@@ -2506,6 +2506,9 @@ jobs:
           VersionInfoCopyright=Copyright (C) 2026 Leonardo A Botelho
           AppVersion=3.0.6
           VersionInfoVersion=3.0.6.0
+          VersionInfoTextVersion=3.0.6.0
+          VersionInfoProductVersion=3.0.6.0
+          VersionInfoProductTextVersion=3.0.6.0
           UninstallDisplayName=ZEUVORYX 3.0.6 LAB
           DefaultDirName={localappdata}\Programs\ZEUVORYX-Lab303
           DefaultGroupName=ZEUVORYX LAB
@@ -2584,7 +2587,10 @@ jobs:
           $exe = Join-Path $dir 'ZEUVORYX.exe'
           $p = Start-Process -FilePath $exe -ArgumentList '-version' -RedirectStandardOutput version.txt -RedirectStandardError version-error.txt -Wait -PassThru
           if ($p.ExitCode -ne 0 -or (Get-Content -Raw version.txt).Trim() -ne '3.0.6-lab') { throw 'Installed executable version mismatch' }
-          if ((Get-Item $setup).VersionInfo.FileVersion -ne '3.0.6.0') { throw 'Installer PE version mismatch' }
+          $vi = (Get-Item -LiteralPath $setup).VersionInfo
+          $numericVersion = '{0}.{1}.{2}.{3}' -f $vi.FileMajorPart,$vi.FileMinorPart,$vi.FileBuildPart,$vi.FilePrivatePart
+          Write-Host "Installer PE numeric version=$numericVersion; display version=$($vi.FileVersion)"
+          if ($numericVersion -ne '3.0.6.0') { throw "Installer PE numeric version mismatch: $numericVersion" }
           $entries = @(Get-ChildItem $dir -Filter 'unins*.exe')
           if ($entries.Count -ne 1) { throw 'Unexpected duplicate uninstaller' }
           Write-Host 'In-place reinstall and data preservation passed on Windows runner'

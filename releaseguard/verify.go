@@ -42,13 +42,14 @@ func Verify(raw, signature []byte, trusted ed25519.PublicKey, installed uint64, 
  if err:=json.Unmarshal(raw,&m);err!=nil{return fail("invalid manifest")}
  canonical,err:=json.Marshal(m)
  if err!=nil || !bytes.Equal(canonical,raw){return fail("noncanonical or unexpected manifest")}
- if m.Sequence==0 || m.Sequence<=installed || !versionPattern.MatchString(m.Version) || (channel!="stable" && channel!="beta") || m.Channel!=channel || m.Platform!="windows-amd64" {return fail("version, channel or platform rejected")}
+ if m.Sequence==0 || m.Sequence<=installed || !versionPattern.MatchString(m.Version) || (channel!="stable" && channel!="beta" && channel!="lab") || m.Channel!=channel || m.Platform!="windows-amd64" {return fail("version, channel or platform rejected")}
  if m.Expires<=now.Unix() || m.Expires>now.Add(30*24*time.Hour).Unix(){return fail("invalid expiration")}
  if m.Size<=0 || m.Size>MaxPackage{return fail("invalid package size")}
  digest,err:=hex.DecodeString(m.SHA256)
  if err!=nil || len(digest)!=sha256.Size || m.SHA256!=strings.ToLower(m.SHA256){return fail("invalid digest")}
  u,err:=url.Parse(m.URL)
  prefix:=releasePrefix+"v"+m.Version+"/"
+ if channel=="lab"{prefix=releasePrefix+"v"+m.Version+"-lab/"}
  if err!=nil || u.Scheme!="https" || u.Host!="github.com" || u.User!=nil || u.RawQuery!="" || u.ForceQuery || u.Fragment!="" || u.RawPath!="" || u.String()!=m.URL || !strings.HasPrefix(u.Path,prefix) || !filenamePattern.MatchString(strings.TrimPrefix(u.Path,prefix)) || strings.Contains(u.Path,"..") {return fail("unapproved package URL")}
  return m,nil
 }

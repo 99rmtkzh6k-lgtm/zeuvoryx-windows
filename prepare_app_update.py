@@ -16,6 +16,18 @@ if !bind("openLabReleases",func()error{
     if !status.Available||status.DownloadURL==""{return fmt.Errorf("Nenhum pacote LAB mais recente encontrado")}
     return exec.Command("rundll32.exe","url.dll,FileProtocolHandler",status.DownloadURL).Start()
 }) { return }
+if !bind("signedUpdateEnabled", updater.SignedEnabled) { return }
+if !bind("installSignedUpdate",func()error{
+    operationGate.Lock();defer operationGate.Unlock()
+    s.mu.Lock(); running:=s.running; s.mu.Unlock()
+    if running||native.status().Running{return fmt.Errorf("Aguarde as operações em andamento")}
+    status,e:=updater.Check(nativeCtx,runtime.GOOS,runtime.GOARCH,true);if e!=nil{return e}
+    if !status.Available{return fmt.Errorf("Nenhuma atualização mais recente")}
+    if e=updater.StartVerifiedInstall(nativeCtx,status.Latest);e!=nil{return e}
+    monitorEnabled.Store(false)
+    w.Dispatch(func(){w.Terminate()})
+    return nil
+}) { return }
 '''+needle)
 s=once(s,'ZEUVORYX | 3.0.3 LAB','ZEUVORYX | 3.0.4 LAB')
 p.write_text(s,encoding="utf-8")
@@ -28,18 +40,18 @@ const zUpdateCopy={
 'en-US':['LAB updates — 3.0.4','Check for updates','Download LAB update','GitHub download; manual Sandbox installation. Verify package origin.','Checking...','New LAB version: ','No LAB update found.','Check failed. Try again.'],
 'es-ES':['Actualizaciones LAB — 3.0.4','Buscar actualizaciones','Descargar actualización LAB','Descarga de GitHub; instalación manual en Sandbox. Verifique el origen.','Consultando...','Nueva versión LAB: ','Sin actualizaciones LAB.','Error de consulta. Inténtelo de nuevo.']
 };
-let zUpdateBusy=false,zUpdateResult=null,zUpdateError=false;
+let zUpdateBusy=false,zUpdateResult=null,zUpdateError=false,zSigned=false;
 function zUpdatePaint(){
  const t=zUpdateCopy[document.documentElement.lang]||zUpdateCopy['pt-BR'];
- el('zUpdateTitle').textContent=t[0];el('zUpdateCheck').textContent=t[1];el('zUpdateOpen').textContent=t[2];el('zUpdateNote').textContent=t[3];
+ el('zUpdateTitle').textContent=t[0];el('zUpdateCheck').textContent=t[1];el('zUpdateOpen').textContent=zSigned?({'pt-BR':'Atualizar agora','en-US':'Update now','es-ES':'Actualizar ahora'}[document.documentElement.lang]||'Atualizar agora'):t[2];el('zUpdateNote').textContent=zSigned?({'pt-BR':'Instalação assinada sobre a versão atual; finalize as varreduras.','en-US':'Signed in-place update; finish scans first.','es-ES':'Actualización firmada; finalice los análisis.'}[document.documentElement.lang]||t[3]):t[3];
  el('zUpdateState').textContent=zUpdateBusy?t[4]:zUpdateError?t[7]:zUpdateResult?(zUpdateResult.available?t[5]+zUpdateResult.latest:t[6]):'';
  el('zUpdateOpen').hidden=!(zUpdateResult&&zUpdateResult.available&&!zUpdateError);el('zUpdateCheck').disabled=zUpdateBusy;
 }
 async function zUpdateRun(){
  if(zUpdateBusy)return;zUpdateBusy=true;zUpdateError=false;zUpdateResult=null;zUpdatePaint();
- try{zUpdateResult=await window.checkLabRelease()}catch(e){zUpdateError=true}finally{zUpdateBusy=false;zUpdatePaint()}
+ try{zSigned=await window.signedUpdateEnabled();zUpdateResult=await window.checkLabRelease()}catch(e){zUpdateError=true}finally{zUpdateBusy=false;zUpdatePaint()}
 }
-el('zUpdateCheck').onclick=zUpdateRun;el('zUpdateOpen').onclick=()=>action(async()=>{await window.openLabReleases()});
+el('zUpdateCheck').onclick=zUpdateRun;el('zUpdateOpen').onclick=()=>action(async()=>{if(zUpdateBusy)return;zUpdateBusy=true;el('zUpdateOpen').disabled=true;try{if(zSigned){const lang=document.documentElement.lang;const text={'pt-BR':'Instalar a atualização assinada e fechar o ZEUVORYX?','en-US':'Install the signed update and close ZEUVORYX?','es-ES':'¿Instalar la actualización firmada y cerrar ZEUVORYX?'};if(await ask(text[lang]||text['pt-BR']))await window.installSignedUpdate()}else await window.openLabReleases()}finally{zUpdateBusy=false;el('zUpdateOpen').disabled=false;zUpdatePaint()}});
 new MutationObserver(zUpdatePaint).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});zUpdatePaint();setTimeout(zUpdateRun,1500);
 </script></body></html>''')
 p.write_text(s,encoding="utf-8")

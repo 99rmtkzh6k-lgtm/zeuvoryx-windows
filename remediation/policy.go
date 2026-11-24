@@ -17,3 +17,9 @@ func Allowed(action Action,e Evidence)bool{
  // Only reversible quarantine may be planned in the lab. Other actions remain disabled.
  return action==Quarantine
 }
+
+// EligibleForProductionMetric is a necessary condition only. The caller must
+// additionally verify the completed outcome and deduplicate the incident.
+func EligibleForProductionMetric(e Evidence) bool {
+ return !e.TestArtifact && Allowed(Quarantine,e)
+}

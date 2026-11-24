@@ -6,3 +6,6 @@ Implementação isolada da 3.0.2. Sem distribuição pública.
 - CI: testes específicos de fundação em Windows/Linux. Não representam teste do instalador, proteção antimalware, ou certificação.
 - Chaves geradas nos testes são efêmeras, sem validade de produção.
 - Pendências do memorando permanecem: testes 3.0.2, piloto real, motor de remediação, proteção residente, histórico e servidor auditável, titularidade de chaves, revisão de permissões, assinatura de binários, distribuição e monetização.
+
+## Revisão adicional
+Vinculação estrita de URL ao tag da versão, rejeição de streams inválidos e snapshots antigos, exclusão de artefatos de teste como condição para métricas, fuzzing e dez repetições embaralhadas de testes. Preparado empacotamento restrito do C2PA (executável e arquivos legais); ainda precisa de build integral. Nenhum módulo novo está integrado ao instalador.

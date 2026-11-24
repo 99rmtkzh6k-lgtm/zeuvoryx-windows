@@ -2421,7 +2421,9 @@ jobs:
       - name: Fifty controlled full-root scan regressions
         shell: pwsh
         run: |
-          go test -v -count=50 -timeout=15m -run '^Test306ControlledRoots
+          go test -v -count=50 -timeout=15m -run '^Test306ControlledRoots$' .
+          if ($LASTEXITCODE -ne 0) { throw 'Controlled root scan regression failed' }
+      - name: Ten million synthetic fraud evaluations
         shell: pwsh
         run: |
           $env:ZEUVORYX_STRESS = '1'

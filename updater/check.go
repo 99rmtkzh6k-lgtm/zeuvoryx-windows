@@ -11,7 +11,7 @@ import (
  "time"
 )
 
-const Current = "3.0.6"
+const Current = "3.0.7"
 const ReleasesURL = "https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/releases"
 const endpoint = "https://api.github.com/repos/99rmtkzh6k-lgtm/zeuvoryx-windows/releases"
 

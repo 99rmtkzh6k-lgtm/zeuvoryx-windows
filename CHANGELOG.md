@@ -1,5 +1,10 @@
 # Histórico de versões — ZEUVORYX Windows
 
+## 3.0.7 LAB — evidência física parcial; 3.0.8 LAB em preparação (24/11/2026)
+
+- CI 45507766010 aprovado no commit e8bd034; teste rápido físico parcial: 19.701 arquivos, 13,05 GiB, 10min23s, 22,48 MB/s, três bloqueios de compartilhamento e um cancelamento voluntário, exportação JSON bem-sucedida. Nenhum alerta ou falha interna registrado; eficácia não comprovada.
+- Ramificação 3.0.8 alinhada à base corrigida, sem nova compilação; otimização, cobertura e validação pendentes conforme memorando. Nenhum instalador ou release 3.0.8.
+
 
 ## 3.0.7 LAB R1 — em validação, não liberado (24/11/2026)
 

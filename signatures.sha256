@@ -1,3 +1,9 @@
-# Adicione SHA-256 de arquivos efetivamente confirmados como maliciosos.
-# Formato: 64_caracteres_hexadecimais nome_da_ameaca
-# Sem exemplos artificiais ativos para evitar falsos positivos.
+# ZEUVORYX LAB: small, historical, advisory-only seed. Not a current comprehensive database.
+# Factual SHA-256 identifiers from public TLP:CLEAR CISA/FBI advisories. No malware files.
+# Source references and limits: SIGNATURE_PROVENANCE.md. Do not auto-delete on match.
+6633fa85bb234a75927b23417313e51a4c155e12f71da3959e168851a600b010 Ransomware.Rhysida
+1fd07b8d1728e416f897bef4f1471126f9b18ef108eb952f4b75050da22e8e43 Ransomware.BianLian
+7b15f570a23a5c5ce8ff942da60834a9d0549ea3ea9f34f900a09331325df893 Malware.BianLian
+af9f95497b8503af1a399bc6f070c3bbeabc5aeecd8c09bca80495831ae71e61 Ransomware.BlackSuit
+c798b2690c5f16eb2917a679af3117cfe9c7060fa8bc84ffc3159338ef33508e Malware.BlackSuit.associated
+338228a3e79f3993abc102cbac2ff253c84965213d59ac30892538cdd9b0a22b Ransomware.BlackSuit.associated

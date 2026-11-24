@@ -1,0 +1,12 @@
+# Historical SHA-256 seed — experimental
+
+Reviewed 2026-11-24 from publicly indexed text of TLP:CLEAR reports. Six exact-file identifiers, not a modern comprehensive signature database. Original page images were inaccessible (HTTP 403); recheck primary copies before production. Factual hashes only, attribution retained. No legitimate dual-use tools, filenames-only indicators, URLs, IPs, synthetic hashes or test entries included. No malware downloaded. A match is advisory pending evidence review; no automatic destructive action. Review source conditions, revocation and freshness before release. No claim of current threat prevalence or endorsement.
+
+- `6633fa85bb234a75927b23417313e51a4c155e12f71da3959e168851a600b010` — Ransomware.Rhysida; AA23-319A table 2: https://www.cisa.gov/sites/default/files/2023-11/aa23-319a-stopransomware-rhysida-ransomware_1.pdf
+- `1fd07b8d1728e416f897bef4f1471126f9b18ef108eb952f4b75050da22e8e43` — Ransomware.BianLian; AA23-136A table 1: https://www.cisa.gov/sites/default/files/2023-05/aa23-136a_stopransomware_bianlian_ransomware_group_1.pdf
+- `7b15f570a23a5c5ce8ff942da60834a9d0549ea3ea9f34f900a09331325df893` — Malware.BianLian; AA23-136A table 1: https://www.cisa.gov/sites/default/files/2023-05/aa23-136a_stopransomware_bianlian_ransomware_group_1.pdf
+- `af9f95497b8503af1a399bc6f070c3bbeabc5aeecd8c09bca80495831ae71e61` — Ransomware.BlackSuit; AA23-061A table 10: https://www.cisa.gov/sites/default/files/2023-11/aa23-061a-stopransomware-royal-ransomware-update.pdf
+- `c798b2690c5f16eb2917a679af3117cfe9c7060fa8bc84ffc3159338ef33508e` — Malware.BlackSuit.associated; AA23-061A table 10: https://www.cisa.gov/sites/default/files/2023-11/aa23-061a-stopransomware-royal-ransomware-update.pdf
+- `338228a3e79f3993abc102cbac2ff253c84965213d59ac30892538cdd9b0a22b` — Ransomware.BlackSuit.associated; AA23-061A table 10: https://www.cisa.gov/sites/default/files/2023-11/aa23-061a-stopransomware-royal-ransomware-update.pdf
+
+Broader protection: preserve Defender and its own security intelligence; ClamAV official FreshClam signatures with separately installed executable (GPLv2, no linking) are a candidate for optional directory scan, resource limits and real engine attribution. Do not call a six-hash seed an adequate antivirus database. No paid feed or API. Independent effectiveness, false positives, signed updates and production rights review are required.

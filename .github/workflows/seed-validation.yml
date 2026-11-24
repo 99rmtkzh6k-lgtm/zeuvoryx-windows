@@ -1,0 +1,33 @@
+name: ZEUVORYX signature seed detection validation
+on:
+  push:
+    branches: [lab-help-evo025]
+    paths: ['signatures.sha256','qa/seed_detection_test.go.txt','prepare_seed_coverage.py','.github/workflows/seed-validation.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  seed:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+          cache: false
+      - name: Test real source loader and scanner with harmless controls
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force engine | Out-Null
+          foreach ($f in @('scanner.go','scanner_test.go','zip_test.go','pe.go','quarantine.go')) { Copy-Item $f engine/ -ErrorAction Stop }
+          Copy-Item qa/seed_detection_test.go.txt engine/seed_detection_test.go -ErrorAction Stop
+          go test -v -count=5 -run '^TestZSeedLoadAndScan$' ./engine
+          if ($LASTEXITCODE -ne 0) { throw 'Signature detection failed' }
+      - name: Check UI transform
+        shell: pwsh
+        run: |
+          python -c "from prepare_seed_coverage import transform; from pathlib import Path; out=transform('<script></script></body></html>'); assert 'window.intelStatus()' in out; Path('seed-ui.js').write_text(out.split('<script>',1)[1].split('</script>',1)[0],encoding='utf-8')"
+          if ($LASTEXITCODE -ne 0) { throw 'UI transform failed' }
+          node --check seed-ui.js
+          if ($LASTEXITCODE -ne 0) { throw 'UI syntax failed' }

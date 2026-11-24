@@ -1,0 +1,35 @@
+package engine
+
+import (
+ "context"
+ "crypto/sha256"
+ "encoding/hex"
+ "os"
+ "path/filepath"
+ "testing"
+)
+
+func TestZSeedLoadAndScan(t *testing.T) {
+ s:=New()
+ if e:=s.LoadIOC("../signatures.sha256");e!=nil {t.Fatal(e)}
+ if len(s.IOC)!=6{t.Fatalf("expected 6 historical indicators; got %d",len(s.IOC))}
+ for _,h:=range []string{"6633fa85bb234a75927b23417313e51a4c155e12f71da3959e168851a600b010","1fd07b8d1728e416f897bef4f1471126f9b18ef108eb952f4b75050da22e8e43","7b15f570a23a5c5ce8ff942da60834a9d0549ea3ea9f34f900a09331325df893","af9f95497b8503af1a399bc6f070c3bbeabc5aeecd8c09bca80495831ae71e61","c798b2690c5f16eb2917a679af3117cfe9c7060fa8bc84ffc3159338ef33508e","338228a3e79f3993abc102cbac2ff253c84965213d59ac30892538cdd9b0a22b"}{
+  if s.IOC[h]=="" {t.Fatalf("missing source identifier %s",h)}
+ }
+ // Inert positive-control hash uses the same actual loader and file scanner.
+ // Never persists into the distributed signature file.
+ root:=t.TempDir()
+ positive:=[]byte("ZEUVORYX harmless positive control")
+ sum:=sha256.Sum256(positive);h:=hex.EncodeToString(sum[:])
+ local:=filepath.Join(root,"control.sha256")
+ if e:=os.WriteFile(local,[]byte(h+" inert laboratory control\n"),0600);e!=nil{t.Fatal(e)}
+ if e:=s.LoadIOC(local);e!=nil{t.Fatal(e)}
+ file:=filepath.Join(root,"control.txt")
+ if e:=os.WriteFile(file,positive,0600);e!=nil{t.Fatal(e)}
+ r,e:=s.Scan(context.Background(),file,nil)
+ if e!=nil||r.Cancelled||r.Files!=1||len(r.Findings)!=1||r.Findings[0].SHA256!=h{t.Fatalf("positive control failed: %+v %v",r,e)}
+ clean:=filepath.Join(root,"ordinary.txt")
+ if e:=os.WriteFile(clean,[]byte("ordinary harmless document"),0600);e!=nil{t.Fatal(e)}
+ r,e=s.Scan(context.Background(),clean,nil)
+ if e!=nil||r.Cancelled||r.Files!=1||len(r.Findings)!=0{t.Fatalf("negative control failed: %+v %v",r,e)}
+}

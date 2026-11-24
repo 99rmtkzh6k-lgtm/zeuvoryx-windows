@@ -54,6 +54,8 @@ Atualizado em 24/11/2026. Índice operacional do [memorando histórico completo]
 
 | REQ-042 | Independência financeira e licenças comerciais gratuitas: sem royalties, assinaturas obrigatórias ou contratação não autorizada; avisos/SBOM e alternativas verificadas | E | NSIS fixture e bloqueio de consulta não verificada preparados; migração, cobertura, CI e licenças integrais pendentes | EVO-029/030; REQ-009/038/040 |
 
+| REQ-043 | Sustentabilidade por patrocínios diretos e publicidade no site oficial, área opcional e estática no app, sem rastreamento nem impacto na proteção | P | Planejamento; AdSense desktop proibido; site/contratos/aprovação pendentes | EVO-030; REQ-023/036/038/042 |
+
 ## Controle obrigatório de continuidade
 
 A cada tarefa, ler o índice e o memorando, identificar requisitos afetados, registrar novos pedidos imediatamente (inclusive "no próximo"), preservar IDs e estados dos demais. Antes de fechar, comparar o índice anterior com o novo, justificar qualquer mudança de prioridade/estado, anexar evidência ou marcar pendência, atualizar a main e a ramificação/plataforma pertinente e confirmar gravação remota. Correção P0 pode adiar implantação de P1/P2, mas não apagar nem declarar cumprida. Decisões posteriores explícitas prevalecem sobre as substituídas, cujo histórico permanece. A fila não é autorização para lançar, contratar ou realizar ações destrutivas. Reconciliar requisitos não localizados com o histórico e pedidos recuperáveis, sem alegar cobertura absoluta de conversas inacessíveis.

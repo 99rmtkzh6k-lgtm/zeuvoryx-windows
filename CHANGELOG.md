@@ -1,6 +1,10 @@
 # Histórico de versões — ZEUVORYX Windows
 
-## 3.0.8 LAB — intervenção A, CI pendente
+## 3.0.8 LAB R1 — CI aprovado, piloto físico pendente
+
+24/11/2026 — CI 3.0.8 LAB R1 aprovado na [execução 45513126955](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45513126955), commit bfdc766b80b75a13c8d2198fa7356d96df4ec8ee. ZIP portátil x64 exclusivamente para teste rápido autorizado: [artefato 14976792219](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45513126955/artifacts/14976792219), 6.883.070 bytes; SHA-256 do ZIP conferido nos bytes baixados: 9c5f62efc583f6e8fe18691c008f8bf495cd9b94fcacbf58431e74e94ae6eb5e; CRC íntegro. SHA-256 do EXE confere com o manifesto: 98d07e58e2780d3d1ee0211f9d65869aa09928693e0dd5272c9f5f7f93110cbe. CI aprovou regressões de leitura/PE (30 rodadas cada), 50 regressões de varredura, 10 repetições, 5 rodadas de links, EICAR, cenários sintéticos, build e smoke desktop. Não equivale a proteção real certificada. Testes físicos, desempenho comparativo, cinco ciclos integrados e demais gates pendentes; nenhum instalador, atualização assinada ou release autorizada. Manter Defender e SmartScreen ativos, extrair ZIP em pasta separada e executar apenas rápida em ambiente autorizado.
+
+## 3.0.8 LAB — intervenção A (histórico)
 
 - Evita entropia desnecessária; preserva regras e hash integral. Limita leitura individual a 256 KiB; separa cancelamento voluntário do erro I/O no desktop. Novos testes e microbenchmarks; desempenho físico e eficácia não comprovados.
 

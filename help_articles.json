@@ -1,0 +1,346 @@
+{
+  "pt-br": [
+    {
+      "id": "about",
+      "title": "O que é o ZEUVORYX?",
+      "tags": "zeuvoryx antivírus o que é funciona protege",
+      "answer": "Scanner de segurança para Windows x64 desenvolvido em Go, com análise de arquivos, indicadores SHA-256, heurísticas, quarentena reversível e IA consultiva experimental. Macintosh 3.0.5 LAB é um projeto separado em validação."
+    },
+    {
+      "id": "install",
+      "title": "Instalação e atualização",
+      "tags": "instalar instalação atualizar atualização versão upgrade zip exe pacote",
+      "answer": "Use somente um pacote de teste autorizado pelo mantenedor e confira sua versão e SHA-256 com a referência do GitHub. Extraia o ZIP antes de abrir o instalador. Termine ou cancele a varredura, feche o aplicativo, faça backup de configurações e quarentena e instale sobre a edição LAB compatível. Não desative Defender, SmartScreen ou outras proteções. O CI verificou migração de 3.0.5 LAB para 3.0.6 LAB; outras migrações não estão comprovadas."
+    },
+    {
+      "id": "startup",
+      "title": "O aplicativo não abre ou fecha sozinho",
+      "tags": "não abre fechar fechou sozinho travou erro iniciar webview2",
+      "answer": "Não repita a instalação indefinidamente. Confirme a versão, se o Windows é x64, se o Microsoft Edge WebView2 Runtime está instalado e se há espaço e memória disponíveis. Consulte o Histórico de confiabilidade (perfmon /rel) e o Visualizador de Eventos (eventvwr.msc), logs Aplicativo e Sistema, no horário da falha. Não apague a quarentena nem desative a proteção do Windows. Envie somente informações anonimizadas pelo canal de suporte."
+    },
+    {
+      "id": "fullscan",
+      "title": "A varredura completa trava ou encerra",
+      "tags": "varredura completa lenta travou fechou scan congela travamento",
+      "answer": "O fechamento inesperado em computadores físicos ainda está em investigação. A versão 3.0.6 corrigiu pontos de inicialização e foi aberta por 15 segundos após a confirmação da interface no CI; 60 testes de um pequeno conjunto de arquivos passaram. Isso não demonstra estabilidade em toda a varredura. Se ocorrer novamente, interrompa os testes na máquina de trabalho, registre horário, versão, modo, uso de CPU/RAM e último progresso. Não execute arquivos suspeitos."
+    },
+    {
+      "id": "errors",
+      "title": "Erros, ignorados e alertas",
+      "tags": "erro ignorados acesso negado arquivo bloqueado alerta detecção vírus zero",
+      "answer": "Acesso negado, arquivo bloqueado por outro processo e arquivo que desapareceu podem impedir a leitura. Um relatório parcial ou zero detecções não comprova ausência de malware. Uma heurística ou pontuação de IA é um indício, não diagnóstico definitivo. Não remova arquivos do Windows apenas por um alerta; revise a evidência e mantenha as proteções do sistema."
+    },
+    {
+      "id": "ai",
+      "title": "IA, tempo real, ClamAV e atualizações",
+      "tags": "inteligência artificial aprende ia tempo real clamav defender atualização automática estatísticas",
+      "answer": "A IA atual é consultiva, sem aprendizagem local contínua validada. Monitoramento residente próprio, aprendizagem contínua, atualização automática de produção e estatísticas globais permanecem em desenvolvimento. ClamAV é integração opcional e depende de instalação externa. Não confunda aprovação do botão Testar componentes com serviço global operacional. Releases de produção não foram anunciadas."
+    },
+    {
+      "id": "support",
+      "title": "Como solicitar suporte",
+      "tags": "ajuda suporte contato relatório bug problema código",
+      "answer": "Abra uma questão no GitHub Issues indicando versão, Windows 10/11 e build, arquitetura, RAM aproximada, modo da varredura, horário e fuso, resultado esperado, resultado observado e passos para reproduzir. Se possível, informe a categoria do erro e o código de saída. Remova nomes de pessoas, caminhos pessoais, e-mails, tokens, identificadores, conteúdo de arquivos e hashes de arquivos privados. Não publique amostras de malware, logs brutos, arquivos de quarentena ou credenciais. Não há atendimento 24 horas garantido."
+    },
+    {
+      "id": "quick",
+      "title": "Qual é a diferença entre varredura rápida, completa e personalizada?",
+      "tags": "rápida completa personalizada escolher pasta disco scan cancelar parar",
+      "answer": "A rápida verifica locais prioritários; a completa, discos locais acessíveis; a personalizada, o local selecionado, quando disponível. Use Cancelar para interromper a análise. Arquivos protegidos, indisponíveis ou bloqueados podem ser omitidos; confira a cobertura no relatório."
+    },
+    {
+      "id": "quarantine",
+      "title": "Como utilizar quarentena e restauração?",
+      "tags": "quarentena recuperar restaurar remover excluir falso positivo isolamento",
+      "answer": "Em Quarentena, consulte os itens isolados. Revise a evidência antes de confirmar qualquer ação. Restaure somente após verificar que o arquivo é legítimo e que o destino é seguro. Não apague arquivos do sistema só por alerta heurístico; não existe garantia de recuperação de arquivos criptografados."
+    },
+    {
+      "id": "links",
+      "title": "Como verificar links, golpes e mensagens?",
+      "tags": "link url phishing fraude golpe internet mensagem banco",
+      "answer": "Na seção Links e fraudes, examine o endereço ou texto suspeito sem incluir dados pessoais, senhas ou códigos. A análise local é consultiva e não visita o endereço, não bloqueia phishing automaticamente e não comprova legitimidade."
+    },
+    {
+      "id": "report",
+      "title": "Como exportar o relatório?",
+      "tags": "exportar salvar enviar relatório log json arquivos bytes velocidade",
+      "answer": "Use Exportar relatório quando estiver disponível. Confira modo, versão, contagem, erros, omitidos e cancelamento. Antes de compartilhar, retire caminhos, nomes, identificadores e hashes de arquivos privados; não publique logs brutos."
+    },
+    {
+      "id": "cloud",
+      "title": "O ZEUVORYX analisa arquivos da nuvem?",
+      "tags": "onedrive drive nuvem arquivos online sincronizados",
+      "answer": "A varredura depende de arquivos acessíveis ao Windows. Arquivos somente online podem não estar disponíveis localmente. Não force o download de todos os arquivos para tentar aumentar a cobertura. Monitoramento de eventos de nuvem está planejado."
+    },
+    {
+      "id": "media",
+      "title": "A ferramenta detecta vídeo falso?",
+      "tags": "vídeo deepfake c2pa autenticidade procedência",
+      "answer": "A opção de mídia verifica credenciais digitais C2PA. A presença ou ausência dessas credenciais não confirma que o vídeo seja verdadeiro ou falso. Não é um detector neural de deepfakes."
+    },
+    {
+      "id": "cleanup",
+      "title": "Como limpar temporários com segurança?",
+      "tags": "limpar limpeza cache temporários liberar espaço",
+      "answer": "Em Ferramentas, revise os temporários candidatos antes de confirmar. A limpeza é opcional; não é remoção de malware. Não apague arquivos ativos ou críticos."
+    }
+  ],
+  "en": [
+    {
+      "id": "about",
+      "title": "What is ZEUVORYX?",
+      "tags": "zeuvoryx antivirus what is protection",
+      "answer": "A Windows x64 security scanner written in Go, with file analysis, SHA-256 indicators, heuristics, reversible quarantine and experimental advisory AI. Macintosh 3.0.5 LAB is a separate candidate under validation."
+    },
+    {
+      "id": "install",
+      "title": "Installation and updates",
+      "tags": "install installer update upgrade version zip exe package",
+      "answer": "Use only a test package authorized by the maintainer; verify the version and SHA-256 against the GitHub reference. Extract the ZIP, finish or cancel scanning, close the app, back up settings and quarantine, then install over a compatible LAB edition. Keep Defender, SmartScreen and other protections enabled. CI checked the 3.0.5 LAB to 3.0.6 LAB upgrade; other migrations are not proven."
+    },
+    {
+      "id": "startup",
+      "title": "App will not open or closes unexpectedly",
+      "tags": "not open closes crash startup webview2 launch",
+      "answer": "Do not repeatedly reinstall. Confirm version, Windows x64, Microsoft Edge WebView2 Runtime availability, free disk space and memory. Check Reliability Monitor (perfmon /rel) and Event Viewer (eventvwr.msc), Application and System logs around the failure. Do not delete quarantine or disable Windows security. Share only anonymized information via support."
+    },
+    {
+      "id": "fullscan",
+      "title": "Full scan freezes or exits",
+      "tags": "full scan stuck freezes exits slow crash",
+      "answer": "Unexpected exits on physical PCs remain under investigation. Version 3.0.6 includes startup changes; CI observed the installed UI staying open for 15 seconds after its readiness signal, and 60 small controlled corpus scan tests passed. This does not establish full-disk stability. If it recurs, stop testing on your work PC and record time, version, scan mode, CPU/RAM and last progress. Do not run suspicious files."
+    },
+    {
+      "id": "errors",
+      "title": "Errors, skipped files and alerts",
+      "tags": "errors skipped access denied locked missing alert detection zero",
+      "answer": "Access denied, files locked by other processes and disappearing files can prevent reading. A partial report or zero detections does not prove a computer is clean. A heuristic or advisory AI score is a signal, not confirmed malware. Do not remove system files solely because of an alert; review evidence and keep system protections enabled."
+    },
+    {
+      "id": "ai",
+      "title": "AI, real-time protection, ClamAV and updates",
+      "tags": "ai artificial intelligence learn realtime clamav defender automatic update statistics",
+      "answer": "Current AI is advisory, without validated continuous local learning. Independent resident protection, continuous learning, production automatic updates and global statistics remain under development. ClamAV is optional and requires a separate installation. Component self-test success does not establish a working worldwide service. No production release has been announced."
+    },
+    {
+      "id": "support",
+      "title": "How to request support",
+      "tags": "help support contact report bug issue error code",
+      "answer": "Open a GitHub issue with the app version, Windows 10/11 build, architecture, approximate RAM, scan mode, timestamp and time zone, expected and observed result, reproduction steps, and error category or exit code if available. Remove personal names, personal paths, emails, tokens, identifiers, file contents and private file hashes. Do not post malware samples, raw logs, quarantine files or credentials. No guaranteed 24-hour support."
+    },
+    {
+      "id": "quick",
+      "title": "Quick, full and custom scans",
+      "tags": "quick full custom scan folder disk cancel stop",
+      "answer": "Quick scans prioritize selected locations; full scans examine accessible local disks; custom scans examine the selected location when available. Use Cancel to stop. Protected, unavailable or locked files may be skipped; check coverage in the report."
+    },
+    {
+      "id": "quarantine",
+      "title": "Quarantine and restore",
+      "tags": "quarantine restore recover delete remove false positive",
+      "answer": "Review isolated items and their evidence before confirming an action. Restore only after checking legitimacy and destination safety. Do not delete system files based on heuristic alerts. Recovery of encrypted files is not guaranteed."
+    },
+    {
+      "id": "links",
+      "title": "Check links and fraud messages",
+      "tags": "link url phishing fraud scam internet message bank",
+      "answer": "In Links and fraud, examine a suspicious address or text without personal data, passwords or codes. Local analysis is advisory, does not visit the URL, automatically block phishing or prove legitimacy."
+    },
+    {
+      "id": "report",
+      "title": "Export a scan report",
+      "tags": "export save send report log json files bytes speed",
+      "answer": "Use Export report when available. Check mode, version, counts, errors, skips and cancellation. Remove personal paths, names, identifiers and private hashes before sharing; do not publish raw logs."
+    },
+    {
+      "id": "cloud",
+      "title": "Cloud and online files",
+      "tags": "onedrive cloud online synced files",
+      "answer": "Scanning depends on files accessible to Windows. Online-only files may be unavailable locally. Do not force bulk downloads to increase coverage. Cloud file event monitoring is planned."
+    },
+    {
+      "id": "media",
+      "title": "Video authenticity",
+      "tags": "video deepfake c2pa authenticity provenance",
+      "answer": "The media option checks C2PA digital credentials. Their presence or absence does not prove a video genuine or fake. It is not a neural deepfake detector."
+    },
+    {
+      "id": "cleanup",
+      "title": "Safe temporary file cleanup",
+      "tags": "clean cleanup cache temporary free space",
+      "answer": "In Tools, review candidate temporary files before confirming. Cleanup is optional and is not malware removal. Do not delete active or critical files."
+    }
+  ],
+  "es": [
+    {
+      "id": "about",
+      "title": "¿Qué es ZEUVORYX?",
+      "tags": "zeuvoryx antivirus qué es protección",
+      "answer": "Escáner de seguridad para Windows x64 desarrollado en Go, con análisis de archivos, indicadores SHA-256, heurística, cuarentena reversible e IA consultiva experimental. Macintosh 3.0.5 LAB es un candidato independiente en validación."
+    },
+    {
+      "id": "install",
+      "title": "Instalación y actualización",
+      "tags": "instalar instalación actualizar actualización versión zip exe paquete",
+      "answer": "Utilice solo paquetes de prueba autorizados y compruebe la versión y SHA-256 con la referencia de GitHub. Extraiga el ZIP, termine o cancele el análisis, cierre la aplicación, haga una copia de seguridad de la configuración y cuarentena e instale sobre una edición LAB compatible. Mantenga Defender y SmartScreen activos. El CI comprobó la migración de 3.0.5 LAB a 3.0.6 LAB; otras migraciones no están verificadas."
+    },
+    {
+      "id": "startup",
+      "title": "La aplicación no abre o se cierra",
+      "tags": "no abre cierra inicio webview2 fallo arranque",
+      "answer": "No reinstale repetidamente. Compruebe la versión, Windows x64, Microsoft Edge WebView2 Runtime, espacio y memoria disponibles. Consulte el Monitor de confiabilidad (perfmon /rel) y el Visor de eventos (eventvwr.msc), registros Aplicación y Sistema cerca del fallo. No borre la cuarentena ni desactive la seguridad de Windows. Comparta solo información anonimizada."
+    },
+    {
+      "id": "fullscan",
+      "title": "El análisis completo se bloquea o termina",
+      "tags": "análisis completo escaneo bloqueado lento se cierra",
+      "answer": "Los cierres en equipos físicos siguen en investigación. En CI, la interfaz instalada 3.0.6 permaneció abierta 15 segundos tras confirmar su inicio y pasaron 60 pruebas de un conjunto pequeño controlado. Esto no demuestra estabilidad en todo el disco. Si vuelve a ocurrir, detenga las pruebas en su equipo de trabajo y anote hora, versión, modo, CPU/RAM y último progreso. No ejecute archivos sospechosos."
+    },
+    {
+      "id": "errors",
+      "title": "Errores, archivos omitidos y alertas",
+      "tags": "errores omitidos acceso denegado bloqueado alerta detección cero",
+      "answer": "El acceso denegado, archivos bloqueados o desaparecidos pueden impedir la lectura. Un informe parcial o cero detecciones no demuestra ausencia de malware. Una heurística o puntuación de IA es un indicio, no una confirmación. No elimine archivos del sistema solo por una alerta."
+    },
+    {
+      "id": "ai",
+      "title": "IA, tiempo real, ClamAV y actualizaciones",
+      "tags": "inteligencia artificial aprende ia tiempo real clamav defender actualización automática estadísticas",
+      "answer": "La IA actual es consultiva, sin aprendizaje local continuo validado. Protección residente propia, aprendizaje continuo, actualizaciones automáticas de producción y estadísticas globales siguen en desarrollo. ClamAV es opcional y requiere instalación separada. La autoprueba no demuestra un servicio mundial operativo. No hay versión de producción anunciada."
+    },
+    {
+      "id": "support",
+      "title": "Cómo solicitar ayuda",
+      "tags": "ayuda soporte contacto informe error código",
+      "answer": "Abra una incidencia en GitHub con versión, compilación de Windows 10/11, arquitectura, RAM aproximada, modo de análisis, hora y zona horaria, resultado esperado y observado, pasos de reproducción y categoría de error o código de salida. Quite nombres, rutas personales, correos, tokens, identificadores, contenido y hashes de archivos privados. No publique malware, registros sin depurar, cuarentena ni credenciales. No se garantiza atención las 24 horas."
+    },
+    {
+      "id": "quick",
+      "title": "Análisis rápido, completo y personalizado",
+      "tags": "rápido completo personalizado carpeta disco cancelar parar",
+      "answer": "El rápido prioriza ubicaciones; el completo examina discos locales accesibles; el personalizado, la ubicación elegida cuando esté disponible. Use Cancelar para detenerlo. Los archivos protegidos, no disponibles o bloqueados pueden omitirse; revise la cobertura."
+    },
+    {
+      "id": "quarantine",
+      "title": "Cuarentena y restauración",
+      "tags": "cuarentena restaurar recuperar eliminar falso positivo",
+      "answer": "Revise los elementos aislados y las evidencias antes de confirmar. Restaure solo tras comprobar su legitimidad y destino seguro. No elimine archivos del sistema por heurísticas. No se garantiza recuperación de archivos cifrados."
+    },
+    {
+      "id": "links",
+      "title": "Enlaces y fraudes",
+      "tags": "enlace url phishing fraude estafa internet mensaje banco",
+      "answer": "Examine una dirección o texto sospechoso sin datos personales, contraseñas ni códigos. La evaluación local es consultiva, no visita la URL, no bloquea phishing automáticamente ni prueba legitimidad."
+    },
+    {
+      "id": "report",
+      "title": "Exportar informe",
+      "tags": "exportar guardar enviar informe registro json archivos velocidad",
+      "answer": "Use Exportar informe cuando esté disponible. Revise modo, versión, conteos, errores, omitidos y cancelación. Elimine rutas personales, nombres, identificadores y hashes privados antes de compartir; no publique registros brutos."
+    },
+    {
+      "id": "cloud",
+      "title": "Archivos en la nube",
+      "tags": "onedrive nube online sincronizados archivos",
+      "answer": "El análisis depende de archivos accesibles a Windows. Los archivos solo en línea pueden no estar disponibles localmente. No fuerce descargas masivas. La monitorización de eventos en la nube está prevista."
+    },
+    {
+      "id": "media",
+      "title": "Autenticidad de vídeo",
+      "tags": "video deepfake c2pa autenticidad procedencia",
+      "answer": "La opción verifica credenciales digitales C2PA. Su presencia o ausencia no demuestra autenticidad ni falsedad. No es un detector neuronal de deepfakes."
+    },
+    {
+      "id": "cleanup",
+      "title": "Limpieza de temporales",
+      "tags": "limpiar limpieza cache temporales espacio",
+      "answer": "En Herramientas, revise los temporales candidatos antes de confirmar. Es opcional y no equivale a eliminar malware. No borre archivos activos o críticos."
+    }
+  ],
+  "ja": [
+    {
+      "id": "about",
+      "title": "ZEUVORYX とは？",
+      "tags": "ZEUVORYX ウイルス対策 とは 保護",
+      "answer": "Go で開発された Windows x64 向けセキュリティスキャナーです。ファイル分析、SHA-256 指標、ヒューリスティック分析、復元可能な隔離、実験的な補助 AI を備えています。Macintosh 3.0.5 LAB は別の検証中の候補版です。"
+    },
+    {
+      "id": "install",
+      "title": "インストールと更新",
+      "tags": "インストール 更新 バージョン ZIP EXE",
+      "answer": "管理者が許可したテストパッケージのみを使用し、GitHub の参照情報でバージョンと SHA-256 を確認してください。ZIP を展開し、スキャンを終了または中止してアプリを閉じ、設定と隔離データをバックアップしてから互換性のある LAB 版に上書きインストールしてください。Defender、SmartScreen などの保護機能は無効にしないでください。CI で 3.0.5 LAB から 3.0.6 LAB への更新を確認しましたが、他の移行は未検証です。"
+    },
+    {
+      "id": "startup",
+      "title": "起動しない、または突然終了する場合",
+      "tags": "起動 開かない 終了 エラー WebView2",
+      "answer": "再インストールを繰り返さず、バージョン、Windows x64、Microsoft Edge WebView2 Runtime、空き容量とメモリを確認してください。信頼性モニター（perfmon /rel）とイベントビューアー（eventvwr.msc）のアプリケーション／システムログを障害時刻の前後で確認します。隔離データを削除したり Windows の保護機能を無効にしたりしないでください。サポートには匿名化した情報だけを共有してください。"
+    },
+    {
+      "id": "fullscan",
+      "title": "フルスキャンが停止・終了する場合",
+      "tags": "フルスキャン 停止 遅い 強制終了 スキャン",
+      "answer": "実機での突然の終了は調査中です。3.0.6 の CI では起動確認後に画面が15秒間開いていることを確認し、小規模な管理されたファイル群のスキャンテストが60回成功しました。ディスク全体の安定性を証明するものではありません。再発した場合は業務用 PC でのテストを中止し、時刻、バージョン、スキャンモード、CPU/RAM 使用状況、最後の進捗を記録してください。不審なファイルは実行しないでください。"
+    },
+    {
+      "id": "errors",
+      "title": "エラー、スキップ、警告",
+      "tags": "エラー スキップ アクセス拒否 検出 警告",
+      "answer": "アクセス拒否、他のプロセスによるロック、ファイルの消失により読み取れない場合があります。部分的なレポートや検出数ゼロは安全性の証明ではありません。ヒューリスティックや AI スコアは参考情報であり、マルウェアの確定ではありません。警告だけを理由にシステムファイルを削除しないでください。"
+    },
+    {
+      "id": "ai",
+      "title": "AI、リアルタイム保護、ClamAV、更新",
+      "tags": "AI 学習 リアルタイム ClamAV Defender 自動更新 統計",
+      "answer": "現行 AI は補助的な分析を行い、継続的なローカル学習は未検証です。独自の常駐保護、継続学習、製品版の自動更新、世界統計は開発中です。ClamAV は別途インストールが必要な任意機能です。自己診断の成功は世界規模のサービス稼働を意味しません。製品版の公開は未発表です。"
+    },
+    {
+      "id": "support",
+      "title": "サポートへの問い合わせ",
+      "tags": "サポート 問い合わせ レポート 不具合 エラーコード",
+      "answer": "GitHub Issues にバージョン、Windows 10/11 のビルド、アーキテクチャ、おおよその RAM、スキャンモード、時刻とタイムゾーン、期待した結果と実際の結果、再現手順、可能であればエラー分類や終了コードを記載してください。氏名、個人のパス、メール、トークン、識別子、ファイル内容、非公開ファイルのハッシュは削除してください。マルウェアのサンプル、生ログ、隔離ファイル、認証情報は投稿しないでください。24時間の対応は保証されません。"
+    },
+    {
+      "id": "quick",
+      "title": "クイック・フル・カスタムスキャン",
+      "tags": "クイック フル カスタム スキャン フォルダ ディスク 中止",
+      "answer": "クイックは優先場所、フルはアクセス可能なローカルディスク、カスタムは利用可能な場合に選択した場所を検査します。中止ボタンで停止できます。アクセスできないファイルはスキップされる場合があります。"
+    },
+    {
+      "id": "quarantine",
+      "title": "隔離と復元",
+      "tags": "隔離 復元 削除 誤検知 回復",
+      "answer": "操作を確定する前に隔離項目と根拠を確認してください。正当性と復元先の安全性を確認してから復元します。ヒューリスティック警告だけでシステムファイルを削除しないでください。"
+    },
+    {
+      "id": "links",
+      "title": "リンクと詐欺の確認",
+      "tags": "リンク URL フィッシング 詐欺 メッセージ 銀行",
+      "answer": "個人情報、パスワード、コードを含めずに疑わしいURLや文章を調べます。ローカル分析は参考情報で、URLにアクセスせず、自動遮断や安全性の保証をしません。"
+    },
+    {
+      "id": "report",
+      "title": "レポートの出力",
+      "tags": "レポート 出力 保存 送信 ログ JSON",
+      "answer": "出力ボタンが利用可能なときに使用します。モード、バージョン、件数、エラー、スキップ、中止を確認します。個人のパス、氏名、識別子、非公開ハッシュを削除し、生ログを公開しないでください。"
+    },
+    {
+      "id": "cloud",
+      "title": "クラウドファイル",
+      "tags": "クラウド OneDrive オンライン 同期",
+      "answer": "Windowsからアクセス可能なファイルが対象です。オンライン専用ファイルはローカルにない場合があります。一括ダウンロードを強制しないでください。クラウドイベント監視は計画中です。"
+    },
+    {
+      "id": "media",
+      "title": "動画の真正性",
+      "tags": "動画 ディープフェイク C2PA 真正性",
+      "answer": "C2PAのデジタル資格情報を確認します。資格情報の有無は動画の真偽を証明しません。ニューラルディープフェイク検出器ではありません。"
+    },
+    {
+      "id": "cleanup",
+      "title": "一時ファイルの整理",
+      "tags": "一時ファイル キャッシュ 整理 空き容量",
+      "answer": "ツールで対象を確認してから操作を確定します。任意の整理機能であり、マルウェア除去ではありません。使用中のファイルや重要ファイルは削除しないでください。"
+    }
+  ]
+}

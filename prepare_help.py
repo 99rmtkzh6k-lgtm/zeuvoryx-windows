@@ -20,5 +20,5 @@ if __name__=="__main__":
     p=Path("desktop.html")
     s=Path("help_search.js").read_text(encoding="utf-8")
     data=json.loads(Path("help_articles.json").read_text(encoding="utf-8"))
-    assert set(data)=={"pt-br","en","es","ja"} and all(len(v)==14 for v in data.values())
+    assert set(data)=={"pt-br","en","es","ja"} and all(len(v)==31 for v in data.values())
     p.write_text(transform(p.read_text(encoding="utf-8"),s,data),encoding="utf-8")

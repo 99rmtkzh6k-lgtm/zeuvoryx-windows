@@ -83,6 +83,159 @@
       "title": "Como limpar temporários com segurança?",
       "tags": "limpar limpeza cache temporários liberar espaço",
       "answer": "Em Ferramentas, revise os temporários candidatos antes de confirmar. A limpeza é opcional; não é remoção de malware. Não apague arquivos ativos ou críticos."
+    },
+    {
+      "id": "defender",
+      "title": "Como usar a Segurança do Windows e Microsoft Defender?",
+      "tags": "defender antivirus segurança windows microsoft histórico proteção",
+      "answer": "Abra Segurança do Windows > Proteção contra vírus e ameaças. Confira o estado e o Histórico de proteção. Mantenha o Defender ativo; ZEUVORYX não substitui esse motor. Em computador corporativo, respeite as políticas da organização.",
+      "source": "https://support.microsoft.com/en-us/windows/security/windows-security/protection-history-in-the-windows-security-app",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "windowsupdate",
+      "title": "Como atualizar o Windows?",
+      "tags": "windows update atualização sistema operacional atualização segurança reiniciar",
+      "answer": "Abra Configurações > Windows Update (no Windows 10, Atualização e Segurança). Verifique atualizações e reinicie quando solicitado, após salvar o trabalho. Não instale atualizações de sites desconhecidos.",
+      "source": "https://support.microsoft.com/en-us/windows/deployment/updates-lifecycle/windows-update-faq",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "win10",
+      "title": "Windows 10 ainda é seguro?",
+      "tags": "windows 10 suporte fim outubro 2025 esu windows11",
+      "answer": "O suporte regular do Windows 10 terminou em 14/10/2025. Existem exceções por edição e programas de atualizações de segurança estendidas (ESU). Verifique sua elegibilidade e planeje migrar para uma versão suportada. Antivírus não substitui correções do sistema.",
+      "source": "https://support.microsoft.com/en-us/windows/deployment/updates-lifecycle/windows-10-support-has-ended-on-october-14-2025",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "performance",
+      "title": "Computador lento, CPU ou memória alta",
+      "tags": "cpu ram memória disco lento desempenho gerenciador tarefas 100",
+      "answer": "Abra Gerenciador de Tarefas (Ctrl+Shift+Esc) e confira CPU, memória e disco. Uma análise completa pode usar recursos temporariamente. Salve o trabalho e cancele a análise se a máquina ficar instável. Não encerre processos críticos nem desative a proteção para ganhar velocidade.",
+      "source": "https://support.microsoft.com/windows",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "firewall",
+      "title": "Para que serve firewall?",
+      "tags": "firewall rede conexão porta proteção internet wifi",
+      "answer": "O firewall controla conexões de rede conforme suas regras. Mantenha o Firewall do Windows habilitado e não abra portas ou crie exceções sem necessidade. O ZEUVORYX consulta recursos nativos; não é um firewall próprio.",
+      "source": "https://support.microsoft.com/windows",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "backup",
+      "title": "Como fazer backup e recuperar arquivos?",
+      "tags": "backup copia segurança restaurar recuperação arquivos disco externo",
+      "answer": "Mantenha cópias versionadas e uma cópia separada ou offline, teste a restauração e desconecte a unidade de backup quando não estiver em uso. Sincronização não é necessariamente backup. Não dependa do antivírus para recuperar arquivos perdidos.",
+      "source": "https://support.microsoft.com/pt-br/windows/security/protect-your-pc-from-ransomware",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "ransomware",
+      "title": "O que fazer se suspeitar de ransomware?",
+      "tags": "ransomware sequestro criptografados resgate extorsão arquivos",
+      "answer": "Desconecte o computador afetado da rede para limitar a propagação, não execute arquivos suspeitos e preserve evidências. Use outro dispositivo confiável para buscar ajuda e proteger contas. Consulte um especialista e restaure backups verificados após contenção. Não há garantia de descriptografia.",
+      "source": "https://support.microsoft.com/pt-br/windows/security/protect-your-pc-from-ransomware",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "passwords",
+      "title": "Como proteger senhas e contas?",
+      "tags": "senha senhas password conta autenticação mfa 2fa passkey",
+      "answer": "Use senhas únicas e longas, gerenciador confiável e autenticação multifator ou passkeys quando disponíveis. Nunca informe códigos de verificação a terceiros. Se suspeitar de invasão, use dispositivo confiável, altere a senha e revise sessões e recuperação.",
+      "source": "https://cartilha.cert.br/",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "internet",
+      "title": "Como navegar com segurança e evitar golpes?",
+      "tags": "internet navegador site golpe pix banco phishing download wi-fi wifi https",
+      "answer": "Digite endereços oficiais ou use favoritos conhecidos. HTTPS não garante que um site seja legítimo. Confirme pedidos de pagamento por canal independente, não compartilhe códigos e evite instalar programas desconhecidos. Em caso de fraude bancária, contate imediatamente o banco pelos canais oficiais.",
+      "source": "https://cartilha.cert.br/",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "privacy",
+      "title": "O que é LGPD e quais são meus direitos?",
+      "tags": "lgpd lpgt lgpt lpgd lei proteção dados pessoais privacidade titular anpd consentimento exclusão",
+      "answer": "A Lei Geral de Proteção de Dados (Lei 13.709/2018) regula o tratamento de dados pessoais no Brasil. Conforme a situação, há direitos de informação, acesso, correção, revogação do consentimento e eliminação, sujeitos às hipóteses legais. Procure primeiro o controlador; se necessário consulte a ANPD. Esta é orientação geral, não parecer jurídico.",
+      "source": "https://www.gov.br/anpd/pt-br/assuntos/titular-de-dados-1/direito-dos-titulares",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "gdpr",
+      "title": "O que é GDPR na Europa?",
+      "tags": "gdpr rgpd europa união europeia dados privacidade direitos",
+      "answer": "O GDPR estabelece regras de proteção de dados pessoais na União Europeia e pode alcançar empresas fora da UE em determinadas situações. Direitos e deveres dependem da atividade e da legislação aplicável. Consulte a Comissão Europeia e orientação profissional para casos concretos.",
+      "source": "https://commission.europa.eu/law/law-topic/data-protection/information-individuals_en",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "databreach",
+      "title": "Vazamento de dados: o que fazer?",
+      "tags": "vazamento dados incidente lgpd anpd invasão exposição roubo dados",
+      "answer": "Se seus dados foram expostos, proteja contas em dispositivo confiável, guarde evidências e contate o responsável. No Brasil, a comunicação de incidente com risco ou dano relevante é obrigação do controlador, em regra em três dias úteis, conforme a regulamentação da ANPD. Nem todo ataque é automaticamente notificável. Não publique dados pessoais.",
+      "source": "https://www.gov.br/anpd/pt-br/canais_atendimento/agente-de-tratamento/comunicado-de-incidente-de-seguranca-cis",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "license",
+      "title": "O que é licença de software e direitos autorais?",
+      "tags": "licença licenciamento software direitos autorais código propriedade eula inpi",
+      "answer": "A licença define usos autorizados do programa. Software pode conter componentes de terceiros sujeitos a licenças próprias. A Lei 9.609/1998 regula a proteção de programas de computador no Brasil. Não presuma direito de redistribuição do código ou de componentes externos. Consulte os termos da versão e orientação jurídica se necessário.",
+      "source": "https://www.planalto.gov.br/ccivil_03/leis/l9609.htm",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "consumer",
+      "title": "Antivírus garante proteção total? Quais são meus direitos?",
+      "tags": "garantia responsabilidade consumidor cdc direito dano suporte proteção 100",
+      "answer": "Nenhum antivírus garante detectar toda ameaça. No Brasil, o CDC pode proteger consumidores conforme a relação e o caso; defeito, dano, nexo causal e hipóteses de exclusão de responsabilidade precisam ser avaliados. Guarde comprovantes, versão e evidências e procure o fornecedor ou órgão de defesa do consumidor. Não é parecer jurídico.",
+      "source": "https://planalto.gov.br/ccivil_03/leis/l8078compilado.htm",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "telemetry",
+      "title": "O ZEUVORYX envia meus dados para a internet?",
+      "tags": "telemetria coleta dados arquivos upload internet estatísticas privacidade offline",
+      "answer": "A busca de ajuda funciona localmente e não envia perguntas. As análises locais não precisam transmitir arquivos para pontuar riscos; algumas integrações e verificações externas podem consultar serviços quando solicitadas. A central mundial de estatísticas ainda não está operacional na versão 3.0.6 LAB. Revise cada função e seus avisos antes de usar; não inclua dados pessoais em consultas ou relatórios públicos.",
+      "source": "https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/main/support",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "store",
+      "title": "Onde baixar e comprar com segurança?",
+      "tags": "loja microsoft store download compra assinatura pagamento preço licença atualização",
+      "answer": "Use apenas os canais oficiais identificados pelo mantenedor. O 3.0.6 é candidato de teste; não há lançamento comercial confirmado. Não pague a terceiros por chaves supostamente oficiais nem ignore avisos de assinatura. A avaliação da loja não comprova eficácia do antivírus.",
+      "source": "https://learn.microsoft.com/en-us/windows/apps/publish/store-policies",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "threatintel",
+      "title": "O que são SHA-256, IOC e CVE?",
+      "tags": "sha256 sha-256 hash ioc cve assinatura indicadores vulnerabilidade cisa",
+      "answer": "SHA-256 é uma impressão digital de conteúdo; um IOC é um indicador de possível ameaça e CVE identifica vulnerabilidades publicadas. Correspondência ou consulta a catálogo não confirma sozinha infecção ou vulnerabilidade instalada. Use fontes autorizadas e não execute amostras suspeitas.",
+      "source": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+      "reviewed": "2026-11-24",
+      "scope": "general"
     }
   ],
   "en": [
@@ -169,6 +322,159 @@
       "title": "Safe temporary file cleanup",
       "tags": "clean cleanup cache temporary free space",
       "answer": "In Tools, review candidate temporary files before confirming. Cleanup is optional and is not malware removal. Do not delete active or critical files."
+    },
+    {
+      "id": "defender",
+      "title": "How do I use Windows Security and Defender?",
+      "tags": "defender antivirus windows security microsoft protection history",
+      "answer": "Open Windows Security > Virus & threat protection and check its status and Protection history. Keep Defender enabled; ZEUVORYX does not replace it. Follow organizational policy on managed PCs.",
+      "source": "https://support.microsoft.com/en-us/windows/security/windows-security/protection-history-in-the-windows-security-app",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "windowsupdate",
+      "title": "How do I update Windows?",
+      "tags": "windows update operating system patches restart",
+      "answer": "Open Settings > Windows Update (Update & Security on Windows 10), check for updates and restart when requested after saving work. Avoid unofficial update downloads.",
+      "source": "https://support.microsoft.com/en-us/windows/deployment/updates-lifecycle/windows-update-faq",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "win10",
+      "title": "Is Windows 10 still supported?",
+      "tags": "windows 10 end support esu windows11 2025",
+      "answer": "Regular Windows 10 support ended on October 14, 2025. Edition-specific exceptions and Extended Security Updates (ESU) exist. Check eligibility and plan a move to a supported OS. Antivirus does not replace OS patches.",
+      "source": "https://support.microsoft.com/en-us/windows/deployment/updates-lifecycle/windows-10-support-has-ended-on-october-14-2025",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "performance",
+      "title": "High CPU, RAM or disk usage",
+      "tags": "cpu ram memory disk slow performance task manager",
+      "answer": "Open Task Manager (Ctrl+Shift+Esc) and check CPU, memory and disk. Full scans may temporarily use resources. Save work and cancel the scan if unstable. Do not kill critical processes or disable security to improve speed.",
+      "source": "https://support.microsoft.com/windows",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "firewall",
+      "title": "What is a firewall?",
+      "tags": "firewall network connection port wifi",
+      "answer": "A firewall controls network connections according to rules. Keep Windows Firewall enabled and avoid unnecessary open ports or exceptions. ZEUVORYX consults native features; it is not an independent firewall.",
+      "source": "https://support.microsoft.com/windows",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "backup",
+      "title": "Backup and file recovery",
+      "tags": "backup recovery restore copies external drive",
+      "answer": "Keep versioned backups and a separate or offline copy, test restoration and disconnect backup drives when not in use. Sync is not necessarily backup. Do not rely on antivirus to recover lost files.",
+      "source": "https://support.microsoft.com/pt-br/windows/security/protect-your-pc-from-ransomware",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "ransomware",
+      "title": "Suspected ransomware: what now?",
+      "tags": "ransomware encrypted files ransom extortion",
+      "answer": "Disconnect the affected PC from the network to limit spread, avoid suspicious files and preserve evidence. Use a trusted device for help and account protection. Seek expert assistance and restore verified backups after containment. Decryption is not guaranteed.",
+      "source": "https://support.microsoft.com/pt-br/windows/security/protect-your-pc-from-ransomware",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "passwords",
+      "title": "How to protect passwords and accounts",
+      "tags": "password passwords accounts mfa 2fa passkey",
+      "answer": "Use unique long passwords, a trusted password manager and MFA or passkeys when available. Never share verification codes. After suspected compromise, use a trusted device to change passwords and review sessions and recovery settings.",
+      "source": "https://cartilha.cert.br/",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "internet",
+      "title": "Safe browsing and online scams",
+      "tags": "internet browser website scam bank phishing download wifi https",
+      "answer": "Use official addresses or trusted bookmarks. HTTPS alone does not prove legitimacy. Verify payment requests independently, never share codes and avoid unknown downloads. Contact your bank immediately via official channels if you suspect financial fraud.",
+      "source": "https://cartilha.cert.br/",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "privacy",
+      "title": "What is Brazil's LGPD and what are my rights?",
+      "tags": "lgpd lpgt lgpt lpgd brazil privacy personal data rights anpd consent deletion",
+      "answer": "Brazil's General Data Protection Law (Law 13,709/2018) governs personal data processing. Depending on the circumstances, rights include information, access, correction, consent withdrawal and deletion subject to legal exceptions. Contact the controller first and consult ANPD if needed. General information, not legal advice.",
+      "source": "https://www.gov.br/anpd/pt-br/assuntos/titular-de-dados-1/direito-dos-titulares",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "gdpr",
+      "title": "What is GDPR?",
+      "tags": "gdpr europe eu personal data privacy rights",
+      "answer": "GDPR sets EU personal data protection rules and can apply to organizations outside the EU in certain circumstances. Rights and duties depend on the activity and applicable law. Consult the European Commission and qualified advice for specific cases.",
+      "source": "https://commission.europa.eu/law/law-topic/data-protection/information-individuals_en",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "databreach",
+      "title": "What to do after a data breach",
+      "tags": "data breach leak incident lgpd anpd exposure",
+      "answer": "If your data was exposed, secure accounts from a trusted device, preserve evidence and contact the responsible organization. In Brazil, the controller generally has three business days to notify qualifying incidents involving relevant risk or harm under ANPD rules. Not every attack is automatically reportable. Do not post personal data.",
+      "source": "https://www.gov.br/anpd/pt-br/canais_atendimento/agente-de-tratamento/comunicado-de-incidente-de-seguranca-cis",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "license",
+      "title": "Software licenses and copyright",
+      "tags": "license licensing software copyright code intellectual property eula",
+      "answer": "A license defines authorized use. Software may contain third-party components with separate terms. Brazilian software law is Law 9,609/1998. Do not assume redistribution rights to code or third-party components. Consult the version's terms and qualified advice where needed.",
+      "source": "https://www.planalto.gov.br/ccivil_03/leis/l9609.htm",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "consumer",
+      "title": "Does antivirus guarantee complete protection?",
+      "tags": "guarantee liability consumer rights damages support protection 100",
+      "answer": "No antivirus guarantees detection of every threat. Brazilian consumer law may apply depending on the relationship and facts; defects, damage, causation and exclusions require case-specific assessment. Preserve records and contact the provider or consumer authority. Not legal advice.",
+      "source": "https://planalto.gov.br/ccivil_03/leis/l8078compilado.htm",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "telemetry",
+      "title": "Does ZEUVORYX send data online?",
+      "tags": "telemetry privacy upload files online statistics offline",
+      "answer": "Help search runs locally and does not send questions. Local risk analysis does not need file uploads; some optional integrations may contact external services when requested. Global statistics are not operational in 3.0.6 LAB. Review feature notices before use and avoid personal data in queries or public reports.",
+      "source": "https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/main/support",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "store",
+      "title": "Where to download or buy safely?",
+      "tags": "store microsoft download buy subscription payment price license",
+      "answer": "Use only maintainer-identified official channels. 3.0.6 is a test candidate, not a confirmed commercial launch. Do not pay third parties for supposed official keys or bypass signature warnings. Store review does not certify antivirus effectiveness.",
+      "source": "https://learn.microsoft.com/en-us/windows/apps/publish/store-policies",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "threatintel",
+      "title": "What are SHA-256, IOC and CVE?",
+      "tags": "sha256 sha-256 hash ioc cve signatures indicators vulnerability cisa",
+      "answer": "SHA-256 is a content fingerprint, an IOC is an indicator of possible threat and CVE identifies published vulnerabilities. A match or catalog lookup alone does not establish infection or an installed vulnerability. Use authorized sources and never execute suspicious samples.",
+      "source": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+      "reviewed": "2026-11-24",
+      "scope": "general"
     }
   ],
   "es": [
@@ -255,6 +561,159 @@
       "title": "Limpieza de temporales",
       "tags": "limpiar limpieza cache temporales espacio",
       "answer": "En Herramientas, revise los temporales candidatos antes de confirmar. Es opcional y no equivale a eliminar malware. No borre archivos activos o críticos."
+    },
+    {
+      "id": "defender",
+      "title": "¿Cómo usar Seguridad de Windows y Defender?",
+      "tags": "defender antivirus seguridad windows microsoft historial protección",
+      "answer": "Abra Seguridad de Windows > Protección contra virus y amenazas y consulte su estado e historial. Mantenga Defender activo; ZEUVORYX no lo sustituye. Respete las políticas de equipos administrados.",
+      "source": "https://support.microsoft.com/en-us/windows/security/windows-security/protection-history-in-the-windows-security-app",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "windowsupdate",
+      "title": "¿Cómo actualizar Windows?",
+      "tags": "windows update actualización sistema operativo reiniciar",
+      "answer": "Abra Configuración > Windows Update (Actualización y seguridad en Windows 10), busque actualizaciones y reinicie tras guardar su trabajo. Evite descargas no oficiales.",
+      "source": "https://support.microsoft.com/en-us/windows/deployment/updates-lifecycle/windows-update-faq",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "win10",
+      "title": "¿Windows 10 sigue teniendo soporte?",
+      "tags": "windows 10 fin soporte esu windows11 2025",
+      "answer": "El soporte regular terminó el 14/10/2025. Hay excepciones por edición y actualizaciones de seguridad extendidas (ESU). Compruebe elegibilidad y migre a un sistema compatible. El antivirus no sustituye los parches.",
+      "source": "https://support.microsoft.com/en-us/windows/deployment/updates-lifecycle/windows-10-support-has-ended-on-october-14-2025",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "performance",
+      "title": "CPU, memoria o disco elevados",
+      "tags": "cpu ram memoria disco lento rendimiento administrador tareas",
+      "answer": "Abra el Administrador de tareas (Ctrl+Shift+Esc) y revise CPU, memoria y disco. Un análisis completo puede consumir recursos temporalmente. Guarde el trabajo y cancele si hay inestabilidad. No cierre procesos críticos ni desactive protección.",
+      "source": "https://support.microsoft.com/windows",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "firewall",
+      "title": "¿Para qué sirve el firewall?",
+      "tags": "firewall cortafuegos red conexión puerto wifi",
+      "answer": "Controla conexiones según reglas. Mantenga el firewall de Windows activo y evite puertos o excepciones innecesarios. ZEUVORYX consulta funciones nativas; no es un firewall propio.",
+      "source": "https://support.microsoft.com/windows",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "backup",
+      "title": "Copias de seguridad y recuperación",
+      "tags": "backup copia seguridad recuperar restaurar disco externo",
+      "answer": "Mantenga copias con versiones y una copia separada o sin conexión, pruebe la restauración y desconecte el disco cuando no se use. Sincronizar no equivale necesariamente a respaldar.",
+      "source": "https://support.microsoft.com/pt-br/windows/security/protect-your-pc-from-ransomware",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "ransomware",
+      "title": "¿Qué hacer ante ransomware?",
+      "tags": "ransomware archivos cifrados rescate extorsión",
+      "answer": "Desconecte el equipo de la red, no ejecute archivos sospechosos y conserve evidencias. Use otro dispositivo fiable para pedir ayuda y proteger cuentas. Busque asistencia especializada y restaure copias verificadas tras contener el incidente.",
+      "source": "https://support.microsoft.com/pt-br/windows/security/protect-your-pc-from-ransomware",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "passwords",
+      "title": "Cómo proteger contraseñas y cuentas",
+      "tags": "contraseña contraseñas cuenta mfa 2fa passkey",
+      "answer": "Use contraseñas únicas y largas, gestor fiable y MFA o passkeys. No comparta códigos. Si sospecha una intrusión, cambie la contraseña desde un dispositivo fiable y revise sesiones y recuperación.",
+      "source": "https://cartilha.cert.br/",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "internet",
+      "title": "Navegación segura y estafas",
+      "tags": "internet navegador sitio estafa banco phishing descarga wifi https",
+      "answer": "Use direcciones oficiales. HTTPS no garantiza legitimidad. Confirme solicitudes de pago por otro canal, no comparta códigos y evite descargas desconocidas. Ante fraude financiero contacte al banco por canales oficiales.",
+      "source": "https://cartilha.cert.br/",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "privacy",
+      "title": "¿Qué es la LGPD y cuáles son mis derechos?",
+      "tags": "lgpd lpgt lgpt lpgd brasil privacidad datos personales derechos anpd consentimiento",
+      "answer": "La Ley 13.709/2018 regula el tratamiento de datos personales en Brasil. Según el caso, existen derechos de información, acceso, rectificación, revocación y eliminación con excepciones legales. Contacte primero al responsable y consulte ANPD si procede. Orientación general, no asesoramiento jurídico.",
+      "source": "https://www.gov.br/anpd/pt-br/assuntos/titular-de-dados-1/direito-dos-titulares",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "gdpr",
+      "title": "¿Qué es el RGPD?",
+      "tags": "gdpr rgpd europa unión europea datos privacidad",
+      "answer": "El RGPD establece reglas de protección de datos en la UE y puede aplicarse a organizaciones fuera de ella en ciertos supuestos. Consulte la Comisión Europea y asesoramiento especializado para casos concretos.",
+      "source": "https://commission.europa.eu/law/law-topic/data-protection/information-individuals_en",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "databreach",
+      "title": "Qué hacer ante una fuga de datos",
+      "tags": "fuga datos incidente lgpd anpd exposición",
+      "answer": "Proteja cuentas desde un dispositivo fiable, conserve evidencias y contacte al responsable. En Brasil, el responsable debe comunicar incidentes relevantes según las reglas de ANPD, generalmente en tres días hábiles. No todo ataque es notificable. No publique datos personales.",
+      "source": "https://www.gov.br/anpd/pt-br/canais_atendimento/agente-de-tratamento/comunicado-de-incidente-de-seguranca-cis",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "license",
+      "title": "Licencias de software y derechos de autor",
+      "tags": "licencia software derechos autor código propiedad eula",
+      "answer": "Una licencia define usos permitidos. Los componentes externos pueden tener condiciones propias. La Ley brasileña 9.609/1998 regula la protección de programas. No presuponga derechos de redistribución. Consulte los términos y asesoramiento cuando proceda.",
+      "source": "https://www.planalto.gov.br/ccivil_03/leis/l9609.htm",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "consumer",
+      "title": "¿El antivirus garantiza protección total?",
+      "tags": "garantía responsabilidad consumidor derechos daño soporte protección",
+      "answer": "Ningún antivirus garantiza detectar todas las amenazas. La ley brasileña de consumo puede aplicarse según el caso; defecto, daño, causalidad y exclusiones requieren evaluación. Conserve evidencias y contacte al proveedor o autoridad. No es asesoramiento jurídico.",
+      "source": "https://planalto.gov.br/ccivil_03/leis/l8078compilado.htm",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "telemetry",
+      "title": "¿ZEUVORYX envía datos por internet?",
+      "tags": "telemetría privacidad subir archivos internet estadísticas offline",
+      "answer": "La ayuda funciona localmente sin enviar preguntas. El análisis local no necesita subir archivos; algunas integraciones pueden consultar servicios externos cuando se solicitan. Las estadísticas mundiales no operan en 3.0.6 LAB. Revise avisos y no incluya datos personales.",
+      "source": "https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/main/support",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "store",
+      "title": "¿Dónde descargar o comprar con seguridad?",
+      "tags": "tienda microsoft store descargar compra suscripción precio licencia",
+      "answer": "Use solo canales oficiales del mantenedor. 3.0.6 es un candidato de prueba, sin lanzamiento comercial confirmado. No pague a terceros por supuestas claves oficiales ni ignore avisos de firma. La revisión de la tienda no certifica eficacia.",
+      "source": "https://learn.microsoft.com/en-us/windows/apps/publish/store-policies",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "threatintel",
+      "title": "¿Qué son SHA-256, IOC y CVE?",
+      "tags": "sha256 sha-256 hash ioc cve firmas indicadores vulnerabilidad",
+      "answer": "SHA-256 es una huella del contenido; IOC indica una posible amenaza y CVE identifica vulnerabilidades publicadas. Una coincidencia o consulta no confirma por sí sola infección ni vulnerabilidad instalada. Use fuentes autorizadas.",
+      "source": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+      "reviewed": "2026-11-24",
+      "scope": "general"
     }
   ],
   "ja": [
@@ -341,6 +800,159 @@
       "title": "一時ファイルの整理",
       "tags": "一時ファイル キャッシュ 整理 空き容量",
       "answer": "ツールで対象を確認してから操作を確定します。任意の整理機能であり、マルウェア除去ではありません。使用中のファイルや重要ファイルは削除しないでください。"
+    },
+    {
+      "id": "defender",
+      "title": "Windows セキュリティと Defender",
+      "tags": "Windows セキュリティ Defender 保護 履歴",
+      "answer": "Windows セキュリティのウイルスと脅威の防止で状態と保護の履歴を確認します。Defender を有効に保ってください。ZEUVORYX は代替ではありません。管理対象PCでは組織の方針に従ってください。",
+      "source": "https://support.microsoft.com/en-us/windows/security/windows-security/protection-history-in-the-windows-security-app",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "windowsupdate",
+      "title": "Windows の更新方法",
+      "tags": "Windows Update 更新 再起動",
+      "answer": "設定の Windows Update（Windows 10 は更新とセキュリティ）で更新を確認し、作業を保存して必要に応じて再起動します。非公式の更新は避けてください。",
+      "source": "https://support.microsoft.com/en-us/windows/deployment/updates-lifecycle/windows-update-faq",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "win10",
+      "title": "Windows 10 のサポート終了",
+      "tags": "Windows 10 サポート 終了 ESU 更新",
+      "answer": "通常サポートは2025年10月14日に終了しました。エディション別の例外や拡張セキュリティ更新 ESU があります。対象条件を確認し、サポート中のOSへの移行を検討してください。",
+      "source": "https://support.microsoft.com/en-us/windows/deployment/updates-lifecycle/windows-10-support-has-ended-on-october-14-2025",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "performance",
+      "title": "CPU・メモリ・ディスク使用率",
+      "tags": "CPU RAM メモリ ディスク 遅い タスクマネージャー",
+      "answer": "Ctrl+Shift+Esc でタスクマネージャーを開き、CPU、メモリ、ディスクを確認します。不安定なら作業を保存してスキャンを中止します。重要なプロセスや保護機能を停止しないでください。",
+      "source": "https://support.microsoft.com/windows",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "firewall",
+      "title": "ファイアウォールとは",
+      "tags": "ファイアウォール ネットワーク ポート 接続",
+      "answer": "ルールに従って通信を制御します。Windows のファイアウォールを有効にし、不要なポートや例外を設定しないでください。ZEUVORYX 自体は独立したファイアウォールではありません。",
+      "source": "https://support.microsoft.com/windows",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "backup",
+      "title": "バックアップと復元",
+      "tags": "バックアップ コピー 復元 外付け",
+      "answer": "世代管理されたバックアップと別の場所またはオフラインのコピーを保持し、復元を試してください。使用しない外付けバックアップは取り外します。同期だけでは十分とは限りません。",
+      "source": "https://support.microsoft.com/pt-br/windows/security/protect-your-pc-from-ransomware",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "ransomware",
+      "title": "ランサムウェアが疑われる場合",
+      "tags": "ランサムウェア 暗号化 身代金 感染",
+      "answer": "拡散を抑えるためネットワークから切断し、不審なファイルを実行せず証拠を保全します。信頼できる別端末から支援を求め、アカウントを保護してください。復号は保証されません。",
+      "source": "https://support.microsoft.com/pt-br/windows/security/protect-your-pc-from-ransomware",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "passwords",
+      "title": "パスワードとアカウントの保護",
+      "tags": "パスワード アカウント MFA 二段階 パスキー",
+      "answer": "長く固有のパスワード、信頼できる管理ツール、多要素認証やパスキーを使います。確認コードは共有しないでください。侵害の疑いがあれば別の安全な端末から認証情報やセッションを確認します。",
+      "source": "https://cartilha.cert.br/",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "internet",
+      "title": "安全なインターネット利用",
+      "tags": "インターネット ブラウザ 詐欺 銀行 フィッシング ダウンロード",
+      "answer": "公式アドレスを利用し、HTTPS だけで正当性を判断しないでください。送金依頼は別の経路で確認し、コードを共有せず不明なダウンロードを避けます。金融詐欺の疑いがあれば銀行の公式窓口へ連絡します。",
+      "source": "https://cartilha.cert.br/",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "privacy",
+      "title": "ブラジルの個人データ保護法 LGPD",
+      "tags": "LGPD LPGT LGPT ブラジル 個人情報 プライバシー 権利 ANPD",
+      "answer": "ブラジル法13.709/2018は個人データの処理を規律します。状況に応じて情報、アクセス、訂正、同意撤回、削除等の権利があります。法定例外があります。まず管理者に連絡し、必要ならANPDを参照してください。一般情報であり法的助言ではありません。",
+      "source": "https://www.gov.br/anpd/pt-br/assuntos/titular-de-dados-1/direito-dos-titulares",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "gdpr",
+      "title": "EU の GDPR とは",
+      "tags": "GDPR EU 欧州 個人データ プライバシー",
+      "answer": "EU の個人データ保護規則で、一定の場合はEU域外の組織にも適用されます。具体的な義務は活動と適用法によります。欧州委員会の情報や専門家に相談してください。",
+      "source": "https://commission.europa.eu/law/law-topic/data-protection/information-individuals_en",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "databreach",
+      "title": "個人データ漏えい時の対応",
+      "tags": "データ漏えい インシデント LGPD ANPD 個人情報",
+      "answer": "安全な端末からアカウントを保護し、証拠を保全して責任組織に連絡します。ブラジルでは重大なリスク・損害を伴う所定の事故は管理者が原則3営業日以内に通知します。すべての攻撃が通知対象とは限りません。",
+      "source": "https://www.gov.br/anpd/pt-br/canais_atendimento/agente-de-tratamento/comunicado-de-incidente-de-seguranca-cis",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "license",
+      "title": "ソフトウェアライセンスと著作権",
+      "tags": "ライセンス 著作権 ソフトウェア コード",
+      "answer": "ライセンスは利用許諾の範囲を定めます。第三者の部品には別の条件があり得ます。ブラジルでは法律9.609/1998がソフトウェア保護を規定します。再配布が許可されていると決めつけず、条件を確認してください。",
+      "source": "https://www.planalto.gov.br/ccivil_03/leis/l9609.htm",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "consumer",
+      "title": "ウイルス対策は完全な保護を保証するか",
+      "tags": "保証 責任 消費者 権利 損害",
+      "answer": "すべての脅威を検出する保証はありません。ブラジル消費者法の適用、欠陥、損害、因果関係や免責は個別事情によります。記録を保存し、提供元や消費者相談窓口へ相談してください。法的助言ではありません。",
+      "source": "https://planalto.gov.br/ccivil_03/leis/l8078compilado.htm",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "telemetry",
+      "title": "ZEUVORYX はデータを送信するか",
+      "tags": "テレメトリ プライバシー アップロード 統計 オフライン",
+      "answer": "ヘルプ検索はローカルで実行され質問を送信しません。ローカル分析にファイル送信は不要ですが、一部の任意機能は外部サービスに問い合わせる場合があります。3.0.6 LAB の世界統計は未稼働です。各機能の注意事項を確認してください。",
+      "source": "https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/main/support",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "store",
+      "title": "安全なダウンロードと購入",
+      "tags": "Microsoft Store ダウンロード 購入 価格 ライセンス",
+      "answer": "管理者が示す公式経路のみ利用します。3.0.6 はテスト候補版で商用公開は未確認です。非公式のキーに支払ったり署名警告を回避したりしないでください。",
+      "source": "https://learn.microsoft.com/en-us/windows/apps/publish/store-policies",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "threatintel",
+      "title": "SHA-256・IOC・CVE とは",
+      "tags": "SHA256 IOC CVE ハッシュ 脆弱性 指標",
+      "answer": "SHA-256 は内容の指紋、IOC は脅威の可能性を示す指標、CVE は公開脆弱性の識別子です。一致や照会だけで感染や脆弱性の存在を確定できません。",
+      "source": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+      "reviewed": "2026-11-24",
+      "scope": "general"
     }
   ]
 }

@@ -1,0 +1,34 @@
+name: ZEUVORYX offline help component validation
+on:
+  push:
+    branches: [lab-help-evo025]
+    paths: ['help_articles.json','help_search.js','help_search_test.js','prepare_help.py','.github/workflows/help-validation.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  help:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate actual search and dataset
+        run: node help_search_test.js
+      - name: Validate HTML embedding and JavaScript syntax
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from prepare_help import transform
+          data=json.loads(Path('help_articles.json').read_text())
+          out=transform('<html><body><main><header></header></main><script>"use strict";</script></body></html>',Path('help_search.js').read_text(),data)
+          assert '__Z_HELP_DATA__' not in out and out.count('</script>')==1
+          Path('/tmp/help-embedded.js').write_text(out.split('<script>',1)[1].split('</script>',1)[0])
+          try:
+              transform(out,Path('help_search.js').read_text(),data)
+          except ValueError:
+              pass
+          else:
+              raise AssertionError('Duplicate embedding accepted')
+          PY
+          node --check /tmp/help-embedded.js

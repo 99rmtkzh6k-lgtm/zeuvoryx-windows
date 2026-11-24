@@ -2,7 +2,7 @@ name: ZEUVORYX 3.0.1 Competitive - Windows Build
 
 on:
   push:
-    branches: [main]
+    branches: [main, zeuvoryx-3.0.1-competitive]
   workflow_dispatch:
 
 permissions:
@@ -11,7 +11,7 @@ permissions:
 jobs:
   build-windows:
     runs-on: windows-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     env:
       GOARCH: amd64
       CGO_ENABLED: '0'
@@ -24,6 +24,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Validate upgrade prerequisites
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          foreach ($f in @('go.mod','main.go','zeuvoryx_upgrade.py')) {
+            if (!(Test-Path -LiteralPath $f -PathType Leaf)) { throw "Required file missing: $f" }
+          }
+          python -m py_compile zeuvoryx_upgrade.py
+          if ($LASTEXITCODE -ne 0) { throw 'Upgrade script syntax validation failed' }
       - name: Organize project
         shell: pwsh
         run: |
@@ -2223,6 +2232,8 @@ jobs:
       - name: Validate source code
         shell: pwsh
         run: |
+          go list ./...
+          if ($LASTEXITCODE -ne 0) { throw 'Go package validation failed' }
           go vet ./...
           if ($LASTEXITCODE -ne 0) { throw 'Go validation failed' }
       - name: Run tests ten times

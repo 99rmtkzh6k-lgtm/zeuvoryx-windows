@@ -1,4 +1,4 @@
-ZEUVORYX 3.0.1 | OLYMPUS — Competitive Beta
+ZEUVORYX 3.0.2 | OLYMPUS — Competitive Beta
 24/11/2026
 
 Atualização cumulativa da versão experimental 3.0.1. Substitui o script
@@ -6,11 +6,11 @@ zeuvoryx_upgrade.py anterior; não execute as duas versões em sequência.
 Não é instalador, executável ou certificação de proteção.
 
 COMPILAÇÃO NO GITHUB (main)
-1. Abra Actions > ZEUVORYX 3.0.1 Competitive - Windows Build.
+1. Abra Actions > ZEUVORYX 3.0.2 Competitive - Windows Build.
 2. Selecione Run workflow, branch main. Push em main também inicia o CI.
 3. Aguarde os testes e a compilação. Baixe somente o artefato
-   ZEUVORYX-3.0.1-Competitive-Windows de uma execução bem-sucedida.
-4. Extraia o ZIP e use ZEUVORYX-Setup-3.0.1.exe ou a edição portátil.
+   ZEUVORYX-3.0.2-Competitive-Windows de uma execução bem-sucedida.
+4. Extraia o ZIP e use ZEUVORYX-Setup-3.0.2.exe ou a edição portátil.
 5. No Windows Sandbox ou VM, mantenha o Defender ativo. Teste análise
    rápida e completa, alertas, filtros e relatório. Não coloque arquivos
    de sistema em quarentena. Exporte o JSON e o diagnóstico de testes.
@@ -34,8 +34,14 @@ TESTES LOCAIS: reprodução do motor, 10 rodadas Go, 5 com race detector,
 go vet, compilação cruzada do teste para Windows amd64, sintaxe JS e
 transformação HTML em fixture. O aplicativo completo e o comportamento
 visual e Authenticode no Windows dependem de execução posterior no GitHub/VM.
-A IA treinada, defesa residente própria, VPN, proteção multiplataforma e
+A IA validada com malware real, defesa residente própria, VPN, proteção multiplataforma e
 certificação laboratorial NÃO são entregues por este pacote.
 
 COMPARAÇÃO: python comparar_relatorios.py antigo.json novo.json
 Compare apenas escopos, máquina, disco, configurações e corpus equivalentes.
+
+3.0.2: três idiomas selecionáveis; autoria Leonardo A Botelho; modelo
+experimental auxiliar treinado com dados sintéticos, sem aprendizado em
+produção. Antes de promover a beta para main, confirme o build da branch
+localization-3.0.2 e teste no Windows Sandbox. Não utilize como substituto
+do Defender.

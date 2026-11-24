@@ -2,9 +2,7 @@ name: ZEUVORYX 3.0.5 LAB - Windows Build
 run-name: ZEUVORYX 3.0.5 LAB R5 Olympus Silver QA20 Windows x64
 
 on:
-  push:
-    branches: [security-3.0.5-lab]
-  workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
@@ -2321,7 +2319,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Diagnostics integration failed' }
           gofmt -w diagnostics.go diagnostics_test.go desktop_windows.go
           if ($LASTEXITCODE -ne 0) { throw 'Diagnostics formatting failed' }
-      - name: Apply ZEUVORYX 3.0.1 scanner hardening
+      - name: Apply inherited scanner hardening (baseline 3.0.1)
         shell: pwsh
         run: |
           python zeuvoryx_upgrade.py --apply

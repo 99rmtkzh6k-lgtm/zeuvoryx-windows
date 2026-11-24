@@ -1,1 +1,9 @@
-ZEUVORYX: duas novas artes conceituais, arquivos 4K JPEG em ui/assets. Foram ampliadas a partir de imagens geradas em resolução inferior; nao constituem screenshots de funcionalidades implementadas.
+ZEUVORYX — OLYMPUS SILVER — 3.0.5 LAB R5
+Autoria declarada: Leonardo A Botelho.
+Arte oficial: zeuvoryx_brand.jpg; Zeus, templo grego, acabamento prata e texto
+escuro. Derivados e ícone gerados offline no workflow, sem recursos de rede.
+As artes conceituais 4K anteriores não constituem screenshots de funcionalidades.
+Revisão futura solicitada: comandos de varredura e gráfico/métricas no topo do
+painel principal, botões menores em 3D por CSS leve, contraste e foco acessível.
+Não implementado nesta atualização documental. Preservar a identidade visual,
+a assinatura do criador, a rapidez, a estabilidade e o baixo consumo.

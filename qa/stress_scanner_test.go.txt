@@ -1,0 +1,47 @@
+package engine
+import("crypto/sha256";"encoding/hex";"os";"strconv";"testing";"time";"context";"path/filepath";"net/http";"io";"runtime")
+func TestZStressScanner5M(t *testing.T){
+ if os.Getenv("ZEUVORYX_QA20")!="1"{t.Skip("opt-in workload")}
+ start:=time.Now();var n [3]int
+ for i:=0;i<5000000;i++{
+  data:=strconv.AppendInt([]byte("Harmless quality fixture "),int64(i),10)
+  sum:=sha256.Sum256(data);hash:=hex.EncodeToString(sum[:])
+  path:="ordinary.txt";var ioc map[string]string
+  switch i%3{case 1:ioc=map[string]string{hash:"synthetic known fixture"};case 2:path="document.pdf.exe"}
+  f:=analyze(path,data,hash,ioc)
+  switch i%3{
+  case 0:if f!=nil{t.Fatalf("benign fixture %d: %+v",i,f)}
+  case 1:if f==nil||f.Evidence!="ioc_match"||!f.QuarantineEligible||f.Risk!=100{t.Fatalf("IOC fixture %d: %+v",i,f)}
+  case 2:if f==nil||f.Evidence!="heuristic"||f.QuarantineEligible||f.Risk<30||f.Risk>100{t.Fatalf("heuristic fixture %d: %+v",i,f)}
+  };n[i%3]++
+ }
+ t.Logf("QA20 scanner: %d completed; benign/IOC/heuristic=%v; elapsed=%s; synthetic",n[0]+n[1]+n[2],n,time.Since(start))
+}
+func TestZRealWindowsFiles(t *testing.T){
+ if os.Getenv("ZEUVORYX_QA20")!="1"||runtime.GOOS!="windows"{t.Skip("opt-in Windows fixture")}
+ root:=os.Getenv("SystemRoot");if root==""{t.Fatal("SystemRoot missing")}
+ s:=New();n:=0;start:=time.Now();var total int64
+ for _,name:=range []string{"kernel32.dll","ntdll.dll","advapi32.dll","user32.dll","shell32.dll","wintrust.dll","crypt32.dll","notepad.exe","cmd.exe","reg.exe"}{
+  p:=filepath.Join(root,"System32",name);if _,e:=os.Stat(p);os.IsNotExist(e){t.Logf("unavailable: %s",name);continue}
+  r,e:=s.Scan(context.Background(),p,nil);if e!=nil||r.Files!=1{t.Fatalf("read %s: %+v %v",name,r,e)}
+  n++;total+=r.Bytes
+  for _,f:=range r.Findings{if f.Evidence!="heuristic"||f.QuarantineEligible{t.Fatalf("unsafe system-file finding %s: %+v",name,f)}}
+  t.Logf("real OS file %s bytes=%d heuristic_alerts=%d",name,r.Bytes,len(r.Findings))
+ }
+ if n<5{t.Fatal("too few real system files")}
+ t.Logf("real OS files=%d bytes=%d elapsed=%s",n,total,time.Since(start))
+}
+func TestZOfficialEICAR(t *testing.T){
+ if os.Getenv("ZEUVORYX_QA20")!="1"{t.Skip("opt-in official online fixture")}
+ c:=&http.Client{Timeout:20*time.Second}
+ r,e:=c.Get("https://www.eicar.org/download/eicar-com-txt/")
+ if e!=nil{t.Skipf("official download unavailable (not a detection pass): %v",e)}
+ defer r.Body.Close()
+ if r.StatusCode!=200{t.Skipf("official download unavailable: HTTP %d",r.StatusCode)}
+ b,e:=io.ReadAll(io.LimitReader(r.Body,1024));if e!=nil{t.Skipf("official download blocked or unreadable: %v",e)}
+ sum:=sha256.Sum256(b);hash:=hex.EncodeToString(sum[:])
+ if len(b)!=68||hash!="275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f"{t.Skipf("official download did not return pinned fixture: bytes=%d",len(b))}
+ h:=analyze("eicar.com.txt",b,hash,nil)
+ if h==nil||h.Evidence!="test_eicar"{t.Fatalf("official in-memory EICAR not detected: %+v",h)}
+ t.Log("official EICAR HTTPS fixture verified by SHA-256 and detected; no execution or disk write")
+}

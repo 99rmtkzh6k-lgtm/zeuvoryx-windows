@@ -1,13 +1,15 @@
-name: ZEUVORYX 3.0.1 Competitive - Windows Build
-run-name: ZEUVORYX 3.0.1 Competitive Windows x64
+name: ZEUVORYX 3.0.5 LAB - Windows Build
+run-name: ZEUVORYX 3.0.5 LAB R5 Olympus Silver QA20 Windows x64
 
 on:
-  push:
-    branches: [main]
-  workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
+
+concurrency:
+  group: zeuvoryx-windows-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-windows:
@@ -16,6 +18,7 @@ jobs:
     env:
       GOARCH: amd64
       CGO_ENABLED: '0'
+      ZEUVORYX_OWNER_PUBLIC_KEY: ${{ vars.ZEUVORYX_OWNER_PUBLIC_KEY }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -271,7 +274,7 @@ jobs:
           func runDesktop(s *State, _ bool) {
           	runtime.LockOSThread()
           	defer runtime.UnlockOSThread()
-          	w := webview.NewWithOptions(webview.WebViewOptions{Debug: false, AutoFocus: true, WindowOptions: webview.WindowOptions{Title: "ZEUVORYX | Olympus 3.0.1 Competitive", Width: 920, Height: 650, Center: true}})
+          	w := webview.NewWithOptions(webview.WebViewOptions{Debug: false, AutoFocus: true, WindowOptions: webview.WindowOptions{Title: "ZEUVORYX | Olympus 3.0.3 Competitive", Width: 920, Height: 650, Center: true}})
           	if w == nil {
           		desktopError("Não foi possível inicializar a interface. Verifique a instalação do Microsoft WebView2 Runtime.")
           		return
@@ -564,7 +567,8 @@ jobs:
           html,body{width:100%;height:100%;overflow:hidden}body{font-size:14px}.shell{height:100vh;min-height:0;grid-template-columns:184px minmax(0,1fr);overflow:hidden}aside{padding:14px 10px;overflow-y:auto;min-height:0}.brand{font-size:16px;gap:7px}.brand svg{width:30px;height:34px}.tag{margin:5px 0 14px}.nav{gap:4px}.nav button{padding:9px 10px;font-size:13px}.note{margin-top:10px;font-size:11px}.zeus-art{height:110px;margin:10px 0 4px}main{padding:14px 16px;overflow-y:auto;min-height:0;min-width:0}header{margin-bottom:12px;gap:8px}h1{font-size:22px}.hero{padding:14px;gap:12px;border-radius:14px;margin-bottom:12px}.hero>div:last-child{min-width:0;flex:1}.hero h2{font-size:19px}.hero p{margin:5px 0 9px;font-size:13px}.ring,.ring svg{width:70px;height:70px}.ring span{font-size:25px}.actions{display:flex;flex-wrap:wrap;gap:6px}.actions button{padding:9px 11px;font-size:13px}.mode-help{font-size:11px!important;color:var(--muted);margin:8px 0 0!important}.grid{gap:8px;margin-bottom:10px}.card{padding:12px;border-radius:12px;min-width:0}.metric{font-size:24px;margin-top:5px}.label{font-size:10px}.chart{margin-bottom:10px}.chart svg{height:90px;margin-top:6px}.chart .sub{font-size:11px}.speed{margin-top:3px}.pill{padding:6px 8px;font-size:11px}.sub{margin-top:4px}.muted{font-size:12px}footer{margin-top:9px;font-size:11px}#msg{min-height:0;margin-top:6px}.media-field{max-width:100%}dialog{width:min(92vw,500px)}
           @media(max-width:720px){.shell{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}aside{padding:8px 10px;border-right:0;border-bottom:1px solid var(--line);overflow:visible}.brand{font-size:14px}.brand svg{width:24px;height:25px}.tag,.note,.zeus-art{display:none}.nav{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}.nav button{font-size:11px;padding:6px 8px}main{padding:10px}.hero{gap:8px;padding:10px}.ring,.ring svg{width:50px;height:50px}.ring span{font-size:20px}.hero h2{font-size:17px}header{flex-wrap:wrap}h1{font-size:19px}.metric{font-size:19px}.label{font-size:9px}.grid{gap:5px}.card{padding:9px}.chart svg{height:72px}}
           @media(max-height:610px){.zeus-art{height:75px}.note{display:none}.chart svg{height:64px}.chart .sub{display:none}header{margin-bottom:8px}.hero{margin-bottom:8px}.grid{margin-bottom:8px}}
-          </style></head><body><div class="shell"><aside><div class="brand"><svg viewBox="0 0 64 72" fill="none" aria-hidden="true"><path d="M32 4 58 14v22c0 16-10 27-26 34C16 63 6 52 6 36V14Z" fill="#15384c" stroke="#53e4d0" stroke-width="3"/><path d="M17 23h30L22 48h25" stroke="#e8fffd" stroke-width="6" stroke-linejoin="round"/></svg>ZEUVORYX</div><div class="tag">OLYMPUS 3.0</div><nav class="nav"><button class="active" data-page="overview">Visão geral</button><button data-page="alerts">Alertas</button><button data-page="quarantine">Quarentena</button><button data-page="media">Autenticidade de vídeo</button><button data-page="engine">Motor e IA</button><button data-page="tools">Ferramentas</button><button data-page="security">Segurança Windows</button><button data-page="defender">Motor Defender</button><button data-page="links">Links e fraudes</button><button data-page="intel">Inteligência de ameaças</button></nav><img class="zeus-art" src="__COVER__" alt="Arte original do ZEUVORYX"><p class="note">Análise local de arquivos. Esta versão não bloqueia a execução de malware nem substitui o Microsoft Defender.</p></aside><main><header><div><h1>Central de segurança</h1><p class="sub">Escolha a análise que deseja executar</p></div><div class="actions"><div class="pill" id="badge">Inicializando</div><button id="minimize">Minimizar</button></div></header><section id="overview"><div class="hero" id="hero"><div class="ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="44" fill="none" stroke="#30445d" stroke-width="6"/><circle class="arc" cx="60" cy="60" r="44" fill="none" stroke="#53e4d0" stroke-width="6" stroke-linecap="round"/></svg><span>⌁</span></div><div><h2 id="stateTitle">Bem-vindo ao ZEUVORYX</h2><p id="stateText">Aguardando sua escolha. Nenhuma varredura é iniciada automaticamente.</p><div class="actions"><button id="start" disabled>Varredura completa</button><button id="quick" class="primary" disabled>Varredura rápida</button><button id="stop" disabled>Cancelar</button><button id="export" disabled>Exportar relatório</button></div><p class="mode-help">Rápida: locais prioritários. Completa: discos locais acessíveis.</p></div></div><div class="grid"><div class="card"><div class="label">ARQUIVOS ANALISADOS</div><div class="metric" id="files">0</div></div><div class="card"><div class="label">VOLUME ANALISADO</div><div class="metric" id="bytes">0 B</div></div><div class="card"><div class="label">ALERTAS DO RELATÓRIO</div><div class="metric" id="hits">—</div></div></div><div class="card chart"><h2>Atividade da varredura</h2><p class="sub">Arquivos examinados por intervalo de atualização de aproximadamente 2 segundos.</p><svg viewBox="0 0 600 140" preserveAspectRatio="none" role="img" aria-label="Gráfico de arquivos examinados por intervalo"><path d="M35 10H590M35 65H590M35 120H590" stroke="#2c405d" fill="none" stroke-dasharray="4 5"/><text x="0" y="15" id="chartMax">0</text><text x="8" y="123">0</text><polyline id="curve" points="" fill="none" stroke="#53e4d0" stroke-width="2.6" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg><p class="speed" id="speed">Velocidade: aguardando medição.</p><p class="muted" id="activity">Aguardando medições.</p></div><div id="afterScan" class="card hidden"><h2>Deseja liberar espaço?</h2><p class="sub">Confira os temporários antigos antes de remover.</p><button id="afterCleanup">Revisar limpeza</button></div><div class="card"><h2>Cobertura da análise</h2><p class="sub" id="scope">Discos locais fixos; arquivos protegidos ou inacessíveis podem ser ignorados.</p><p class="sub" id="skipped"></p></div></section><section id="alerts" class="hidden card"><h2>Alertas e resultados</h2><p class="sub">Os resultados completos aparecem no fim da varredura. Alertas heurísticos não confirmam infecção.</p><div id="findings" class="list"></div></section><section id="quarantine" class="hidden card"><h2>Arquivos em quarentena</h2><p class="sub">O isolamento e a restauração exigem confirmação.</p><div id="qitems" class="list"></div><button id="refreshQ">Atualizar lista</button></section><section id="media" class="hidden card"><h2>Autenticidade de vídeo</h2><p class="sub">Verificação C2PA de procedência digital, não um detector neural de deepfakes. A análise pode consultar referências remotas de credenciais. A falta de credenciais é inconclusiva.</p><input class="media-field" id="videoPath" placeholder="Selecione um vídeo MP4 ou MOV" readonly><div class="actions"><button id="chooseVideo">Escolher vídeo</button><button id="checkVideo" class="primary">Verificar procedência</button></div><p id="videoStatus" class="sub" role="status"></p><pre class="media-report" id="videoResult"></pre></section><section id="security" class="hidden card"><h2>Segurança em camadas</h2><p class="sub">Diagnóstico somente leitura do Microsoft Defender, firewall e versão do Windows. Não é um firewall próprio, nem uma auditoria de vulnerabilidades CVE.</p><div class="actions" style="margin:15px 0"><button id="auditWindows" class="primary">Consultar proteção</button><button id="openSecurity">Abrir Segurança do Windows</button><button id="openUpdates">Verificar Windows Update</button></div><p id="auditState" class="sub" role="status">Aguardando consulta.</p><div id="auditReport" class="list"></div></section><section id="defender" class="hidden card"><h2>Motor de proteção Microsoft Defender</h2><p class="sub">Comandos reais do Windows. O Defender é um motor separado do ZEUVORYX; a proteção residente, a atualização automática e as ações contra malware dependem do estado e das políticas do Windows. Esta tela não ativa nem desativa essas políticas.</p><div class="actions" style="margin:15px 0"><button class="primary" data-native="quick">Verificação rápida Defender</button><button data-native="full">Verificação completa Defender</button><button data-native="update">Atualizar assinaturas Defender</button><button data-native="history">Histórico de ameaças</button><button data-native="updates">Consultar atualizações pendentes</button><button data-native="remediate" class="primary">Tratar ameaças ativas</button><button data-native="network-block">Ativar bloqueio de conexões perigosas</button><button data-native="folder-block">Ativar proteção de pastas</button><p class="note">As opções de bloqueio exigem Defender ativo e podem exigir abrir ZEUVORYX como administrador. A proteção de pastas pode impedir a gravação por aplicativos legítimos; consulte a Segurança do Windows para revisar as permissões. Não alteramos essas políticas sem sua confirmação.</p></div><p class="sub" id="nativeState" role="status">Aguardando sua escolha. Nenhuma operação iniciada.</p><div id="nativeReport" class="list"></div><p class="note">O Windows pode solicitar permissões ou recusar operações quando o Defender está desativado, em modo passivo ou sob políticas administrativas. O Defender pode tratar ameaças durante a varredura conforme suas configurações. Fechar o ZEUVORYX pode não interromper uma varredura já solicitada ao Windows.</p></section><section id="links" class="hidden card"><h2>Verificação de links e fraudes</h2><p class="sub">Examina a estrutura do endereço sem acessar o site, consultar DNS ou enviar dados. Também consulta a lista local importada de URLs. Não é reputação online nem bloqueio automático de phishing. HTTPS não garante que um site seja legítimo.</p><input id="urlCheck" class="media-field" type="text" maxlength="8192" placeholder="https://..." autocomplete="off" spellcheck="false"><button id="checkLink" class="primary">Examinar endereço</button><div id="linkReport" class="list" role="status"></div><div class="entry"><h2>Fraudes financeiras e roubo de identidade</h2><p>Triagem local de texto, sem envio a servidores. Não cole senhas, chaves privadas, frases de recuperação, códigos, CPF ou documentos reais. Padrões não comprovam fraude nem legitimidade.</p><textarea id="fraudInput" class="media-field" rows="5" maxlength="8192" autocomplete="off" spellcheck="false" placeholder="Cole somente a mensagem suspeita, sem dados pessoais"></textarea><button id="fraudCheck">Examinar mensagem</button><div id="fraudReport" class="list" role="status"></div></div><div class="entry"><h2>Resposta a incidentes</h2><p>Escolha um cenário para receber ações de contenção e recuperação. O roteiro não executa mudanças em contas, carteiras ou rede.</p><div class="actions"><button data-incident="crypto">Criptomoedas</button><button data-incident="identity">Identidade / contas</button><button data-incident="malware">Malware</button><button data-incident="ransomware">Ransomware</button></div><div id="incidentReport" class="list" role="status"></div></div></section><section id="tools" class="hidden card"><h2>Ferramentas de segurança e manutenção</h2><p class="sub">A limpeza é opcional. Não alteramos registro, perfis de navegador ou arquivos do sistema.</p><div class="entry"><h2>Monitoramento periódico</h2><p class="sub">Varredura rápida a cada 5 minutos, enquanto o aplicativo estiver aberto, inclusive minimizado. Pausa se houver análise ou alertas pendentes. Não bloqueia malware antes da execução.</p><label><input type="checkbox" id="monitor"> Ativar nesta sessão</label></div><div class="entry"><h2>Limpeza de temporários</h2><p class="sub">Localiza arquivos .tmp do usuário com mais de 7 dias. Você confirma antes de remover.</p><button id="previewCleanup">Examinar temporários</button><p id="cleanupResult" class="sub"></p></div></section><section id="intel" class="hidden card"><h2>Inteligência de ameaças e vulnerabilidades</h2><p class="sub">Indicadores SHA-256 complementam o Defender. Não são um modelo de IA e não detectam variantes desconhecidas. Nenhuma amostra ou arquivo do PC é enviado. A base adicionada é armazenada localmente e recarregada ao abrir o aplicativo. A origem deve ser confiável; indicadores não são confirmação de infecção.</p><div class="entry"><h2>MalwareBazaar • abuse.ch</h2><p>Consultar os 100 registros mais recentes via API oficial. Requer sua Auth-Key e autorização de uso conforme os termos do serviço. A chave não é armazenada pelo aplicativo.</p><label for="intelKey">Auth-Key</label><input id="intelKey" class="media-field" type="password" autocomplete="off" maxlength="256"><button id="intelSync" class="primary">Consultar e incorporar indicadores</button><p id="intelResult" role="status">Aguardando consulta.</p></div><div class="entry"><h2>Importar lista de hashes</h2><p>Cole SHA-256 de uma fonte confiável, um por linha. Correspondências são alertas sujeitos à sua revisão, não exclusões automáticas.</p><textarea id="intelList" class="media-field" rows="5" maxlength="8388608" placeholder="SHA-256 por linha"></textarea><button id="intelImport">Validar e incorporar</button><button id="intelCount">Consultar base ativa</button><p id="intelCountResult" role="status"></p></div><div class="entry"><h2>Reputação de URLs</h2><p>Importe uma lista de URLs de uma fonte confiável, como a lista de texto do URLhaus, uma por linha. Substitui a lista anterior. Não acessa os endereços. Correspondência exata não é bloqueio automático.</p><textarea id="reputationList" class="media-field" rows="4" maxlength="8388608" placeholder="Uma URL por linha"></textarea><button id="repImport">Validar e salvar lista</button><p id="repResult" role="status"></p></div><div class="entry"><h2>Vulnerabilidades exploradas • CISA KEV</h2><p>Pesquise um código CVE conhecido. A consulta não determina se o seu computador possui a vulnerabilidade.</p><input id="cveInput" class="media-field" maxlength="32" placeholder="CVE-2025-1234"><button id="cveCheck">Consultar catálogo oficial</button><div id="cveResult" class="list" role="status"></div></div></section><section id="engine" class="hidden card"><h2>Motor e inteligência artificial</h2><p class="sub">Motor atual: SHA-256, regras heurísticas e análise PE. Modelo treinado de malware: não instalado. Detector neural de vídeo: não instalado. C2PA: verificador de procedência digital separado.</p><div class="entry"><h2>ClamAV — segundo motor independente do Defender</h2><p>Requer instalação oficial separada do ClamAV e assinaturas atualizadas pelo FreshClam. Examina um arquivo por vez; não remove automaticamente e não é proteção residente.</p><button id="clamCheck">Consultar instalação</button><button id="clamChoose">Examinar arquivo com ClamAV</button><p id="clamState" role="status"></p><pre id="clamReport" class="media-report"></pre></div><img class="mythic" src="__PANEL__" alt="Arte original do painel mitológico"><p class="sub">A classificação de risco é uma pontuação heurística, não uma probabilidade de infecção.</p></section><p id="msg" role="status"></p><footer>ZEUVORYX · Beta experimental · Não desative a proteção do Windows.</footer></main></div><dialog id="confirmBox"><h2>Confirme a operação</h2><p id="confirmText"></p><div class="actions"><button id="no">Cancelar</button><button id="yes" class="primary">Confirmar</button></div></dialog><script>
+          .z-authorship{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:6px 10px;margin-top:14px;padding-top:8px;border-top:1px solid var(--line);color:var(--muted);font-size:10px}.z-authorship strong{font-family:'Segoe Script','Segoe UI',cursive;font-size:13px;font-style:italic;font-weight:500;color:#d7e6f4;border-bottom:1px solid #6ce3cf}.z-authorship small{font-size:10px}
+          </style></head><body><div class="shell"><aside><div class="brand"><svg viewBox="0 0 64 72" fill="none" aria-hidden="true"><path d="M32 4 58 14v22c0 16-10 27-26 34C16 63 6 52 6 36V14Z" fill="#15384c" stroke="#53e4d0" stroke-width="3"/><path d="M17 23h30L22 48h25" stroke="#e8fffd" stroke-width="6" stroke-linejoin="round"/></svg>ZEUVORYX</div><div class="tag">OLYMPUS 3.0</div><nav class="nav"><button class="active" data-page="overview">Visão geral</button><button data-page="alerts">Alertas</button><button data-page="quarantine">Quarentena</button><button data-page="media">Autenticidade de vídeo</button><button data-page="engine">Motor e IA</button><button data-page="tools">Ferramentas</button><button data-page="security">Segurança Windows</button><button data-page="defender">Motor Defender</button><button data-page="links">Links e fraudes</button><button data-page="intel">Inteligência de ameaças</button></nav><img class="zeus-art" src="__PANEL__" alt="Arte oficial do ZEUVORYX"><p class="note">Análise local de arquivos. Esta versão não bloqueia a execução de malware nem substitui o Microsoft Defender.</p></aside><main><header><div><h1>Central de segurança</h1><p class="sub">Escolha a análise que deseja executar</p></div><div class="actions"><div class="pill" id="badge">Inicializando</div><button id="minimize">Minimizar</button></div></header><section id="overview"><div class="hero" id="hero"><div class="ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="44" fill="none" stroke="#30445d" stroke-width="6"/><circle class="arc" cx="60" cy="60" r="44" fill="none" stroke="#53e4d0" stroke-width="6" stroke-linecap="round"/></svg><span>⌁</span></div><div><h2 id="stateTitle">Bem-vindo ao ZEUVORYX</h2><p id="stateText">Aguardando sua escolha. Nenhuma varredura é iniciada automaticamente.</p><div class="actions"><button id="start" disabled>Varredura completa</button><button id="quick" class="primary" disabled>Varredura rápida</button><button id="stop" disabled>Cancelar</button><button id="export" disabled>Exportar relatório</button></div><p class="mode-help">Rápida: locais prioritários. Completa: discos locais acessíveis.</p></div></div><div class="grid"><div class="card"><div class="label">ARQUIVOS ANALISADOS</div><div class="metric" id="files">0</div></div><div class="card"><div class="label">VOLUME ANALISADO</div><div class="metric" id="bytes">0 B</div></div><div class="card"><div class="label">ALERTAS DO RELATÓRIO</div><div class="metric" id="hits">—</div></div></div><div class="card chart"><h2>Atividade da varredura</h2><p class="sub">Arquivos examinados por intervalo de atualização de aproximadamente 2 segundos.</p><svg viewBox="0 0 600 140" preserveAspectRatio="none" role="img" aria-label="Gráfico de arquivos examinados por intervalo"><path d="M35 10H590M35 65H590M35 120H590" stroke="#2c405d" fill="none" stroke-dasharray="4 5"/><text x="0" y="15" id="chartMax">0</text><text x="8" y="123">0</text><polyline id="curve" points="" fill="none" stroke="#53e4d0" stroke-width="2.6" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg><p class="speed" id="speed">Velocidade: aguardando medição.</p><p class="muted" id="activity">Aguardando medições.</p></div><div id="afterScan" class="card hidden"><h2>Deseja liberar espaço?</h2><p class="sub">Confira os temporários antigos antes de remover.</p><button id="afterCleanup">Revisar limpeza</button></div><div class="card"><h2>Cobertura da análise</h2><p class="sub" id="scope">Discos locais fixos; arquivos protegidos ou inacessíveis podem ser ignorados.</p><p class="sub" id="skipped"></p></div></section><section id="alerts" class="hidden card"><h2>Alertas e resultados</h2><p class="sub">Os resultados completos aparecem no fim da varredura. Alertas heurísticos não confirmam infecção.</p><div id="findings" class="list"></div></section><section id="quarantine" class="hidden card"><h2>Arquivos em quarentena</h2><p class="sub">O isolamento e a restauração exigem confirmação.</p><div id="qitems" class="list"></div><button id="refreshQ">Atualizar lista</button></section><section id="media" class="hidden card"><h2>Autenticidade de vídeo</h2><p class="sub">Verificação C2PA de procedência digital, não um detector neural de deepfakes. A análise pode consultar referências remotas de credenciais. A falta de credenciais é inconclusiva.</p><input class="media-field" id="videoPath" placeholder="Selecione um vídeo MP4 ou MOV" readonly><div class="actions"><button id="chooseVideo">Escolher vídeo</button><button id="checkVideo" class="primary">Verificar procedência</button></div><p id="videoStatus" class="sub" role="status"></p><pre class="media-report" id="videoResult"></pre></section><section id="security" class="hidden card"><h2>Segurança em camadas</h2><p class="sub">Diagnóstico somente leitura do Microsoft Defender, firewall e versão do Windows. Não é um firewall próprio, nem uma auditoria de vulnerabilidades CVE.</p><div class="actions" style="margin:15px 0"><button id="auditWindows" class="primary">Consultar proteção</button><button id="openSecurity">Abrir Segurança do Windows</button><button id="openUpdates">Verificar Windows Update</button></div><p id="auditState" class="sub" role="status">Aguardando consulta.</p><div id="auditReport" class="list"></div></section><section id="defender" class="hidden card"><h2>Motor de proteção Microsoft Defender</h2><p class="sub">Comandos reais do Windows. O Defender é um motor separado do ZEUVORYX; a proteção residente, a atualização automática e as ações contra malware dependem do estado e das políticas do Windows. Esta tela não ativa nem desativa essas políticas.</p><div class="actions" style="margin:15px 0"><button class="primary" data-native="quick">Verificação rápida Defender</button><button data-native="full">Verificação completa Defender</button><button data-native="update">Atualizar assinaturas Defender</button><button data-native="history">Histórico de ameaças</button><button data-native="updates">Consultar atualizações pendentes</button><button data-native="remediate" class="primary">Tratar ameaças ativas</button><button data-native="network-block">Ativar bloqueio de conexões perigosas</button><button data-native="folder-block">Ativar proteção de pastas</button><p class="note">As opções de bloqueio exigem Defender ativo e podem exigir abrir ZEUVORYX como administrador. A proteção de pastas pode impedir a gravação por aplicativos legítimos; consulte a Segurança do Windows para revisar as permissões. Não alteramos essas políticas sem sua confirmação.</p></div><p class="sub" id="nativeState" role="status">Aguardando sua escolha. Nenhuma operação iniciada.</p><div id="nativeReport" class="list"></div><p class="note">O Windows pode solicitar permissões ou recusar operações quando o Defender está desativado, em modo passivo ou sob políticas administrativas. O Defender pode tratar ameaças durante a varredura conforme suas configurações. Fechar o ZEUVORYX pode não interromper uma varredura já solicitada ao Windows.</p></section><section id="links" class="hidden card"><h2>Verificação de links e fraudes</h2><p class="sub">Examina a estrutura do endereço sem acessar o site, consultar DNS ou enviar dados. Também consulta a lista local importada de URLs. Não é reputação online nem bloqueio automático de phishing. HTTPS não garante que um site seja legítimo.</p><input id="urlCheck" class="media-field" type="text" maxlength="8192" placeholder="https://..." autocomplete="off" spellcheck="false"><button id="checkLink" class="primary">Examinar endereço</button><div id="linkReport" class="list" role="status"></div><div class="entry"><h2>Fraudes financeiras e roubo de identidade</h2><p>Triagem local de texto, sem envio a servidores. Não cole senhas, chaves privadas, frases de recuperação, códigos, CPF ou documentos reais. Padrões não comprovam fraude nem legitimidade.</p><textarea id="fraudInput" class="media-field" rows="5" maxlength="8192" autocomplete="off" spellcheck="false" placeholder="Cole somente a mensagem suspeita, sem dados pessoais"></textarea><button id="fraudCheck">Examinar mensagem</button><div id="fraudReport" class="list" role="status"></div></div><div class="entry"><h2>Resposta a incidentes</h2><p>Escolha um cenário para receber ações de contenção e recuperação. O roteiro não executa mudanças em contas, carteiras ou rede.</p><div class="actions"><button data-incident="crypto">Criptomoedas</button><button data-incident="identity">Identidade / contas</button><button data-incident="malware">Malware</button><button data-incident="ransomware">Ransomware</button></div><div id="incidentReport" class="list" role="status"></div></div></section><section id="tools" class="hidden card"><h2>Ferramentas de segurança e manutenção</h2><p class="sub">A limpeza é opcional. Não alteramos registro, perfis de navegador ou arquivos do sistema.</p><div class="entry"><h2>Monitoramento periódico</h2><p class="sub">Varredura rápida a cada 5 minutos, enquanto o aplicativo estiver aberto, inclusive minimizado. Pausa se houver análise ou alertas pendentes. Não bloqueia malware antes da execução.</p><label><input type="checkbox" id="monitor"> Ativar nesta sessão</label></div><div class="entry"><h2>Limpeza de temporários</h2><p class="sub">Localiza arquivos .tmp do usuário com mais de 7 dias. Você confirma antes de remover.</p><button id="previewCleanup">Examinar temporários</button><p id="cleanupResult" class="sub"></p></div></section><section id="intel" class="hidden card"><h2>Inteligência de ameaças e vulnerabilidades</h2><p class="sub">Indicadores SHA-256 complementam o Defender. Não são um modelo de IA e não detectam variantes desconhecidas. Nenhuma amostra ou arquivo do PC é enviado. A base adicionada é armazenada localmente e recarregada ao abrir o aplicativo. A origem deve ser confiável; indicadores não são confirmação de infecção.</p><div class="entry"><h2>MalwareBazaar • abuse.ch</h2><p>Consultar os 100 registros mais recentes via API oficial. Requer sua Auth-Key e autorização de uso conforme os termos do serviço. A chave não é armazenada pelo aplicativo.</p><label for="intelKey">Auth-Key</label><input id="intelKey" class="media-field" type="password" autocomplete="off" maxlength="256"><button id="intelSync" class="primary">Consultar e incorporar indicadores</button><p id="intelResult" role="status">Aguardando consulta.</p></div><div class="entry"><h2>Importar lista de hashes</h2><p>Cole SHA-256 de uma fonte confiável, um por linha. Correspondências são alertas sujeitos à sua revisão, não exclusões automáticas.</p><textarea id="intelList" class="media-field" rows="5" maxlength="8388608" placeholder="SHA-256 por linha"></textarea><button id="intelImport">Validar e incorporar</button><button id="intelCount">Consultar base ativa</button><p id="intelCountResult" role="status"></p></div><div class="entry"><h2>Reputação de URLs</h2><p>Importe uma lista de URLs de uma fonte confiável, como a lista de texto do URLhaus, uma por linha. Substitui a lista anterior. Não acessa os endereços. Correspondência exata não é bloqueio automático.</p><textarea id="reputationList" class="media-field" rows="4" maxlength="8388608" placeholder="Uma URL por linha"></textarea><button id="repImport">Validar e salvar lista</button><p id="repResult" role="status"></p></div><div class="entry"><h2>Vulnerabilidades exploradas • CISA KEV</h2><p>Pesquise um código CVE conhecido. A consulta não determina se o seu computador possui a vulnerabilidade.</p><input id="cveInput" class="media-field" maxlength="32" placeholder="CVE-2025-1234"><button id="cveCheck">Consultar catálogo oficial</button><div id="cveResult" class="list" role="status"></div></div></section><section id="engine" class="hidden card"><h2>Motor e inteligência artificial</h2><p class="sub">Motor atual: SHA-256, regras heurísticas e análise PE. Modelo treinado de malware: não instalado. Detector neural de vídeo: não instalado. C2PA: verificador de procedência digital separado.</p><div class="entry"><h2>ClamAV — segundo motor independente do Defender</h2><p>Requer instalação oficial separada do ClamAV e assinaturas atualizadas pelo FreshClam. Examina um arquivo por vez; não remove automaticamente e não é proteção residente.</p><button id="clamCheck">Consultar instalação</button><button id="clamChoose">Examinar arquivo com ClamAV</button><p id="clamState" role="status"></p><pre id="clamReport" class="media-report"></pre></div><img class="mythic" src="__PANEL__" alt="Arte original do painel mitológico"><p class="sub">A classificação de risco é uma pontuação heurística, não uma probabilidade de infecção.</p></section><p id="msg" role="status"></p><footer>ZEUVORYX · Beta experimental · Não desative a proteção do Windows.</footer><div class="z-authorship" aria-label="Created and engineered by Leonardo A Botelho"><span>CREATED &amp; ENGINEERED BY</span><strong>Leonardo A Botelho</strong><small>© 2026 ZEUVORYX</small></div></main></div><dialog id="confirmBox"><h2>Confirme a operação</h2><p id="confirmText"></p><div class="actions"><button id="no">Cancelar</button><button id="yes" class="primary">Confirmar</button></div></dialog><script>
           'use strict';const el=id=>document.getElementById(id),fmt=n=>Number(n||0).toLocaleString('pt-BR');let last=null,series=[],key='',busy=false,confirmResolve=null;function volume(n){if(n>=1073741824)return (n/1073741824).toFixed(2)+' GB';if(n>=1048576)return (n/1048576).toFixed(1)+' MB';if(n>=1024)return (n/1024).toFixed(1)+' KB';return fmt(n)+' B'}function node(tag,text,cls){let x=document.createElement(tag);x.textContent=text;if(cls)x.className=cls;return x}function ask(text){el('confirmText').textContent=text;el('confirmBox').showModal();return new Promise(r=>confirmResolve=r)}function closeConfirm(ok){el('confirmBox').close();const r=confirmResolve;confirmResolve=null;if(r)r(ok)}el('yes').onclick=()=>closeConfirm(true);el('no').onclick=()=>closeConfirm(false);el('confirmBox').oncancel=e=>{e.preventDefault();closeConfirm(false)};async function action(fn){try{el('msg').textContent='';await fn()}catch(e){el('msg').textContent=String(e)}}function chart(n,running){if(last!==null&&n<last){series=[];last=null}if(running&&last!==null){series.push(Math.max(0,n-last));if(series.length>40)series.shift()}last=n;const max=Math.max(1,...series);el('chartMax').textContent=fmt(Math.max(0,...series));el('curve').setAttribute('points',series.map((v,i)=>`${35+i*555/Math.max(1,series.length-1)},${120-110*v/max}`).join(' '));el('activity').textContent=series.length?fmt(series.at(-1))+' arquivos no último intervalo medido.':'Aguardando medições.'}function resetChart(){last=null;series=[];lastMeasure=null;el('curve').setAttribute('points','')}function renderFindings(s){let r=s.report||{},box=el('findings');box.replaceChildren();let list=r.findings||[];if(!list.length)box.append(node('p',s.running?'Varredura em andamento.':s.done?'Nenhum alerta neste relatório.':'Nenhum relatório disponível.','muted'));for(const f of list){let row=node('div','','entry');row.append(node('strong',`${f.level} · ${f.risk}/100`,'risk'),node('p',f.path),node('p',(f.reasons||[]).join(' · ')));if(!f.path.includes(' :: ')){let b=node('button','Isolar arquivo');b.disabled=s.running;b.onclick=()=>action(async()=>{if(await ask('Mover para quarentena? Isso pode afetar programas legítimos. '+f.path)){await window.isolate(f.path);await loadQ();el('msg').textContent='Arquivo isolado.'}});row.append(b)}box.append(row)}}async function loadQ(){const items=await window.quarantineList()||[],box=el('qitems');box.replaceChildren();if(!items.length)box.append(node('p','Nenhum arquivo isolado.','muted'));for(const q of items){const row=node('div','','entry');row.append(node('strong',q.original),node('p',new Date(q.when).toLocaleString('pt-BR')));let b=node('button','Restaurar');b.onclick=()=>action(async()=>{if(await ask('Restaurar arquivo potencialmente perigoso? '+q.original)){await window.restoreItem(q.id);await loadQ()}});row.append(b);let del=node('button','Excluir definitivamente');del.onclick=()=>action(async()=>{if(await ask('Excluir definitivamente este item da quarentena? Não será possível restaurar. '+q.original)){await window.deleteQuarantined(q.id);await loadQ();el('msg').textContent='Item excluído da quarentena.'}});row.append(del);box.append(row)}}async function refresh(){if(busy)return;busy=true;try{const s=await window.getScanState(),r=s.report||{};let running=s.running;el('monitor').checked=!!s.monitor;el('previewCleanup').disabled=running;el('afterScan').classList.toggle('hidden',running||!s.done||!!r.cancelled||!!s.error);el('hero').classList.toggle('scanning',running);el('badge').textContent=running?'Analisando':s.error?'Erro na análise':s.done?'Análise encerrada':'Pronto';el('stateTitle').textContent=running?'Varredura em andamento':s.error?'A análise encontrou um erro':s.done?(r.cancelled?'Varredura cancelada':'Varredura concluída'):'Escolha como deseja começar';el('stateText').textContent=s.error|| (running?'Você pode minimizar esta janela enquanto os arquivos são examinados.':s.done?'Verifique os resultados e os itens não examinados.':'Nenhuma varredura foi iniciada. Selecione a análise rápida ou completa, ou use o menu lateral.');el('files').textContent=fmt(s.files);el('bytes').textContent=volume(s.bytes);el('hits').textContent=s.done?fmt((r.findings||[]).length):'—';el('scope').textContent=r.root||'Nenhuma seleção de escopo ainda';el('skipped').textContent=s.done?fmt(r.skipped)+' itens ignorados ou não examinados. '+(r.errors?.[0]||''):'A cobertura final será informada após a análise.';el('start').disabled=running;el('quick').disabled=running;measureSpeed(s.bytes,running);el('stop').disabled=!running;el('export').disabled=running||!s.done;chart(s.files,running);let k=String(r.started)+String(r.finished)+running+String((r.findings||[]).length);if(k!==key){key=k;renderFindings(s)}}catch(e){el('msg').textContent='Interface: '+String(e)}finally{busy=false}}document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x===b));['overview','alerts','quarantine','media','engine','tools','security','links','defender','intel'].forEach(id=>el(id).classList.toggle('hidden',id!==b.dataset.page));if(b.dataset.page==='quarantine')action(loadQ)});let lastMeasure=null;function measureSpeed(n,running){const t=performance.now();if(running&&lastMeasure&&n>=lastMeasure.n&&t>lastMeasure.t){const rate=(n-lastMeasure.n)/((t-lastMeasure.t)/1000);el('speed').textContent='Velocidade: '+volume(rate)+'/s'}else if(!running){el('speed').textContent='Velocidade: varredura parada.'}lastMeasure=running?{n,t}:null}el('quick').onclick=()=>action(async()=>{if(await window.startQuickScan())resetChart();await refresh()});el('chooseVideo').onclick=()=>action(async()=>{const p=await window.chooseVideo();if(p)el('videoPath').value=p});el('checkVideo').onclick=()=>action(async()=>{const p=el('videoPath').value;if(!p)throw Error('Escolha um vídeo primeiro');const b=el('checkVideo');b.disabled=true;el('videoStatus').textContent='Verificando procedência...';el('videoResult').textContent='';try{const r=await window.verifyVideo(p);el('videoStatus').textContent=r.status;el('videoResult').textContent=typeof r.details==='string'?r.details:JSON.stringify(r.details,null,2)}catch(e){el('videoStatus').textContent='Inconclusivo: '+String(e)}finally{b.disabled=false}});el('start').onclick=()=>action(async()=>{if(await window.startScan())resetChart();await refresh()});el('stop').onclick=()=>action(async()=>{await window.stopScan();await refresh()});el('export').onclick=()=>action(async()=>{el('msg').textContent='Relatório salvo em: '+await window.exportReport()});el('refreshQ').onclick=()=>action(loadQ);el('afterCleanup').onclick=()=>{document.querySelector('[data-page=tools]').click();el('previewCleanup').click()};el('minimize').onclick=()=>action(()=>window.minimizeApp());el('monitor').onchange=()=>action(async()=>{await window.setMonitor(el('monitor').checked);await refresh()});el('previewCleanup').onclick=()=>action(async()=>{const p=await window.previewCleanup();el('cleanupResult').textContent=fmt(p.files)+' arquivos temporários elegíveis · '+volume(p.bytes);if(p.files>0&&await ask('Remover '+fmt(p.files)+' temporários antigos ('+volume(p.bytes)+')?')){const r=await window.applyCleanup();el('cleanupResult').textContent=fmt(r.files)+' removidos · '+volume(r.bytes)+' liberados · '+fmt(r.skipped)+' ignorados'}});refresh();setInterval(refresh,2000);
           
           function auditRow(box,title,value){const row=node('div','','entry');row.append(node('strong',title),node('p',String(value)));box.append(row)}
@@ -614,8 +618,9 @@ jobs:
           $html = [IO.File]::ReadAllText((Join-Path $PWD 'desktop.html'))
           python -m pip install --disable-pip-version-check Pillow==12.2.0
           if ($LASTEXITCODE -ne 0) { throw 'Pillow install failed' }
-          python -c "from PIL import Image; from pathlib import Path; [(lambda im, name: (im.thumbnail((1000,650)), im.convert('RGB').save(name,quality=80,optimize=True)))(Image.open(src), dst) for src,dst in [('ui/assets/zeuvoryx_capa_4k.jpg','cover-small.jpg'),('ui/assets/zeuvoryx_painel_4k.jpg','panel-small.jpg')]]"
+          python zeuvoryx_brand_assets.py
           if ($LASTEXITCODE -ne 0) { throw 'Thumbnail generation failed' }
+          $html = $html.Replace("</style></head>", ".zeus-art{height:auto;max-height:215px;object-fit:contain;background:#08101d}.mythic{display:block;width:100%;max-width:640px;max-height:780px;object-fit:contain;margin:14px auto;background:#08101d;border:1px solid #a78c50;border-radius:12px}.hero{border:1px solid #94713b} @media(max-width:720px){.zeus-art{display:none}}</style></head>")
           $cover = [Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $PWD 'cover-small.jpg')))
           $panel = [Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $PWD 'panel-small.jpg')))
           $html = $html.Replace('__COVER__', ('data:image/jpeg;base64,' + $cover)).Replace('__PANEL__', ('data:image/jpeg;base64,' + $panel))
@@ -625,7 +630,7 @@ jobs:
           $source = @'
           from pathlib import Path
           from PIL import Image, ImageOps
-          image=Image.open('ui/assets/zeuvoryx_capa_4k.jpg').convert('RGB')
+          image=Image.open('brand-shield.jpg').convert('RGB')
           icon=ImageOps.fit(image,(256,256),method=Image.Resampling.LANCZOS,centering=(0.5,0.5))
           icon.save('ZEUVORYX.png')
           icon.save('ZEUVORYX.ico',sizes=[(n,n) for n in (16,24,32,48,64,128,256)])
@@ -683,10 +688,18 @@ jobs:
           [IO.File]::WriteAllText((Join-Path $PWD 'engine/self_test.go'), $source, $utf8)
           gofmt -w main.go desktop_windows.go maintenance.go maintenance_test.go engine/self_test.go
           if ($LASTEXITCODE -ne 0) { throw 'Formatting failed' }
-          go get github.com/jchv/go-webview2@v0.0.0-20260205173254-56598839c808
-          if ($LASTEXITCODE -ne 0) { throw 'WebView2 dependency failed' }
-          go mod tidy
-          if ($LASTEXITCODE -ne 0) { throw 'Module resolution failed' }
+          for ($attempt=1; $attempt -le 3; $attempt++) {
+            go get github.com/jchv/go-webview2@v0.0.0-20260205173254-56598839c808
+            if ($LASTEXITCODE -eq 0) { break }
+            if ($attempt -eq 3) { throw 'WebView2 dependency failed after three attempts' }
+            Start-Sleep -Seconds (5*$attempt)
+          }
+          for ($attempt=1; $attempt -le 3; $attempt++) {
+            go mod tidy
+            if ($LASTEXITCODE -eq 0) { break }
+            if ($attempt -eq 3) { throw 'Module resolution failed after three attempts' }
+            Start-Sleep -Seconds (5*$attempt)
+          }
           python make_icon.py
           if ($LASTEXITCODE -ne 0) { throw 'Icon generation failed' }
           go run github.com/akavel/rsrc@v0.10.2 -arch amd64 -ico ZEUVORYX.ico -o rsrc_windows_amd64.syso
@@ -748,13 +761,56 @@ jobs:
           	if p := u.Port(); p != "" && p != "80" && p != "443" {
           		add("Porta não convencional")
           	}
-          	if strings.Contains(strings.ToLower(u.RawQuery), "redirect=") || strings.Contains(strings.ToLower(u.RawQuery), "url=") {
+          	if hasRedirectParameter(u.RawQuery) {
           		add("Parâmetro de possível redirecionamento")
+          	}
+          	if imitatesWikiLeaks(host) {
+          		add("Domínio semelhante a wikileaks.org: confirme o endereço oficial; não comprova fraude")
           	}
           	if len(r.Signals) > 0 {
           		r.Assessment = "Atenção: indicadores estruturais; não comprovam fraude"
           	}
           	return r, nil
+          }
+          
+          // Bounded decoding of query keys only. Never visits the destination.
+          func hasRedirectParameter(raw string) bool {
+           for round:=0;round<3;round++ {
+            for _,part:=range strings.FieldsFunc(raw,func(r rune)bool{return r=='&'||r==';'}) {
+             key,_,ok:=strings.Cut(part,"=");if !ok{continue}
+             key,e:=url.QueryUnescape(key);if e!=nil{continue}
+             switch strings.ToLower(key) {
+             case "redirect","url","redirect_uri","redirect_url","return_url","returnurl","next","continue","target","destination","dest":return true
+             }
+            }
+            decoded,e:=url.QueryUnescape(raw);if e!=nil||decoded==raw{break};raw=decoded
+           }
+           return false
+          }
+          // Advisory, deliberately limited to the identity requested for this regression.
+          // Only DNS labels are examined, not ordinary text or page paths.
+          func imitatesWikiLeaks(host string) bool {
+           const official="wikileaks.org"
+           if host==official||strings.HasSuffix(host,"."+official){return false}
+           for _,label:=range strings.Split(host,".") {
+            s:=strings.ReplaceAll(label,"-","")
+            if strings.Contains(s,"wikileaks")||nearWikiLabel(s){return true}
+           }
+           return false
+          }
+          func nearWikiLabel(s string) bool {
+           const brand="wikileaks"
+           if len(s)<len(brand)-1||len(s)>len(brand)+1{return false}
+           // Bounded edit distance (one insertion, deletion or substitution), including a
+           // single adjacent transposition. ASCII only; other scripts have a separate signal.
+           for _,r:=range s{if !(r>='a'&&r<='z'||r>='0'&&r<='9'){return false}}
+           if len(s)==len(brand){
+            diffs:=[]int{};for i:=range brand{if s[i]!=brand[i]{diffs=append(diffs,i)}}
+            return len(diffs)<=1||(len(diffs)==2&&diffs[1]==diffs[0]+1&&s[diffs[0]]==brand[diffs[1]]&&s[diffs[1]]==brand[diffs[0]])
+           }
+           a,b:=s,brand;if len(a)>len(b){a,b=b,a}
+           for i:=0;i<len(b);i++{if a==b[:i]+b[i+1:]{return true}}
+           return false
           }
           '@
           [IO.File]::WriteAllText((Join-Path $PWD 'linkcheck.go'), $source, $utf8)
@@ -790,6 +846,37 @@ jobs:
           			t.Fatalf("%q: %+v %v", tc.url, r, e)
           		}
           	}
+          }
+          
+          func TestWikiLinkRegression(t *testing.T){
+           cases:=[]struct{raw string;want int;invalid bool}{
+           {"https://wikileaks.org/ ",0,false},
+           {"https://www.wikileaks.org/",0,false},
+           {"https://wikileaks.org./",0,false},
+           {"http://wikileaks.org/",1,false},
+           {"https://wikileaks.org@other.invalid/",1,false},
+           {"https://wikileaks.org.other.invalid/",1,false},
+           {"https://wikileaks-support.invalid/",1,false},
+           {"https://wikileakz.invalid/",1,false},
+           {"https://wikileak.invalid/",1,false},
+           {"https://wiki-leaks.invalid/",1,false},
+           {"https://wikilekas.invalid/",1,false},
+           {"https://example.invalid/news/wikileaks",0,false},
+           {"https://example.invalid/?q=wikileaks",0,false},
+           {"https://wikileaks.org/?redirect=https%3A%2F%2Fother.invalid",1,false},
+           {"https://wikileaks.org/?%72edirect=https%3A%2F%2Fother.invalid",1,false},
+           {"https://wikileaks.org/?%2572edirect=https%3A%2F%2Fother.invalid",1,false},
+           {"https://wikileaks.org/?redirect%3Dhttps%253A%252F%252Fother.invalid",1,false},
+           {"https://wikileaks.org/?redirect_uri=https%3A%2F%2Fother.invalid",1,false},
+           {"https://wikileaks.org/?next=%2Fnews",1,false},
+           {"https://example.invalid/?myurl=value",0,false},
+           {"file:///wikileaks.org",0,true},
+           }
+           for _,c:=range cases{
+            r,e:=assessLink(c.raw);if c.invalid{if e==nil{t.Fatalf("expected invalid: %s",c.raw)};continue}
+            if e!=nil||len(r.Signals)!=c.want{t.Fatalf("%s: got %+v %v want %d signals",c.raw,r,e,c.want)}
+           }
+           t.Logf("%d structural URL cases; no network access or active blocking",len(cases))
           }
           '@
           [IO.File]::WriteAllText((Join-Path $PWD 'linkcheck_test.go'), $source, $utf8)
@@ -2232,13 +2319,86 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Diagnostics integration failed' }
           gofmt -w diagnostics.go diagnostics_test.go desktop_windows.go
           if ($LASTEXITCODE -ne 0) { throw 'Diagnostics formatting failed' }
-      - name: Apply ZEUVORYX 3.0.1 scanner hardening
+      - name: Apply scanner hardening for ZEUVORYX 3.0.5 LAB R5
         shell: pwsh
         run: |
           python zeuvoryx_upgrade.py --apply
           if ($LASTEXITCODE -ne 0) { throw 'ZEUVORYX upgrade failed' }
           gofmt -w main.go desktop_windows.go engine/scanner.go engine/pe.go engine/quarantine.go engine/scan_upgrade.go engine/scan_upgrade_windows.go engine/scan_upgrade_other.go engine/scan_upgrade_test.go engine/scan_upgrade_integration_test.go
           if ($LASTEXITCODE -ne 0) { throw 'Upgrade formatting failed' }
+      - name: Integrate experimental AI and three-language desktop
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          python zeuvoryx_adaptive.py
+          if ($LASTEXITCODE -ne 0) { throw 'Adaptive integration failed' }
+          python zeuvoryx_i18n.py
+          if ($LASTEXITCODE -ne 0) { throw 'Localization integration failed' }
+          python zeuvoryx_lab303.py
+          if ($LASTEXITCODE -ne 0) { throw 'Laboratory integration failed' }
+          python prepare_app_update.py
+          if ($LASTEXITCODE -ne 0) { throw 'Update check integration failed' }
+          python prepare_audit305.py
+          if ($LASTEXITCODE -ne 0) { throw '3.0.5 audit integration failed' }
+          python prepare_olympus_silver.py
+          if ($LASTEXITCODE -ne 0) { throw 'Olympus silver interface integration failed' }
+          gofmt -w audit main.go engine/scanner.go engine/scan_upgrade.go desktop_windows.go
+          if ($LASTEXITCODE -ne 0) { throw 'Audit formatting failed' }
+          gofmt -w updater
+          if ($LASTEXITCODE -ne 0) { throw 'Updater formatting failed' }
+          gofmt -w labcheck releaseguard impact remediation
+          if ($LASTEXITCODE -ne 0) { throw 'Laboratory formatting failed' }
+          gofmt -w engine/scanner.go desktop_windows.go language_windows.go language_windows_test.go adaptive
+          if ($LASTEXITCODE -ne 0) { throw 'Formatting failed' }
+          python -c "from pathlib import Path; s=Path('desktop.html').read_text(encoding='utf-8'); Path('desktop-syntax.js').write_text(s.split('<script>',1)[1].split('</script>',1)[0],encoding='utf-8')"
+          if ($LASTEXITCODE -ne 0) { throw 'JavaScript extraction failed' }
+          node --check desktop-syntax.js
+          if ($LASTEXITCODE -ne 0) { throw 'Desktop JavaScript syntax failed' }
+      - name: Verify final ZEUVORYX 3.0.5 LAB R5 identity
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $desktop = Get-Content -Raw -LiteralPath 'desktop_windows.go'
+          $html = Get-Content -Raw -LiteralPath 'desktop.html'
+          $engine = Get-Content -Raw -LiteralPath 'engine/scan_upgrade.go'
+          $updater = Get-Content -Raw -LiteralPath 'updater/check.go'
+          if (!$desktop.Contains('ZEUVORYX | 3.0.5 LAB')) { throw 'Incorrect application title' }
+          if (!$html.Contains('3.0.5 LAB BETA</div>')) { throw 'Incorrect desktop version' }
+          if ($html.Contains('OLYMPUS 3.0.1 BETA</div>')) { throw 'Stale desktop version' }
+          if ($engine -notmatch 'const\s+ScanEngineVersion\s*=\s*"3\.0\.5-lab"') { throw 'Incorrect scan engine version' }
+          if ($updater -notmatch 'const\s+Current\s*=\s*"3\.0\.5"') { throw 'Incorrect updater version' }
+          Write-Host 'Verified final identity: ZEUVORYX 3.0.5 LAB R5'
+      - name: Run adaptive model tests
+        shell: pwsh
+        run: |
+          go test -v -count=10 ./adaptive
+          if ($LASTEXITCODE -ne 0) { throw 'Adaptive tests failed' }
+      - name: Train and evaluate AI on 50 million held-out synthetic scenarios
+        shell: pwsh
+        run: |
+          go run ./cmd/adaptive-lab50 -out lab-results/adaptive-report-50m.json
+          if ($LASTEXITCODE -ne 0) { throw 'Adaptive lab failed' }
+      - name: Upload adaptive training and validation evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: ZEUVORYX-3.0.5-Adaptive-Lab-50M
+          path: lab-results/adaptive-report-50m.json
+          if-no-files-found: error
+      - name: Install and run static scanner safety regression tests
+        shell: pwsh
+        run: |
+          Copy-Item qa/scanner_quality_test.go.txt engine/scanner_quality_test.go -ErrorAction Stop
+          gofmt -w engine/scanner_quality_test.go
+          if ($LASTEXITCODE -ne 0) { throw 'Quality test formatting failed' }
+          go test -v -run '^TestZQuality' -count=10 ./engine
+          if ($LASTEXITCODE -ne 0) { throw 'Scanner quality regression' }
+          go test -run '^$' -fuzz '^FuzzZStaticScanner$' -fuzztime=20s -parallel=2 ./engine
+          if ($LASTEXITCODE -ne 0) { throw 'Static scanner fuzz test failed' }
+      - name: Link safety regression five rounds
+        shell: pwsh
+        run: |
+          go test -v -count=5 -run '^(TestLinkTriage|TestWikiLinkRegression)$' .
+          if ($LASTEXITCODE -ne 0) { throw 'Link safety regression failed' }
       - name: Validate source code
         shell: pwsh
         run: |
@@ -2257,12 +2417,38 @@ jobs:
           $env:ZEUVORYX_STRESS = '1'
           go test -v -run '^TestSyntheticFraudMillion$' -count=10 .
           if ($LASTEXITCODE -ne 0) { throw 'Synthetic fraud workload failed' }
+      - name: QA20 actual synthetic workload and official Windows read-only checks
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Copy-Item qa/stress_scanner_test.go.txt engine/stress_scanner_test.go
+          Copy-Item qa/stress_native_test.go.txt stress_native_test.go
+          gofmt -w engine/stress_scanner_test.go stress_native_test.go adaptive/stress20_test.go updater/stress20_test.go remediation/stress20_test.go
+          if ($LASTEXITCODE -ne 0) { throw 'QA20 formatting failed' }
+          $env:ZEUVORYX_QA20 = '1'
+          go test -v -count=1 -timeout=20m -run '^TestZStress' ./engine ./adaptive ./updater ./remediation | Tee-Object -FilePath qa20-stress.log
+          if ($LASTEXITCODE -ne 0) { throw 'QA20 workload failed' }
+          go test -v -count=1 -timeout=3m -run '^TestZ(RealWindowsFiles|OfficialEICAR)$' ./engine | Tee-Object -FilePath qa20-windows-files.log
+          if ($LASTEXITCODE -ne 0) { throw 'Windows fixture checks failed' }
+          go test -v -count=1 -timeout=2m -run '^TestZRealSecurityAudit$' . | Tee-Object -FilePath qa20-native.log
+          if ($LASTEXITCODE -ne 0) { throw 'Native Windows audit failed' }
+      - name: Upload QA20 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ZEUVORYX-3.0.5-R5-QA20-evidence
+          path: qa20-*.log
+          if-no-files-found: ignore
       - name: Build Windows desktop EXE
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
           New-Item -ItemType Directory -Force dist | Out-Null
-          go build -trimpath -ldflags '-H=windowsgui' -o dist/ZEUVORYX.exe .
+          $key = $env:ZEUVORYX_OWNER_PUBLIC_KEY
+          if ($key -and $key -notmatch '^[0-9a-fA-F]{64}$') { throw 'Invalid owner public key' }
+          $flags = '-H=windowsgui'
+          if ($key) { $flags += ' -X github.com/zeuvoryx/zeuvoryx/updater.OwnerPublicKeyHex=' + $key }
+          go build -trimpath -ldflags $flags -o dist/ZEUVORYX.exe .
           if ($LASTEXITCODE -ne 0) { throw 'Windows build failed' }
           Copy-Item signatures.sha256, ZEUVORYX.ico, ZEUVORYX.png dist/ -ErrorAction Stop
           $bytes = [IO.File]::ReadAllBytes((Join-Path $PWD 'dist/ZEUVORYX.exe'))
@@ -2283,24 +2469,40 @@ jobs:
           $tools = @(Get-ChildItem c2pa-release -Recurse -Filter c2patool.exe -File)
           if ($tools.Count -ne 1) { throw 'C2PA executable missing or ambiguous' }
           New-Item -ItemType Directory -Force dist/media-verifier | Out-Null
-          Copy-Item (Join-Path $tools[0].Directory.FullName '*') dist/media-verifier -Recurse -Force
+          Copy-Item -LiteralPath $tools[0].FullName -Destination dist/media-verifier/c2patool.exe -Force
+          $legal = @(Get-ChildItem c2pa-release -Recurse -File | Where-Object { $_.Name -match '^(LICENSE|NOTICE|COPYING)([._-][A-Za-z0-9._-]+)?$' })
+          foreach ($item in $legal) {
+            $dest = Join-Path 'dist/media-verifier' $item.Name
+            if (Test-Path $dest) {
+              if ((Get-FileHash -LiteralPath $dest).Hash -ne (Get-FileHash -LiteralPath $item.FullName).Hash) { throw 'Conflicting third-party license filenames' }
+            } else { Copy-Item -LiteralPath $item.FullName -Destination $dest }
+          }
+          $unexpected = @(Get-ChildItem dist/media-verifier -Recurse -File | Where-Object { $_.Name -ne 'c2patool.exe' -and $_.Name -notmatch '^(LICENSE|NOTICE|COPYING)([._-][A-Za-z0-9._-]+)?$' })
+          if ($unexpected.Count -gt 0) { throw 'Unexpected C2PA distribution file' }
           & (Join-Path $PWD 'dist/media-verifier/c2patool.exe') -V
           if ($LASTEXITCODE -ne 0) { throw 'C2PA runtime check failed' }
-          Copy-Item ui/assets/zeuvoryx_capa_4k.jpg, ui/assets/zeuvoryx_painel_4k.jpg dist/ -ErrorAction Stop
+          Copy-Item zeuvoryx_brand.jpg dist/ -ErrorAction Stop
+          if ((Get-FileHash dist/zeuvoryx_brand.jpg -Algorithm SHA256).Hash.ToLowerInvariant() -ne 'c0ae621b1784260b67f8f8953d9ad96ac6cb2a5c9b96cd66f3125f22ef9de754') { throw 'Unexpected branding asset in package' }
           $ini = "[.ShellClassInfo]`r`nIconResource=ZEUVORYX.ico,0`r`n"
           [IO.File]::WriteAllText((Join-Path $PWD 'dist/desktop.ini'), $ini, [Text.Encoding]::Unicode)
           $source = @'
           [Setup]
-          AppId=ZEUVORYX.Desktop
-          AppName=ZEUVORYX
-          AppVersion=3.0.1
-          DefaultDirName={localappdata}\Programs\ZEUVORYX
-          DefaultGroupName=ZEUVORYX
+          AppId=ZEUVORYX.Desktop.Lab303
+          AppName=ZEUVORYX 3.0.5 LAB
+          AppPublisher=Leonardo A Botelho
+          VersionInfoCompany=Leonardo A Botelho
+          VersionInfoCopyright=Copyright (C) 2026 Leonardo A Botelho
+          AppVersion=3.0.5
+          DefaultDirName={localappdata}\Programs\ZEUVORYX-Lab303
+          DefaultGroupName=ZEUVORYX LAB
           DisableProgramGroupPage=yes
           PrivilegesRequired=lowest
+          CloseApplications=yes
+          RestartApplications=no
+          UsePreviousAppDir=yes
           ArchitecturesAllowed=x64compatible
           OutputDir=installer
-          OutputBaseFilename=ZEUVORYX-Setup-3.0.1
+          OutputBaseFilename=ZEUVORYX-LAB-Setup-3.0.5
           SetupIconFile=dist\ZEUVORYX.ico
           UninstallDisplayIcon={app}\ZEUVORYX.exe
           Compression=lzma2
@@ -2313,12 +2515,18 @@ jobs:
           [Files]
           Source: "dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
           [Icons]
-          Name: "{autoprograms}\ZEUVORYX"; Filename: "{app}\ZEUVORYX.exe"; WorkingDir: "{app}"
-          Name: "{autodesktop}\ZEUVORYX"; Filename: "{app}\ZEUVORYX.exe"; WorkingDir: "{app}"; Tasks: desktopicon
+          Name: "{autoprograms}\ZEUVORYX LAB"; Filename: "{app}\ZEUVORYX.exe"; WorkingDir: "{app}"
+          Name: "{autodesktop}\ZEUVORYX LAB"; Filename: "{app}\ZEUVORYX.exe"; WorkingDir: "{app}"; Tasks: desktopicon
           [Run]
           Filename: "{sys}\attrib.exe"; Parameters: "+h +s ""{app}\desktop.ini"""; Flags: runhidden waituntilterminated
           Filename: "{sys}\attrib.exe"; Parameters: "+r ""{app}"""; Flags: runhidden waituntilterminated
           Filename: "{app}\ZEUVORYX.exe"; Description: "Abrir ZEUVORYX"; Flags: nowait postinstall skipifsilent unchecked
+          Filename: "{app}\ZEUVORYX.exe"; Parameters: "-updated-version={param:ZEUVORYXTARGET|}"; Flags: nowait skipifnotsilent; Check: IsSignedUpdate
+          [Code]
+          function IsSignedUpdate: Boolean;
+          begin
+            Result := ExpandConstant('{param:ZEUVORYXUPDATE|0}') = '1';
+          end;
           [UninstallRun]
           Filename: "{sys}\attrib.exe"; Parameters: "-r ""{app}"""; Flags: runhidden waituntilterminated
           Filename: "{sys}\attrib.exe"; Parameters: "-h -s ""{app}\desktop.ini"""; Flags: runhidden waituntilterminated; RunOnceId: "ClearFolderIcon"
@@ -2328,13 +2536,34 @@ jobs:
           if (!(Test-Path $iscc)) { throw 'Inno Setup compiler not found' }
           & $iscc setup.iss
           if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed' }
-          if (!(Test-Path 'installer/ZEUVORYX-Setup-3.0.1.exe')) { throw 'Installer missing' }
-          Get-FileHash installer/ZEUVORYX-Setup-3.0.1.exe -Algorithm SHA256
-      - name: Upload Competitive 3.0.1 installer and portable edition
+          if (!(Test-Path 'installer/ZEUVORYX-LAB-Setup-3.0.5.exe')) { throw 'Installer missing' }
+          Get-FileHash installer/ZEUVORYX-LAB-Setup-3.0.5.exe -Algorithm SHA256
+      - name: Test in-place installer and preserve user data
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $setup = Join-Path $PWD 'installer/ZEUVORYX-LAB-Setup-3.0.5.exe'
+          $dir = Join-Path $env:LOCALAPPDATA 'Programs/ZEUVORYX-Lab303'
+          $config = Join-Path $env:APPDATA 'ZEUVORYX/lab305-audit'
+          New-Item -ItemType Directory -Force $config | Out-Null
+          $marker = Join-Path $config 'upgrade-test-marker.txt'
+          Set-Content -LiteralPath $marker -Value 'preserve-test-only'
+          for ($i=0; $i -lt 2; $i++) {
+            $p = Start-Process -FilePath $setup -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/CLOSEAPPLICATIONS' -Wait -PassThru
+            if ($p.ExitCode -ne 0) { throw "Installation failed: $($p.ExitCode)" }
+            if ((Get-FileHash (Join-Path $dir 'ZEUVORYX.exe')).Hash -ne (Get-FileHash dist/ZEUVORYX.exe).Hash) { throw 'Installed binary mismatch' }
+            if ((Get-Content -LiteralPath $marker) -ne 'preserve-test-only') { throw 'User data lost' }
+          }
+          $reg = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\ZEUVORYX.Desktop.Lab303_is1'
+          if (!(Test-Path $reg)) { throw 'Expected installation identity missing' }
+          $entries = @(Get-ChildItem $dir -Filter 'unins*.exe')
+          if ($entries.Count -ne 1) { throw 'Unexpected duplicate uninstaller' }
+          Write-Host 'In-place reinstall and data preservation passed on Windows runner'
+      - name: Upload LAB 3.0.5 installer and portable edition
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.1-Competitive-Windows
+          name: ZEUVORYX-3.0.5-LAB-R5-Olympus-Silver-Windows-Complete
           path: |
             dist/
-            installer/ZEUVORYX-Setup-3.0.1.exe
+            installer/ZEUVORYX-LAB-Setup-3.0.5.exe
           if-no-files-found: error

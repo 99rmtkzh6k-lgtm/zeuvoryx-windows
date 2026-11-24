@@ -1,0 +1,13 @@
+//go:build windows
+
+package main
+import("testing";"os";"encoding/json";"time")
+func TestZRealSecurityAudit(t *testing.T){
+ if os.Getenv("ZEUVORYX_QA20")!="1"{t.Skip("opt-in native audit")}
+ started:=time.Now();v,e:=windowsSecurityAudit()
+ if e!=nil{t.Fatalf("native Windows audit failed: %v",e)}
+ for _,k:=range []string{"defender","firewall","updates","errors"}{if _,ok:=v[k];!ok{t.Fatal("missing field: "+k)}}
+ b,e:=json.Marshal(v);if e!=nil{t.Fatal(e)}
+ t.Logf("Native Windows read-only audit (%s): %s",time.Since(started),b)
+ if v["firewall"]==nil||v["defender"]==nil{t.Log("PARTIAL: native protection status unavailable; not a confirmed protection pass")}
+}

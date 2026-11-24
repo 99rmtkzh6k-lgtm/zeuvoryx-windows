@@ -6,8 +6,6 @@ Scanner complementar de segurança para Windows x64, desenvolvido em Go, com int
 
 **Estado:** beta de laboratório. Compilação 3.0.5 R5 aprovada em 24/11/2026; validação manual em Windows 10/11 e eficácia independente pendentes. Não substitui Microsoft Defender.
 
-**Atenção:** esta é a página de apresentação da versão mais recente. A ramificação `main` ainda conserva o código histórico 3.0.1. Para código, compilação e testes da versão 3.0.5, use exclusivamente a ramificação [security-3.0.5-lab](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/security-3.0.5-lab). Não execute o workflow antigo para obter a versão nova.
-
 ## Download e instalação de teste
 
 - [Compilação validada — execução 45419964764](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45419964764)
@@ -35,18 +33,18 @@ Scanner complementar de segurança para Windows x64, desenvolvido em Go, com int
 
 Execução [45419964764](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45419964764), commit `11cd939ff0944bf2da9a81f6f4bc166559e5384b`: gate de versão 3.0.5, cinco rodadas de regressão de links, dez repetições de testes, QA20 (20 milhões de iterações sintéticas), build EXE, instalador e teste de reinstalação aprovados. Laboratório de IA com 50 milhões de cenários sintéticos não comprova proteção real; testes de laboratório não equivalem a certificação.
 
-**Validação adicional:** a execução de fundamentos de segurança [45419964425](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45419964425) teve os jobs Windows e Linux aprovados e o job macOS cancelado; não constitui aprovação integral multiplataforma.
-
 ## Desenvolvimento e continuidade
 
-A ramificação ativa é `security-3.0.5-lab`. O workflow `.github/workflows/windows-build-lab-305.yml` chama `windows-build.yml` nessa ramificação. Para uma nova compilação, selecione a ramificação de laboratório; caso o GitHub não disponibilize execução manual desse workflow na página principal, use a execução validada acima. A `main` preserva o código anterior 3.0.1 e não deve ser confundida com o laboratório mais recente. Consulte [instruções](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/security-3.0.5-lab/INSTRUCOES_GITHUB.txt), [instalação](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/security-3.0.5-lab/LEIA-ME.txt), [histórico de versões](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/security-3.0.5-lab/CHANGELOG.md) e o [memorando obrigatório](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/security-3.0.5-lab/MEMORANDO_DESENVOLVIMENTO.md).
+A ramificação `main` consolida a base de código Windows 3.0.5 LAB R5; `security-3.0.5-lab` preserva a referência de laboratório. O workflow `.github/workflows/windows-build-lab-305.yml` chama `windows-build.yml` na ramificação selecionada. A versão antiga está preservada no histórico. A compilação citada acima corresponde à execução da ramificação LAB; a nova execução em main precisa de confirmação. Consulte [instruções](INSTRUCOES_GITHUB.txt), [instalação](LEIA-ME.txt), [histórico de versões](CHANGELOG.md) e o [memorando obrigatório](MEMORANDO_DESENVOLVIMENTO.md).
 
 Próximos passos: painel com comandos de varredura e métricas no topo, botões compactos 3D; teste visual e Windows real; atualização assinada de produção; auditoria ampliada, remediação segura, proteção residente, IA validada, estatísticas globais ultraleves e Macintosh independente. Idiomas adicionais conforme qualidade/desempenho. Nenhum desses requisitos é considerado concluído só por estar planejado.
+
+## Macintosh — desenvolvimento separado
+
+A edição macOS permanece na versão **3.0.3 LAB**, com Swift/SwiftUI e motor Go somente leitura. [Documentação Macintosh](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/macintosh-3.0.3-lab). Intel compilado; Apple Silicon teve job cancelado e reteste solicitado. Não há equivalência funcional integral com Windows. Não confundir os instaladores. 
+
+Para compilar Macintosh em Actions, selecione o workflow Macintosh e a ramificação `macintosh-3.0.3-lab`.
 
 ## Licenciamento, autoria e distribuição
 
 Autoria declarada: Leonardo A Botelho. Não há licença de redistribuição de produção definida neste documento; revisar licenças de dependências e direitos de arte antes de publicação. O projeto não reivindica certificação, detecção universal ou substituição de antivírus. Releases públicas e lançamento mundial dependem de autorização do titular e dos critérios do memorando.
-
-## Versão histórica
-
-A versão 3.0.1 Competitive permanece preservada no [commit histórico c7d2f3c](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/c7d2f3c94fd080368eff59921d338a0dd5fa41ca). Não é o download recomendado para avaliação da versão 3.0.5.

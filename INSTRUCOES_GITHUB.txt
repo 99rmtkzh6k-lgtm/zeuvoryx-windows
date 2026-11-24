@@ -1,11 +1,20 @@
-ZEUVORYX — PASSO A PASSO DEFINITIVO
+ZEUVORYX — INSTRUÇÕES ATUAIS — 3.0.5 LAB R5
+24/11/2026
 
-1. Extraia o ZIP no celular/computador.
-2. No GitHub, envie TODOS OS ARQUIVOS E PASTAS EXTRAIDOS, inclusive a pasta oculta .github/workflows/windows.yml.
-3. Confira a pasta .github e os diretorios cmd, engine e ui.
-4. Entre em Actions e rode "ZEUVORYX - Testes e executavel Windows".
-5. Ao concluir com sucesso, baixe em Artifacts o ZEUVORYX-Windows-x64.
-6. Extraia o arquivo baixado e clique duas vezes em ZEUVORYX.exe em computador Windows.
+1. Repositório: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows
+2. Selecione main para a base Windows 3.0.5 LAB R5 consolidada, ou security-3.0.5-lab para a referência de laboratório.
+3. Workflow LAB: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/workflows/windows-build-lab-305.yml
+4. A execução aprovada é https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45419964764
+5. Em Artifacts, escolha ZEUVORYX-3.0.5-LAB-R5-Olympus-Silver-Windows-Complete.
+   Download: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45419964764/artifacts/14934540577
+6. Extraia o ZIP e siga LEIA-ME.txt. Não é necessário reenviar arquivos nem
+   recriar o workflow para baixar um build já aprovado.
+7. Para nova alteração funcional, preserve o histórico de main, consulte o memorando, revise
+   a ramificação LAB e faça commit. O push funcional dispara o workflow LAB na ramificação correspondente;
+   mudanças apenas documentais devem usar [skip ci].
+8. Não misture fontes antigos com o LAB. Não execute manualmente os geradores
+   de versões intermediárias fora da sequência de CI.
 
-Nao misture estes arquivos com versoes anteriores do repositorio. Remova arquivos antigos duplicados que possam causar conflito de pacotes Go.
-Leia README.md para recursos, seguranca e limitacoes. Não afirme cobertura total de malware antes de validação independente.
+O workflow de implementação windows-build.yml é chamado por windows-build-lab-305.yml.
+O artefato de Actions é de laboratório e pode exigir login. Releases públicas
+só serão autorizadas após validação. Não afirme proteção total ou certificação.

@@ -1,9 +1,9 @@
-name: ZEUVORYX 3.0.4 LAB - Windows Build
-run-name: ZEUVORYX 3.0.4 LAB Windows x64
+name: ZEUVORYX 3.0.5 LAB - Windows Build
+run-name: ZEUVORYX 3.0.5 LAB Windows x64
 
 on:
   push:
-    branches: [security-3.0.4-lab]
+    branches: [security-3.0.5-lab]
   workflow_dispatch:
 
 permissions:
@@ -2257,6 +2257,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Laboratory integration failed' }
           python prepare_app_update.py
           if ($LASTEXITCODE -ne 0) { throw 'Update check integration failed' }
+          python prepare_audit305.py
+          if ($LASTEXITCODE -ne 0) { throw '3.0.5 audit integration failed' }
+          gofmt -w audit main.go engine/scanner.go engine/scan_upgrade.go desktop_windows.go
+          if ($LASTEXITCODE -ne 0) { throw 'Audit formatting failed' }
           gofmt -w updater
           if ($LASTEXITCODE -ne 0) { throw 'Updater formatting failed' }
           gofmt -w labcheck releaseguard impact remediation
@@ -2280,7 +2284,7 @@ jobs:
       - name: Upload adaptive training and validation evidence
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.4-Adaptive-Lab-50M
+          name: ZEUVORYX-3.0.5-Adaptive-Lab-50M
           path: lab-results/adaptive-report-50m.json
           if-no-files-found: error
       - name: Install and run static scanner safety regression tests
@@ -2356,18 +2360,18 @@ jobs:
           $source = @'
           [Setup]
           AppId=ZEUVORYX.Desktop.Lab303
-          AppName=ZEUVORYX 3.0.4 LAB
+          AppName=ZEUVORYX 3.0.5 LAB
           AppPublisher=Leonardo A Botelho
           VersionInfoCompany=Leonardo A Botelho
           VersionInfoCopyright=Copyright (C) 2026 Leonardo A Botelho
-          AppVersion=3.0.4
+          AppVersion=3.0.5
           DefaultDirName={localappdata}\Programs\ZEUVORYX-Lab303
-          DefaultGroupName=ZEUVORYX 3.0.3 LAB
+          DefaultGroupName=ZEUVORYX LAB
           DisableProgramGroupPage=yes
           PrivilegesRequired=lowest
           ArchitecturesAllowed=x64compatible
           OutputDir=installer
-          OutputBaseFilename=ZEUVORYX-LAB-Setup-3.0.4
+          OutputBaseFilename=ZEUVORYX-LAB-Setup-3.0.5
           SetupIconFile=dist\ZEUVORYX.ico
           UninstallDisplayIcon={app}\ZEUVORYX.exe
           Compression=lzma2
@@ -2380,8 +2384,8 @@ jobs:
           [Files]
           Source: "dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
           [Icons]
-          Name: "{autoprograms}\ZEUVORYX 3.0.3 LAB"; Filename: "{app}\ZEUVORYX.exe"; WorkingDir: "{app}"
-          Name: "{autodesktop}\ZEUVORYX 3.0.3 LAB"; Filename: "{app}\ZEUVORYX.exe"; WorkingDir: "{app}"; Tasks: desktopicon
+          Name: "{autoprograms}\ZEUVORYX LAB"; Filename: "{app}\ZEUVORYX.exe"; WorkingDir: "{app}"
+          Name: "{autodesktop}\ZEUVORYX LAB"; Filename: "{app}\ZEUVORYX.exe"; WorkingDir: "{app}"; Tasks: desktopicon
           [Run]
           Filename: "{sys}\attrib.exe"; Parameters: "+h +s ""{app}\desktop.ini"""; Flags: runhidden waituntilterminated
           Filename: "{sys}\attrib.exe"; Parameters: "+r ""{app}"""; Flags: runhidden waituntilterminated
@@ -2395,13 +2399,13 @@ jobs:
           if (!(Test-Path $iscc)) { throw 'Inno Setup compiler not found' }
           & $iscc setup.iss
           if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed' }
-          if (!(Test-Path 'installer/ZEUVORYX-LAB-Setup-3.0.4.exe')) { throw 'Installer missing' }
-          Get-FileHash installer/ZEUVORYX-LAB-Setup-3.0.4.exe -Algorithm SHA256
-      - name: Upload LAB 3.0.4 installer and portable edition
+          if (!(Test-Path 'installer/ZEUVORYX-LAB-Setup-3.0.5.exe')) { throw 'Installer missing' }
+          Get-FileHash installer/ZEUVORYX-LAB-Setup-3.0.5.exe -Algorithm SHA256
+      - name: Upload LAB 3.0.5 installer and portable edition
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.4-LAB-Windows-Complete
+          name: ZEUVORYX-3.0.5-LAB-Windows-Complete
           path: |
             dist/
-            installer/ZEUVORYX-LAB-Setup-3.0.4.exe
+            installer/ZEUVORYX-LAB-Setup-3.0.5.exe
           if-no-files-found: error

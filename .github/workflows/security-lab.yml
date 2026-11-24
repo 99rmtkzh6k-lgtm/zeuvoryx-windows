@@ -1,7 +1,7 @@
-name: ZEUVORYX 3.0.4 security foundation lab
+name: ZEUVORYX 3.0.5 security foundation lab
 on:
   push:
-    branches: [security-3.0.4-lab]
+    branches: [security-3.0.5-lab]
   workflow_dispatch:
 permissions:
   contents: read
@@ -20,9 +20,9 @@ jobs:
       - name: Verify security foundations on Windows
         shell: pwsh
         run: |
-          go vet ./releaseguard ./impact ./remediation ./updater
+          go vet ./releaseguard ./impact ./remediation ./updater ./audit
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          go test -v -count=10 -shuffle=on -cover ./releaseguard ./impact ./remediation ./updater
+          go test -v -count=10 -shuffle=on -cover ./releaseguard ./impact ./remediation ./updater ./audit
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
   linux:
     runs-on: ubuntu-latest
@@ -37,8 +37,8 @@ jobs:
           cache: false
       - name: Race and regression checks
         run: |
-          go vet ./releaseguard ./impact ./remediation ./updater
-          go test -race -count=10 -shuffle=on -cover ./releaseguard ./impact ./remediation ./updater
+          go vet ./releaseguard ./impact ./remediation ./updater ./audit
+          go test -race -count=10 -shuffle=on -cover ./releaseguard ./impact ./remediation ./updater ./audit
           go test -run '^$' -fuzz '^FuzzSignedManifest$' -fuzztime=10s -parallel=2 ./releaseguard
           go test -run '^$' -fuzz '^FuzzSignedSnapshot$' -fuzztime=10s -parallel=2 ./impact
 
@@ -53,5 +53,5 @@ jobs:
         with:
           go-version: '1.24.x'
           cache: false
-      - run: go vet ./updater
-      - run: go test -race -count=10 ./updater
+      - run: go vet ./updater ./audit
+      - run: go test -race -count=10 ./updater ./audit

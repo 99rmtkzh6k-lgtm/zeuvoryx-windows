@@ -26,7 +26,7 @@ Atualizado em 24/11/2026. Índice operacional do [memorando histórico completo]
 | REQ-020 | PT-BR, inglês e espanhol, detecção Windows, seleção manual e fallback inglês; mais oito idiomas desejáveis | E | P2 11 idiomas sem sacrificar desempenho; validar os três atuais | Linha do tempo 3.0.2 |
 | REQ-021 | Macintosh separado Intel/ARM64, paridade funcional progressiva, pacote e assinatura próprios | E | P1 não confundir compilação Intel com aprovação integral; consultar memo macOS | EVO-002; memorando Macintosh |
 | REQ-022 | iOS e veículos: pesquisa futura, sem implantação agora | A | Retomar somente por decisão do titular | Sequência aprovada; prioridades |
-| REQ-023 | Publicação mundial gratuita inicialmente, Microsoft Store/GitHub e outros canais, futura monetização | P | P2 após eficácia, licenças, segurança e autorização | Lançamento mundial; distribuição |
+| REQ-023 | Distribuição mundial gratuita, Microsoft Store/GitHub e demais canais; possível aquisição futura do projeto, sem cobrança ao usuário no plano atual | P | Após eficácia, licenças, segurança e autorização; sem garantia de comprador | EVO-031; lançamento mundial |
 | REQ-024 | Autoria, controle exclusivo de código e publicação; registro/licença/patente e revisão jurídica | E | P1 segurança da conta, assinatura, permissões; revisão jurídica pendente | Controle exclusivo; liberação |
 | REQ-025 | Testes repetidos, 5 ciclos integrados, 50 equivalência/desempenho quando viáveis, Windows 10/11 e máquinas reais, 4 GB/2 núcleos | B | P0; CI não basta | CP-001; EVO-018 |
 | REQ-026 | Versionamento uniforme, documentação, metadados, release/artefato e memorando atualizado sem lembrete | E | P0; About administrativo bloqueado | CP-002/003 |
@@ -54,7 +54,7 @@ Atualizado em 24/11/2026. Índice operacional do [memorando histórico completo]
 
 | REQ-042 | Independência financeira e licenças comerciais gratuitas: sem royalties, assinaturas obrigatórias ou contratação não autorizada; avisos/SBOM e alternativas verificadas | E | NSIS fixture e bloqueio de consulta não verificada preparados; migração, cobertura, CI e licenças integrais pendentes | EVO-029/030; REQ-009/038/040 |
 
-| REQ-043 | Sustentabilidade por patrocínios diretos e publicidade no site oficial, área opcional e estática no app, sem rastreamento nem impacto na proteção | P | Planejamento; AdSense desktop proibido; site/contratos/aprovação pendentes | EVO-030; REQ-023/036/038/042 |
+| REQ-043 | Publicidade, patrocínios e espaço promocional | A | Suspenso por decisão do titular; sem anúncios no app/site de suporte; retomar somente por autorização expressa | EVO-030/031 |
 
 ## Controle obrigatório de continuidade
 

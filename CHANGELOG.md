@@ -62,3 +62,5 @@ Macintosh 3.0.5 LAB: regressão portátil Linux e compilação Intel aprovadas; 
 - Windows R5 aprovado: [45447823825](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45447823825), commit `07373e9c538794c5f14a3bc13ad85206d3049bc9`. ZIP 14946014706, 33793191 bytes, SHA-256 `7232a6b12003b23a0e4de8a15e188d528533a63b15f11c93ea41771fa33111cb` confirmado no arquivo baixado e CRC íntegro. Instalador 15497251 bytes, SHA-256 `e90bedcbbcdd4cbb41020fac39b93d867beb0d4ebef884ff103e96632451ef39`; PE sem certificado Authenticode. Cinco rodadas links, dez repetições, QA20, 50M sintético, build e reinstalação passaram. Coleta DROP 45447823809 falhou por validade temporal; não relaxar validação. Sem release, sem alteração funcional.
 
 - ZVX-EVO-008 (planejado): cinco estrelas fixas, seleção explícita, avaliação única persistente por instalação e deduplicação; nenhuma nota inicial contabilizada. Implementação e testes na próxima revisão funcional.
+
+- ZVX-EVO-009 (planejado): central mundial de estatísticas/avaliações entre canais, métricas de proteção verificadas, arquitetura e gates em GLOBAL_SECURITY_INTELLIGENCE.md. Sem implantação ou alteração funcional.

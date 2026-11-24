@@ -1,9 +1,9 @@
-name: ZEUVORYX 3.0.3 LAB - Windows Build
-run-name: ZEUVORYX 3.0.3 LAB Windows x64
+name: ZEUVORYX 3.0.4 LAB - Windows Build
+run-name: ZEUVORYX 3.0.4 LAB Windows x64
 
 on:
   push:
-    branches: [security-3.0.3-lab]
+    branches: [security-3.0.4-lab]
   workflow_dispatch:
 
 permissions:
@@ -2255,6 +2255,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Localization integration failed' }
           python zeuvoryx_lab303.py
           if ($LASTEXITCODE -ne 0) { throw 'Laboratory integration failed' }
+          python prepare_app_update.py
+          if ($LASTEXITCODE -ne 0) { throw 'Update check integration failed' }
+          gofmt -w updater
+          if ($LASTEXITCODE -ne 0) { throw 'Updater formatting failed' }
           gofmt -w labcheck releaseguard impact remediation
           if ($LASTEXITCODE -ne 0) { throw 'Laboratory formatting failed' }
           gofmt -w engine/scanner.go desktop_windows.go language_windows.go language_windows_test.go adaptive
@@ -2276,7 +2280,7 @@ jobs:
       - name: Upload adaptive training and validation evidence
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.3-Adaptive-Lab-50M
+          name: ZEUVORYX-3.0.4-Adaptive-Lab-50M
           path: lab-results/adaptive-report-50m.json
           if-no-files-found: error
       - name: Install and run static scanner safety regression tests
@@ -2352,18 +2356,18 @@ jobs:
           $source = @'
           [Setup]
           AppId=ZEUVORYX.Desktop.Lab303
-          AppName=ZEUVORYX 3.0.3 LAB
+          AppName=ZEUVORYX 3.0.4 LAB
           AppPublisher=Leonardo A Botelho
           VersionInfoCompany=Leonardo A Botelho
           VersionInfoCopyright=Copyright (C) 2026 Leonardo A Botelho
-          AppVersion=3.0.3
+          AppVersion=3.0.4
           DefaultDirName={localappdata}\Programs\ZEUVORYX-Lab303
           DefaultGroupName=ZEUVORYX 3.0.3 LAB
           DisableProgramGroupPage=yes
           PrivilegesRequired=lowest
           ArchitecturesAllowed=x64compatible
           OutputDir=installer
-          OutputBaseFilename=ZEUVORYX-Setup-3.0.3
+          OutputBaseFilename=ZEUVORYX-LAB-Setup-3.0.4
           SetupIconFile=dist\ZEUVORYX.ico
           UninstallDisplayIcon={app}\ZEUVORYX.exe
           Compression=lzma2
@@ -2391,13 +2395,13 @@ jobs:
           if (!(Test-Path $iscc)) { throw 'Inno Setup compiler not found' }
           & $iscc setup.iss
           if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed' }
-          if (!(Test-Path 'installer/ZEUVORYX-Setup-3.0.3.exe')) { throw 'Installer missing' }
-          Get-FileHash installer/ZEUVORYX-Setup-3.0.3.exe -Algorithm SHA256
-      - name: Upload Competitive 3.0.3 installer and portable edition
+          if (!(Test-Path 'installer/ZEUVORYX-LAB-Setup-3.0.4.exe')) { throw 'Installer missing' }
+          Get-FileHash installer/ZEUVORYX-LAB-Setup-3.0.4.exe -Algorithm SHA256
+      - name: Upload LAB 3.0.4 installer and portable edition
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.3-LAB-Windows-Brand
+          name: ZEUVORYX-3.0.4-LAB-Windows-Complete
           path: |
             dist/
-            installer/ZEUVORYX-Setup-3.0.3.exe
+            installer/ZEUVORYX-LAB-Setup-3.0.4.exe
           if-no-files-found: error

@@ -33,4 +33,10 @@ func TestUpdateTrustAndURL(t *testing.T){
  OwnerPublicKeyHex=hex.EncodeToString(make([]byte,32));if !SignedEnabled(){t.Fatal("key shape")}
 }
 
-func TestCompletedVersion(t *testing.T){for _,x:=range []string{"","3.0.4","3.0.5","3.0.7","3.0.6-lab","v3.0.6"}{if CompletedVersion(x)!=""{t.Fatal(x)}};if CompletedVersion(Current)!=Current{t.Fatal("current version not acknowledged")}}
+func TestCompletedVersion(t *testing.T) {
+ for _, x := range []string{"", "0.0.0", "999.999.999", Current+"-lab", "v"+Current, Current+" "} {
+  if x==Current { t.Fatal("invalid test fixture: matches current version") }
+  if CompletedVersion(x)!="" { t.Fatal("unexpected completion for",x) }
+ }
+ if CompletedVersion(Current)!=Current { t.Fatal("current version not acknowledged") }
+}

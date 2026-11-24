@@ -40,6 +40,9 @@ Atualizado em 24/11/2026. Índice operacional do [memorando histórico completo]
 | REQ-033 | Preservar ClamAV opcional, sob demanda e dependente de instalação externa | E | Manter; medir custo e distinguir motores | EVO-019 |
 | REQ-034 | Revisão integrada de toda fila após relatório 3.0.6; cinco ciclos e 50 equivalência quando viáveis | P | Próxima revisão, sem perder EVO-008–012 | EVO-019; REQ-025 |
 
+| REQ-035 | Ícone ZEUS: preservar escudo; trocar apenas fundo/moldura escura por prata no software, alinhar recursos ICO/PE, taskbar, bandeja, atalhos e instalador | P | Próxima revisão; distinguir realce nativo Windows e validar DPI/temas | EVO-020; REQ-014/030 |
+| REQ-036 | Preparar distribuição mundial nas lojas e canais oficiais após validação integrada, assinatura, revisão de políticas/licenças e autorização | P | Pós-validação; não publicar nem contratar automaticamente | EVO-020; REQ-023/024 |
+
 ## Controle obrigatório de continuidade
 
 A cada tarefa, ler o índice e o memorando, identificar requisitos afetados, registrar novos pedidos imediatamente (inclusive "no próximo"), preservar IDs e estados dos demais. Antes de fechar, comparar o índice anterior com o novo, justificar qualquer mudança de prioridade/estado, anexar evidência ou marcar pendência, atualizar a main e a ramificação/plataforma pertinente e confirmar gravação remota. Correção P0 pode adiar implantação de P1/P2, mas não apagar nem declarar cumprida. Decisões posteriores explícitas prevalecem sobre as substituídas, cujo histórico permanece. A fila não é autorização para lançar, contratar ou realizar ações destrutivas. Reconciliar requisitos não localizados com o histórico e pedidos recuperáveis, sem alegar cobertura absoluta de conversas inacessíveis.
@@ -55,3 +58,7 @@ REQ-002/018: migração e abertura de 15 segundos aprovadas no CI, estado E (pil
 ### Próxima evolução EVO-019 — aguardando relatório do piloto 3.0.6
 
 REQ-029 a 034 adicionados conforme solicitação do titular. REQ-008 e REQ-007 ampliados, não encerrados; REQ-026 inclui correção do rótulo herdado 3.0.3. REQ-015 a 019 e demais pendências continuam na fila. Nenhum novo binário nesta revisão documental.
+
+### Complemento EVO-020 — ícone prata e lojas
+
+REQ-035/036 adicionados, mantendo os 34 anteriores e as quatro cláusulas pétreas. Próxima versão funcional prevista 3.0.7 após relatório do piloto 3.0.6. Correção de arte no software pendente; não alterar aparência global do Windows. Preparação de distribuição somente após gates e autorização. Nenhum novo binário nesta revisão.

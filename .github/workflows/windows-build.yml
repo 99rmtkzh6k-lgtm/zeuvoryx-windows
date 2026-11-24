@@ -2319,7 +2319,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Diagnostics integration failed' }
           gofmt -w diagnostics.go diagnostics_test.go desktop_windows.go
           if ($LASTEXITCODE -ne 0) { throw 'Diagnostics formatting failed' }
-      - name: Apply inherited scanner hardening (baseline 3.0.1)
+      - name: Apply scanner hardening for ZEUVORYX 3.0.5 LAB R5
         shell: pwsh
         run: |
           python zeuvoryx_upgrade.py --apply
@@ -2354,6 +2354,20 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'JavaScript extraction failed' }
           node --check desktop-syntax.js
           if ($LASTEXITCODE -ne 0) { throw 'Desktop JavaScript syntax failed' }
+      - name: Verify final ZEUVORYX 3.0.5 LAB R5 identity
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $desktop = Get-Content -Raw -LiteralPath 'desktop_windows.go'
+          $html = Get-Content -Raw -LiteralPath 'desktop.html'
+          $engine = Get-Content -Raw -LiteralPath 'engine/scan_upgrade.go'
+          $updater = Get-Content -Raw -LiteralPath 'updater/check.go'
+          if (!$desktop.Contains('ZEUVORYX | 3.0.5 LAB')) { throw 'Incorrect application title' }
+          if (!$html.Contains('3.0.5 LAB BETA</div>')) { throw 'Incorrect desktop version' }
+          if ($html.Contains('OLYMPUS 3.0.1 BETA</div>')) { throw 'Stale desktop version' }
+          if ($engine -notmatch 'const\s+ScanEngineVersion\s*=\s*"3\.0\.5-lab"') { throw 'Incorrect scan engine version' }
+          if ($updater -notmatch 'const\s+Current\s*=\s*"3\.0\.5"') { throw 'Incorrect updater version' }
+          Write-Host 'Verified final identity: ZEUVORYX 3.0.5 LAB R5'
       - name: Run adaptive model tests
         shell: pwsh
         run: |

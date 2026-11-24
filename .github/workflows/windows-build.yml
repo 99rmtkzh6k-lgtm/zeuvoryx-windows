@@ -2349,9 +2349,23 @@ jobs:
             installer/ZEUVORYX-Setup-3.0.2.exe
           if-no-files-found: error
 
+  test-updater-macos:
+    runs-on: macos-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+          cache: false
+      - run: go vet ./updater
+      - run: go test -race -count=10 ./updater
+
   publish-test-release:
     if: github.event_name == 'push' && github.ref == 'refs/tags/v3.0.2'
-    needs: build-windows
+    needs: [build-windows, test-updater-macos]
     runs-on: ubuntu-latest
     permissions:
       contents: write

@@ -1,39 +1,23 @@
-# ZEUVORYX 3.0.2 Competitive — Windows (beta)
+# ZEUVORYX Macintosh 3.0.3 LAB — macOS
 
-Projeto experimental de segurança para Windows, em Go. O motor combina heurísticas explicáveis e indicadores SHA-256; não substitui o Microsoft Defender. A IA experimental usa regressão logística treinada com vetores sintéticos; ela não está validada para identificar malware real.
+Scanner complementar experimental, com aplicativo nativo Swift/SwiftUI e motor Go local somente leitura. Created & Engineered by Leonardo A Botelho.
 
-## Compilação e download
+**Estado em 24/11/2026:** pacote Intel (x86_64) aprovado em CI; Apple Silicon (ARM64) ainda sem aprovação, pois o job anterior foi cancelado. Nova tentativa solicitada. Não é equivalente à versão Windows 3.0.5 R5.
 
-1. Abra **Actions → ZEUVORYX 3.0.2 Competitive - Windows Build → Run workflow** e selecione `main`. Um push em `main` também inicia a compilação.
-2. Aguarde a conclusão dos testes e do build.
-3. Em **Artifacts**, baixe **ZEUVORYX-3.0.2-Competitive-Windows**.
-4. Extraia o pacote e use `installer/ZEUVORYX-Setup-3.0.2.exe` ou a edição portátil em `dist/`. A interface desktop utiliza Microsoft WebView2.
+## Compilação e download de laboratório
 
-O binário não é assinado digitalmente. Verifique a procedência e os hashes; teste em Windows Sandbox ou VM com o Defender ativo antes de usar em uma máquina real.
+- [Execução Macintosh 45396837719](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45396837719)
+- [Pacote Intel 3.0.3 LAB](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45396837719/artifacts/14921063483) (3.158.126 bytes; arquivo de Actions sujeito a login e retenção).
+- SHA-256 do artefato Intel: `03eccf1255deb52ffa8a7dc18ae58934dc46b1dbc60d6b028b30acb78081c922`.
+- Apple Silicon: aguardar aprovação do job ARM64 e artefato correspondente; não confundir com pacote Intel.
+- Requisitos: macOS 13 ou posterior, arquitetura correspondente. CI usa macOS 15. DMG com assinatura ad hoc de laboratório, sem Developer ID ou notarização. Não desative Gatekeeper, XProtect nem outras proteções.
 
-## Recursos experimentais
+## Recursos e limites
 
-- Varredura rápida e completa, análise heurística, hashes SHA-256, teste EICAR e inspeção limitada de arquivos ZIP e PE.
-- Fila de varredura paralela limitada, cancelamento, indicadores de cobertura e desempenho e filtros de alertas.
-- Quarentena reversível mediante ação explícita e critérios de elegibilidade.
-- Interface desktop, diagnóstico local voluntário com exportação JSON e integração com recursos de segurança do Windows.
-- Atualização cumulativa do motor e interface em `zeuvoryx_upgrade.py`, aplicada pelo workflow durante a compilação.
+Scanner local somente leitura, hash SHA-256, teste EICAR, alerta de extensão dupla e diagnósticos. Interface em português, inglês e espanhol. Módulos compartilhados de fraude, links, inteligência, reputação e diagnóstico têm testes separados, não equivalem à integração completa na interface. Sem quarentena, remediação, proteção residente, base IOC ativa, IA integrada ao scanner ou atualizador de produção comprovados.
 
-## Desenvolvimento e validação
+CI Intel aprovou dez repetições de testes, race/fuzz, cargas sintéticas, compilação Swift/Go, verificação ad hoc e pacote DMG. Isso não comprova eficácia contra malware real ou funcionamento em todos os Macs.
 
-O workflow `.github/workflows/windows-build.yml` organiza e gera arquivos de código, aplica o script de atualização, executa verificações Go e testes repetidos, compila o executável Windows x64 e gera o instalador. Consulte `LEIA-ME.txt` para instruções e `comparar_relatorios.py` para comparar relatórios equivalentes.
+## Desenvolvimento
 
-Os testes automatizados e avaliações sintéticas não comprovam eficácia contra malware real. O aplicativo completo ainda exige testes em Windows, auditoria e validação independente. Não há garantia de detecção universal, proteção residente própria por driver, VPN ou certificação laboratorial.
-
-## Licença e identidade visual
-
-Código experimental para avaliação e adaptação; consulte as licenças das dependências antes de redistribuir. As imagens conceituais do projeto não comprovam funcionalidades técnicas.
-
-## Novidades da versão 3.0.2 (beta)
-
-- Português brasileiro, inglês e espanhol: interface principal e mensagens selecionadas, detecção do idioma de exibição do Windows, escolha manual persistente e inglês como fallback. Mensagens técnicas externas e partes dos relatórios podem permanecer no idioma original.
-- Adaptive Intelligence Engine 0.1: modelo de regressão logística local treinado em exemplos sintéticos, sem dependências de IA externas. A pontuação é experimental e aparece apenas em alertas heurísticos existentes. Não altera o veredito, não libera nem isola arquivos e não é uma probabilidade de malware.
-- Treinamento supervisionado limitado e testável em código. Não existe aprendizado contínuo em produção, coleta automática de dados ou atualização automática de modelo.
-- Created & Engineered by Leonardo A Botelho: autoria na interface e nos metadados do instalador. Não equivale à assinatura criptográfica Authenticode.
-
-O build e a validação em Windows Sandbox devem ser confirmados antes de distribuição.
+Ramificação: `macintosh-3.0.3-lab`. Workflow: [macintosh-build.yml](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/macintosh-3.0.3-lab/.github/workflows/macintosh-build.yml). Consulte [MEMORANDO_MACINTOSH.md](MEMORANDO_MACINTOSH.md). O trabalho Windows 3.0.5 permanece separado. Não publicar releases de produção sem validação e autorização do titular.

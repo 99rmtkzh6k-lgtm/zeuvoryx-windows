@@ -121,7 +121,7 @@ func retryScanRead(ctx context.Context,read func()([]Finding,error))([]Finding,e
  return read()
 }
 ''',encoding="utf-8")
-edit("engine/scan_upgrade.go",lambda s:one(s,"return s.examine(ctx,path,size)","return retryScanRead(ctx,func()([]Finding,error){return s.examine(ctx,path,size)})"))
+edit("engine/scan_upgrade.go",lambda s:rx(s,r"return\s+s\.examine\(ctx,\s*path,\s*size\)","return retryScanRead(ctx,func()([]Finding,error){return s.examine(ctx,path,size)})"))
 Path("engine/scan_retry_test.go").write_text(r'''package engine
 
 import (

@@ -113,12 +113,17 @@ func CountScanError(r *Report,err error) {
 func retryScanRead(ctx context.Context,read func()([]Finding,error))([]Finding,error) {
  if e:=ctx.Err();e!=nil{return nil,e}
  hits,err:=read()
- category:=ScanErrorCategory(err)
- if category!="sharing_violation"&&category!="lock_violation"{return hits,err}
- timer:=time.NewTimer(25*time.Millisecond)
- defer timer.Stop()
- select{case <-ctx.Done():return nil,ctx.Err();case <-timer.C:}
- return read()
+ // A live Windows desktop can hold temporary files longer than 25 ms.
+ // At most two delayed retries, only for native sharing/lock conflicts.
+ for _,delay:=range []time.Duration{50*time.Millisecond,150*time.Millisecond}{
+  category:=ScanErrorCategory(err)
+  if category!="sharing_violation"&&category!="lock_violation"{return hits,err}
+  timer:=time.NewTimer(delay)
+  select{case <-ctx.Done():timer.Stop();return nil,ctx.Err();case <-timer.C:}
+  if e:=ctx.Err();e!=nil{return nil,e}
+  hits,err=read()
+ }
+ return hits,err
 }
 ''',encoding="utf-8")
 edit("engine/scan_upgrade.go",lambda s:rx(s,r"return\s+s\.examine\(ctx,\s*path,\s*size\)","return retryScanRead(ctx,func()([]Finding,error){return s.examine(ctx,path,size)})"))
@@ -146,6 +151,8 @@ func TestScanRetryBounded(t *testing.T){
  n:=0
  _,err:=retryScanRead(context.Background(),func()([]Finding,error){n++;return nil,fs.ErrPermission})
  if n!=1||!errors.Is(err,fs.ErrPermission){t.Fatal(n,err)}
+ n=0;_,err=retryScanRead(context.Background(),func()([]Finding,error){n++;return nil,fs.ErrNotExist})
+ if n!=1||!errors.Is(err,fs.ErrNotExist){t.Fatal(n,err)}
  ctx,cancel:=context.WithCancel(context.Background());cancel()
  n=0;_,err=retryScanRead(ctx,func()([]Finding,error){n++;return nil,nil})
  if n!=0||!errors.Is(err,context.Canceled){t.Fatal(n,err)}
@@ -154,7 +161,15 @@ func TestScanRetryBounded(t *testing.T){
   n=0;_,err=retryScanRead(context.Background(),func()([]Finding,error){n++;if n==1{return nil,code};return nil,nil})
   if n!=2||err!=nil{t.Fatal(n,err)}
   n=0;_,err=retryScanRead(context.Background(),func()([]Finding,error){n++;return nil,code})
-  if n!=2||err==nil{t.Fatal(n,err)}
+  if n!=3||err==nil{t.Fatal(n,err)}
+  n=0;_,err=retryScanRead(context.Background(),func()([]Finding,error){n++;if n<3{return nil,code};return nil,nil})
+  if n!=3||err!=nil{t.Fatal(n,err)}
+  n=0;_,err=retryScanRead(context.Background(),func()([]Finding,error){n++;if n==1{return nil,code};return nil,fs.ErrNotExist})
+  if n!=2||!errors.Is(err,fs.ErrNotExist){t.Fatal(n,err)}
+  ctx,cancel:=context.WithCancel(context.Background())
+  n=0;_,err=retryScanRead(ctx,func()([]Finding,error){n++;cancel();return nil,code})
+  cancel()
+  if n!=1||!errors.Is(err,context.Canceled){t.Fatal(n,err)}
  }
 }
 ''',encoding="utf-8")

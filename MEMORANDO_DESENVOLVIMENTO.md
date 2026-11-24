@@ -1,4 +1,6 @@
-# Memorando de desenvolvimento — ZEUVORYX Windows
+# Memorando de desenvolvimento — ZEUVORYX Windows e Macintosh
+
+> Situação corrente: Windows 3.0.5 LAB R5 (CI aprovado) e Macintosh 3.0.5 LAB (candidato; Intel aprovado, ARM64 cancelado na tentativa anterior e reteste solicitado). As seções antigas são histórico; consultar ZVX-EVO-002 ao final.
 Atualização de 24/11/2026 — decisão para a etapa posterior aos testes da 3.0.2 Competitive Beta.
 Autoria: Created & Engineered by Leonardo A Botelho.
 
@@ -337,3 +339,12 @@ Pesquisa realizada em fontes públicas de mantenedores nesta revisão. As ferram
 4. Sincronizar documentação, concluir About manualmente pelo titular e verificar valores efetivos. Não publicar release.
 
 Classificação desta etapa: auditoria realizada; atualização documental e instruções de continuidade implementadas após verificação de gravação; ferramentas novas propostas; validação ARM64 e produção pendentes; metadados administrativos bloqueados por capacidade da integração. Preservar histórico e os nove controles ZVX-STD.
+
+
+## ZVX-EVO-002 — conferência de versão e CI (24/11/2026)
+
+Macintosh 3.0.5 LAB: regressão portátil Linux e compilação Intel aprovadas; Apple Silicon ARM64 cancelado na tentativa anterior, sem etapas registradas e com log indisponível (404). Reteste exclusivo solicitado e aceito pelo GitHub em 24/11/2026; resultado ainda não confirmado. Não há causa de código comprovada.
+- Execução [45437873318](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45437873318); job ARM64 original 138600529888. O workflow usa macos-15 para ARM64 e macos-15-intel para Intel, com fail-fast desativado. Não alterar rótulos ou código sem evidência.
+- Windows 3.0.5 LAB R5: compilação [45436304817](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45436304817) confirmada como aprovada. Macintosh 3.0.3 LAB é histórico preservado. A 3.0.5 LAB é o candidato atual, não uma versão aprovada para distribuição integral.
+- Revisão exclusivamente documental; sem mudança de versão, motor, instaladores, permissões, releases ou assinatura. Estados anteriores nos registros históricos não representam a situação atual. Validação em computadores reais, eficácia independente e assinatura de produção seguem pendentes.
+- About/Topics/Website: edição administrativa não disponível nesta integração; instruções permanecem em [ABOUT_GITHUB.md](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/main/ABOUT_GITHUB.md). Conferir campos reais após ação do titular.

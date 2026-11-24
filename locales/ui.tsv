@@ -1,0 +1,166 @@
+# Português|English|Español
+Visão geral|Overview|Vista general
+Alertas|Alerts|Alertas
+Quarentena|Quarantine|Cuarentena
+Autenticidade de vídeo|Video authenticity|Autenticidad de vídeo
+Motor e IA|Engine and AI|Motor e IA
+Ferramentas|Tools|Herramientas
+Segurança Windows|Windows security|Seguridad de Windows
+Motor Defender|Defender engine|Motor Defender
+Links e fraudes|Links and scams|Enlaces y fraudes
+Inteligência de ameaças|Threat intelligence|Inteligencia de amenazas
+Diagnóstico de testes|Test diagnostics|Diagnóstico de pruebas
+Central de segurança|Security center|Centro de seguridad
+Escolha a análise que deseja executar|Choose a scan|Elija un análisis
+Inicializando|Starting|Iniciando
+Minimizar|Minimize|Minimizar
+Bem-vindo ao ZEUVORYX|Welcome to ZEUVORYX|Bienvenido a ZEUVORYX
+Aguardando sua escolha. Nenhuma varredura é iniciada automaticamente.|Waiting for your choice. No scan starts automatically.|Esperando su elección. No se inicia ningún análisis automáticamente.
+Varredura completa|Full scan|Análisis completo
+Varredura rápida|Quick scan|Análisis rápido
+Cancelar|Cancel|Cancelar
+Exportar relatório|Export report|Exportar informe
+Rápida: locais prioritários. Completa: discos locais acessíveis.|Quick: priority locations. Full: accessible local drives.|Rápido: ubicaciones prioritarias. Completo: discos locales accesibles.
+ARQUIVOS ANALISADOS|FILES SCANNED|ARCHIVOS ANALIZADOS
+VOLUME ANALISADO|DATA SCANNED|VOLUMEN ANALIZADO
+ALERTAS DO RELATÓRIO|REPORT ALERTS|ALERTAS DEL INFORME
+Atividade da varredura|Scan activity|Actividad del análisis
+Arquivos examinados por intervalo de atualização de aproximadamente 2 segundos.|Files scanned per approximately 2-second update interval.|Archivos examinados por intervalo de actualización de aproximadamente 2 segundos.
+Velocidade: aguardando medição.|Speed: waiting for measurement.|Velocidad: esperando medición.
+Aguardando medições.|Waiting for measurements.|Esperando mediciones.
+Deseja liberar espaço?|Free up space?|¿Desea liberar espacio?
+Confira os temporários antigos antes de remover.|Review old temporary files before removing them.|Revise los archivos temporales antiguos antes de eliminarlos.
+Revisar limpeza|Review cleanup|Revisar limpieza
+Cobertura da análise|Scan coverage|Cobertura del análisis
+Discos locais fixos; arquivos protegidos ou inacessíveis podem ser ignorados.|Fixed local drives; protected or inaccessible files may be skipped.|Discos locales fijos; los archivos protegidos o inaccesibles pueden omitirse.
+Alertas e resultados|Alerts and results|Alertas y resultados
+Arquivos em quarentena|Quarantined files|Archivos en cuarentena
+O isolamento e a restauração exigem confirmação.|Isolation and restoration require confirmation.|El aislamiento y la restauración requieren confirmación.
+Atualizar lista|Refresh list|Actualizar lista
+Escolher vídeo|Choose video|Elegir vídeo
+Verificar procedência|Verify provenance|Verificar procedencia
+Segurança em camadas|Layered security|Seguridad por capas
+Consultar proteção|Check protection|Consultar protección
+Abrir Segurança do Windows|Open Windows Security|Abrir Seguridad de Windows
+Verificar Windows Update|Check Windows Update|Consultar Windows Update
+Aguardando consulta.|Waiting for request.|Esperando consulta.
+Motor de proteção Microsoft Defender|Microsoft Defender protection engine|Motor de protección Microsoft Defender
+Verificação rápida Defender|Defender quick scan|Análisis rápido de Defender
+Verificação completa Defender|Defender full scan|Análisis completo de Defender
+Atualizar assinaturas Defender|Update Defender signatures|Actualizar firmas de Defender
+Histórico de ameaças|Threat history|Historial de amenazas
+Consultar atualizações pendentes|Check pending updates|Consultar actualizaciones pendientes
+Tratar ameaças ativas|Remediate active threats|Tratar amenazas activas
+Ativar bloqueio de conexões perigosas|Enable dangerous connection blocking|Activar bloqueo de conexiones peligrosas
+Ativar proteção de pastas|Enable folder protection|Activar protección de carpetas
+Aguardando sua escolha. Nenhuma operação iniciada.|Waiting for your choice. No operation started.|Esperando su elección. No se ha iniciado ninguna operación.
+Verificação de links e fraudes|Link and scam checks|Verificación de enlaces y fraudes
+Examinar endereço|Check address|Examinar dirección
+Fraudes financeiras e roubo de identidade|Financial scams and identity theft|Fraudes financieros y robo de identidad
+Examinar mensagem|Check message|Examinar mensaje
+Resposta a incidentes|Incident response|Respuesta a incidentes
+Criptomoedas|Cryptocurrencies|Criptomonedas
+Identidade / contas|Identity / accounts|Identidad / cuentas
+Ferramentas de segurança e manutenção|Security and maintenance tools|Herramientas de seguridad y mantenimiento
+Monitoramento periódico|Periodic monitoring|Monitorización periódica
+Ativar nesta sessão|Enable for this session|Activar en esta sesión
+Limpeza de temporários|Temporary file cleanup|Limpieza de temporales
+Examinar temporários|Check temporary files|Examinar temporales
+Inteligência de ameaças e vulnerabilidades|Threat and vulnerability intelligence|Inteligencia de amenazas y vulnerabilidades
+Consultar e incorporar indicadores|Fetch and import indicators|Consultar e incorporar indicadores
+Importar lista de hashes|Import hash list|Importar lista de hashes
+Validar e incorporar|Validate and import|Validar e incorporar
+Consultar base ativa|Check active database|Consultar base activa
+Reputação de URLs|URL reputation|Reputación de URL
+Validar e salvar lista|Validate and save list|Validar y guardar lista
+Vulnerabilidades exploradas • CISA KEV|Exploited vulnerabilities • CISA KEV|Vulnerabilidades explotadas • CISA KEV
+Consultar catálogo oficial|Check official catalog|Consultar catálogo oficial
+Motor e inteligência artificial|Engine and artificial intelligence|Motor e inteligencia artificial
+ClamAV — segundo motor independente do Defender|ClamAV — second engine independent of Defender|ClamAV — segundo motor independiente de Defender
+Consultar instalação|Check installation|Consultar instalación
+Examinar arquivo com ClamAV|Scan file with ClamAV|Examinar archivo con ClamAV
+Confirme a operação|Confirm operation|Confirme la operación
+Confirmar|Confirm|Confirmar
+Iniciar gravação|Start recording|Iniciar grabación
+Encerrar gravação|Stop recording|Finalizar grabación
+Exportar JSON|Export JSON|Exportar JSON
+Gravação desligada.|Recording off.|Grabación desactivada.
+Estado da análise|Scan status|Estado del análisis
+Filtrar alertas|Filter alerts|Filtrar alertas
+Todos|All|Todos
+Indicador SHA-256|SHA-256 indicator|Indicador SHA-256
+Heurística|Heuristic|Heurística
+Teste EICAR|EICAR test|Prueba EICAR
+Mostrar mais 50|Show 50 more|Mostrar 50 más
+Pronto|Ready|Listo
+Analisando|Scanning|Analizando
+Erro na análise|Scan error|Error de análisis
+Análise encerrada|Scan ended|Análisis finalizado
+Varredura em andamento|Scan in progress|Análisis en curso
+Varredura em andamento.|Scan in progress.|Análisis en curso.
+A análise encontrou um erro|The scan encountered an error|El análisis encontró un error
+Varredura cancelada|Scan canceled|Análisis cancelado
+Varredura concluída|Scan completed|Análisis completado
+Escolha como deseja começar|Choose how to start|Elija cómo empezar
+Nenhum alerta neste relatório.|No alerts in this report.|No hay alertas en este informe.
+Nenhum relatório disponível.|No report available.|No hay informes disponibles.
+Nenhum alerta nesta categoria.|No alerts in this category.|No hay alertas en esta categoría.
+Isolar arquivo|Isolate file|Aislar archivo
+Restaurar|Restore|Restaurar
+Excluir definitivamente|Permanently delete|Eliminar definitivamente
+Nenhum arquivo isolado.|No isolated files.|No hay archivos aislados.
+Arquivo isolado.|File isolated.|Archivo aislado.
+Item excluído da quarentena.|Item deleted from quarantine.|Elemento eliminado de la cuarentena.
+Análise em andamento|Scan in progress|Análisis en curso
+Análise interrompida|Scan interrupted|Análisis interrumpido
+Resultados precisam de revisão|Results need review|Los resultados requieren revisión
+Nenhum alerta no conteúdo examinado|No alerts in scanned content|No hay alertas en el contenido examinado
+Isso não comprova ausência de malware.|This does not prove the absence of malware.|Esto no demuestra la ausencia de malware.
+Métricas disponíveis ao fim da análise.|Metrics available after the scan.|Métricas disponibles al finalizar el análisis.
+Baixo|Low|Bajo
+Moderado|Moderate|Moderado
+Alto|High|Alto
+Crítico|Critical|Crítico
+Indeterminado|Undetermined|Indeterminado
+Ativado|Enabled|Activado
+Desativado|Disabled|Desactivado
+Não verificado|Not verified|No verificado
+Resultado|Result|Resultado
+Avaliação|Assessment|Evaluación
+Indicador|Indicator|Indicador
+Limitação|Limitation|Limitación
+Selecione um vídeo MP4 ou MOV|Select an MP4 or MOV video|Seleccione un vídeo MP4 o MOV
+Cole somente a mensagem suspeita, sem dados pessoais|Paste only the suspicious message, without personal data|Pegue solo el mensaje sospechoso, sin datos personales
+SHA-256 por linha|SHA-256 per line|SHA-256 por línea
+Uma URL por linha|One URL per line|Una URL por línea
+Gráfico de arquivos examinados por intervalo|Chart of files scanned per interval|Gráfico de archivos examinados por intervalo
+Métricas técnicas|Technical metrics|Métricas técnicas
+Análise local de arquivos. Esta versão não bloqueia a execução de malware nem substitui o Microsoft Defender.|Local file scanning. This version does not block malware execution or replace Microsoft Defender.|Análisis local de archivos. Esta versión no bloquea la ejecución de malware ni sustituye a Microsoft Defender.
+Os resultados completos aparecem no fim da varredura. Alertas heurísticos não confirmam infecção.|Complete results appear after the scan. Heuristic alerts do not confirm infection.|Los resultados completos aparecen al finalizar el análisis. Las alertas heurísticas no confirman una infección.
+ZEUVORYX · Beta experimental · Não desative a proteção do Windows.|ZEUVORYX · Experimental beta · Do not disable Windows protection.|ZEUVORYX · Beta experimental · No desactive la protección de Windows.
+A classificação de risco é uma pontuação heurística, não uma probabilidade de infecção.|Risk rating is a heuristic score, not a probability of infection.|La clasificación de riesgo es una puntuación heurística, no una probabilidad de infección.
+Mover para quarentena? Isso pode afetar programas legítimos. |Move to quarantine? This may affect legitimate programs. |¿Mover a cuarentena? Esto puede afectar a programas legítimos. 
+Restaurar arquivo potencialmente perigoso? |Restore a potentially dangerous file? |¿Restaurar un archivo potencialmente peligroso? 
+Excluir definitivamente este item da quarentena? Não será possível restaurar. |Permanently delete this quarantine item? It cannot be restored. |¿Eliminar definitivamente este elemento de cuarentena? No podrá restaurarse. 
+Correspondência com indicador local SHA-256|Local SHA-256 indicator match|Coincidencia con indicador local SHA-256
+Arquivo de teste EICAR (inofensivo)|EICAR test file (harmless)|Archivo de prueba EICAR (inofensivo)
+Indício heurístico: não comprova infecção|Heuristic evidence: does not prove infection|Indicio heurístico: no demuestra una infección
+Revisão manual: isolamento bloqueado neste teste.|Manual review: isolation blocked in this test.|Revisión manual: aislamiento bloqueado en esta prueba.
+Authenticode válido na verificação local (não garante segurança)|Valid Authenticode in local verification (does not guarantee safety)|Authenticode válido en verificación local (no garantiza seguridad)
+Assinatura não verificada; pode estar em catálogo do Windows|Signature not verified; may be in the Windows catalog|Firma no verificada; puede estar en el catálogo de Windows
+Nenhuma varredura foi iniciada. Selecione a análise rápida ou completa, ou use o menu lateral.|No scan has started. Select a quick or full scan, or use the side menu.|No se ha iniciado ningún análisis. Seleccione un análisis rápido o completo, o use el menú lateral.
+Você pode minimizar esta janela enquanto os arquivos são examinados.|You can minimize this window while files are scanned.|Puede minimizar esta ventana mientras se examinan los archivos.
+Verifique os resultados e os itens não examinados.|Review the results and unscanned items.|Revise los resultados y los elementos no examinados.
+Não é possível concluir sobre todo o escopo.|No conclusion can be drawn about the entire scope.|No se puede concluir sobre todo el alcance.
+Proteção residente: consulte o Windows|Resident protection: check Windows|Protección residente: consulte Windows
+ZEUVORYX ainda não executou uma análise nesta sessão.|ZEUVORYX has not run a scan in this session.|ZEUVORYX aún no ha realizado un análisis en esta sesión.
+Aguardando o relatório final. A proteção residente depende do Windows.|Waiting for the final report. Resident protection depends on Windows.|Esperando el informe final. La protección residente depende de Windows.
+A cobertura final será informada após a análise.|Final coverage will be reported after the scan.|La cobertura final se informará después del análisis.
+Nenhuma seleção de escopo ainda|No scan scope selected yet|Aún no se ha seleccionado un alcance
+Velocidade: varredura parada.|Speed: scan stopped.|Velocidad: análisis detenido.
+Velocidade: |Speed: |Velocidad: 
+Relatório salvo em: |Report saved to: |Informe guardado en: 
+ itens ignorados ou não examinados. | items skipped or not scanned. | elementos omitidos o no examinados. 
+ arquivos/s · | files/s · | archivos/s · 
+ hashes distintos| distinct hashes| hashes distintos
+ arquivos no último intervalo medido.| files in the last measured interval.| archivos en el último intervalo medido.

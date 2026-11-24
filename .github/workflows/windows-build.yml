@@ -2,8 +2,9 @@ name: ZEUVORYX 3.0.1 Competitive - Windows Build
 
 on:
   push:
-    branches: [main, zeuvoryx-3.0.1-competitive]
+    branches: [zeuvoryx-3.0.1-competitive]
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
@@ -17,6 +18,15 @@ jobs:
       CGO_ENABLED: '0'
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref == 'refs/heads/zeuvoryx-3.0.1-competitive' && github.sha || 'refs/heads/zeuvoryx-3.0.1-competitive' }}
+          persist-credentials: false
+      - name: Verify checked out Competitive source
+        shell: pwsh
+        run: |
+          git log -1 --format='%H %s'
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot identify source commit' }
+          if (!(Test-Path -LiteralPath 'zeuvoryx_upgrade.py' -PathType Leaf)) { throw 'Wrong source: Competitive upgrade missing' }
       - uses: actions/setup-go@v5
         with:
           go-version: '1.24.x'

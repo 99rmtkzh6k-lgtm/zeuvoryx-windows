@@ -1,0 +1,5 @@
+package adaptive
+import "testing"
+func TestLab50PatternSpace(t *testing.T){seen:=map[int]bool{};for a:=0;a<2;a++{for b:=0;b<2;b++{for c:=0;c<5;c++{for d:=0;d<3;d++{for e:=0;e<3;e++{i:=patternIndex(Vector{float64(a),float64(b),float64(c)/4,float64(d)/2,float64(e)/2});if i<0||i>=patternCount||seen[i]{t.Fatal(i)};seen[i]=true}}}}};if len(seen)!=patternCount{t.Fatal(len(seen))}}
+func TestLab50Accounting(t *testing.T){r,e:=RunLab50(2000,2000,3000,1000,nil);if e!=nil{t.Fatal(e)};s,e:=RunLab50(2000,2000,3000,1000,nil);if e!=nil||r!=s{t.Fatal("reproducibility",e)};if !r.SyntheticOnly||r.Validation.Candidate.total()!=2000||r.NominalTest.Candidate.total()!=3000||r.ShiftTest.Candidate.total()!=1000{t.Fatal("accounting")};for _,v:=range []struct{f [10]Comparison;n int}{{r.NominalFamilies,3000},{r.ShiftFamilies,1000}}{n:=0;for _,f:=range v.f{n+=f.Candidate.total()};if n!=v.n{t.Fatal(n)}}}
+func TestLab50StrictGate(t *testing.T){b:=Counts{TP:90,TN:90,FP:10,FN:10};if strictGate(b,Counts{TP:89,TN:100,FP:0,FN:11})||strictGate(b,Counts{TP:100,TN:89,FP:11,FN:0})||!strictGate(b,b){t.Fatal("gate")}}

@@ -1,5 +1,8 @@
 # ZEUVORYX 3.0.6 LAB R1 — Olympus Silver
 
+> **24/11/2026 — Windows 3.0.7 LAB R1, em desenvolvimento (não liberado):** correção experimental do parser PE baseada nos relatórios 3.0.6; 30 rodadas locais de testes do componente aprovadas. CI integral, estabilidade em Windows real, desempenho, cobertura e instalação/migração pendentes. [Ramificação candidata](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/windows-3.0.7-lab) · [Memorando ZVX-EVO-019](MEMORANDO_DESENVOLVIMENTO.md). Não há instalador 3.0.7 para download. Links anteriores são históricos de laboratório.
+
+
 Scanner complementar de segurança para Windows x64, desenvolvido em Go, com interface desktop, análise de arquivos e links, quarentena reversível e IA consultiva experimental. **Created & Engineered by Leonardo A Botelho.**
 
 [![Windows LAB R5](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/workflows/windows-build-lab-306.yml/badge.svg?branch=windows-3.0.6-lab)](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/workflows/windows-build-lab-306.yml)

@@ -1,0 +1,12 @@
+name: ZEUVORYX EVO-014 performance candidate
+run-name: ZEUVORYX EVO-014 performance LAB Windows x64
+on:
+  push:
+    branches: [lab-performance-evo014]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    if: github.ref == 'refs/heads/lab-performance-evo014'
+    uses: ./.github/workflows/windows-build.yml

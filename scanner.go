@@ -116,6 +116,11 @@ func entropy(b []byte) float64 {
 	}
 	return out
 }
+// Compute entropy only for extensions to which this rule applies.
+// Reordering pure predicates preserves the exact heuristic decision.
+func highEntropyScript(ext string, data []byte) bool {
+	return riskyExtensions[ext] && len(data) >= 4096 && entropy(data) > 7.8
+}
 func tier(score int) string {
 	if score >= 80 {
 		return "critical"
@@ -148,7 +153,7 @@ func analyze(path string, data []byte, fullHash string, ioc map[string]string) *
 			reasons = append(reasons, rule.label)
 		}
 	}
-	if len(data) >= 4096 && entropy(data) > 7.8 && riskyExtensions[ext] {
+	if highEntropyScript(ext, data) {
 		score += 15
 		reasons = append(reasons, "Entropia elevada em script")
 	}

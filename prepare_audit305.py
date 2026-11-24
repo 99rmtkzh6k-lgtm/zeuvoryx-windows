@@ -200,3 +200,20 @@ func TestScanRetryBounded(t *testing.T){
  }
 }
 ''',encoding="utf-8")
+
+
+# ZVX-EVO-017 Windows candidate: lifecycle diagnostics and resource pressure.
+# Runs on the actual generated Windows source, not just the legacy root scanner.
+def stability_main(s):
+    s=one(s,'func main() {','func main() {\n    defer startStabilityDiagnostics()()')
+    s=rx(s,r'workers\s*:=\s*runtime\.NumCPU\(\)','workers := stabilityWorkers(runtime.NumCPU())')
+    s=rx(s,r'runDesktop\(state,\s*\*auto\)','defer watchStability(state)()\n        runDesktop(state, *auto)')
+    s=one(s,'scanID,idErr:=audit.NewID()','scanID,idErr:=audit.NewID()') if 'scanID,idErr:=audit.NewID()' in s else s
+    s=rx(s,r'started\s*:=\s*time\.Now\(\)\s*\n\s*store,storeErr\s*:=\s*audit\.Default\(\)','started:=time.Now()\n    log.Printf("stability scan_start mode=%s",mode)\n    store,storeErr:=audit.Default()')
+    s=one(s,'s.report = rep','log.Printf("stability scan_end files=%d bytes=%d cancelled=%t partial=%t errors=%d",rep.Files,rep.Bytes,rep.Cancelled,rep.Partial,rep.ErrorCount)\n    s.report = rep')
+    return s
+def stability_desktop(s):
+    s=one(s,'import (','import (\n "log"')
+    return one(s,'w.Run()','log.Print("stability webview_loop_enter")\n    w.Run()\n    log.Print("stability webview_loop_return")')
+edit("main.go",stability_main)
+edit("desktop_windows.go",stability_desktop)

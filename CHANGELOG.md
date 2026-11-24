@@ -78,3 +78,7 @@ Macintosh 3.0.5 LAB: regressão portátil Linux e compilação Intel aprovadas; 
 - ZVX-EVO-015: incidente de encerramento simultâneo reportado em dois PCs Windows; investigação crítica, diagnóstico local e testes de estabilidade previstos. EVO-013 CI aprovado, causa do encerramento ainda desconhecida.
 
 - ZVX-EVO-016: investigação de encerramentos na varredura completa; candidato de contenção de panic recuperável por arquivo e teste, sem causa confirmada; CI pendente.
+
+
+### 3.0.5 LAB — candidato EVO-017 (não publicado)
+- Diagnóstico local de encerramento, checkpoints numéricos e perfil de memória/concorrência para Windows de dois núcleos. Causa e eficácia ainda pendentes de CI e piloto.

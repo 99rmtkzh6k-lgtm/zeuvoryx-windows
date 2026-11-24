@@ -3,7 +3,7 @@ run-name: ZEUVORYX 3.0.5 LAB R5 Olympus Silver - Windows x64
 
 on:
   push:
-    branches: [main, security-3.0.5-lab]
+    branches: [main, security-3.0.5-lab, lab-stability-evo017]
   workflow_dispatch:
 
 permissions:
@@ -11,5 +11,5 @@ permissions:
 
 jobs:
   build-lab-305:
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/security-3.0.5-lab'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/security-3.0.5-lab' || github.ref == 'refs/heads/lab-stability-evo017'
     uses: ./.github/workflows/windows-build.yml

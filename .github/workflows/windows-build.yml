@@ -1,4 +1,4 @@
-name: ZEUVORYX 2.6 Olympus Desktop
+name: ZEUVORYX 3.0 Olympus Fortified - Fraud and Remediation
 
 on:
   push:
@@ -252,7 +252,7 @@ jobs:
           func runDesktop(s *State, _ bool) {
           	runtime.LockOSThread()
           	defer runtime.UnlockOSThread()
-          	w := webview.NewWithOptions(webview.WebViewOptions{Debug: false, AutoFocus: true, WindowOptions: webview.WindowOptions{Title: "ZEUVORYX | Olympus 2.6", Width: 920, Height: 650, Center: true}})
+          	w := webview.NewWithOptions(webview.WebViewOptions{Debug: false, AutoFocus: true, WindowOptions: webview.WindowOptions{Title: "ZEUVORYX | Olympus 3.0", Width: 920, Height: 650, Center: true}})
           	if w == nil {
           		desktopError("Não foi possível inicializar a interface. Verifique a instalação do Microsoft WebView2 Runtime.")
           		return
@@ -267,6 +267,16 @@ jobs:
           	}()
           	w.SetSize(540, 400, webview.HintMin)
               desktopUser.NewProc("ShowWindow").Call(uintptr(w.Window()), 3)
+              nativeCtx, stopNative := context.WithCancel(context.Background())
+              defer stopNative()
+              native := &defenderController{ctx:nativeCtx, run:runDefenderOperation}
+              var operationGate sync.Mutex
+              startLocal := func(path string) (bool,error) {
+                  operationGate.Lock(); defer operationGate.Unlock()
+                  if native.status().Running { return false,fmt.Errorf("Aguarde a operação do Windows") }
+                  if !s.startScan(path,true) { return false,fmt.Errorf("Varredura já em andamento") }
+                  return true,nil
+              }
               var monitorEnabled atomic.Bool
               monitorCtx, stopMonitor := context.WithCancel(context.Background())
               defer stopMonitor()
@@ -275,9 +285,9 @@ jobs:
                   for { select {
                   case <-monitorCtx.Done(): return
                   case <-ticker.C:
-                      if !monitorEnabled.Load() { continue }
+                      if !monitorEnabled.Load() || native.status().Running { continue }
                       s.mu.Lock(); ready := !s.running && len(s.report.Findings)==0; s.mu.Unlock()
-                      if ready { s.startScan(":quick:", true) }
+                      if ready { _, _ = startLocal(":quick:") }
                   } }
               }()
               var cleanupMu sync.Mutex
@@ -313,13 +323,58 @@ jobs:
                   s.mu.Lock(); defer s.mu.Unlock(); if s.running { return false,fmt.Errorf("Aguarde a varredura") }
                   e:=deleteIsolated(s.quarantine.Dir,id);return e==nil,e
               }) { return }
-              if !bind("assessLink", assessLink) { return }
+          
               if !bind("windowsSecurityAudit", windowsSecurityAudit) { return }
               if !bind("openSecuritySettings", openSecuritySettings) { return }
-              if !bind("startScan", func() bool { return s.startScan("", true) }) {
+              if !bind("nativeStart", func(op string) (bool,error) {
+                  operationGate.Lock(); defer operationGate.Unlock()
+                  s.mu.Lock(); defer s.mu.Unlock()
+                  if s.running { return false,fmt.Errorf("Encerre a varredura ZEUVORYX antes de executar outra operação") }
+                  e:=native.start(op);return e==nil,e
+              }) { return }
+              if !bind("nativeStatus", native.status) { return }
+              if !bind("assessFraud", assessFraud) { return }
+              if !bind("incidentPlan", incidentPlan) { return }
+              var intelClientInstance = intelClient()
+              snapshotPath,snapshotErr:=intelSnapshotPath()
+              snapshot:=newIntelSnapshot()
+              if snapshotErr==nil { snapshot,snapshotErr=loadSnapshot(snapshotPath) }
+              if snapshotErr==nil { merged,e:=mergeIntel(s.scanner.IOC,snapshot.Hashes);snapshotErr=e;if e==nil{s.scanner.IOC=merged} }
+              var lastIntelSync time.Time
+              if !bind("assessLink",func(raw string)(LinkAssessment,error){s.mu.Lock();defer s.mu.Unlock();return assessWithReputation(raw,snapshot.URLs)}){return}
+              if !bind("importReputation",func(raw string)(int,error){
+                  urls,e:=parseReputationList(raw);if e!=nil{return 0,e};s.mu.Lock();defer s.mu.Unlock()
+                  if snapshotErr!=nil{return 0,fmt.Errorf("Base local indisponível: %v",snapshotErr)}
+                  next:=snapshot;next.URLs=urls;next.Updated=time.Now();if e=saveSnapshot(snapshotPath,next);e!=nil{return 0,e};snapshot=next;return len(urls),nil
+              }){return}
+              if !bind("clamStatus",func()string{if _,e:=clamExecutable();e!=nil{return e.Error()};return "ClamAV localizado; base e operação serão verificadas ao examinar arquivo"}){return}
+              if !bind("chooseClamFile",chooseClamFile){return}
+              if !bind("clamScanFile",func(path string)(map[string]any,error){operationGate.Lock();defer operationGate.Unlock();s.mu.Lock();running:=s.running;s.mu.Unlock();if running||native.status().Running{return nil,fmt.Errorf("Aguarde a operação atual")};return clamScanFile(path)}){return}
+              applyIntel := func(added map[string]string, remote bool) (map[string]any,error) {
+                  operationGate.Lock(); defer operationGate.Unlock()
+                  s.mu.Lock(); defer s.mu.Unlock()
+                  if s.running || native.status().Running {return nil,fmt.Errorf("Aguarde o fim das operações de varredura")}
+                  merged,e:=mergeIntel(s.scanner.IOC,added);if e!=nil{return nil,e}
+                  if snapshotErr!=nil{return nil,fmt.Errorf("Base local indisponível: %v",snapshotErr)}
+                  next:=snapshot;next.Hashes=merged;next.Updated=time.Now();if e=saveSnapshot(snapshotPath,next);e!=nil{return nil,e};snapshot=next
+                  delta:=len(merged)-len(s.scanner.IOC);s.scanner.IOC=merged
+                  if remote {lastIntelSync=time.Now()}
+                  return map[string]any{"added":delta,"total":len(merged),"sourceRecords":len(added)},nil
+              }
+              if !bind("intelStatus",func()map[string]any{
+                  s.mu.Lock();defer s.mu.Unlock();errText:="";if snapshotErr!=nil{errText=snapshotErr.Error()};return map[string]any{"total":len(s.scanner.IOC),"lastSync":lastIntelSync,"savedAt":snapshot.Updated,"urls":len(snapshot.URLs),"storageError":errText}
+              }){return}
+              if !bind("importThreatHashes",func(raw string)(map[string]any,error){
+                  v,e:=parseHashList(raw);if e!=nil{return nil,e};return applyIntel(v,false)
+              }){return}
+              if !bind("syncThreatHashes",func(key string)(map[string]any,error){
+                  v,e:=fetchBazaar(nativeCtx,intelClientInstance,key);if e!=nil{return nil,e};return applyIntel(v,true)
+              }){return}
+              if !bind("checkKnownCVE",func(id string)(kevResult,error){return fetchKEV(nativeCtx,intelClientInstance,id)}){return}
+              if !bind("startScan", func() (bool,error) { return startLocal("") }) {
           		return
           	}
-          	if !bind("startQuickScan", func() bool { return s.startScan(":quick:", true) }) { return }
+          	if !bind("startQuickScan", func() (bool,error) { return startLocal(":quick:") }) { return }
           	if !bind("chooseVideo", chooseVideo) { return }
           	if !bind("verifyVideo", verifyVideo) { return }
           	if !bind("stopScan", func() bool {
@@ -443,6 +498,15 @@ jobs:
               b,e:=cmd.Output(); if e!=nil{return "",e}; return strings.TrimSpace(string(b)),nil
           }
           
+          func chooseClamFile() (string,error) {
+              ps := filepath.Join(os.Getenv("SystemRoot"),"System32","WindowsPowerShell","v1.0","powershell.exe")
+              script := `[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false); Add-Type -AssemblyName System.Windows.Forms; $d = New-Object System.Windows.Forms.OpenFileDialog; $d.Filter = 'Todos os arquivos|*.*'; $d.CheckFileExists = $true; if ($d.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) { [Console]::WriteLine($d.FileName) }; $d.Dispose()`
+              ctx,cancel:=context.WithTimeout(context.Background(),5*time.Minute); defer cancel()
+              cmd:=exec.CommandContext(ctx,ps,"-NoProfile","-STA","-Command",script)
+              cmd.SysProcAttr=&syscall.SysProcAttr{HideWindow:true}
+              b,e:=cmd.Output(); if e!=nil{return "",e}; return strings.TrimSpace(string(b)),nil
+          }
+          
           type limitedMediaOutput struct { b bytes.Buffer; n int }
           func (w *limitedMediaOutput) Write(p []byte)(int,error){
               if len(p)>w.n { return 0,fmt.Errorf("relatório excedeu o limite de segurança") }
@@ -470,7 +534,7 @@ jobs:
           }
           '@
           [IO.File]::WriteAllText((Join-Path $PWD 'desktop_windows.go'), $source, $utf8)
-
+          
           $source = @'
           <!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:;"><title>ZEUVORYX</title><style>
           :root{color-scheme:dark;--bg:#080e1b;--panel:#111c30;--line:#24344f;--muted:#9eafc9;--cyan:#53e4d0;--blue:#628fff}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% 0%,#192b49 0%,#080e1b 55%);color:#eef4ff;font:15px 'Segoe UI',sans-serif}button{font:inherit;cursor:pointer;border:1px solid #3c5275;border-radius:10px;padding:11px 16px;background:#18263d;color:#edf5ff;font-weight:600}button.primary{background:#62dfd1;color:#081e25;border:0}button:disabled{opacity:.4;cursor:default}button:hover:not(:disabled){filter:brightness(1.13)}button:focus-visible{outline:3px solid #86b8ff;outline-offset:3px}.shell{display:grid;grid-template-columns:216px minmax(0,1fr);min-height:100vh}aside{background:#0b1425;padding:26px 17px;border-right:1px solid var(--line)}.brand{display:flex;align-items:center;gap:11px;font-size:19px;font-weight:800;letter-spacing:1px}.brand svg{width:38px;height:42px;flex:none}.tag{font-size:11px;letter-spacing:2px;color:var(--muted);margin:12px 0 34px}.nav{display:grid;gap:9px}.nav button{text-align:left;background:transparent;border-color:transparent;color:#aebed6}.nav button.active{color:#e5fdfb;border-color:#29465a;background:#15313e}.note{font-size:12px;line-height:1.6;color:var(--muted);margin-top:32px}main{padding:29px 30px;min-width:0}header{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:23px}h1,h2,p{margin:0}h1{font-size:28px;letter-spacing:-.6px}h2{font-size:17px}.sub{color:var(--muted);margin-top:7px;font-size:13px}.pill{border:1px solid #344865;padding:8px 12px;border-radius:99px;font-size:12px;color:#b6c7e1;white-space:nowrap}.hero{background:linear-gradient(120deg,#10263b,#182a47 65%,#142038);border:1px solid #304968;border-radius:20px;padding:25px;display:flex;align-items:center;gap:25px;margin-bottom:18px;overflow:hidden}.ring{width:112px;height:112px;flex:none;display:grid;place-items:center;position:relative}.ring svg{width:112px;height:112px;position:absolute;inset:0}.ring .arc{transform-origin:60px 60px;stroke-dasharray:65 211;stroke-dashoffset:0}.scanning .arc{animation:spin 1.8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.scanning .arc{animation:none}}.ring span{font-size:35px;color:var(--cyan)}.hero h2{font-size:24px}.hero p{color:#b7c7e2;line-height:1.5;margin:8px 0 17px}.actions{display:flex;flex-wrap:wrap;gap:8px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:18px}.card{padding:19px;border:1px solid var(--line);border-radius:15px;background:var(--panel)}.label{color:var(--muted);font-size:12px;letter-spacing:.4px}.metric{font-size:30px;font-weight:700;margin-top:8px;overflow-wrap:anywhere}.chart{margin-bottom:16px}.chart svg{width:100%;height:145px;margin-top:15px;display:block}.chart text{fill:#9eafc9;font-size:10px}.list{display:grid;gap:10px;margin-top:15px}.entry{border:1px solid var(--line);border-radius:12px;padding:13px;background:#101a2d;overflow-wrap:anywhere}.entry p{color:var(--muted);font-size:12px;margin:8px 0;line-height:1.5}.entry button{font-size:12px;padding:7px 11px}.risk{color:#ffba88;font-weight:700}.muted{color:var(--muted);font-size:13px}.hidden{display:none!important}#msg{min-height:22px;color:#ffd29b;font-size:13px;margin-top:10px;overflow-wrap:anywhere}dialog{max-width:500px;background:#14233a;color:#edf5ff;border:1px solid #496286;border-radius:16px;padding:24px}dialog::backdrop{background:#000a}dialog p{margin:12px 0 18px;overflow-wrap:anywhere}footer{font-size:12px;color:var(--muted);margin-top:18px;line-height:1.6}@media(max-width:900px){.shell{grid-template-columns:175px minmax(0,1fr)}main{padding:22px 16px}.metric{font-size:23px}.hero{gap:15px;padding:17px}.ring{width:94px;height:94px}.ring svg{width:94px;height:94px}}
@@ -481,17 +545,50 @@ jobs:
           html,body{width:100%;height:100%;overflow:hidden}body{font-size:14px}.shell{height:100vh;min-height:0;grid-template-columns:184px minmax(0,1fr);overflow:hidden}aside{padding:14px 10px;overflow-y:auto;min-height:0}.brand{font-size:16px;gap:7px}.brand svg{width:30px;height:34px}.tag{margin:5px 0 14px}.nav{gap:4px}.nav button{padding:9px 10px;font-size:13px}.note{margin-top:10px;font-size:11px}.zeus-art{height:110px;margin:10px 0 4px}main{padding:14px 16px;overflow-y:auto;min-height:0;min-width:0}header{margin-bottom:12px;gap:8px}h1{font-size:22px}.hero{padding:14px;gap:12px;border-radius:14px;margin-bottom:12px}.hero>div:last-child{min-width:0;flex:1}.hero h2{font-size:19px}.hero p{margin:5px 0 9px;font-size:13px}.ring,.ring svg{width:70px;height:70px}.ring span{font-size:25px}.actions{display:flex;flex-wrap:wrap;gap:6px}.actions button{padding:9px 11px;font-size:13px}.mode-help{font-size:11px!important;color:var(--muted);margin:8px 0 0!important}.grid{gap:8px;margin-bottom:10px}.card{padding:12px;border-radius:12px;min-width:0}.metric{font-size:24px;margin-top:5px}.label{font-size:10px}.chart{margin-bottom:10px}.chart svg{height:90px;margin-top:6px}.chart .sub{font-size:11px}.speed{margin-top:3px}.pill{padding:6px 8px;font-size:11px}.sub{margin-top:4px}.muted{font-size:12px}footer{margin-top:9px;font-size:11px}#msg{min-height:0;margin-top:6px}.media-field{max-width:100%}dialog{width:min(92vw,500px)}
           @media(max-width:720px){.shell{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}aside{padding:8px 10px;border-right:0;border-bottom:1px solid var(--line);overflow:visible}.brand{font-size:14px}.brand svg{width:24px;height:25px}.tag,.note,.zeus-art{display:none}.nav{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}.nav button{font-size:11px;padding:6px 8px}main{padding:10px}.hero{gap:8px;padding:10px}.ring,.ring svg{width:50px;height:50px}.ring span{font-size:20px}.hero h2{font-size:17px}header{flex-wrap:wrap}h1{font-size:19px}.metric{font-size:19px}.label{font-size:9px}.grid{gap:5px}.card{padding:9px}.chart svg{height:72px}}
           @media(max-height:610px){.zeus-art{height:75px}.note{display:none}.chart svg{height:64px}.chart .sub{display:none}header{margin-bottom:8px}.hero{margin-bottom:8px}.grid{margin-bottom:8px}}
-          </style></head><body><div class="shell"><aside><div class="brand"><svg viewBox="0 0 64 72" fill="none" aria-hidden="true"><path d="M32 4 58 14v22c0 16-10 27-26 34C16 63 6 52 6 36V14Z" fill="#15384c" stroke="#53e4d0" stroke-width="3"/><path d="M17 23h30L22 48h25" stroke="#e8fffd" stroke-width="6" stroke-linejoin="round"/></svg>ZEUVORYX</div><div class="tag">OLYMPUS 2.6</div><nav class="nav"><button class="active" data-page="overview">Visão geral</button><button data-page="alerts">Alertas</button><button data-page="quarantine">Quarentena</button><button data-page="media">Autenticidade de vídeo</button><button data-page="engine">Motor e IA</button><button data-page="tools">Ferramentas</button><button data-page="security">Segurança Windows</button><button data-page="links">Links e fraudes</button></nav><img class="zeus-art" src="__COVER__" alt="Arte original do ZEUVORYX"><p class="note">Análise local de arquivos. Esta versão não bloqueia a execução de malware nem substitui o Microsoft Defender.</p></aside><main><header><div><h1>Central de segurança</h1><p class="sub">Escolha a análise que deseja executar</p></div><div class="actions"><div class="pill" id="badge">Inicializando</div><button id="minimize">Minimizar</button></div></header><section id="overview"><div class="hero" id="hero"><div class="ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="44" fill="none" stroke="#30445d" stroke-width="6"/><circle class="arc" cx="60" cy="60" r="44" fill="none" stroke="#53e4d0" stroke-width="6" stroke-linecap="round"/></svg><span>⌁</span></div><div><h2 id="stateTitle">Bem-vindo ao ZEUVORYX</h2><p id="stateText">Aguardando sua escolha. Nenhuma varredura é iniciada automaticamente.</p><div class="actions"><button id="start" disabled>Varredura completa</button><button id="quick" class="primary" disabled>Varredura rápida</button><button id="stop" disabled>Cancelar</button><button id="export" disabled>Exportar relatório</button></div><p class="mode-help">Rápida: locais prioritários. Completa: discos locais acessíveis.</p></div></div><div class="grid"><div class="card"><div class="label">ARQUIVOS ANALISADOS</div><div class="metric" id="files">0</div></div><div class="card"><div class="label">VOLUME ANALISADO</div><div class="metric" id="bytes">0 B</div></div><div class="card"><div class="label">ALERTAS DO RELATÓRIO</div><div class="metric" id="hits">—</div></div></div><div class="card chart"><h2>Atividade da varredura</h2><p class="sub">Arquivos examinados por intervalo de atualização de aproximadamente 2 segundos.</p><svg viewBox="0 0 600 140" preserveAspectRatio="none" role="img" aria-label="Gráfico de arquivos examinados por intervalo"><path d="M35 10H590M35 65H590M35 120H590" stroke="#2c405d" fill="none" stroke-dasharray="4 5"/><text x="0" y="15" id="chartMax">0</text><text x="8" y="123">0</text><polyline id="curve" points="" fill="none" stroke="#53e4d0" stroke-width="2.6" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg><p class="speed" id="speed">Velocidade: aguardando medição.</p><p class="muted" id="activity">Aguardando medições.</p></div><div id="afterScan" class="card hidden"><h2>Deseja liberar espaço?</h2><p class="sub">Confira os temporários antigos antes de remover.</p><button id="afterCleanup">Revisar limpeza</button></div><div class="card"><h2>Cobertura da análise</h2><p class="sub" id="scope">Discos locais fixos; arquivos protegidos ou inacessíveis podem ser ignorados.</p><p class="sub" id="skipped"></p></div></section><section id="alerts" class="hidden card"><h2>Alertas e resultados</h2><p class="sub">Os resultados completos aparecem no fim da varredura. Alertas heurísticos não confirmam infecção.</p><div id="findings" class="list"></div></section><section id="quarantine" class="hidden card"><h2>Arquivos em quarentena</h2><p class="sub">O isolamento e a restauração exigem confirmação.</p><div id="qitems" class="list"></div><button id="refreshQ">Atualizar lista</button></section><section id="media" class="hidden card"><h2>Autenticidade de vídeo</h2><p class="sub">Verificação C2PA de procedência digital, não um detector neural de deepfakes. A análise pode consultar referências remotas de credenciais. A falta de credenciais é inconclusiva.</p><input class="media-field" id="videoPath" placeholder="Selecione um vídeo MP4 ou MOV" readonly><div class="actions"><button id="chooseVideo">Escolher vídeo</button><button id="checkVideo" class="primary">Verificar procedência</button></div><p id="videoStatus" class="sub" role="status"></p><pre class="media-report" id="videoResult"></pre></section><section id="security" class="hidden card"><h2>Segurança em camadas</h2><p class="sub">Diagnóstico somente leitura do Microsoft Defender, firewall e versão do Windows. Não é um firewall próprio, nem uma auditoria de vulnerabilidades CVE.</p><div class="actions" style="margin:15px 0"><button id="auditWindows" class="primary">Consultar proteção</button><button id="openSecurity">Abrir Segurança do Windows</button><button id="openUpdates">Verificar Windows Update</button></div><p id="auditState" class="sub" role="status">Aguardando consulta.</p><div id="auditReport" class="list"></div></section><section id="links" class="hidden card"><h2>Verificação de links e fraudes</h2><p class="sub">Examina a estrutura do endereço sem acessar o site, consultar DNS ou enviar dados. Não é reputação online nem bloqueio automático de phishing. HTTPS não garante que um site seja legítimo.</p><input id="urlCheck" class="media-field" type="text" maxlength="8192" placeholder="https://..." autocomplete="off" spellcheck="false"><button id="checkLink" class="primary">Examinar endereço</button><div id="linkReport" class="list" role="status"></div></section><section id="tools" class="hidden card"><h2>Ferramentas de segurança e manutenção</h2><p class="sub">A limpeza é opcional. Não alteramos registro, perfis de navegador ou arquivos do sistema.</p><div class="entry"><h2>Monitoramento periódico</h2><p class="sub">Varredura rápida a cada 5 minutos, enquanto o aplicativo estiver aberto, inclusive minimizado. Pausa se houver análise ou alertas pendentes. Não bloqueia malware antes da execução.</p><label><input type="checkbox" id="monitor"> Ativar nesta sessão</label></div><div class="entry"><h2>Limpeza de temporários</h2><p class="sub">Localiza arquivos .tmp do usuário com mais de 7 dias. Você confirma antes de remover.</p><button id="previewCleanup">Examinar temporários</button><p id="cleanupResult" class="sub"></p></div></section><section id="engine" class="hidden card"><h2>Motor e inteligência artificial</h2><p class="sub">Motor atual: SHA-256, regras heurísticas e análise PE. Modelo treinado de malware: não instalado. Detector neural de vídeo: não instalado. C2PA: verificador de procedência digital separado.</p><img class="mythic" src="__PANEL__" alt="Arte original do painel mitológico"><p class="sub">A classificação de risco é uma pontuação heurística, não uma probabilidade de infecção.</p></section><p id="msg" role="status"></p><footer>ZEUVORYX · Beta experimental · Não desative a proteção do Windows.</footer></main></div><dialog id="confirmBox"><h2>Confirme a operação</h2><p id="confirmText"></p><div class="actions"><button id="no">Cancelar</button><button id="yes" class="primary">Confirmar</button></div></dialog><script>
-          'use strict';const el=id=>document.getElementById(id),fmt=n=>Number(n||0).toLocaleString('pt-BR');let last=null,series=[],key='',busy=false,confirmResolve=null;function volume(n){if(n>=1073741824)return (n/1073741824).toFixed(2)+' GB';if(n>=1048576)return (n/1048576).toFixed(1)+' MB';if(n>=1024)return (n/1024).toFixed(1)+' KB';return fmt(n)+' B'}function node(tag,text,cls){let x=document.createElement(tag);x.textContent=text;if(cls)x.className=cls;return x}function ask(text){el('confirmText').textContent=text;el('confirmBox').showModal();return new Promise(r=>confirmResolve=r)}function closeConfirm(ok){el('confirmBox').close();const r=confirmResolve;confirmResolve=null;if(r)r(ok)}el('yes').onclick=()=>closeConfirm(true);el('no').onclick=()=>closeConfirm(false);el('confirmBox').oncancel=e=>{e.preventDefault();closeConfirm(false)};async function action(fn){try{el('msg').textContent='';await fn()}catch(e){el('msg').textContent=String(e)}}function chart(n,running){if(last!==null&&n<last){series=[];last=null}if(running&&last!==null){series.push(Math.max(0,n-last));if(series.length>40)series.shift()}last=n;const max=Math.max(1,...series);el('chartMax').textContent=fmt(Math.max(0,...series));el('curve').setAttribute('points',series.map((v,i)=>`${35+i*555/Math.max(1,series.length-1)},${120-110*v/max}`).join(' '));el('activity').textContent=series.length?fmt(series.at(-1))+' arquivos no último intervalo medido.':'Aguardando medições.'}function resetChart(){last=null;series=[];lastMeasure=null;el('curve').setAttribute('points','')}function renderFindings(s){let r=s.report||{},box=el('findings');box.replaceChildren();let list=r.findings||[];if(!list.length)box.append(node('p',s.running?'Varredura em andamento.':s.done?'Nenhum alerta neste relatório.':'Nenhum relatório disponível.','muted'));for(const f of list){let row=node('div','','entry');row.append(node('strong',`${f.level} · ${f.risk}/100`,'risk'),node('p',f.path),node('p',(f.reasons||[]).join(' · ')));if(!f.path.includes(' :: ')){let b=node('button','Isolar arquivo');b.disabled=s.running;b.onclick=()=>action(async()=>{if(await ask('Mover para quarentena? Isso pode afetar programas legítimos. '+f.path)){await window.isolate(f.path);await loadQ();el('msg').textContent='Arquivo isolado.'}});row.append(b)}box.append(row)}}async function loadQ(){const items=await window.quarantineList()||[],box=el('qitems');box.replaceChildren();if(!items.length)box.append(node('p','Nenhum arquivo isolado.','muted'));for(const q of items){const row=node('div','','entry');row.append(node('strong',q.original),node('p',new Date(q.when).toLocaleString('pt-BR')));let b=node('button','Restaurar');b.onclick=()=>action(async()=>{if(await ask('Restaurar arquivo potencialmente perigoso? '+q.original)){await window.restoreItem(q.id);await loadQ()}});row.append(b);let del=node('button','Excluir definitivamente');del.onclick=()=>action(async()=>{if(await ask('Excluir definitivamente este item da quarentena? Não será possível restaurar. '+q.original)){await window.deleteQuarantined(q.id);await loadQ();el('msg').textContent='Item excluído da quarentena.'}});row.append(del);box.append(row)}}async function refresh(){if(busy)return;busy=true;try{const s=await window.getScanState(),r=s.report||{};let running=s.running;el('monitor').checked=!!s.monitor;el('previewCleanup').disabled=running;el('afterScan').classList.toggle('hidden',running||!s.done||!!r.cancelled||!!s.error);el('hero').classList.toggle('scanning',running);el('badge').textContent=running?'Analisando':s.error?'Erro na análise':s.done?'Análise encerrada':'Pronto';el('stateTitle').textContent=running?'Varredura em andamento':s.error?'A análise encontrou um erro':s.done?(r.cancelled?'Varredura cancelada':'Varredura concluída'):'Escolha como deseja começar';el('stateText').textContent=s.error|| (running?'Você pode minimizar esta janela enquanto os arquivos são examinados.':s.done?'Verifique os resultados e os itens não examinados.':'Nenhuma varredura foi iniciada. Selecione a análise rápida ou completa, ou use o menu lateral.');el('files').textContent=fmt(s.files);el('bytes').textContent=volume(s.bytes);el('hits').textContent=s.done?fmt((r.findings||[]).length):'—';el('scope').textContent=r.root||'Nenhuma seleção de escopo ainda';el('skipped').textContent=s.done?fmt(r.skipped)+' itens ignorados ou não examinados. '+(r.errors?.[0]||''):'A cobertura final será informada após a análise.';el('start').disabled=running;el('quick').disabled=running;measureSpeed(s.bytes,running);el('stop').disabled=!running;el('export').disabled=running||!s.done;chart(s.files,running);let k=String(r.started)+String(r.finished)+running+String((r.findings||[]).length);if(k!==key){key=k;renderFindings(s)}}catch(e){el('msg').textContent='Interface: '+String(e)}finally{busy=false}}document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x===b));['overview','alerts','quarantine','media','engine','tools','security','links'].forEach(id=>el(id).classList.toggle('hidden',id!==b.dataset.page));if(b.dataset.page==='quarantine')action(loadQ)});let lastMeasure=null;function measureSpeed(n,running){const t=performance.now();if(running&&lastMeasure&&n>=lastMeasure.n&&t>lastMeasure.t){const rate=(n-lastMeasure.n)/((t-lastMeasure.t)/1000);el('speed').textContent='Velocidade: '+volume(rate)+'/s'}else if(!running){el('speed').textContent='Velocidade: varredura parada.'}lastMeasure=running?{n,t}:null}el('quick').onclick=()=>action(async()=>{if(await window.startQuickScan())resetChart();await refresh()});el('chooseVideo').onclick=()=>action(async()=>{const p=await window.chooseVideo();if(p)el('videoPath').value=p});el('checkVideo').onclick=()=>action(async()=>{const p=el('videoPath').value;if(!p)throw Error('Escolha um vídeo primeiro');const b=el('checkVideo');b.disabled=true;el('videoStatus').textContent='Verificando procedência...';el('videoResult').textContent='';try{const r=await window.verifyVideo(p);el('videoStatus').textContent=r.status;el('videoResult').textContent=typeof r.details==='string'?r.details:JSON.stringify(r.details,null,2)}catch(e){el('videoStatus').textContent='Inconclusivo: '+String(e)}finally{b.disabled=false}});el('start').onclick=()=>action(async()=>{if(await window.startScan())resetChart();await refresh()});el('stop').onclick=()=>action(async()=>{await window.stopScan();await refresh()});el('export').onclick=()=>action(async()=>{el('msg').textContent='Relatório salvo em: '+await window.exportReport()});el('refreshQ').onclick=()=>action(loadQ);el('afterCleanup').onclick=()=>{document.querySelector('[data-page=tools]').click();el('previewCleanup').click()};el('minimize').onclick=()=>action(()=>window.minimizeApp());el('monitor').onchange=()=>action(async()=>{await window.setMonitor(el('monitor').checked);await refresh()});el('previewCleanup').onclick=()=>action(async()=>{const p=await window.previewCleanup();el('cleanupResult').textContent=fmt(p.files)+' arquivos temporários elegíveis · '+volume(p.bytes);if(p.files>0&&await ask('Remover '+fmt(p.files)+' temporários antigos ('+volume(p.bytes)+')?')){const r=await window.applyCleanup();el('cleanupResult').textContent=fmt(r.files)+' removidos · '+volume(r.bytes)+' liberados · '+fmt(r.skipped)+' ignorados'}});refresh();setInterval(refresh,2000);
+          </style></head><body><div class="shell"><aside><div class="brand"><svg viewBox="0 0 64 72" fill="none" aria-hidden="true"><path d="M32 4 58 14v22c0 16-10 27-26 34C16 63 6 52 6 36V14Z" fill="#15384c" stroke="#53e4d0" stroke-width="3"/><path d="M17 23h30L22 48h25" stroke="#e8fffd" stroke-width="6" stroke-linejoin="round"/></svg>ZEUVORYX</div><div class="tag">OLYMPUS 3.0</div><nav class="nav"><button class="active" data-page="overview">Visão geral</button><button data-page="alerts">Alertas</button><button data-page="quarantine">Quarentena</button><button data-page="media">Autenticidade de vídeo</button><button data-page="engine">Motor e IA</button><button data-page="tools">Ferramentas</button><button data-page="security">Segurança Windows</button><button data-page="defender">Motor Defender</button><button data-page="links">Links e fraudes</button><button data-page="intel">Inteligência de ameaças</button></nav><img class="zeus-art" src="__COVER__" alt="Arte original do ZEUVORYX"><p class="note">Análise local de arquivos. Esta versão não bloqueia a execução de malware nem substitui o Microsoft Defender.</p></aside><main><header><div><h1>Central de segurança</h1><p class="sub">Escolha a análise que deseja executar</p></div><div class="actions"><div class="pill" id="badge">Inicializando</div><button id="minimize">Minimizar</button></div></header><section id="overview"><div class="hero" id="hero"><div class="ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="44" fill="none" stroke="#30445d" stroke-width="6"/><circle class="arc" cx="60" cy="60" r="44" fill="none" stroke="#53e4d0" stroke-width="6" stroke-linecap="round"/></svg><span>⌁</span></div><div><h2 id="stateTitle">Bem-vindo ao ZEUVORYX</h2><p id="stateText">Aguardando sua escolha. Nenhuma varredura é iniciada automaticamente.</p><div class="actions"><button id="start" disabled>Varredura completa</button><button id="quick" class="primary" disabled>Varredura rápida</button><button id="stop" disabled>Cancelar</button><button id="export" disabled>Exportar relatório</button></div><p class="mode-help">Rápida: locais prioritários. Completa: discos locais acessíveis.</p></div></div><div class="grid"><div class="card"><div class="label">ARQUIVOS ANALISADOS</div><div class="metric" id="files">0</div></div><div class="card"><div class="label">VOLUME ANALISADO</div><div class="metric" id="bytes">0 B</div></div><div class="card"><div class="label">ALERTAS DO RELATÓRIO</div><div class="metric" id="hits">—</div></div></div><div class="card chart"><h2>Atividade da varredura</h2><p class="sub">Arquivos examinados por intervalo de atualização de aproximadamente 2 segundos.</p><svg viewBox="0 0 600 140" preserveAspectRatio="none" role="img" aria-label="Gráfico de arquivos examinados por intervalo"><path d="M35 10H590M35 65H590M35 120H590" stroke="#2c405d" fill="none" stroke-dasharray="4 5"/><text x="0" y="15" id="chartMax">0</text><text x="8" y="123">0</text><polyline id="curve" points="" fill="none" stroke="#53e4d0" stroke-width="2.6" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg><p class="speed" id="speed">Velocidade: aguardando medição.</p><p class="muted" id="activity">Aguardando medições.</p></div><div id="afterScan" class="card hidden"><h2>Deseja liberar espaço?</h2><p class="sub">Confira os temporários antigos antes de remover.</p><button id="afterCleanup">Revisar limpeza</button></div><div class="card"><h2>Cobertura da análise</h2><p class="sub" id="scope">Discos locais fixos; arquivos protegidos ou inacessíveis podem ser ignorados.</p><p class="sub" id="skipped"></p></div></section><section id="alerts" class="hidden card"><h2>Alertas e resultados</h2><p class="sub">Os resultados completos aparecem no fim da varredura. Alertas heurísticos não confirmam infecção.</p><div id="findings" class="list"></div></section><section id="quarantine" class="hidden card"><h2>Arquivos em quarentena</h2><p class="sub">O isolamento e a restauração exigem confirmação.</p><div id="qitems" class="list"></div><button id="refreshQ">Atualizar lista</button></section><section id="media" class="hidden card"><h2>Autenticidade de vídeo</h2><p class="sub">Verificação C2PA de procedência digital, não um detector neural de deepfakes. A análise pode consultar referências remotas de credenciais. A falta de credenciais é inconclusiva.</p><input class="media-field" id="videoPath" placeholder="Selecione um vídeo MP4 ou MOV" readonly><div class="actions"><button id="chooseVideo">Escolher vídeo</button><button id="checkVideo" class="primary">Verificar procedência</button></div><p id="videoStatus" class="sub" role="status"></p><pre class="media-report" id="videoResult"></pre></section><section id="security" class="hidden card"><h2>Segurança em camadas</h2><p class="sub">Diagnóstico somente leitura do Microsoft Defender, firewall e versão do Windows. Não é um firewall próprio, nem uma auditoria de vulnerabilidades CVE.</p><div class="actions" style="margin:15px 0"><button id="auditWindows" class="primary">Consultar proteção</button><button id="openSecurity">Abrir Segurança do Windows</button><button id="openUpdates">Verificar Windows Update</button></div><p id="auditState" class="sub" role="status">Aguardando consulta.</p><div id="auditReport" class="list"></div></section><section id="defender" class="hidden card"><h2>Motor de proteção Microsoft Defender</h2><p class="sub">Comandos reais do Windows. O Defender é um motor separado do ZEUVORYX; a proteção residente, a atualização automática e as ações contra malware dependem do estado e das políticas do Windows. Esta tela não ativa nem desativa essas políticas.</p><div class="actions" style="margin:15px 0"><button class="primary" data-native="quick">Verificação rápida Defender</button><button data-native="full">Verificação completa Defender</button><button data-native="update">Atualizar assinaturas Defender</button><button data-native="history">Histórico de ameaças</button><button data-native="updates">Consultar atualizações pendentes</button><button data-native="remediate" class="primary">Tratar ameaças ativas</button><button data-native="network-block">Ativar bloqueio de conexões perigosas</button><button data-native="folder-block">Ativar proteção de pastas</button><p class="note">As opções de bloqueio exigem Defender ativo e podem exigir abrir ZEUVORYX como administrador. A proteção de pastas pode impedir a gravação por aplicativos legítimos; consulte a Segurança do Windows para revisar as permissões. Não alteramos essas políticas sem sua confirmação.</p></div><p class="sub" id="nativeState" role="status">Aguardando sua escolha. Nenhuma operação iniciada.</p><div id="nativeReport" class="list"></div><p class="note">O Windows pode solicitar permissões ou recusar operações quando o Defender está desativado, em modo passivo ou sob políticas administrativas. O Defender pode tratar ameaças durante a varredura conforme suas configurações. Fechar o ZEUVORYX pode não interromper uma varredura já solicitada ao Windows.</p></section><section id="links" class="hidden card"><h2>Verificação de links e fraudes</h2><p class="sub">Examina a estrutura do endereço sem acessar o site, consultar DNS ou enviar dados. Também consulta a lista local importada de URLs. Não é reputação online nem bloqueio automático de phishing. HTTPS não garante que um site seja legítimo.</p><input id="urlCheck" class="media-field" type="text" maxlength="8192" placeholder="https://..." autocomplete="off" spellcheck="false"><button id="checkLink" class="primary">Examinar endereço</button><div id="linkReport" class="list" role="status"></div><div class="entry"><h2>Fraudes financeiras e roubo de identidade</h2><p>Triagem local de texto, sem envio a servidores. Não cole senhas, chaves privadas, frases de recuperação, códigos, CPF ou documentos reais. Padrões não comprovam fraude nem legitimidade.</p><textarea id="fraudInput" class="media-field" rows="5" maxlength="8192" autocomplete="off" spellcheck="false" placeholder="Cole somente a mensagem suspeita, sem dados pessoais"></textarea><button id="fraudCheck">Examinar mensagem</button><div id="fraudReport" class="list" role="status"></div></div><div class="entry"><h2>Resposta a incidentes</h2><p>Escolha um cenário para receber ações de contenção e recuperação. O roteiro não executa mudanças em contas, carteiras ou rede.</p><div class="actions"><button data-incident="crypto">Criptomoedas</button><button data-incident="identity">Identidade / contas</button><button data-incident="malware">Malware</button><button data-incident="ransomware">Ransomware</button></div><div id="incidentReport" class="list" role="status"></div></div></section><section id="tools" class="hidden card"><h2>Ferramentas de segurança e manutenção</h2><p class="sub">A limpeza é opcional. Não alteramos registro, perfis de navegador ou arquivos do sistema.</p><div class="entry"><h2>Monitoramento periódico</h2><p class="sub">Varredura rápida a cada 5 minutos, enquanto o aplicativo estiver aberto, inclusive minimizado. Pausa se houver análise ou alertas pendentes. Não bloqueia malware antes da execução.</p><label><input type="checkbox" id="monitor"> Ativar nesta sessão</label></div><div class="entry"><h2>Limpeza de temporários</h2><p class="sub">Localiza arquivos .tmp do usuário com mais de 7 dias. Você confirma antes de remover.</p><button id="previewCleanup">Examinar temporários</button><p id="cleanupResult" class="sub"></p></div></section><section id="intel" class="hidden card"><h2>Inteligência de ameaças e vulnerabilidades</h2><p class="sub">Indicadores SHA-256 complementam o Defender. Não são um modelo de IA e não detectam variantes desconhecidas. Nenhuma amostra ou arquivo do PC é enviado. A base adicionada é armazenada localmente e recarregada ao abrir o aplicativo. A origem deve ser confiável; indicadores não são confirmação de infecção.</p><div class="entry"><h2>MalwareBazaar • abuse.ch</h2><p>Consultar os 100 registros mais recentes via API oficial. Requer sua Auth-Key e autorização de uso conforme os termos do serviço. A chave não é armazenada pelo aplicativo.</p><label for="intelKey">Auth-Key</label><input id="intelKey" class="media-field" type="password" autocomplete="off" maxlength="256"><button id="intelSync" class="primary">Consultar e incorporar indicadores</button><p id="intelResult" role="status">Aguardando consulta.</p></div><div class="entry"><h2>Importar lista de hashes</h2><p>Cole SHA-256 de uma fonte confiável, um por linha. Correspondências são alertas sujeitos à sua revisão, não exclusões automáticas.</p><textarea id="intelList" class="media-field" rows="5" maxlength="8388608" placeholder="SHA-256 por linha"></textarea><button id="intelImport">Validar e incorporar</button><button id="intelCount">Consultar base ativa</button><p id="intelCountResult" role="status"></p></div><div class="entry"><h2>Reputação de URLs</h2><p>Importe uma lista de URLs de uma fonte confiável, como a lista de texto do URLhaus, uma por linha. Substitui a lista anterior. Não acessa os endereços. Correspondência exata não é bloqueio automático.</p><textarea id="reputationList" class="media-field" rows="4" maxlength="8388608" placeholder="Uma URL por linha"></textarea><button id="repImport">Validar e salvar lista</button><p id="repResult" role="status"></p></div><div class="entry"><h2>Vulnerabilidades exploradas • CISA KEV</h2><p>Pesquise um código CVE conhecido. A consulta não determina se o seu computador possui a vulnerabilidade.</p><input id="cveInput" class="media-field" maxlength="32" placeholder="CVE-2025-1234"><button id="cveCheck">Consultar catálogo oficial</button><div id="cveResult" class="list" role="status"></div></div></section><section id="engine" class="hidden card"><h2>Motor e inteligência artificial</h2><p class="sub">Motor atual: SHA-256, regras heurísticas e análise PE. Modelo treinado de malware: não instalado. Detector neural de vídeo: não instalado. C2PA: verificador de procedência digital separado.</p><div class="entry"><h2>ClamAV — segundo motor independente do Defender</h2><p>Requer instalação oficial separada do ClamAV e assinaturas atualizadas pelo FreshClam. Examina um arquivo por vez; não remove automaticamente e não é proteção residente.</p><button id="clamCheck">Consultar instalação</button><button id="clamChoose">Examinar arquivo com ClamAV</button><p id="clamState" role="status"></p><pre id="clamReport" class="media-report"></pre></div><img class="mythic" src="__PANEL__" alt="Arte original do painel mitológico"><p class="sub">A classificação de risco é uma pontuação heurística, não uma probabilidade de infecção.</p></section><p id="msg" role="status"></p><footer>ZEUVORYX · Beta experimental · Não desative a proteção do Windows.</footer></main></div><dialog id="confirmBox"><h2>Confirme a operação</h2><p id="confirmText"></p><div class="actions"><button id="no">Cancelar</button><button id="yes" class="primary">Confirmar</button></div></dialog><script>
+          'use strict';const el=id=>document.getElementById(id),fmt=n=>Number(n||0).toLocaleString('pt-BR');let last=null,series=[],key='',busy=false,confirmResolve=null;function volume(n){if(n>=1073741824)return (n/1073741824).toFixed(2)+' GB';if(n>=1048576)return (n/1048576).toFixed(1)+' MB';if(n>=1024)return (n/1024).toFixed(1)+' KB';return fmt(n)+' B'}function node(tag,text,cls){let x=document.createElement(tag);x.textContent=text;if(cls)x.className=cls;return x}function ask(text){el('confirmText').textContent=text;el('confirmBox').showModal();return new Promise(r=>confirmResolve=r)}function closeConfirm(ok){el('confirmBox').close();const r=confirmResolve;confirmResolve=null;if(r)r(ok)}el('yes').onclick=()=>closeConfirm(true);el('no').onclick=()=>closeConfirm(false);el('confirmBox').oncancel=e=>{e.preventDefault();closeConfirm(false)};async function action(fn){try{el('msg').textContent='';await fn()}catch(e){el('msg').textContent=String(e)}}function chart(n,running){if(last!==null&&n<last){series=[];last=null}if(running&&last!==null){series.push(Math.max(0,n-last));if(series.length>40)series.shift()}last=n;const max=Math.max(1,...series);el('chartMax').textContent=fmt(Math.max(0,...series));el('curve').setAttribute('points',series.map((v,i)=>`${35+i*555/Math.max(1,series.length-1)},${120-110*v/max}`).join(' '));el('activity').textContent=series.length?fmt(series.at(-1))+' arquivos no último intervalo medido.':'Aguardando medições.'}function resetChart(){last=null;series=[];lastMeasure=null;el('curve').setAttribute('points','')}function renderFindings(s){let r=s.report||{},box=el('findings');box.replaceChildren();let list=r.findings||[];if(!list.length)box.append(node('p',s.running?'Varredura em andamento.':s.done?'Nenhum alerta neste relatório.':'Nenhum relatório disponível.','muted'));for(const f of list){let row=node('div','','entry');row.append(node('strong',`${f.level} · ${f.risk}/100`,'risk'),node('p',f.path),node('p',(f.reasons||[]).join(' · ')));if(!f.path.includes(' :: ')){let b=node('button','Isolar arquivo');b.disabled=s.running;b.onclick=()=>action(async()=>{if(await ask('Mover para quarentena? Isso pode afetar programas legítimos. '+f.path)){await window.isolate(f.path);await loadQ();el('msg').textContent='Arquivo isolado.'}});row.append(b)}box.append(row)}}async function loadQ(){const items=await window.quarantineList()||[],box=el('qitems');box.replaceChildren();if(!items.length)box.append(node('p','Nenhum arquivo isolado.','muted'));for(const q of items){const row=node('div','','entry');row.append(node('strong',q.original),node('p',new Date(q.when).toLocaleString('pt-BR')));let b=node('button','Restaurar');b.onclick=()=>action(async()=>{if(await ask('Restaurar arquivo potencialmente perigoso? '+q.original)){await window.restoreItem(q.id);await loadQ()}});row.append(b);let del=node('button','Excluir definitivamente');del.onclick=()=>action(async()=>{if(await ask('Excluir definitivamente este item da quarentena? Não será possível restaurar. '+q.original)){await window.deleteQuarantined(q.id);await loadQ();el('msg').textContent='Item excluído da quarentena.'}});row.append(del);box.append(row)}}async function refresh(){if(busy)return;busy=true;try{const s=await window.getScanState(),r=s.report||{};let running=s.running;el('monitor').checked=!!s.monitor;el('previewCleanup').disabled=running;el('afterScan').classList.toggle('hidden',running||!s.done||!!r.cancelled||!!s.error);el('hero').classList.toggle('scanning',running);el('badge').textContent=running?'Analisando':s.error?'Erro na análise':s.done?'Análise encerrada':'Pronto';el('stateTitle').textContent=running?'Varredura em andamento':s.error?'A análise encontrou um erro':s.done?(r.cancelled?'Varredura cancelada':'Varredura concluída'):'Escolha como deseja começar';el('stateText').textContent=s.error|| (running?'Você pode minimizar esta janela enquanto os arquivos são examinados.':s.done?'Verifique os resultados e os itens não examinados.':'Nenhuma varredura foi iniciada. Selecione a análise rápida ou completa, ou use o menu lateral.');el('files').textContent=fmt(s.files);el('bytes').textContent=volume(s.bytes);el('hits').textContent=s.done?fmt((r.findings||[]).length):'—';el('scope').textContent=r.root||'Nenhuma seleção de escopo ainda';el('skipped').textContent=s.done?fmt(r.skipped)+' itens ignorados ou não examinados. '+(r.errors?.[0]||''):'A cobertura final será informada após a análise.';el('start').disabled=running;el('quick').disabled=running;measureSpeed(s.bytes,running);el('stop').disabled=!running;el('export').disabled=running||!s.done;chart(s.files,running);let k=String(r.started)+String(r.finished)+running+String((r.findings||[]).length);if(k!==key){key=k;renderFindings(s)}}catch(e){el('msg').textContent='Interface: '+String(e)}finally{busy=false}}document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x===b));['overview','alerts','quarantine','media','engine','tools','security','links','defender','intel'].forEach(id=>el(id).classList.toggle('hidden',id!==b.dataset.page));if(b.dataset.page==='quarantine')action(loadQ)});let lastMeasure=null;function measureSpeed(n,running){const t=performance.now();if(running&&lastMeasure&&n>=lastMeasure.n&&t>lastMeasure.t){const rate=(n-lastMeasure.n)/((t-lastMeasure.t)/1000);el('speed').textContent='Velocidade: '+volume(rate)+'/s'}else if(!running){el('speed').textContent='Velocidade: varredura parada.'}lastMeasure=running?{n,t}:null}el('quick').onclick=()=>action(async()=>{if(await window.startQuickScan())resetChart();await refresh()});el('chooseVideo').onclick=()=>action(async()=>{const p=await window.chooseVideo();if(p)el('videoPath').value=p});el('checkVideo').onclick=()=>action(async()=>{const p=el('videoPath').value;if(!p)throw Error('Escolha um vídeo primeiro');const b=el('checkVideo');b.disabled=true;el('videoStatus').textContent='Verificando procedência...';el('videoResult').textContent='';try{const r=await window.verifyVideo(p);el('videoStatus').textContent=r.status;el('videoResult').textContent=typeof r.details==='string'?r.details:JSON.stringify(r.details,null,2)}catch(e){el('videoStatus').textContent='Inconclusivo: '+String(e)}finally{b.disabled=false}});el('start').onclick=()=>action(async()=>{if(await window.startScan())resetChart();await refresh()});el('stop').onclick=()=>action(async()=>{await window.stopScan();await refresh()});el('export').onclick=()=>action(async()=>{el('msg').textContent='Relatório salvo em: '+await window.exportReport()});el('refreshQ').onclick=()=>action(loadQ);el('afterCleanup').onclick=()=>{document.querySelector('[data-page=tools]').click();el('previewCleanup').click()};el('minimize').onclick=()=>action(()=>window.minimizeApp());el('monitor').onchange=()=>action(async()=>{await window.setMonitor(el('monitor').checked);await refresh()});el('previewCleanup').onclick=()=>action(async()=>{const p=await window.previewCleanup();el('cleanupResult').textContent=fmt(p.files)+' arquivos temporários elegíveis · '+volume(p.bytes);if(p.files>0&&await ask('Remover '+fmt(p.files)+' temporários antigos ('+volume(p.bytes)+')?')){const r=await window.applyCleanup();el('cleanupResult').textContent=fmt(r.files)+' removidos · '+volume(r.bytes)+' liberados · '+fmt(r.skipped)+' ignorados'}});refresh();setInterval(refresh,2000);
           
           function auditRow(box,title,value){const row=node('div','','entry');row.append(node('strong',title),node('p',String(value)));box.append(row)}
           function stateLabel(v){return v===true?'Ativado':v===false?'Desativado':'Não verificado'}
           function policyLabel(v){return v===1?'Bloqueio ativado':v===0?'Desativado':v===2?'Modo de auditoria':typeof v==='number'?'Modo '+v+' (consulte o Windows)':'Não verificado'}
-          el('auditWindows').onclick=()=>action(async()=>{const b=el('auditWindows'),box=el('auditReport');b.disabled=true;box.replaceChildren();el('auditState').textContent='Consultando o Windows...';try{const a=await window.windowsSecurityAudit(),d=a.defender||{},u=a.updates||{};auditRow(box,'Microsoft Defender',stateLabel(d.antivirus));auditRow(box,'Proteção em tempo real do Defender',stateLabel(d.realTime));auditRow(box,'Monitoramento comportamental do Defender',stateLabel(d.behavior));auditRow(box,'Modo de execução',d.runningMode||'Não verificado');auditRow(box,'Controle de pastas contra ransomware (Defender)',policyLabel(a.policies?.controlledFolders));auditRow(box,'Proteção de rede (Defender)',policyLabel(a.policies?.networkProtection));auditRow(box,'Assinaturas do Defender',d.signatureVersion||'Não verificado');auditRow(box,'Idade das assinaturas',typeof d.signatureAge==='number'?d.signatureAge+' dias':'Não verificado');if(Array.isArray(a.firewall)&&a.firewall.length){for(const f of a.firewall)auditRow(box,'Firewall '+f.name,stateLabel(f.enabled))}else auditRow(box,'Firewall','Não verificado');auditRow(box,'Windows',u.os?u.os+' | build '+u.build:'Não verificado');for(const e of a.errors||[])auditRow(box,'Consulta indisponível',e);el('auditState').textContent='Consulta concluída. Atualizações pendentes devem ser conferidas no Windows Update.'}catch(e){el('auditState').textContent=String(e)}finally{b.disabled=false}});
+          el('auditWindows').onclick=()=>action(async()=>{const b=el('auditWindows'),box=el('auditReport');b.disabled=true;box.replaceChildren();el('auditState').textContent='Consultando o Windows...';try{const a=await window.windowsSecurityAudit(),d=a.defender||{},u=a.updates||{};auditRow(box,'Microsoft Defender',stateLabel(d.antivirus));auditRow(box,'Proteção em tempo real do Defender',stateLabel(d.realTime));auditRow(box,'Monitoramento comportamental do Defender',stateLabel(d.behavior));auditRow(box,'Modo de execução',d.runningMode||'Não verificado');auditRow(box,'Proteção contra adulteração',stateLabel(d.tamper));auditRow(box,'Inspeção de arquivos baixados (Defender)',stateLabel(d.ioav));auditRow(box,'Inspeção de rede (Defender)',stateLabel(d.nis));const asr=a.asr||{},hard=a.systemHardening||{};auditRow(box,'Proteção de aplicativos potencialmente indesejados',policyLabel(asr.pua));auditRow(box,'Proteção em nuvem (MAPS)',typeof asr.cloudReporting==='number'?'Modo '+asr.cloudReporting:'Não verificado');auditRow(box,'Regras ASR configuradas',Array.isArray(asr.rules)?String(asr.rules.length):'Não verificado');for(const rule of asr.rules||[])auditRow(box,'ASR '+rule.id,rule.action===1?'Bloqueio':rule.action===2?'Auditoria':rule.action===6?'Aviso':rule.action===0?'Desativada':'Modo '+rule.action);auditRow(box,'Secure Boot',stateLabel(hard.secureBoot));auditRow(box,'BitLocker (disco do sistema)',hard.diskProtection||'Não verificado');auditRow(box,'Conexões RDP permitidas pela configuração',stateLabel(hard.rdpAllowed));auditRow(box,'Controle de pastas contra ransomware (Defender)',policyLabel(a.policies?.controlledFolders));auditRow(box,'Proteção de rede (Defender)',policyLabel(a.policies?.networkProtection));auditRow(box,'Assinaturas do Defender',d.signatureVersion||'Não verificado');auditRow(box,'Idade das assinaturas',typeof d.signatureAge==='number'?d.signatureAge+' dias':'Não verificado');if(Array.isArray(a.firewall)&&a.firewall.length){for(const f of a.firewall)auditRow(box,'Firewall '+f.name,stateLabel(f.enabled))}else auditRow(box,'Firewall','Não verificado');auditRow(box,'Windows',u.os?u.os+' | build '+u.build:'Não verificado');for(const e of a.errors||[])auditRow(box,'Consulta indisponível',e);el('auditState').textContent='Consulta concluída. Atualizações pendentes devem ser conferidas no Windows Update.'}catch(e){el('auditState').textContent=String(e)}finally{b.disabled=false}});
           el('openSecurity').onclick=()=>action(()=>window.openSecuritySettings('security'));
           el('openUpdates').onclick=()=>action(()=>window.openSecuritySettings('updates'));
           el('checkLink').onclick=()=>action(async()=>{const box=el('linkReport');box.replaceChildren();try{const r=await window.assessLink(el('urlCheck').value);auditRow(box,'Domínio interpretado',r.host);auditRow(box,'Avaliação',r.assessment);for(const s of r.signals||[])auditRow(box,'Indicador',s);auditRow(box,'Limitação','Nenhum resultado comprova que o endereço seja seguro. Confira a origem por um canal oficial.')}catch(e){auditRow(box,'Endereço não avaliado',String(e))}});
           
+          
+          let nativeBusy=false,nativeKey='';
+          function renderNative(s){
+           const buttons=document.querySelectorAll('[data-native]');buttons.forEach(b=>b.disabled=!!s.running);
+           const box=el('nativeReport'),state=el('nativeState');
+           if(s.running){state.textContent='Operação solicitada ao Windows. Aguardando resposta...';return}
+           if(!s.operation){state.textContent='Aguardando sua escolha. Nenhuma operação iniciada.';return}
+           state.textContent=s.error?'Operação não confirmada: '+s.error:'O Windows retornou um resultado. Confira os detalhes abaixo.';
+           const key=JSON.stringify(s);if(key===nativeKey)return;nativeKey=key;box.replaceChildren();
+           if(s.error){auditRow(box,'Falha ou indisponibilidade',s.error);return}
+           const r=s.result||{};auditRow(box,'Resultado',r.message||'Resposta sem descrição');
+           if(s.operation==='network-block'||s.operation==='folder-block'){auditRow(box,'Modo anterior',String(r.before??'Desconhecido'));auditRow(box,'Modo configurado',r.after===1?'Bloqueio (confirmado pela configuração)':'Não confirmado');auditRow(box,'Limitação','Verificação da configuração, não um teste de bloqueio real.')}
+           if(s.operation==='remediate'){auditRow(box,'Ameaças ativas antes',typeof r.activeBefore==='number'?String(r.activeBefore):'Não confirmado');auditRow(box,'Ameaças ativas após',typeof r.activeAfter==='number'?String(r.activeAfter):'Não confirmado');auditRow(box,'Próxima ação',r.activeAfter===0?'Nenhuma ameaça ativa reportada nesta consulta; faça nova varredura. Isso não garante ausência de malware.':'Ameaças remanescentes ou estado desconhecido: nova análise e suporte especializado.')}
+           if(s.operation==='update'){auditRow(box,'Versão das assinaturas',r.version||'Não confirmada');auditRow(box,'Idade das assinaturas',typeof r.age==='number'?r.age+' dias':'Não confirmada')}
+           if(s.operation==='history'){const rows=Array.isArray(r.detections)?r.detections:[];auditRow(box,'Registros retornados',rows.length+' (até 100; não é uma contagem de infecções ativas)');for(const x of rows){auditRow(box,'ID '+x.id+' | '+x.when,'Ação reportada: '+(x.actionSuccess===true?'Bem-sucedida':x.actionSuccess===false?'Não concluída':'Não informada')+' | '+(x.resources||[]).join(' · '))}}
+           if(s.operation==='updates'){auditRow(box,'Código da consulta',r.resultCode===2?'Sucesso':r.resultCode===3?'Sucesso com erros':String(r.resultCode??'Desconhecido'));auditRow(box,'Atualizações encontradas',typeof r.count==='number'?String(r.count):'Não confirmado');for(const u of r.updates||[])auditRow(box,u.title,(u.kb||[]).join(', '));auditRow(box,'Limitação','A consulta ao Windows Update não é uma auditoria completa de vulnerabilidades.')}
+          }
+          async function refreshNative(){if(nativeBusy)return;nativeBusy=true;try{renderNative(await window.nativeStatus())}catch(e){el('nativeState').textContent=String(e)}finally{nativeBusy=false}}
+          document.querySelectorAll('[data-native]').forEach(b=>b.onclick=()=>action(async()=>{const op=b.dataset.native;if((op==='network-block'||op==='folder-block')&&!await ask(op==='network-block'?'Ativar proteção de rede do Microsoft Defender em modo de bloqueio? Conexões classificadas como perigosas podem ser impedidas.':'Ativar acesso controlado a pastas do Microsoft Defender? Aplicativos legítimos não autorizados também podem ter gravações bloqueadas. Confira as configurações do Windows se necessário.'))return;if(op==='remediate'&&!await ask('Solicitar ao Microsoft Defender o tratamento de TODAS as ameaças ativas que ele detectou? O Windows poderá remover ou isolar arquivos. Confira os alertas antes de confirmar.'))return;if((op==='quick'||op==='full')&&!await ask('Iniciar uma varredura com Microsoft Defender? O Windows pode tratar arquivos detectados de acordo com suas políticas.'))return;try{await window.nativeStart(op);nativeKey='';el('nativeReport').replaceChildren();await refreshNative()}catch(e){el('nativeState').textContent=String(e)}}));
+          refreshNative();setInterval(refreshNative,2000);
+          el('fraudCheck').onclick=()=>action(async()=>{const box=el('fraudReport'),raw=el('fraudInput').value;el('fraudInput').value='';box.replaceChildren();try{const r=await window.assessFraud(raw);auditRow(box,'Avaliação',r.assessment);for(const x of r.signals||[])auditRow(box,'Indicador',x);for(const x of r.actions||[])auditRow(box,'Ação recomendada',x)}catch(e){box.textContent=String(e)}});
+          document.querySelectorAll('[data-incident]').forEach(b=>b.onclick=()=>action(async()=>{const box=el('incidentReport');box.replaceChildren();try{const r=await window.incidentPlan(b.dataset.incident);r.forEach((x,i)=>auditRow(box,'Passo '+(i+1),x))}catch(e){box.textContent=String(e)}}));
+          
+          
+          async function intelRun(button, result, fn){const b=el(button),r=el(result);b.disabled=true;r.textContent='Processando...';try{const v=await fn();r.textContent='Indicadores novos: '+v.added+' | Total ativo: '+v.total+' | Registros recebidos: '+v.sourceRecords+'. Faça uma nova varredura para aplicar.'}catch(e){r.textContent='Não atualizado: '+String(e)}finally{b.disabled=false}}
+          el('intelSync').onclick=()=>{const k=el('intelKey').value;el('intelKey').value='';return intelRun('intelSync','intelResult',()=>window.syncThreatHashes(k))};
+          el('intelImport').onclick=()=>intelRun('intelImport','intelCountResult',()=>window.importThreatHashes(el('intelList').value));
+          el('intelCount').onclick=()=>action(async()=>{const r=await window.intelStatus();el('intelCountResult').textContent='Indicadores ativos: '+r.total+' | URLs: '+r.urls+' | Última gravação: '+r.savedAt+(r.storageError?' | Falha na base: '+r.storageError:'')});
+          el('cveCheck').onclick=()=>action(async()=>{const b=el('cveCheck'),box=el('cveResult');b.disabled=true;box.textContent='Consultando catálogo...';try{const r=await window.checkKnownCVE(el('cveInput').value);box.replaceChildren();auditRow(box,'Versão do catálogo',r.version);auditRow(box,'Total no catálogo',String(r.count));auditRow(box,'Resultado',r.found?'Consta no catálogo de exploração conhecida':'Não consta nesta versão; isso não prova segurança');if(r.found){const x=r.entry;auditRow(box,x.cveID,x.vendorProject+' '+x.product);auditRow(box,'Ação recomendada pela CISA',x.requiredAction);auditRow(box,'Uso conhecido em ransomware',x.knownRansomwareCampaignUse||'Não informado')}auditRow(box,'Limitação','Não confirma a presença da vulnerabilidade no computador.')}catch(e){box.textContent='Consulta não concluída: '+String(e)}finally{b.disabled=false}});
+          
+          el('repImport').onclick=()=>action(async()=>{const b=el('repImport');b.disabled=true;try{if(!await ask('Substituir a lista local de URLs?'))return;const n=await window.importReputation(el('reputationList').value);el('repResult').textContent=n+' URLs validadas e gravadas.';el('reputationList').value=''}finally{b.disabled=false}});
+          el('clamCheck').onclick=()=>action(async()=>{el('clamState').textContent=await window.clamStatus()});
+          el('clamChoose').onclick=()=>action(async()=>{const b=el('clamChoose');b.disabled=true;try{const p=await window.chooseClamFile();if(!p)return;el('clamState').textContent='ClamAV examinando arquivo...';const r=await window.clamScanFile(p);el('clamState').textContent=r.status;el('clamReport').textContent=r.details||''}catch(e){el('clamState').textContent='Operação não confirmada: '+String(e)}finally{b.disabled=false}});
           </script></body></html>
           '@
           [IO.File]::WriteAllText((Join-Path $PWD 'desktop.html'), $source, $utf8)
@@ -505,7 +602,7 @@ jobs:
           $html = $html.Replace('__COVER__', ('data:image/jpeg;base64,' + $cover)).Replace('__PANEL__', ('data:image/jpeg;base64,' + $panel))
           if ([Text.Encoding]::UTF8.GetByteCount($html) -gt 1500000) { throw 'Embedded WebView2 page too large' }
           [IO.File]::WriteAllText((Join-Path $PWD 'desktop.html'), $html, $utf8)
-
+          
           $source = @'
           from pathlib import Path
           from PIL import Image, ImageOps
@@ -515,7 +612,7 @@ jobs:
           icon.save('ZEUVORYX.ico',sizes=[(n,n) for n in (16,24,32,48,64,128,256)])
           '@
           [IO.File]::WriteAllText((Join-Path $PWD 'make_icon.py'), $source, $utf8)
-
+          
           $mainPath = Join-Path $PWD 'main.go'
           $main = [IO.File]::ReadAllText($mainPath)
           $needle = 'listener, e := net.Listen("tcp", "127.0.0.1:0")'
@@ -699,12 +796,18 @@ jobs:
           	}
           	ps := filepath.Join(root, "System32", "WindowsPowerShell", "v1.0", "powershell.exe")
           	script := `[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
-           $r=[ordered]@{defender=$null;firewall=$null;updates=$null;policies=$null;errors=@()}
-           try {$d=Get-MpComputerStatus -ErrorAction Stop;$r.defender=[ordered]@{antivirus=$d.AntivirusEnabled;realTime=$d.RealTimeProtectionEnabled;behavior=$d.BehaviorMonitorEnabled;signatureAge=$d.AntivirusSignatureAge;signatureVersion=$d.AntivirusSignatureVersion;runningMode=$d.AMRunningMode}} catch {$r.errors+= 'Defender indisponível ou acesso negado'}
+           $r=[ordered]@{defender=$null;firewall=$null;updates=$null;policies=$null;asr=$null;systemHardening=$null;errors=@()}
+           try {$d=Get-MpComputerStatus -ErrorAction Stop;$r.defender=[ordered]@{antivirus=$d.AntivirusEnabled;realTime=$d.RealTimeProtectionEnabled;behavior=$d.BehaviorMonitorEnabled;signatureAge=$d.AntivirusSignatureAge;signatureVersion=$d.AntivirusSignatureVersion;runningMode=$d.AMRunningMode;tamper=$d.IsTamperProtected;ioav=$d.IoavProtectionEnabled;nis=$d.NISEnabled}} catch {$r.errors+= 'Defender indisponível ou acesso negado'}
            try {$p=Get-MpPreference -ErrorAction Stop;$r.policies=[ordered]@{controlledFolders=$(if($null -ne $p.EnableControlledFolderAccess){[int]$p.EnableControlledFolderAccess});networkProtection=$(if($null -ne $p.EnableNetworkProtection){[int]$p.EnableNetworkProtection})}} catch {$r.errors+='Políticas de ransomware e rede indisponíveis ou acesso negado'}
            try {$r.firewall=@(Get-NetFirewallProfile -PolicyStore ActiveStore -ErrorAction Stop | ForEach-Object {[ordered]@{name=$_.Name;enabled=($_.Enabled.ToString() -eq 'True')}})} catch {$r.errors+='Firewall indisponível ou acesso negado'}
            try {$o=Get-CimInstance Win32_OperatingSystem -ErrorAction Stop;$r.updates=[ordered]@{os=$o.Caption;version=$o.Version;build=$o.BuildNumber;lastBoot=$o.LastBootUpTime.ToString('o')}} catch {$r.errors+='Versão do sistema indisponível'}
-           $r|ConvertTo-Json -Depth 5 -Compress`
+           try {$p=Get-MpPreference -ErrorAction Stop;$ids=@($p.AttackSurfaceReductionRules_Ids);$actions=@($p.AttackSurfaceReductionRules_Actions);$rows=@();for($i=0;$i -lt [Math]::Min($ids.Count,$actions.Count);$i++){if($ids[$i]){$rows+= [ordered]@{id=[string]$ids[$i];action=[int]$actions[$i]}}};$r.asr=[ordered]@{rules=$rows;cloudReporting=$(if($null -ne $p.MAPSReporting){[int]$p.MAPSReporting});pua=$(if($null -ne $p.PUAProtection){[int]$p.PUAProtection})}} catch {$r.errors+='Regras ASR indisponíveis ou acesso negado'}
+           $hard=[ordered]@{secureBoot=$null;diskProtection=$null;rdpAllowed=$null}
+           try {$hard.secureBoot=Confirm-SecureBootUEFI -ErrorAction Stop} catch {$r.errors+='Secure Boot não verificado'}
+           try {$b=Get-BitLockerVolume -MountPoint $env:SystemDrive -ErrorAction Stop;$hard.diskProtection=[string]$b.ProtectionStatus} catch {$r.errors+='BitLocker não verificado'}
+           try {$v=Get-ItemProperty -LiteralPath 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server' -Name fDenyTSConnections -ErrorAction Stop;$hard.rdpAllowed=($v.fDenyTSConnections -eq 0)} catch {$r.errors+='Configuração RDP não verificada'}
+           $r.systemHardening=$hard
+           $r|ConvertTo-Json -Depth 6 -Compress`
           	ctx, cancel := context.WithTimeout(context.Background(), 45*time.Second)
           	defer cancel()
           	cmd := exec.CommandContext(ctx, ps, "-NoProfile", "-NonInteractive", "-Command", script)
@@ -738,16 +841,1394 @@ jobs:
           [IO.File]::WriteAllText((Join-Path $PWD 'security_windows.go'), $source, $utf8)
           gofmt -w linkcheck.go linkcheck_test.go security_windows.go
           if ($LASTEXITCODE -ne 0) { throw 'Security formatting failed' }
+      - name: Prepare Defender operations
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $utf8 = New-Object System.Text.UTF8Encoding($false)
+          $source = @'
+          package main
+          
+          import (
+          	"context"
+          	"fmt"
+          	"sync"
+          	"time"
+          )
+          
+          // Fixed operations only; no user-controlled command or argument is executed.
+          type defenderOperation struct {
+          	script  string
+          	timeout time.Duration
+          }
+          
+          var defenderOperations = map[string]defenderOperation{
+              "network-block": {`$status=Get-MpComputerStatus -ErrorAction Stop; if (-not $status.AntivirusEnabled -or -not $status.RealTimeProtectionEnabled) { throw 'Defender em tempo real indisponivel' }; $before=(Get-MpPreference -ErrorAction Stop).EnableNetworkProtection; if ($null -eq $before) { throw 'Preferencia indisponivel' }; Set-MpPreference -EnableNetworkProtection Enabled -ErrorAction Stop; $after=(Get-MpPreference -ErrorAction Stop).EnableNetworkProtection; if ($null -eq $after -or [int]$after -ne 1) { throw 'Configuracao nao confirmada; consulte as politicas do Windows' }; [ordered]@{message='Proteção de rede em modo de bloqueio configurada; eficácia depende do Windows';before=[int]$before;after=[int]$after}`, 2 * time.Minute},
+              "folder-block": {`$status=Get-MpComputerStatus -ErrorAction Stop; if (-not $status.AntivirusEnabled -or -not $status.RealTimeProtectionEnabled) { throw 'Defender em tempo real indisponivel' }; $before=(Get-MpPreference -ErrorAction Stop).EnableControlledFolderAccess; if ($null -eq $before) { throw 'Preferencia indisponivel' }; Set-MpPreference -EnableControlledFolderAccess Enabled -ErrorAction Stop; $after=(Get-MpPreference -ErrorAction Stop).EnableControlledFolderAccess; if ($null -eq $after -or [int]$after -ne 1) { throw 'Configuracao nao confirmada; consulte as politicas do Windows' }; [ordered]@{message='Proteção de pastas em modo de bloqueio configurada; eficácia depende do Windows';before=[int]$before;after=[int]$after}`, 2 * time.Minute},
+              "remediate": {`$status=Get-MpComputerStatus -ErrorAction Stop; if (-not $status.AntivirusEnabled) { throw 'Defender indisponivel ou desativado' }; $before=@(Get-MpThreat -ErrorAction Stop | Where-Object { $_.IsActive -eq $true }).Count; if ($before -gt 0) { Remove-MpThreat -ErrorAction Stop | Out-Null }; $after=@(Get-MpThreat -ErrorAction Stop | Where-Object { $_.IsActive -eq $true }).Count; [ordered]@{message='Tratamento consultado; verifique ameaças remanescentes e execute nova varredura';activeBefore=$before;activeAfter=$after}`, 20 * time.Minute},
+          	"quick":   {`Start-MpScan -ScanType QuickScan -ErrorAction Stop; [ordered]@{message='Comando de varredura rápida concluído. Consulte o histórico de proteção.'}`, 6 * time.Hour},
+          	"full":    {`Start-MpScan -ScanType FullScan -ErrorAction Stop; [ordered]@{message='Comando de varredura completa concluído. Consulte o histórico de proteção.'}`, 24 * time.Hour},
+          	"update":  {`Update-MpSignature -ErrorAction Stop; $d=Get-MpComputerStatus -ErrorAction Stop; [ordered]@{message='Consulta de atualização concluída';version=$d.AntivirusSignatureVersion;age=$d.AntivirusSignatureAge}`, 15 * time.Minute},
+          	"history": {`$rows=@(Get-MpThreatDetection -ErrorAction Stop | Sort-Object InitialDetectionTime -Descending | Select-Object -First 100 | ForEach-Object {[ordered]@{id=[string]$_.ThreatID;when=[string]$_.InitialDetectionTime;actionSuccess=$_.ActionSuccess;resources=@($_.Resources | Select-Object -First 8)}}); [ordered]@{message='Histórico do Microsoft Defender';detections=$rows}`, 60 * time.Second},
+          	"updates": {`$session=New-Object -ComObject Microsoft.Update.Session; $search=$session.CreateUpdateSearcher(); $result=$search.Search('IsInstalled=0 and IsHidden=0 and Type=''Software'''); $rows=@($result.Updates | Select-Object -First 100 | ForEach-Object {[ordered]@{title=$_.Title;kb=@($_.KBArticleIDs)}}); [ordered]@{message='Consulta ao Windows Update concluída; nenhuma instalação iniciada';resultCode=[int]$result.ResultCode;count=$result.Updates.Count;updates=$rows}`, 10 * time.Minute},
+          }
+          
+          type defenderState struct {
+          	Running   bool           `json:"running"`
+          	Operation string         `json:"operation"`
+          	Error     string         `json:"error"`
+          	Result    map[string]any `json:"result"`
+          }
+          type defenderController struct {
+          	mu    sync.Mutex
+          	state defenderState
+          	run   func(context.Context, string) (map[string]any, error)
+          	ctx   context.Context
+          }
+          
+          func (d *defenderController) status() defenderState { d.mu.Lock(); defer d.mu.Unlock(); return d.state }
+          func (d *defenderController) start(name string) error {
+          	op, ok := defenderOperations[name]
+          	if !ok {
+          		return fmt.Errorf("Operação não permitida")
+          	}
+          	d.mu.Lock()
+          	if d.state.Running {
+          		d.mu.Unlock()
+          		return fmt.Errorf("Outra operação do Windows está em andamento")
+          	}
+          	if d.ctx.Err() != nil {
+          		d.mu.Unlock()
+          		return d.ctx.Err()
+          	}
+          	d.state = defenderState{Running: true, Operation: name}
+          	d.mu.Unlock()
+          	go func() {
+          		ctx, cancel := context.WithTimeout(d.ctx, op.timeout)
+          		defer cancel()
+          		result, err := d.run(ctx, op.script)
+          		d.mu.Lock()
+          		defer d.mu.Unlock()
+          		d.state = defenderState{Operation: name, Result: result}
+          		if err != nil {
+          			d.state.Error = err.Error()
+          		}
+          	}()
+          	return nil
+          }
+          '@
+          [IO.File]::WriteAllText((Join-Path $PWD 'defender_ops.go'), $source, $utf8)
+          $source = @'
+          package main
+          
+          import (
+          	"context"
+          	"encoding/json"
+          	"fmt"
+          	"os"
+          	"os/exec"
+          	"path/filepath"
+          	"strings"
+          	"syscall"
+          )
+          
+          func runDefenderOperation(ctx context.Context, script string) (map[string]any, error) {
+          	root := os.Getenv("SystemRoot")
+          	if root == "" {
+          		return nil, fmt.Errorf("SystemRoot indisponível")
+          	}
+          	ps := filepath.Join(root, "System32", "WindowsPowerShell", "v1.0", "powershell.exe")
+          	command := "[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new($false); $ErrorActionPreference='Stop'; $ProgressPreference='SilentlyContinue'; $result=& { " + script + " }; $result | ConvertTo-Json -Depth 8 -Compress"
+          	cmd := exec.CommandContext(ctx, ps, "-NoProfile", "-NonInteractive", "-Command", command)
+          	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+          	var stderr strings.Builder
+          	cmd.Stderr = &stderr
+          	data, e := cmd.Output()
+          	if ctx.Err() != nil {
+          		return nil, fmt.Errorf("Consulta interrompida: %w. Uma varredura do Defender já solicitada pode continuar no Windows.", ctx.Err())
+          	}
+          	if e != nil {
+          		message := strings.TrimSpace(stderr.String())
+          		if len(message) > 1500 {
+          			message = message[:1500]
+          		}
+          		return nil, fmt.Errorf("Operação não confirmada: %v. %s", e, message)
+          	}
+          	var out map[string]any
+          	if e = json.Unmarshal(data, &out); e != nil || out == nil {
+          		return nil, fmt.Errorf("O Windows não retornou um relatório válido")
+          	}
+          	return out, nil
+          }
+          '@
+          [IO.File]::WriteAllText((Join-Path $PWD 'defender_ops_windows.go'), $source, $utf8)
+          $source = @'
+          package main
+          
+          import (
+          	"context"
+          	"errors"
+          	"strings"
+          	"testing"
+          	"time"
+          )
+          
+          func awaitDefender(t *testing.T, d *defenderController) defenderState {
+          	t.Helper()
+          	deadline := time.Now().Add(2 * time.Second)
+          	for time.Now().Before(deadline) {
+          		s := d.status()
+          		if !s.Running {
+          			return s
+          		}
+          		time.Sleep(time.Millisecond)
+          	}
+          	t.Fatal("timeout")
+          	return defenderState{}
+          }
+          func TestDefenderOperationAllowlist(t *testing.T) {
+          	d := defenderController{ctx: context.Background(), run: func(context.Context, string) (map[string]any, error) {
+          		t.Error("unexpected execution")
+          		return nil, nil
+          	}}
+          	for _, name := range []string{"", "quick; anything", "remove-all", "disable"} {
+          		if d.start(name) == nil {
+          			t.Fatal(name)
+          		}
+          	}
+          }
+          func TestDefenderDispatchAndConcurrency(t *testing.T) {
+          	release := make(chan struct{})
+          	d := defenderController{ctx: context.Background(), run: func(_ context.Context, s string) (map[string]any, error) {
+          		if !strings.Contains(s, "Start-MpScan -ScanType QuickScan") {
+          			t.Error(s)
+          		}
+          		<-release
+          		return map[string]any{"message": "done"}, nil
+          	}}
+          	if e := d.start("quick"); e != nil {
+          		t.Fatal(e)
+          	}
+          	if e := d.start("full"); e == nil {
+          		t.Fatal("concurrent operation accepted")
+          	}
+          	close(release)
+          	r := awaitDefender(t, &d)
+          	if r.Error != "" || r.Result["message"] != "done" {
+          		t.Fatal(r)
+          	}
+          }
+          func TestDefenderErrorsAreNotSuccess(t *testing.T) {
+          	d := defenderController{ctx: context.Background(), run: func(context.Context, string) (map[string]any, error) { return nil, errors.New("access denied") }}
+          	if e := d.start("update"); e != nil {
+          		t.Fatal(e)
+          	}
+          	r := awaitDefender(t, &d)
+          	if r.Error != "access denied" || r.Result != nil {
+          		t.Fatal(r)
+          	}
+          }
+          func TestDefenderClosedContext(t *testing.T) {
+          	ctx, cancel := context.WithCancel(context.Background())
+          	cancel()
+          	d := defenderController{ctx: ctx, run: func(context.Context, string) (map[string]any, error) {
+          		t.Error("executed after close")
+          		return nil, nil
+          	}}
+          	if d.start("history") == nil {
+          		t.Fatal("closed controller accepted request")
+          	}
+          }
+          '@
+          [IO.File]::WriteAllText((Join-Path $PWD 'defender_ops_test.go'), $source, $utf8)
+          gofmt -w defender_ops.go defender_ops_windows.go defender_ops_test.go
+          if ($LASTEXITCODE -ne 0) { throw 'Defender operation formatting failed' }
+      - name: Strengthen threat intelligence and scan resilience
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $utf8 = New-Object System.Text.UTF8Encoding($false)
+          $source = @'
+          package main
+          
+          import (
+          	"bufio"
+          	"context"
+          	"encoding/hex"
+          	"encoding/json"
+          	"fmt"
+          	"io"
+          	"net/http"
+          	"net/url"
+          	"regexp"
+          	"strings"
+          	"time"
+          )
+          
+          const maxIntelBytes = 8 << 20
+          const maxIndicators = 100000
+          const bazaarURL = "https://mb-api.abuse.ch/api/v1/"
+          const kevURL = "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
+          
+          func intelClient() *http.Client {
+          	return &http.Client{Timeout: 45 * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
+          }
+          func intelBody(c *http.Client, req *http.Request) ([]byte, error) {
+          	resp, e := c.Do(req)
+          	if e != nil {
+          		return nil, fmt.Errorf("Consulta externa indisponível: %w", e)
+          	}
+          	defer resp.Body.Close()
+          	if resp.StatusCode != http.StatusOK {
+          		return nil, fmt.Errorf("Fonte externa respondeu HTTP %d", resp.StatusCode)
+          	}
+          	b, e := io.ReadAll(io.LimitReader(resp.Body, maxIntelBytes+1))
+          	if e != nil {
+          		return nil, e
+          	}
+          	if len(b) > maxIntelBytes {
+          		return nil, fmt.Errorf("Resposta acima do limite de segurança")
+          	}
+          	return b, nil
+          }
+          func validHash(h string) bool {
+          	if len(h) != 64 {
+          		return false
+          	}
+          	_, e := hex.DecodeString(h)
+          	return e == nil
+          }
+          
+          // Only strict SHA-256 indicators. No paths, samples, scripts or commands are imported.
+          func parseHashList(raw string) (map[string]string, error) {
+          	if len(raw) > maxIntelBytes {
+          		return nil, fmt.Errorf("Lista acima do limite de 8 MiB")
+          	}
+          	out := map[string]string{}
+          	sc := bufio.NewScanner(strings.NewReader(raw))
+          	sc.Buffer(make([]byte, 4096), 4096)
+          	for n := 1; sc.Scan(); n++ {
+          		line := strings.TrimSpace(sc.Text())
+          		if line == "" || strings.HasPrefix(line, "#") {
+          			continue
+          		}
+          		parts := strings.Fields(line)
+          		h := strings.ToLower(parts[0])
+          		if !validHash(h) {
+          			return nil, fmt.Errorf("SHA-256 inválido na linha %d", n)
+          		}
+          		out[h] = "Indicador importado pelo usuário (fonte não verificada pelo aplicativo)"
+          		if len(out) > maxIndicators {
+          			return nil, fmt.Errorf("Limite de indicadores excedido")
+          		}
+          	}
+          	if e := sc.Err(); e != nil {
+          		return nil, e
+          	}
+          	if len(out) == 0 {
+          		return nil, fmt.Errorf("Nenhum indicador válido")
+          	}
+          	return out, nil
+          }
+          func parseBazaar(b []byte) (map[string]string, error) {
+          	var r struct {
+          		Status string `json:"query_status"`
+          		Data   []struct {
+          			Hash string `json:"sha256_hash"`
+          		} `json:"data"`
+          	}
+          	if e := json.Unmarshal(b, &r); e != nil {
+          		return nil, fmt.Errorf("Resposta MalwareBazaar inválida")
+          	}
+          	if r.Status != "ok" || len(r.Data) == 0 || len(r.Data) > 100 {
+          		return nil, fmt.Errorf("Consulta MalwareBazaar sem resultado válido; confira a chave e disponibilidade")
+          	}
+          	out := map[string]string{}
+          	for _, v := range r.Data {
+          		h := strings.ToLower(v.Hash)
+          		if !validHash(h) {
+          			return nil, fmt.Errorf("Indicador inválido na fonte MalwareBazaar")
+          		}
+          		out[h] = "MalwareBazaar: indicador SHA-256 publicado"
+          	}
+          	return out, nil
+          }
+          func fetchBazaar(ctx context.Context, c *http.Client, key string) (map[string]string, error) {
+          	key = strings.TrimSpace(key)
+          	if len(key) < 8 || len(key) > 256 || strings.ContainsAny(key, "\r\n\t ") {
+          		return nil, fmt.Errorf("Informe uma Auth-Key válida do MalwareBazaar")
+          	}
+          	form := url.Values{"query": {"get_recent"}, "selector": {"100"}}
+          	req, e := http.NewRequestWithContext(ctx, http.MethodPost, bazaarURL, strings.NewReader(form.Encode()))
+          	if e != nil {
+          		return nil, e
+          	}
+          	req.Header.Set("Auth-Key", key)
+          	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+          	req.Header.Set("Accept", "application/json")
+          	b, e := intelBody(c, req)
+          	if e != nil {
+          		return nil, e
+          	}
+          	return parseBazaar(b)
+          }
+          
+          // Return a new map or fail without modifying the existing scanner database.
+          func mergeIntel(old, added map[string]string) (map[string]string, error) {
+          	out := make(map[string]string, len(old)+len(added))
+          	for k, v := range old {
+          		out[k] = v
+          	}
+          	for k, v := range added {
+          		if !validHash(k) {
+          			return nil, fmt.Errorf("Indicador inválido")
+          		}
+          		if prior, ok := out[k]; !ok || strings.HasPrefix(prior, "Indicador importado") {
+          			out[k] = v
+          		}
+          		if len(out) > maxIndicators {
+          			return nil, fmt.Errorf("Limite de 100 mil indicadores atingido")
+          		}
+          	}
+          	return out, nil
+          }
+          
+          var cvePattern = regexp.MustCompile(`^CVE-[0-9]{4}-[0-9]{4,19}$`)
+          
+          type kevEntry struct {
+          	ID         string `json:"cveID"`
+          	Vendor     string `json:"vendorProject"`
+          	Product    string `json:"product"`
+          	Name       string `json:"vulnerabilityName"`
+          	Action     string `json:"requiredAction"`
+          	Ransomware string `json:"knownRansomwareCampaignUse"`
+          }
+          type kevResult struct {
+          	Version string    `json:"version"`
+          	Count   int       `json:"count"`
+          	Found   bool      `json:"found"`
+          	Entry   *kevEntry `json:"entry,omitempty"`
+          }
+          
+          func parseKEV(b []byte, id string) (kevResult, error) {
+          	id = strings.ToUpper(strings.TrimSpace(id))
+          	if !cvePattern.MatchString(id) {
+          		return kevResult{}, fmt.Errorf("Informe um identificador CVE válido")
+          	}
+          	var r struct {
+          		Version string     `json:"catalogVersion"`
+          		Count   int        `json:"count"`
+          		Items   []kevEntry `json:"vulnerabilities"`
+          	}
+          	if e := json.Unmarshal(b, &r); e != nil {
+          		return kevResult{}, fmt.Errorf("Catálogo KEV inválido")
+          	}
+          	if r.Version == "" || r.Count <= 0 || r.Count != len(r.Items) {
+          		return kevResult{}, fmt.Errorf("Catálogo KEV incompleto")
+          	}
+          	res := kevResult{Version: r.Version, Count: r.Count}
+          	for _, v := range r.Items {
+          		if v.ID == id {
+          			res.Found = true
+          			res.Entry = &v
+          			break
+          		}
+          	}
+          	return res, nil
+          }
+          func fetchKEV(ctx context.Context, c *http.Client, id string) (kevResult, error) {
+          	id = strings.ToUpper(strings.TrimSpace(id))
+          	if !cvePattern.MatchString(id) {
+          		return kevResult{}, fmt.Errorf("Informe um identificador CVE válido")
+          	}
+          	req, e := http.NewRequestWithContext(ctx, http.MethodGet, kevURL, nil)
+          	if e != nil {
+          		return kevResult{}, e
+          	}
+          	req.Header.Set("Accept", "application/json")
+          	b, e := intelBody(c, req)
+          	if e != nil {
+          		return kevResult{}, e
+          	}
+          	return parseKEV(b, id)
+          }
+          '@
+          [IO.File]::WriteAllText((Join-Path $PWD 'intel.go'), $source, $utf8)
+          $source = @'
+          package main
+          
+          import (
+          	"context"
+          	"fmt"
+          	"io"
+          	"net/http"
+          	"strings"
+          	"testing"
+          )
+          
+          func TestHashListStrict(t *testing.T) {
+          	h := strings.Repeat("A", 64)
+          	r, e := parseHashList("# header\n" + h + " label\n" + h + "\n")
+          	if e != nil || len(r) != 1 || r[strings.ToLower(h)] == "" {
+          		t.Fatal(r, e)
+          	}
+          	for _, x := range []string{"", h + "\ninvalid", strings.Repeat("z", 64), strings.Repeat("a", 4097)} {
+          		if _, e := parseHashList(x); e == nil {
+          			t.Fatal("accepted invalid list")
+          		}
+          	}
+          }
+          func TestBazaarStrict(t *testing.T) {
+          	h := strings.Repeat("b", 64)
+          	b := fmt.Sprintf(`{"query_status":"ok","data":[{"sha256_hash":"%s"}]}`, h)
+          	r, e := parseBazaar([]byte(b))
+          	if e != nil || len(r) != 1 {
+          		t.Fatal(r, e)
+          	}
+          	for _, x := range []string{`{"query_status":"no_results"}`, `{"query_status":"ok","data":[{"sha256_hash":"bad"}]}`, `not json`} {
+          		if _, e := parseBazaar([]byte(x)); e == nil {
+          			t.Fatal(x)
+          		}
+          	}
+          }
+          func TestIntelMerge(t *testing.T) {
+          	a, b := strings.Repeat("a", 64), strings.Repeat("b", 64)
+          	old := map[string]string{a: "known"}
+          	out, e := mergeIntel(old, map[string]string{a: "other", b: "new"})
+          	if e != nil || len(old) != 1 || len(out) != 2 || out[a] != "known" {
+          		t.Fatal(out, e)
+          	}
+          	if _, e := mergeIntel(old, map[string]string{"bad": "bad"}); e == nil {
+          		t.Fatal("accepted invalid")
+          	}
+          }
+          func TestKEVLookup(t *testing.T) {
+          	b := []byte(`{"catalogVersion":"2026.01.01","count":1,"vulnerabilities":[{"cveID":"CVE-2025-1234","product":"Example"}]}`)
+          	r, e := parseKEV(b, "cve-2025-1234")
+          	if e != nil || !r.Found || r.Entry.Product != "Example" {
+          		t.Fatal(r, e)
+          	}
+          	r, e = parseKEV(b, "CVE-2025-12345")
+          	if e != nil || r.Found {
+          		t.Fatal(r, e)
+          	}
+          	if _, e := parseKEV(b, "bad"); e == nil {
+          		t.Fatal("invalid CVE")
+          	}
+          	if _, e := parseKEV([]byte(`{"catalogVersion":"x","count":1}`), "CVE-2025-1234"); e == nil {
+          		t.Fatal("incomplete catalog")
+          	}
+          }
+          
+          type fakeIntelTransport func(*http.Request) (*http.Response, error)
+          
+          func (f fakeIntelTransport) RoundTrip(r *http.Request) (*http.Response, error) { return f(r) }
+          func TestIntelHTTPContract(t *testing.T) {
+          	h := strings.Repeat("c", 64)
+          	c := &http.Client{Transport: fakeIntelTransport(func(r *http.Request) (*http.Response, error) {
+          		if r.URL.String() != bazaarURL || r.Method != "POST" || r.Header.Get("Auth-Key") != "example-key" {
+          			t.Fatal("incorrect request")
+          		}
+          		if e := r.ParseForm(); e != nil || r.Form.Get("query") != "get_recent" || r.Form.Get("selector") != "100" {
+          			t.Fatal("incorrect form")
+          		}
+          		return &http.Response{StatusCode: 200, Body: io.NopCloser(strings.NewReader(fmt.Sprintf(`{"query_status":"ok","data":[{"sha256_hash":"%s"}]}`, h)))}, nil
+          	})}
+          	r, e := fetchBazaar(context.Background(), c, "example-key")
+          	if e != nil || len(r) != 1 {
+          		t.Fatal(r, e)
+          	}
+          }
+          func TestIntelHTTPRejectsErrors(t *testing.T) {
+          	c := &http.Client{Transport: fakeIntelTransport(func(*http.Request) (*http.Response, error) {
+          		return &http.Response{StatusCode: 403, Body: io.NopCloser(strings.NewReader("denied"))}, nil
+          	})}
+          	if _, e := fetchBazaar(context.Background(), c, "example-key"); e == nil {
+          		t.Fatal("accepted HTTP error")
+          	}
+          }
+          func TestIntelRedirectPolicy(t *testing.T) {
+          	c := intelClient()
+          	if c.CheckRedirect(nil, nil) != http.ErrUseLastResponse {
+          		t.Fatal("redirect allowed")
+          	}
+          }
+          '@
+          [IO.File]::WriteAllText((Join-Path $PWD 'intel_test.go'), $source, $utf8)
+          $source = @'
+          package engine
+          
+          import (
+          	"context"
+          	"encoding/binary"
+          	"io"
+          	"strings"
+          	"unicode/utf16"
+          )
+          
+          type guardedReader struct {
+          	ctx context.Context
+          	r   io.Reader
+          }
+          
+          func (g guardedReader) Read(p []byte) (int, error) {
+          	if e := g.ctx.Err(); e != nil {
+          		return 0, e
+          	}
+          	return g.r.Read(p)
+          }
+          
+          // A BOM-marked Unicode script must not bypass textual heuristics just because it contains NUL bytes.
+          func normalizeScriptSample(data []byte) []byte {
+          	if len(data) < 2 {
+          		return data
+          	}
+          	var order binary.ByteOrder
+          	switch {
+          	case data[0] == 0xff && data[1] == 0xfe:
+          		order = binary.LittleEndian
+          	case data[0] == 0xfe && data[1] == 0xff:
+          		order = binary.BigEndian
+          	default:
+          		return data
+          	}
+          	if len(data) >= 4 && ((data[2] == 0 && data[3] == 0) || (data[0] == 0 && data[1] == 0)) {
+          		return data
+          	}
+          	u := make([]uint16, (len(data)-2)/2)
+          	for i := range u {
+          		u[i] = order.Uint16(data[2+i*2:])
+          	}
+          	return []byte(strings.TrimPrefix(string(utf16.Decode(u)), "\ufeff"))
+          }
+          '@
+          [IO.File]::WriteAllText((Join-Path $PWD 'engine/readguard.go'), $source, $utf8)
+          $source = @'
+          package engine
+          
+          import (
+          	"bytes"
+          	"context"
+          	"encoding/binary"
+          	"errors"
+          	"io"
+          	"testing"
+          	"unicode/utf16"
+          )
+          
+          func TestGuardedReaderCancelled(t *testing.T) {
+          	ctx, c := context.WithCancel(context.Background())
+          	c()
+          	_, e := io.ReadAll(guardedReader{ctx, bytes.NewReader([]byte("test"))})
+          	if !errors.Is(e, context.Canceled) {
+          		t.Fatal(e)
+          	}
+          }
+          func TestGuardedReaderNormal(t *testing.T) {
+          	b, e := io.ReadAll(guardedReader{context.Background(), bytes.NewReader([]byte("test"))})
+          	if e != nil || string(b) != "test" {
+          		t.Fatal(b, e)
+          	}
+          }
+          func TestUTF16Scripts(t *testing.T) {
+          	text := "example script"
+          	for _, o := range []binary.ByteOrder{binary.LittleEndian, binary.BigEndian} {
+          		b := []byte{0, 0}
+          		o.PutUint16(b, 0xfeff)
+          		for _, u := range utf16.Encode([]rune(text)) {
+          			p := []byte{0, 0}
+          			o.PutUint16(p, u)
+          			b = append(b, p...)
+          		}
+          		if string(normalizeScriptSample(b)) != text {
+          			t.Fatal("bad decode")
+          		}
+          	}
+          	raw := []byte{'M', 'Z', 0, 0}
+          	if !bytes.Equal(normalizeScriptSample(raw), raw) {
+          		t.Fatal("binary changed")
+          	}
+          }
+          '@
+          [IO.File]::WriteAllText((Join-Path $PWD 'engine/readguard_test.go'), $source, $utf8)
+          $source = @'
+          from pathlib import Path
+          p=Path('engine/scanner.go');s=p.read_text(encoding='utf-8')
+          def one(a,b):
+           global s
+           if s.count(a)!=1:raise RuntimeError('Unexpected scanner structure: '+a)
+           s=s.replace(a,b,1)
+          one('func (s *Scanner) examine(path string, size int64)', 'func (s *Scanner) examine(ctx context.Context, path string, size int64)')
+          one('io.LimitReader(f, limit)', 'io.LimitReader(guardedReader{ctx, f}, limit)')
+          one('io.Copy(h, f)', 'io.Copy(h, guardedReader{ctx, f})')
+          one('io.LimitReader(r, entryMax+1)', 'io.LimitReader(guardedReader{ctx, r}, entryMax+1)')
+          one('if textSample(data) {', 'sample := normalizeScriptSample(data)\n\tif textSample(sample) {')
+          one('lower = strings.ToLower(string(data))', 'lower = strings.ToLower(string(sample))')
+          if s.count('s.examine(')!=2:raise RuntimeError('Unexpected calls to examine')
+          s=s.replace('s.examine(', 's.examine(ctx, ')
+          # A cancelled file must not be reported as fully scanned.
+          one('report.Files = 1', 'if ctx.Err() != nil { report.Cancelled = true; report.Finished = time.Now(); return report, nil }; report.Files = 1')
+          p.write_text(s,encoding='utf-8')
+          '@
+          [IO.File]::WriteAllText((Join-Path $PWD 'patch_guard.py'), $source, $utf8)
+          python patch_guard.py
+          if ($LASTEXITCODE -ne 0) { throw 'Scanner resilience patch failed' }
+          gofmt -w intel.go intel_test.go engine/scanner.go engine/readguard.go engine/readguard_test.go
+          if ($LASTEXITCODE -ne 0) { throw 'Threat intelligence formatting failed' }
+      - name: Prepare fraud prevention and verified remediation
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $utf8 = New-Object System.Text.UTF8Encoding($false)
+          $source = @'
+          package main
+          
+          import (
+           "fmt"
+           "strings"
+           "unicode"
+          )
+          
+          type FraudAssessment struct {
+           Signals []string `json:"signals"`
+           Assessment string `json:"assessment"`
+           Actions []string `json:"actions"`
+          }
+          type fraudRule struct { label string; terms []string }
+          var fraudRules = []fraudRule{
+           {"Solicitação de segredo de carteira ou código de acesso", []string{"seed phrase", "frase de recuperacao", "chave privada", "private key", "codigo de verificacao", "codigo sms", "one time password", "codigo 2fa"}},
+           {"Promessa de lucro sem risco", []string{"lucro garantido", "retorno garantido", "ganho garantido", "guaranteed profit", "guaranteed returns", "sem risco", "risk free"}},
+           {"Cobrança antecipada para recuperar ou liberar dinheiro", []string{"taxa de desbloqueio", "taxa de recuperacao", "taxa para sacar", "unlock fee", "recovery fee", "deposito para liberar"}},
+           {"Pressão ou ameaça de bloqueio", []string{"conta sera bloqueada", "account suspended", "urgente confirme", "acao imediata", "verify immediately"}},
+           {"Solicitação de acesso remoto", []string{"instale anydesk", "instale teamviewer", "install anydesk", "install teamviewer", "acesso remoto ao seu computador"}},
+           {"Solicitação de aprovação ou assinatura de carteira", []string{"aprovar transacao", "assine a transacao", "approve transaction", "sign transaction", "conecte sua carteira", "connect your wallet"}},
+           {"Solicitação de documentos ou selfie", []string{"envie seu cpf", "envie uma selfie", "foto do seu documento", "send your passport", "send your id"}},
+          }
+          func fraudNormalize(s string) string {
+           // Handles common Latin accents and whitespace; not a comprehensive confusable detector.
+           var b strings.Builder; b.Grow(len(s)); space:=false
+           for _,r:=range s { r=unicode.ToLower(r); switch r {case 'á','à','ã','â','ä':r='a';case 'é','ê','è','ë':r='e';case 'í','ì','î','ï':r='i';case 'ó','ò','õ','ô','ö':r='o';case 'ú','ù','û','ü':r='u';case 'ç':r='c'}; if unicode.Is(unicode.Mn,r){continue}; if unicode.IsSpace(r)||unicode.IsPunct(r)||unicode.IsControl(r)||unicode.Is(unicode.Cf,r){if !space{b.WriteByte(' ');space=true};continue}; b.WriteRune(r);space=false }
+           return strings.TrimSpace(b.String())
+          }
+          func assessFraud(raw string)(FraudAssessment,error){
+           r:=FraudAssessment{Signals:[]string{},Actions:[]string{},Assessment:"Inconclusivo: nenhum padrão reconhecido; não comprova legitimidade"}
+           if len(raw)>16384||strings.TrimSpace(raw)=="" {return r,fmt.Errorf("Informe uma mensagem de até 16 KiB, sem senhas ou dados pessoais")}
+           s:=fraudNormalize(raw)
+           for _,rule:=range fraudRules{for _,term:=range rule.terms{if strings.Contains(s,term){r.Signals=append(r.Signals,rule.label);break}}}
+           if len(r.Signals)>0{r.Assessment="Atenção: padrões de possível fraude; confirme por canal independente";r.Actions=[]string{"Não envie dinheiro, códigos, documentos ou segredos de carteira.","Não abra links nem instale programas indicados na mensagem.","Confirme pelo aplicativo oficial ou contato conhecido, em dispositivo confiável."}}
+           return r,nil
+          }
+          
+          // No user-supplied commands, secrets or destinations are accepted by the response planner.
+          func incidentPlan(kind string)([]string,error){
+           switch kind {
+           case "malware":return []string{"Se houver atividade suspeita em andamento, desconecte o dispositivo da rede manualmente; em acesso remoto você poderá perder a conexão.","Abra Motor Defender e atualize assinaturas em rede confiável quando for seguro.","Execute uma varredura completa e solicite o tratamento de ameaças ativas, com confirmação.","Confira o resultado e execute outra análise. Se persistir, procure suporte especializado.","Preserve evidências e restaure somente backups confiáveis após a contenção."},nil
+           case "crypto":return []string{"Interrompa pagamentos e não pague supostas taxas de recuperação.","Em dispositivo limpo, contate a corretora pelo aplicativo oficial e solicite bloqueio de saques ou da conta, se disponível.","Encerre sessões, revogue chaves API e permissões suspeitas por meios oficiais. Altere senhas e configure MFA resistente a phishing.","Se a frase de recuperação ou chave privada foi exposta, procure orientação confiável para transferir os ativos remanescentes a uma nova carteira segura. Nunca compartilhe a frase.","Preserve identificadores de transações e registre ocorrência. A recuperação de fundos não é garantida."},nil
+           case "identity":return []string{"Em dispositivo limpo, proteja primeiro o e-mail principal: altere senha, encerre sessões e revise recuperação e MFA.","Contate bancos e serviços pelos canais oficiais, conteste operações e peça bloqueio conforme necessário.","Consulte contas e relacionamentos no Registrato pelos canais oficiais do Banco Central.","Preserve evidências, registre ocorrência e monitore novas contas e transações."},nil
+           case "ransomware":return []string{"Desconecte o dispositivo afetado da rede para conter a propagação; não conecte backups.","Preserve evidências e procure suporte especializado, sobretudo em redes empresariais.","Não pague resgate como garantia de recuperação. Trate ameaças detectadas e corrija a causa antes de restaurar.","Restaure backups offline confiáveis após validação do ambiente; altere credenciais comprometidas em dispositivo limpo."},nil
+           default:return nil,fmt.Errorf("Tipo de incidente não permitido")
+           }
+          }
+          '@
+          [IO.File]::WriteAllText((Join-Path $PWD 'fraud.go'), $source, $utf8)
+          $source = @'
+          package main
+          import("os";"strconv";"testing";"strings";"context")
+          var fraudCases=[]struct{text string;want bool}{
+           {"ENVIE SUA FRASE DE RECUPERAÇÃO",true},{"Retorno garantido sem risco",true},{"Pague taxa de desbloqueio",true},{"Urgente confirme seus dados",true},{"Instale AnyDesk",true},{"Conecte sua carteira",true},{"Envie seu CPF",true},{"Your account suspended",true},{"Reunião confirmada amanhã",false},{"Relatório de despesas disponível",false},
+          }
+          func TestFraudCases(t *testing.T){for _,v:=range fraudCases{r,e:=assessFraud(v.text);if e!=nil||(len(r.Signals)>0)!=v.want{t.Fatalf("case %q: %+v %v",v.text,r,e)}}}
+          func TestFraudInputLimits(t *testing.T){for _,v:=range []string{"",strings.Repeat("a",16385)}{if _,e:=assessFraud(v);e==nil{t.Fatal("invalid input accepted")}};r,e:=assessFraud("CÓDIGO\tSMS");if e!=nil||len(r.Signals)!=1{t.Fatal(r,e)}}
+          func TestIncidentPlans(t *testing.T){for _,v:=range []string{"crypto","identity","malware","ransomware"}{r,e:=incidentPlan(v);if e!=nil||len(r)<4{t.Fatal(v,r,e)}};if _,e:=incidentPlan("arbitrary");e==nil{t.Fatal("unknown plan")}}
+          func TestRemediationDispatch(t *testing.T){d:=defenderController{ctx:context.Background(),run:func(_ context.Context,s string)(map[string]any,error){if !strings.Contains(s,"Remove-MpThreat -ErrorAction Stop")||strings.Count(s,"Get-MpThreat -ErrorAction Stop")!=2{t.Error("missing treatment or verification")};return map[string]any{"activeBefore":float64(2),"activeAfter":float64(1)},nil}};if e:=d.start("remediate");e!=nil{t.Fatal(e)};r:=awaitDefender(t,&d);if r.Error!=""||r.Result["activeAfter"]!=float64(1){t.Fatal(r)}}
+          func TestProtectivePolicyAllowlist(t *testing.T){for _,v:=range []struct{name,prop string}{{"network-block","EnableNetworkProtection"},{"folder-block","EnableControlledFolderAccess"}}{op,ok:=defenderOperations[v.name];if !ok||!strings.Contains(op.script,"Set-MpPreference -"+v.prop+" Enabled -ErrorAction Stop")||strings.Count(op.script,"Get-MpPreference -ErrorAction Stop")!=2||!strings.Contains(op.script,"[int]$after -ne 1"){t.Fatal(v.name)}}}
+          func TestSyntheticFraudMillion(t *testing.T){if os.Getenv("ZEUVORYX_STRESS")!="1"{t.Skip("opt-in synthetic workload")};for i:=0;i<1000000;i++{v:=fraudCases[i%len(fraudCases)];r,e:=assessFraud(v.text+" ref "+strconv.Itoa(i));if e!=nil||(len(r.Signals)>0)!=v.want{t.Fatalf("case %d",i)}};t.Log("1000000 synthetic message evaluations; 800000 marked, 200000 unmarked; not live attacks")}
+          '@
+          [IO.File]::WriteAllText((Join-Path $PWD 'fraud_test.go'), $source, $utf8)
+          gofmt -w fraud.go fraud_test.go
+          if ($LASTEXITCODE -ne 0) { throw 'Fraud module formatting failed' }
+      - name: Persist threat intelligence and add optional ClamAV
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $utf8 = New-Object System.Text.UTF8Encoding($false)
+          $source = @'
+          package main
+          
+          import (
+          	"encoding/json"
+          	"fmt"
+          	"io"
+          	"os"
+          	"path/filepath"
+          	"strings"
+          	"time"
+          )
+          
+          type intelSnapshot struct {
+          	Version int               `json:"version"`
+          	Updated time.Time         `json:"updated"`
+          	Hashes  map[string]string `json:"hashes"`
+          	URLs    map[string]bool   `json:"urls"`
+          }
+          
+          const maxSnapshotBytes = 48 << 20
+          const maxReputationURLs = 100000
+          
+          func newIntelSnapshot() intelSnapshot {
+          	return intelSnapshot{Version: 1, Hashes: map[string]string{}, URLs: map[string]bool{}}
+          }
+          func intelSnapshotPath() (string, error) {
+          	d, e := os.UserConfigDir()
+          	if e != nil {
+          		return "", e
+          	}
+          	return filepath.Join(d, "ZEUVORYX", "intelligence", "snapshot.json"), nil
+          }
+          func validateSnapshot(v intelSnapshot) error {
+          	if v.Version != 1 || v.Hashes == nil || v.URLs == nil || len(v.Hashes) > maxIndicators || len(v.URLs) > maxReputationURLs {
+          		return fmt.Errorf("Base inválida ou acima do limite")
+          	}
+          	for k, label := range v.Hashes {
+          		if !validHash(k) || k != strings.ToLower(k) || len(label) > 512 {
+          			return fmt.Errorf("Indicador inválido na base")
+          		}
+          	}
+          	for k, b := range v.URLs {
+          		if !b || !validReputationURL(k) {
+          			return fmt.Errorf("URL inválida na base")
+          		}
+          	}
+          	return nil
+          }
+          func loadSnapshot(path string) (intelSnapshot, error) {
+          	v := newIntelSnapshot()
+          	f, e := os.Open(path)
+          	if os.IsNotExist(e) {
+          		return v, nil
+          	}
+          	if e != nil {
+          		return v, e
+          	}
+          	defer f.Close()
+          	b, e := io.ReadAll(io.LimitReader(f, maxSnapshotBytes+1))
+          	if e != nil {
+          		return v, e
+          	}
+          	if len(b) > maxSnapshotBytes {
+          		return v, fmt.Errorf("Base acima do limite")
+          	}
+          	if e = json.Unmarshal(b, &v); e != nil {
+          		return newIntelSnapshot(), e
+          	}
+          	if e = validateSnapshot(v); e != nil {
+          		return newIntelSnapshot(), e
+          	}
+          	return v, nil
+          }
+          func saveSnapshot(path string, v intelSnapshot) error {
+          	if e := validateSnapshot(v); e != nil {
+          		return e
+          	}
+          	b, e := json.Marshal(v)
+          	if e != nil {
+          		return e
+          	}
+          	if len(b) > maxSnapshotBytes {
+          		return fmt.Errorf("Base acima do limite")
+          	}
+          	dir := filepath.Dir(path)
+          	if e = os.MkdirAll(dir, 0700); e != nil {
+          		return e
+          	}
+          	f, e := os.CreateTemp(dir, ".snapshot-*")
+          	if e != nil {
+          		return e
+          	}
+          	defer os.Remove(f.Name())
+          	_, e = f.Write(b)
+          	if e == nil {
+          		e = f.Sync()
+          	}
+          	ce := f.Close()
+          	if e == nil {
+          		e = ce
+          	}
+          	if e != nil {
+          		return e
+          	}
+          	return os.Rename(f.Name(), path)
+          }
+          '@
+          [IO.File]::WriteAllText((Join-Path $PWD 'persistent.go'), $source, $utf8)
+          $source = @'
+          package main
+          
+          import (
+          	"bufio"
+          	"fmt"
+          	"net/url"
+          	"strings"
+          	"unicode"
+          )
+          
+          // Exact URLs only. Never opens links or sends them outside the device.
+          func validReputationURL(s string) bool {
+          	if len(s) == 0 || len(s) > 8192 || strings.Contains(s, "\\") || strings.IndexFunc(s, unicode.IsSpace) >= 0 || strings.IndexFunc(s, unicode.IsControl) >= 0 {
+          		return false
+          	}
+          	u, e := url.Parse(s)
+          	return e == nil && (u.Scheme == "http" || u.Scheme == "https") && u.Hostname() != "" && u.User == nil && u.Opaque == "" && u.Fragment == ""
+          }
+          func canonicalReputationURL(s string) string {
+          	s = strings.TrimSpace(s)
+          	if strings.Contains(s, "\\") || strings.IndexFunc(s, unicode.IsSpace) >= 0 || strings.IndexFunc(s, unicode.IsControl) >= 0 {
+          		return ""
+          	}
+          	u, e := url.Parse(s)
+          	if e != nil {
+          		return ""
+          	}
+          	u.Fragment = ""
+          	u.RawFragment = ""
+          	u.Host = strings.ToLower(u.Host)
+          	if u.Path == "" {
+          		u.Path = "/"
+          	}
+          	v := u.String()
+          	if !validReputationURL(v) {
+          		return ""
+          	}
+          	return v
+          }
+          func parseReputationList(raw string) (map[string]bool, error) {
+          	if len(raw) > maxIntelBytes {
+          		return nil, fmt.Errorf("Lista acima do limite de 8 MiB")
+          	}
+          	out := map[string]bool{}
+          	s := bufio.NewScanner(strings.NewReader(raw))
+          	s.Buffer(make([]byte, 4096), 16384)
+          	for s.Scan() {
+          		v := strings.TrimSpace(s.Text())
+          		if v == "" || strings.HasPrefix(v, "#") {
+          			continue
+          		}
+          		k := canonicalReputationURL(v)
+          		if k == "" {
+          			return nil, fmt.Errorf("Lista contém URL inválida")
+          		}
+          		out[k] = true
+          		if len(out) > maxReputationURLs {
+          			return nil, fmt.Errorf("Limite de URLs atingido")
+          		}
+          	}
+          	if e := s.Err(); e != nil {
+          		return nil, e
+          	}
+          	if len(out) == 0 {
+          		return nil, fmt.Errorf("Lista vazia")
+          	}
+          	return out, nil
+          }
+          func assessWithReputation(raw string, urls map[string]bool) (LinkAssessment, error) {
+          	r, e := assessLink(raw)
+          	if e != nil {
+          		return r, e
+          	}
+          	if urls[canonicalReputationURL(raw)] {
+          		r.Signals = append(r.Signals, "Correspondência exata na lista local importada; confirme a procedência e não abra o link")
+          		r.Assessment = "Atenção: URL presente na base de reputação importada"
+          	}
+          	return r, nil
+          }
+          '@
+          [IO.File]::WriteAllText((Join-Path $PWD 'reputation.go'), $source, $utf8)
+          $source = @'
+          package main
+          
+          import (
+          	"context"
+          	"fmt"
+          	"os"
+          	"os/exec"
+          	"path/filepath"
+          	"strings"
+          	"syscall"
+          	"time"
+          )
+          
+          func clamExecutable() (string, error) {
+          	root := os.Getenv("ProgramFiles")
+          	if !filepath.IsAbs(root) {
+          		return "", fmt.Errorf("Program Files indisponível")
+          	}
+          	p := filepath.Join(root, "ClamAV", "clamscan.exe")
+          	st, e := os.Lstat(p)
+          	if e != nil || !st.Mode().IsRegular() {
+          		return "", fmt.Errorf("ClamAV não instalado no diretório oficial Program Files\\ClamAV")
+          	}
+          	return p, nil
+          }
+          func clamScanFile(path string) (map[string]any, error) {
+          	tool, e := clamExecutable()
+          	if e != nil {
+          		return nil, e
+          	}
+          	path, e = filepath.Abs(strings.TrimSpace(path))
+          	if e != nil {
+          		return nil, e
+          	}
+          	if strings.HasPrefix(path, `\\`) {
+          		return nil, fmt.Errorf("Selecione um arquivo local")
+          	}
+          	st, e := os.Lstat(path)
+          	if e != nil || !st.Mode().IsRegular() {
+          		return nil, fmt.Errorf("Selecione um arquivo regular")
+          	}
+          	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+          	defer cancel()
+          	cmd := exec.CommandContext(ctx, tool, "--no-summary", "--", path)
+          	cmd.Dir = filepath.Dir(tool)
+          	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+          	out := &limitedMediaOutput{n: 1 << 20}
+          	cmd.Stdout = out
+          	cmd.Stderr = out
+          	e = cmd.Run()
+          	if ctx.Err() != nil {
+          		return nil, ctx.Err()
+          	}
+          	code := 0
+          	if e != nil {
+          		if x, ok := e.(*exec.ExitError); ok {
+          			code = x.ExitCode()
+          		} else {
+          			return nil, e
+          		}
+          	}
+          	status := "Inconclusivo: erro do ClamAV"
+          	if code == 0 {
+          		status = "Nenhuma detecção reportada pelo ClamAV; não comprova segurança"
+          	} else if code == 1 {
+          		status = "Alerta do ClamAV: não execute o arquivo; use a central Defender para tratamento"
+          	}
+          	return map[string]any{"status": status, "code": code, "details": out.b.String()}, nil
+          }
+          '@
+          [IO.File]::WriteAllText((Join-Path $PWD 'clam_windows.go'), $source, $utf8)
+          $source = @'
+          package main
+          
+          import (
+          	"os"
+          	"path/filepath"
+          	"strings"
+          	"testing"
+          	"time"
+          )
+          
+          func TestSnapshotRoundtrip(t *testing.T) {
+          	p := filepath.Join(t.TempDir(), "intel", "snapshot.json")
+          	v := newIntelSnapshot()
+          	v.Hashes[strings.Repeat("a", 64)] = "test"
+          	v.URLs["https://example.invalid/a"] = true
+          	v.Updated = time.Now()
+          	if e := saveSnapshot(p, v); e != nil {
+          		t.Fatal(e)
+          	}
+          	r, e := loadSnapshot(p)
+          	if e != nil || len(r.Hashes) != 1 || len(r.URLs) != 1 {
+          		t.Fatal(r, e)
+          	}
+          	v.Hashes[strings.Repeat("b", 64)] = "second"
+          	if e = saveSnapshot(p, v); e != nil {
+          		t.Fatal(e)
+          	}
+          	r, e = loadSnapshot(p)
+          	if e != nil || len(r.Hashes) != 2 {
+          		t.Fatal(r, e)
+          	}
+          }
+          func TestInvalidSnapshotDoesNotOverwrite(t *testing.T) {
+          	p := filepath.Join(t.TempDir(), "snapshot.json")
+          	v := newIntelSnapshot()
+          	if e := saveSnapshot(p, v); e != nil {
+          		t.Fatal(e)
+          	}
+          	v.Hashes["bad"] = "test"
+          	if e := saveSnapshot(p, v); e == nil {
+          		t.Fatal("invalid accepted")
+          	}
+          	r, e := loadSnapshot(p)
+          	if e != nil || len(r.Hashes) != 0 {
+          		t.Fatal(r, e)
+          	}
+          	os.WriteFile(p, []byte("broken"), 0600)
+          	if _, e = loadSnapshot(p); e == nil {
+          		t.Fatal("corruption hidden")
+          	}
+          }
+          func TestReputationExact(t *testing.T) {
+          	m, e := parseReputationList("# example\nhttps://EXAMPLE.invalid/a\n")
+          	if e != nil {
+          		t.Fatal(e)
+          	}
+          	r, e := assessWithReputation("https://example.invalid/a#x", m)
+          	if e != nil || len(r.Signals) != 1 {
+          		t.Fatal(r, e)
+          	}
+          	r, e = assessWithReputation("https://example.invalid/b", m)
+          	if e != nil || len(r.Signals) != 0 {
+          		t.Fatal(r, e)
+          	}
+          }
+          func TestReputationInvalid(t *testing.T) {
+          	for _, s := range []string{"file:///tmp/a", "https://x.invalid@other.invalid/", "https://x.invalid/a b", ""} {
+          		if _, e := parseReputationList(s); e == nil {
+          			t.Fatal(s)
+          		}
+          	}
+          }
+          '@
+          [IO.File]::WriteAllText((Join-Path $PWD 'persistent_test.go'), $source, $utf8)
+          gofmt -w persistent.go reputation.go clam_windows.go persistent_test.go
+          if ($LASTEXITCODE -ne 0) { throw 'Fortification formatting failed' }
+      - name: Prepare opt-in local test diagnostics
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $utf8 = New-Object System.Text.UTF8Encoding($false)
+          $source = @'
+          package main
+          
+          import (
+          	"encoding/json"
+          	"fmt"
+          	"os"
+          	"path/filepath"
+          	"sync"
+          	"time"
+          )
+          
+          const diagMaxSamples = 1800
+          
+          // Explicit allowlist: never serialize paths, raw reports, URLs, credentials or error text.
+          type diagSample struct {
+          	At                time.Time `json:"at_utc"`
+          	ScanRunning       bool      `json:"scan_running"`
+          	Files             int       `json:"files"`
+          	Bytes             int64     `json:"bytes"`
+          	ScanFinished      bool      `json:"scan_finished"`
+          	ScanCancelled     bool      `json:"scan_cancelled"`
+          	Skipped           int       `json:"skipped"`
+          	Findings          int       `json:"findings"`
+          	ScanError         bool      `json:"scan_error"`
+          	MonitorEnabled    bool      `json:"monitor_enabled"`
+          	Indicators        int       `json:"sha256_indicators"`
+          	GoHeapBytes       uint64    `json:"go_heap_bytes"`
+          	DefenderRunning   bool      `json:"defender_running"`
+          	DefenderOperation string    `json:"defender_operation,omitempty"`
+          	DefenderError     bool      `json:"defender_error"`
+          	ActiveBefore      *int      `json:"defender_active_before,omitempty"`
+          	ActiveAfter       *int      `json:"defender_active_after,omitempty"`
+          }
+          
+          type diagReport struct {
+          	Schema    string       `json:"schema"`
+          	Version   string       `json:"version"`
+          	Recording bool         `json:"recording"`
+          	Started   time.Time    `json:"started_utc"`
+          	Stopped   *time.Time   `json:"stopped_utc,omitempty"`
+          	Dropped   int          `json:"old_samples_discarded"`
+          	Samples   []diagSample `json:"samples"`
+          }
+          
+          type diagRecorder struct {
+          	mu      sync.Mutex
+          	active  bool
+          	started time.Time
+          	stopped *time.Time
+          	dropped int
+          	next    int
+          	samples []diagSample
+          }
+          
+          func (d *diagRecorder) begin(now time.Time, sample func() diagSample) bool {
+          	d.mu.Lock()
+          	defer d.mu.Unlock()
+          	if d.active {
+          		return false
+          	}
+          	d.active = true
+          	d.started = now.UTC()
+          	d.stopped = nil
+          	d.dropped = 0
+          	d.next = 0
+          	d.samples = make([]diagSample, 0, diagMaxSamples)
+          	d.appendLocked(sample())
+          	return true
+          }
+          func (d *diagRecorder) appendLocked(s diagSample) {
+          	if len(d.samples) < diagMaxSamples {
+          		d.samples = append(d.samples, s)
+          		return
+          	}
+          	d.samples[d.next] = s
+          	d.next = (d.next + 1) % diagMaxSamples
+          	d.dropped++
+          }
+          func (d *diagRecorder) capture(sample func() diagSample) {
+          	d.mu.Lock()
+          	defer d.mu.Unlock()
+          	if d.active {
+          		d.appendLocked(sample())
+          	}
+          }
+          func (d *diagRecorder) stop(now time.Time, sample func() diagSample) bool {
+          	d.mu.Lock()
+          	defer d.mu.Unlock()
+          	if !d.active {
+          		return false
+          	}
+          	d.appendLocked(sample())
+          	d.active = false
+          	t := now.UTC()
+          	d.stopped = &t
+          	return true
+          }
+          func (d *diagRecorder) report() diagReport {
+          	d.mu.Lock()
+          	defer d.mu.Unlock()
+          	out := make([]diagSample, 0, len(d.samples))
+          	out = append(out, d.samples[d.next:]...)
+          	out = append(out, d.samples[:d.next]...)
+          	return diagReport{Schema: "zeuvoryx-diagnostics-v1", Version: "3.0-diagnostico", Recording: d.active, Started: d.started, Stopped: d.stopped, Dropped: d.dropped, Samples: out}
+          }
+          func diagOp(op string) string {
+          	switch op {
+          	case "quick", "full", "update", "history", "updates", "remediate", "network-block", "folder-block":
+          		return op
+          	}
+          	return ""
+          }
+          func diagCount(v any) *int {
+          	var n int
+          	switch x := v.(type) {
+          	case int:
+          		n = x
+          	case float64:
+          		if x < 0 || x > 1000000000 || x != float64(int(x)) {
+          			return nil
+          		}
+          		n = int(x)
+          	default:
+          		return nil
+          	}
+          	if n < 0 || n > 1000000000 {
+          		return nil
+          	}
+          	return &n
+          }
+          func writeDiagReport(dir string, r diagReport) (string, error) {
+          	if len(r.Samples) == 0 {
+          		return "", fmt.Errorf("Nenhuma amostra: inicie uma sessão de diagnóstico")
+          	}
+          	if e := os.MkdirAll(dir, 0700); e != nil {
+          		return "", e
+          	}
+          	f, e := os.CreateTemp(dir, "ZEUVORYX-diagnostico-*.json")
+          	if e != nil {
+          		return "", e
+          	}
+          	name := f.Name()
+          	ok := false
+          	defer func() {
+          		if !ok {
+          			f.Close()
+          			os.Remove(name)
+          		}
+          	}()
+          	enc := json.NewEncoder(f)
+          	enc.SetIndent("", "  ")
+          	if e = enc.Encode(r); e != nil {
+          		return "", e
+          	}
+          	if e = f.Close(); e != nil {
+          		return "", e
+          	}
+          	ok = true
+          	return name, nil
+          }
+          func exportDiag(r diagReport) (string, error) {
+          	base, e := os.UserConfigDir()
+          	if e != nil {
+          		return "", e
+          	}
+          	return writeDiagReport(filepath.Join(base, "ZEUVORYX", "diagnosticos"), r)
+          }
+          '@
+          [IO.File]::WriteAllText((Join-Path $PWD 'diagnostics.go'), $source, $utf8)
+          $source = @'
+          package main
+          
+          import (
+          	"encoding/json"
+          	"os"
+          	"strings"
+          	"sync"
+          	"testing"
+          	"time"
+          )
+          
+          func TestDiagnosticsOptIn(t *testing.T) {
+          	var d diagRecorder
+          	now := time.Now()
+          	n := 0
+          	sample := func() diagSample { n++; return diagSample{At: now, Files: n} }
+          	d.capture(sample)
+          	if n != 0 {
+          		t.Fatal("captured without permission")
+          	}
+          	if !d.begin(now, sample) || d.begin(now, sample) {
+          		t.Fatal("start")
+          	}
+          	d.capture(sample)
+          	if !d.stop(now, sample) || d.stop(now, sample) {
+          		t.Fatal("stop")
+          	}
+          	d.capture(sample)
+          	r := d.report()
+          	if n != 3 || r.Recording || len(r.Samples) != 3 || r.Stopped == nil {
+          		t.Fatal(r)
+          	}
+          	if !d.begin(now, sample) || len(d.report().Samples) != 1 {
+          		t.Fatal("reset")
+          	}
+          }
+          func TestDiagnosticsRing(t *testing.T) {
+          	var d diagRecorder
+          	n := 0
+          	sample := func() diagSample { n++; return diagSample{Files: n} }
+          	d.begin(time.Now(), sample)
+          	for i := 0; i < diagMaxSamples+4; i++ {
+          		d.capture(sample)
+          	}
+          	r := d.report()
+          	if len(r.Samples) != diagMaxSamples || r.Dropped != 5 || r.Samples[0].Files != 6 || r.Samples[len(r.Samples)-1].Files != n {
+          		t.Fatal("wrong bounded chronology")
+          	}
+          }
+          func TestDiagnosticsAllowlist(t *testing.T) {
+          	if diagOp("C:/Users/secret") != "" || diagOp("quick") != "quick" || diagCount("secret") != nil || diagCount(1.5) != nil || diagCount(-1) != nil || *diagCount(0.0) != 0 {
+          		t.Fatal("invalid values")
+          	}
+          	r := diagReport{Samples: []diagSample{{DefenderOperation: diagOp("SECRET"), ActiveAfter: diagCount(0)}}}
+          	b, e := json.Marshal(r)
+          	if e != nil || strings.Contains(string(b), "SECRET") || !strings.Contains(string(b), `"defender_active_after":0`) {
+          		t.Fatal(string(b), e)
+          	}
+          }
+          func TestDiagnosticsExport(t *testing.T) {
+          	var d diagRecorder
+          	dir := t.TempDir()
+          	if _, e := writeDiagReport(dir, d.report()); e == nil {
+          		t.Fatal("empty export")
+          	}
+          	d.begin(time.Now(), func() diagSample { return diagSample{Files: 42} })
+          	p, e := writeDiagReport(dir, d.report())
+          	if e != nil {
+          		t.Fatal(e)
+          	}
+          	b, e := os.ReadFile(p)
+          	var r diagReport
+          	if e != nil || json.Unmarshal(b, &r) != nil || r.Schema != "zeuvoryx-diagnostics-v1" || r.Samples[0].Files != 42 {
+          		t.Fatal("invalid export")
+          	}
+          }
+          func TestDiagnosticsConcurrent(t *testing.T) {
+          	var d diagRecorder
+          	sample := func() diagSample { return diagSample{Files: 1} }
+          	d.begin(time.Now(), sample)
+          	var w sync.WaitGroup
+          	for i := 0; i < 8; i++ {
+          		w.Add(1)
+          		go func() {
+          			defer w.Done()
+          			for j := 0; j < 50; j++ {
+          				d.capture(sample)
+          				_ = d.report()
+          			}
+          		}()
+          	}
+          	w.Wait()
+          	if len(d.report().Samples) != 401 {
+          		t.Fatal("lost sample")
+          	}
+          }
+          '@
+          [IO.File]::WriteAllText((Join-Path $PWD 'diagnostics_test.go'), $source, $utf8)
+          $source = @'
+          from pathlib import Path
+          import re
+          p=Path('desktop_windows.go'); s=p.read_text(encoding='utf-8')
+          def once(s,a,b):
+              if s.count(a)!=1: raise ValueError(f'expected one match: {a[:100]!r} ({s.count(a)})')
+              return s.replace(a,b,1)
+          needle='\tif !bind("getScanState", func() map[string]any {'
+          bindings='''    // Diagnostics is opt-in; recording stays in memory and never uses a network connection.
+              var diag diagRecorder
+              collectDiag := func() diagSample {
+                  s.mu.Lock()
+                  v:=diagSample{At:time.Now().UTC(),ScanRunning:s.running,Files:s.files,Bytes:s.bytes,ScanFinished:!s.report.Finished.IsZero(),ScanCancelled:s.report.Cancelled,Skipped:s.report.Skipped,Findings:len(s.report.Findings),ScanError:s.err!="",MonitorEnabled:monitorEnabled.Load(),Indicators:len(s.scanner.IOC)}
+                  s.mu.Unlock()
+                  var mem runtime.MemStats;runtime.ReadMemStats(&mem);v.GoHeapBytes=mem.HeapAlloc
+                  n:=native.status();v.DefenderRunning=n.Running;v.DefenderOperation=diagOp(n.Operation);v.DefenderError=n.Error!=""
+                  if n.Operation=="remediate" && !n.Running && n.Error=="" {v.ActiveBefore=diagCount(n.Result["activeBefore"]);v.ActiveAfter=diagCount(n.Result["activeAfter"])}
+                  return v
+              }
+              diagCtx, stopDiag:=context.WithCancel(context.Background());defer stopDiag()
+              go func(){ticker:=time.NewTicker(2*time.Second);defer ticker.Stop();for{select{case <-diagCtx.Done():return;case <-ticker.C:diag.capture(collectDiag)}}}()
+              if !bind("diagStart",func()bool{return diag.begin(time.Now(),collectDiag)}){return}
+              if !bind("diagStop",func()bool{return diag.stop(time.Now(),collectDiag)}){return}
+              if !bind("diagReport",diag.report){return}
+              if !bind("diagExport",func()(string,error){return exportDiag(diag.report())}){return}
+          '''
+          s=once(s,needle,bindings+needle);p.write_text(s,encoding='utf-8')
+          p=Path('desktop.html');s=p.read_text(encoding='utf-8')
+          s=once(s,'<button data-page="intel">Inteligência de ameaças</button>','<button data-page="intel">Inteligência de ameaças</button><button data-page="diagnostics">Diagnóstico de testes</button>')
+          s=once(s,"'links','defender','intel'].forEach", "'links','defender','intel','diagnostics'].forEach")
+          section='''<section id="diagnostics" class="hidden card"><h2>Diagnóstico de testes</h2><p class="sub">Gravação voluntária, local, a cada 2 segundos. Não envia dados à internet. Compartilhe o relatório manualmente no ChatGPT.</p><p class="sub">Até 1.800 amostras recentes (aproximadamente 1 hora). Exportar antes de fechar: a sessão fica apenas na memória. Não inclui nomes de arquivos, caminhos, IPs, mensagens, chaves, senhas nem detalhes brutos dos alertas.</p><div class="actions" style="margin:16px 0"><button class="primary" id="diagBegin">Iniciar gravação</button><button id="diagEnd" disabled>Encerrar gravação</button><button id="diagSave" disabled>Exportar JSON</button></div><p id="diagState" class="sub" role="status">Gravação desligada.</p><pre id="diagView" class="media-report" aria-label="Métricas técnicas"></pre><p id="diagPath" class="sub" style="overflow-wrap:anywhere"></p></section>'''
+          s=once(s,'<section id="engine"',section+'<section id="engine"')
+          js='''
+          let diagBusy=false;
+          async function diagRefresh(){if(diagBusy)return;diagBusy=true;try{const r=await window.diagReport(),rows=r.samples||[],x=rows.at(-1),p=rows.at(-2);el('diagBegin').disabled=r.recording;el('diagEnd').disabled=!r.recording;el('diagSave').disabled=!rows.length;el('diagState').textContent=(r.recording?'Gravando localmente':'Gravação desligada')+' | Amostras: '+fmt(rows.length)+' | Amostras antigas descartadas: '+fmt(r.old_samples_discarded);if(!x){el('diagView').textContent='Nenhuma amostra.';return}const dt=p?(Date.parse(x.at_utc)-Date.parse(p.at_utc))/1000:0;const rate=p&&x.scan_running&&p.scan_running&&x.bytes>=p.bytes&&dt>0?volume((x.bytes-p.bytes)/dt)+'/s':'Não medido neste intervalo';el('diagView').textContent='Varredura: '+(x.scan_running?'Em andamento':x.scan_finished?'Encerrada':'Inativa')+'\\nArquivos: '+fmt(x.files)+'\\nVolume: '+volume(x.bytes)+'\\nVelocidade: '+rate+'\\nAlertas no último relatório: '+fmt(x.findings)+'\\nIgnorados no último relatório: '+fmt(x.skipped)+'\\nCancelada: '+(x.scan_cancelled?'Sim':'Não')+'\\nErro de varredura: '+(x.scan_error?'Sim':'Não')+'\\nMemória heap Go (não é RAM total): '+volume(x.go_heap_bytes)+'\\nMonitor periódico: '+(x.monitor_enabled?'Ativo':'Inativo')+'\\nIndicadores SHA-256: '+fmt(x.sha256_indicators)+'\\nDefender operação: '+(x.defender_operation||'Nenhuma')+'\\nDefender comando em andamento: '+(x.defender_running?'Sim':'Não')+'\\nErro do comando: '+(x.defender_error?'Sim':'Não')+'\\nAmeaças ativas antes/depois do tratamento: '+(x.defender_active_before??'Não consultado')+' / '+(x.defender_active_after??'Não consultado');}catch(e){el('diagState').textContent='Falha ao consultar diagnóstico.'}finally{diagBusy=false}}
+          el('diagBegin').onclick=()=>action(async()=>{if(!await ask('Iniciar gravação local? Uma nova sessão substitui a anterior ainda não exportada.'))return;await window.diagStart();el('diagPath').textContent='';await diagRefresh()});
+          el('diagEnd').onclick=()=>action(async()=>{await window.diagStop();await diagRefresh()});
+          el('diagSave').onclick=()=>action(async()=>{const path=await window.diagExport();el('diagPath').textContent='Relatório salvo em: '+path+' | Abra essa pasta e envie somente o JSON ao ChatGPT.'});
+          setInterval(()=>{if(!el('diagnostics').classList.contains('hidden'))diagRefresh()},2000);
+          '''
+          s=once(s,'</script></body></html>',js+'</script></body></html>');p.write_text(s,encoding='utf-8')
+          '@
+          [IO.File]::WriteAllText((Join-Path $PWD 'prepare_diagnostics.py'), $source, $utf8)
+          python prepare_diagnostics.py
+          if ($LASTEXITCODE -ne 0) { throw 'Diagnostics integration failed' }
+          gofmt -w diagnostics.go diagnostics_test.go desktop_windows.go
+          if ($LASTEXITCODE -ne 0) { throw 'Diagnostics formatting failed' }
       - name: Validate source code
         shell: pwsh
         run: |
           go vet ./...
           if ($LASTEXITCODE -ne 0) { throw 'Go validation failed' }
-      - name: Run tests five times
+      - name: Run tests ten times
         shell: pwsh
         run: |
-          go test -v -count=5 ./...
+          go test -v -count=10 ./...
           if ($LASTEXITCODE -ne 0) { throw 'Go tests failed' }
+      - name: Ten million synthetic fraud evaluations
+        shell: pwsh
+        run: |
+          $env:ZEUVORYX_STRESS = '1'
+          go test -v -run '^TestSyntheticFraudMillion$' -count=10 .
+          if ($LASTEXITCODE -ne 0) { throw 'Synthetic fraud workload failed' }
       - name: Build Windows desktop EXE
         shell: pwsh
         run: |
@@ -784,14 +2265,14 @@ jobs:
           [Setup]
           AppId=ZEUVORYX.Desktop
           AppName=ZEUVORYX
-          AppVersion=2.6
+          AppVersion=3.0
           DefaultDirName={localappdata}\Programs\ZEUVORYX
           DefaultGroupName=ZEUVORYX
           DisableProgramGroupPage=yes
           PrivilegesRequired=lowest
           ArchitecturesAllowed=x64compatible
           OutputDir=installer
-          OutputBaseFilename=ZEUVORYX-Setup-2.6
+          OutputBaseFilename=ZEUVORYX-Setup-3.0
           SetupIconFile=dist\ZEUVORYX.ico
           UninstallDisplayIcon={app}\ZEUVORYX.exe
           Compression=lzma2
@@ -819,13 +2300,13 @@ jobs:
           if (!(Test-Path $iscc)) { throw 'Inno Setup compiler not found' }
           & $iscc setup.iss
           if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed' }
-          if (!(Test-Path 'installer/ZEUVORYX-Setup-2.6.exe')) { throw 'Installer missing' }
-          Get-FileHash installer/ZEUVORYX-Setup-2.6.exe -Algorithm SHA256
+          if (!(Test-Path 'installer/ZEUVORYX-Setup-3.0.exe')) { throw 'Installer missing' }
+          Get-FileHash installer/ZEUVORYX-Setup-3.0.exe -Algorithm SHA256
       - name: Upload Olympus installer and portable edition
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-2.6-Olympus-Windows
+          name: ZEUVORYX-3.0-Olympus-Windows
           path: |
             dist/
-            installer/ZEUVORYX-Setup-2.6.exe
+            installer/ZEUVORYX-Setup-3.0.exe
           if-no-files-found: error

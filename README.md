@@ -1,5 +1,7 @@
 # ZEUVORYX 3.0.6 LAB R1 — Olympus Silver
 
+> [Central mundial de ajuda / Global Help Center](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/main/support) — PT-BR, EN, ES, JA; candidato 3.0.6 LAB R1.
+
 Scanner complementar de segurança para Windows x64, desenvolvido em Go, com interface desktop, análise de arquivos e links, quarentena reversível e IA consultiva experimental. **Created & Engineered by Leonardo A Botelho.**
 
 [![Windows LAB R5](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/workflows/windows-build-lab-306.yml/badge.svg?branch=windows-3.0.6-lab)](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/workflows/windows-build-lab-306.yml)

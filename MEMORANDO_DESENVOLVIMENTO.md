@@ -582,3 +582,8 @@ Base preservada: 3.0.7 corrigida, relatório de piloto ZVX-PILOTO-307-20261124. 
 ### ZVX-EVO-308-A — correção de workflow
 
 Primeiro push afdbfc6 teve execuções [45512988414](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45512988414) e [45512986227](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45512986227) encerradas com falha sem jobs. Diff confirmou substituição textual indevida do literal de regex '^$' no benchmark, duplicando etapas e invalidando YAML. Corrigido em [bfdc766b80b75a13c8d2198fa7356d96df4ec8ee](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/commit/bfdc766b80b75a13c8d2198fa7356d96df4ec8ee) reconstruindo workflow a partir da base 3.0.7 e usando substituição literal segura. Conferência estática: 33 etapas nomeadas (32 anteriores + nova), bloco final e etapa PE únicos, benchmark íntegro. Não suprimidos testes; CI do commit corrigido ainda não confirmado na consulta. Nenhum EXE/ZIP 3.0.8 liberado. Não confundir falha de configuração com falha do motor.
+
+
+### ZVX-EVO-308-A — CI corrigida em andamento
+
+Execução [45513126955](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45513126955), commit bfdc766b80b75a13c8d2198fa7356d96df4ec8ee, job 138865660671: em andamento na consulta. Setup do job, checkout e identificação da fonte concluídos com sucesso; setup Go em execução, todos os gates de motor, desempenho, build e pacote pendentes. Não liberar download nem declarar aprovação antes de obter resultados. Aguardar resultado do GitHub em consulta posterior; não há acompanhamento autônomo no chat.

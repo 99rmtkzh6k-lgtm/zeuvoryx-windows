@@ -72,3 +72,5 @@ Macintosh 3.0.5 LAB: regressão portátil Linux e compilação Intel aprovadas; 
 - ZVX-EVO-012 (próxima revisão): correção do caminho de atualização, catálogo LAB com link exato aprovado, sequência de revisão e integração local/mundial de avaliação e métricas via contrato API. Especificado, não implantado.
 
 - ZVX-EVO-013: primeiro teste rápido em Windows real; candidato de retry nativo limitado 50/150 ms, testes de cancelamento e erros finais, privacidade de relatórios e métricas de manutenção planejadas. CI pendente; preservado pacote anterior.
+
+- ZVX-CP-001: política pétrea de eficiência e continuidade cumulativa; preservar requisitos, medir e testar evoluções sem regressão, registrar evidências e limitações. Somente documentação.

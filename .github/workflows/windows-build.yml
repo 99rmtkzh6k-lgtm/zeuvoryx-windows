@@ -1,9 +1,9 @@
-name: ZEUVORYX 3.0.1 Competitive - Windows Build
-run-name: ZEUVORYX 3.0.1 Competitive Windows x64
+name: ZEUVORYX 3.0.2 Competitive - Windows Build
+run-name: ZEUVORYX 3.0.2 Competitive Windows x64
 
 on:
   push:
-    branches: [main]
+    branches: [main, localization-3.0.2]
   workflow_dispatch:
 
 permissions:
@@ -271,7 +271,7 @@ jobs:
           func runDesktop(s *State, _ bool) {
           	runtime.LockOSThread()
           	defer runtime.UnlockOSThread()
-          	w := webview.NewWithOptions(webview.WebViewOptions{Debug: false, AutoFocus: true, WindowOptions: webview.WindowOptions{Title: "ZEUVORYX | Olympus 3.0.1 Competitive", Width: 920, Height: 650, Center: true}})
+          	w := webview.NewWithOptions(webview.WebViewOptions{Debug: false, AutoFocus: true, WindowOptions: webview.WindowOptions{Title: "ZEUVORYX | Olympus 3.0.2 Competitive", Width: 920, Height: 650, Center: true}})
           	if w == nil {
           		desktopError("Não foi possível inicializar a interface. Verifique a instalação do Microsoft WebView2 Runtime.")
           		return
@@ -2240,6 +2240,25 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'ZEUVORYX upgrade failed' }
           gofmt -w main.go desktop_windows.go engine/scanner.go engine/pe.go engine/quarantine.go engine/scan_upgrade.go engine/scan_upgrade_windows.go engine/scan_upgrade_other.go engine/scan_upgrade_test.go engine/scan_upgrade_integration_test.go
           if ($LASTEXITCODE -ne 0) { throw 'Upgrade formatting failed' }
+      - name: Integrate experimental AI and three-language desktop
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          python zeuvoryx_adaptive.py
+          if ($LASTEXITCODE -ne 0) { throw 'Adaptive integration failed' }
+          python zeuvoryx_i18n.py
+          if ($LASTEXITCODE -ne 0) { throw 'Localization integration failed' }
+          gofmt -w engine/scanner.go desktop_windows.go language_windows.go language_windows_test.go adaptive
+          if ($LASTEXITCODE -ne 0) { throw 'Formatting failed' }
+          python -c "from pathlib import Path; s=Path('desktop.html').read_text(encoding='utf-8'); Path('desktop-syntax.js').write_text(s.split('<script>',1)[1].split('</script>',1)[0],encoding='utf-8')"
+          if ($LASTEXITCODE -ne 0) { throw 'JavaScript extraction failed' }
+          node --check desktop-syntax.js
+          if ($LASTEXITCODE -ne 0) { throw 'Desktop JavaScript syntax failed' }
+      - name: Run adaptive model tests
+        shell: pwsh
+        run: |
+          go test -v -count=10 ./adaptive
+          if ($LASTEXITCODE -ne 0) { throw 'Adaptive tests failed' }
       - name: Validate source code
         shell: pwsh
         run: |
@@ -2297,14 +2316,14 @@ jobs:
           AppPublisher=Leonardo A Botelho
           VersionInfoCompany=Leonardo A Botelho
           VersionInfoCopyright=Copyright (C) 2026 Leonardo A Botelho
-          AppVersion=3.0.1
+          AppVersion=3.0.2
           DefaultDirName={localappdata}\Programs\ZEUVORYX
           DefaultGroupName=ZEUVORYX
           DisableProgramGroupPage=yes
           PrivilegesRequired=lowest
           ArchitecturesAllowed=x64compatible
           OutputDir=installer
-          OutputBaseFilename=ZEUVORYX-Setup-3.0.1
+          OutputBaseFilename=ZEUVORYX-Setup-3.0.2
           SetupIconFile=dist\ZEUVORYX.ico
           UninstallDisplayIcon={app}\ZEUVORYX.exe
           Compression=lzma2
@@ -2332,13 +2351,13 @@ jobs:
           if (!(Test-Path $iscc)) { throw 'Inno Setup compiler not found' }
           & $iscc setup.iss
           if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed' }
-          if (!(Test-Path 'installer/ZEUVORYX-Setup-3.0.1.exe')) { throw 'Installer missing' }
-          Get-FileHash installer/ZEUVORYX-Setup-3.0.1.exe -Algorithm SHA256
-      - name: Upload Competitive 3.0.1 installer and portable edition
+          if (!(Test-Path 'installer/ZEUVORYX-Setup-3.0.2.exe')) { throw 'Installer missing' }
+          Get-FileHash installer/ZEUVORYX-Setup-3.0.2.exe -Algorithm SHA256
+      - name: Upload Competitive 3.0.2 installer and portable edition
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.1-Competitive-Windows
+          name: ZEUVORYX-3.0.2-Competitive-Windows
           path: |
             dist/
-            installer/ZEUVORYX-Setup-3.0.1.exe
+            installer/ZEUVORYX-Setup-3.0.2.exe
           if-no-files-found: error

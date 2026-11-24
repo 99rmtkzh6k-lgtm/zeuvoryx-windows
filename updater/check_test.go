@@ -31,19 +31,19 @@ func TestHTTP(t *testing.T){
 }
 
 func TestLabIsolation(t *testing.T){
- var r release; r.Pre=true;r.Tag="v3.0.6-lab";r.Assets=append(r.Assets,struct{Name string `json:"name"`}{"ZEUVORYX-Setup-3.0.6.exe"})
+ var r release; r.Pre=true;r.Tag="v3.0.7-lab";r.Assets=append(r.Assets,struct{Name string `json:"name"`}{"ZEUVORYX-Setup-3.0.7.exe"})
  if selectRelease([]release{r},Current,"windows","amd64",true).Found{t.Fatal("wrong installer identity")}
- r.Assets[0].Name="ZEUVORYX-LAB-Setup-3.0.6.exe"
+ r.Assets[0].Name="ZEUVORYX-LAB-Setup-3.0.7.exe"
  if !selectRelease([]release{r},"3.0.5","windows","amd64",true).Available{t.Fatal("lab update missing")}
  if selectRelease([]release{r},Current,"windows","amd64",true).Available{t.Fatal("same version offered")}
- r.Tag="v3.0.6";if selectRelease([]release{r},Current,"windows","amd64",true).Found{t.Fatal("wrong tag")}
+ r.Tag="v3.0.7";if selectRelease([]release{r},Current,"windows","amd64",true).Found{t.Fatal("wrong tag")}
 }
 
 func TestDownloadURL(t *testing.T) {
- var r release; r.Pre=true;r.Tag="v3.0.6-lab";r.Assets=append(r.Assets,struct{Name string `json:"name"`}{"ZEUVORYX-LAB-Setup-3.0.6.exe"})
+ var r release; r.Pre=true;r.Tag="v3.0.7-lab";r.Assets=append(r.Assets,struct{Name string `json:"name"`}{"ZEUVORYX-LAB-Setup-3.0.7.exe"})
  v:=selectRelease([]release{r},"3.0.5","windows","amd64",true)
- if !v.Available||v.DownloadURL!=ReleasesURL+"/download/v3.0.6-lab/ZEUVORYX-LAB-Setup-3.0.6.exe"{t.Fatal(v)}
- r.Tag="v3.0.6-lab/../evil";if selectRelease([]release{r},"3.0.5","windows","amd64",true).DownloadURL!=""{t.Fatal("invalid tag")}
+ if !v.Available||v.DownloadURL!=ReleasesURL+"/download/v3.0.7-lab/ZEUVORYX-LAB-Setup-3.0.7.exe"{t.Fatal(v)}
+ r.Tag="v3.0.7-lab/../evil";if selectRelease([]release{r},"3.0.5","windows","amd64",true).DownloadURL!=""{t.Fatal("invalid tag")}
 }
 
 // A LAB artifact in Actions is not a published release. Never claim a same-version update is newer.

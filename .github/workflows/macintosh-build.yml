@@ -1,0 +1,72 @@
+name: ZEUVORYX Macintosh 3.0.3 LAB
+on:
+  push:
+    branches: [macintosh-3.0.3-lab]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            arch: arm64
+            target: arm64-apple-macos13.0
+          - runner: macos-15-intel
+            arch: amd64
+            target: x86_64-apple-macos13.0
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+          cache: false
+      - name: Validate and test Macintosh modules ten times
+        run: |
+          go vet ./macintosh/... ./releaseguard ./impact ./remediation ./labcheck ./adaptive
+          go test -count=10 -shuffle=on -cover ./macintosh/... ./releaseguard ./impact ./remediation ./labcheck ./adaptive
+      - name: Compile native app and read-only engine
+        env:
+          GOARCH: ${{ matrix.arch }}
+          TARGET: ${{ matrix.target }}
+          CGO_ENABLED: '0'
+        run: |
+          set -euo pipefail
+          APP="dist/ZEUVORYX Macintosh.app"
+          mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
+          test "$(shasum -a 256 zeuvoryx_brand.jpg | cut -d ' ' -f 1)" = c0ae621b1784260b67f8f8953d9ad96ac6cb2a5c9b96cd66f3125f22ef9de754
+          cp zeuvoryx_brand.jpg "$APP/Contents/Resources/"
+          cp macintosh/Info.plist "$APP/Contents/Info.plist"
+          plutil -lint "$APP/Contents/Info.plist"
+          go build -trimpath -o "$APP/Contents/MacOS/zeuvoryx-engine" ./macintosh/cmd/zeuvoryx
+          swiftc -swift-version 5 -parse-as-library -O -target "$TARGET" macintosh/App.swift -o "$APP/Contents/MacOS/ZEUVORYX"
+          codesign --force --sign - "$APP/Contents/MacOS/zeuvoryx-engine"
+          codesign --force --sign - "$APP"
+          codesign --verify --deep --strict --verbose=2 "$APP"
+          "$APP/Contents/MacOS/zeuvoryx-engine" selftest
+          mkdir -p "$RUNNER_TEMP/z-fixture"
+          printf 'harmless' > "$RUNNER_TEMP/z-fixture/ordinary.txt"
+          "$APP/Contents/MacOS/zeuvoryx-engine" scan "$RUNNER_TEMP/z-fixture" > smoke.json
+          python3 -c 'import json; r=json.load(open("smoke.json")); assert r["files"]==1 and not r["partial"] and not r["findings"]'
+          file "$APP/Contents/MacOS/"*
+      - name: Package lab DMG
+        env:
+          ARCH: ${{ matrix.arch }}
+        run: |
+          set -euo pipefail
+          mkdir -p package
+          hdiutil create -volname "ZEUVORYX Macintosh LAB" -srcfolder dist -format UDZO "package/ZEUVORYX-Macintosh-3.0.3-LAB-$ARCH.dmg"
+          hdiutil verify "package/ZEUVORYX-Macintosh-3.0.3-LAB-$ARCH.dmg"
+          cd package
+          shasum -a 256 *.dmg > SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ZEUVORYX-Macintosh-3.0.3-LAB-${{ matrix.arch }}
+          path: package/
+          if-no-files-found: error

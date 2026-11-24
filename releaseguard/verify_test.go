@@ -8,7 +8,7 @@ func TestAuthorizedUpdate(t *testing.T){
  now:=time.Unix(1800000000,0)
  data:=[]byte("inert test package")
  hash:=sha256.Sum256(data)
- good:=Manifest{2,"3.0.3","beta","windows-amd64","https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/releases/download/v3.0.3/test.zip",hex.EncodeToString(hash[:]),int64(len(data)),now.Add(time.Hour).Unix()}
+ good:=Manifest{2,"3.0.3","beta","darwin-universal","https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/releases/download/mac-v3.0.3/test.zip",hex.EncodeToString(hash[:]),int64(len(data)),now.Add(time.Hour).Unix()}
  sign:=func(m Manifest)([]byte,[]byte){b,e:=json.Marshal(m);if e!=nil{t.Fatal(e)};return b,ed25519.Sign(priv,append([]byte(Domain),b...))}
  raw,sig:=sign(good)
  m,e:=Verify(raw,sig,pub,1,"beta",now);if e!=nil{t.Fatal(e)}
@@ -31,10 +31,10 @@ func TestAuthorizedUpdate(t *testing.T){
   func(m *Manifest){m.Platform="linux-amd64"},
   func(m *Manifest){m.Version="3.0.4"},
   func(m *Manifest){m.Version="03.0.3"},
-  func(m *Manifest){m.URL="https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/releases/download/v3.0.3/extra/test.zip"},
-  func(m *Manifest){m.URL="https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/releases/download/v3.0.3/test.zip?"},
-  func(m *Manifest){m.URL="https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/releases/download/v3.0.3/test.txt"},
-  func(m *Manifest){m.URL="https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/releases/download/v3.0.3/test%2f.zip"},
+  func(m *Manifest){m.URL="https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/releases/download/mac-v3.0.3/extra/test.zip"},
+  func(m *Manifest){m.URL="https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/releases/download/mac-v3.0.3/test.zip?"},
+  func(m *Manifest){m.URL="https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/releases/download/mac-v3.0.3/test.txt"},
+  func(m *Manifest){m.URL="https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/releases/download/mac-v3.0.3/test%2f.zip"},
   func(m *Manifest){m.Size=MaxPackage+1},
   func(m *Manifest){m.SHA256="not a hash"},
  }{bad:=good;change(&bad);b,s:=sign(bad);if _,e=Verify(b,s,pub,1,"beta",now);e==nil{t.Fatalf("accepted bad manifest: %+v",bad)}}

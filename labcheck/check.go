@@ -27,7 +27,7 @@ func Run() (Result,error) {
  now:=time.Now()
  data:=[]byte("ZEUVORYX inert laboratory package")
  h:=sha256.Sum256(data)
- m:=releaseguard.Manifest{Sequence:2,Version:"3.0.3",Channel:"beta",Platform:"windows-amd64",URL:"https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/releases/download/v3.0.3/lab.zip",SHA256:hex.EncodeToString(h[:]),Size:int64(len(data)),Expires:now.Add(time.Hour).Unix()}
+ m:=releaseguard.Manifest{Sequence:2,Version:"3.0.3",Channel:"beta",Platform:"darwin-universal",URL:"https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/releases/download/mac-v3.0.3/lab.zip",SHA256:hex.EncodeToString(h[:]),Size:int64(len(data)),Expires:now.Add(time.Hour).Unix()}
  raw,e:=json.Marshal(m);if e!=nil{return r,e}
  sig:=ed25519.Sign(priv,append([]byte(releaseguard.Domain),raw...))
  verified,e:=releaseguard.Verify(raw,sig,pub,1,"beta",now)

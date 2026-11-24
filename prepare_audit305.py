@@ -14,6 +14,7 @@ def edit(name,fn):
 def scanner(s):
     fields=[("ErrorCategories","map[string]int","error_categories,omitempty"),("BuildCommit","string","build_commit,omitempty"),("ScanID","string","scan_id"),("ScanMode","string","scan_mode"),("ErrorCount","int","error_count"),("OmittedErrorDetails","int","omitted_error_details"),("ScanError","string","scan_error,omitempty"),("AuditError","string","audit_error,omitempty")]
     s=one(s,'type Report struct {','type Report struct {\n'+''.join('    '+a+' '+b+' '+chr(96)+'json:"'+c+'"'+chr(96)+'\n' for a,b,c in fields))
+    s=rx(s,r'func\s+\(s\s+\*Scanner\)\s+examine\(ctx\s+context\.Context,\s*path\s+string,\s*size\s+int64\)\s*\(\[\]Finding,\s*error\)\s*\{','func (s *Scanner) examineUnchecked(ctx context.Context, path string, size int64) ([]Finding, error) {')
     return rx(s,r'if len\(report\.Errors\) < 30 \{','report.ErrorCount++\nif len(report.Errors) < 10000 {',2)
 def summary(s):
     s=rx(s,r'const ScanEngineVersion = "[^"]+"','const ScanEngineVersion = "3.0.5-lab"')
@@ -84,8 +85,20 @@ import (
  "time"
 )
 
+// Contain recoverable Go panics in the current file only. Never treat it as clean.
+var errAnalyzerPanic = errors.New("falha interna recuperavel durante a analise de arquivo")
+
+func safeScanRead(read func()([]Finding,error))(hits []Finding,err error){
+ defer func(){if recover()!=nil{hits=nil;err=errAnalyzerPanic}}()
+ return read()
+}
+func (s *Scanner) examine(ctx context.Context,path string,size int64)([]Finding,error){
+ return safeScanRead(func()([]Finding,error){return s.examineUnchecked(ctx,path,size)})
+}
+
 func ScanErrorCategory(err error) string {
  if err==nil {return "none"}
+ if errors.Is(err,errAnalyzerPanic){return "analyzer_panic"}
  if errors.Is(err,context.Canceled)||errors.Is(err,context.DeadlineExceeded){return "cancelled"}
  if errors.Is(err,fs.ErrPermission){return "access_denied"}
  if errors.Is(err,fs.ErrNotExist){return "not_found"}
@@ -137,6 +150,20 @@ import (
  "syscall"
  "testing"
 )
+
+func TestScanRecoverablePanic(t *testing.T){
+ n:=0
+ hits,err:=retryScanRead(context.Background(),func()([]Finding,error){
+  n++
+  return safeScanRead(func()([]Finding,error){panic("synthetic test only")})
+ })
+ if n!=1||hits!=nil||!errors.Is(err,errAnalyzerPanic){t.Fatal(n,hits,err)}
+ var r Report
+ CountScanError(&r,err)
+ if r.ErrorCategories["analyzer_panic"]!=1{t.Fatal(r.ErrorCategories)}
+ hits,err=safeScanRead(func()([]Finding,error){return []Finding{{Risk:50}},nil})
+ if err!=nil||len(hits)!=1||hits[0].Risk!=50{t.Fatal(hits,err)}
+}
 
 func TestScanErrorCategories(t *testing.T) {
  for _,tc:=range []struct{err error; want string}{

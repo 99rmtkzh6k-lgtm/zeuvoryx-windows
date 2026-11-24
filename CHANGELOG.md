@@ -76,3 +76,5 @@ Macintosh 3.0.5 LAB: regressão portátil Linux e compilação Intel aprovadas; 
 - ZVX-CP-001: política pétrea de eficiência e continuidade cumulativa; preservar requisitos, medir e testar evoluções sem regressão, registrar evidências e limitações. Somente documentação.
 
 - ZVX-EVO-015: incidente de encerramento simultâneo reportado em dois PCs Windows; investigação crítica, diagnóstico local e testes de estabilidade previstos. EVO-013 CI aprovado, causa do encerramento ainda desconhecida.
+
+- ZVX-EVO-016: investigação de encerramentos na varredura completa; candidato de contenção de panic recuperável por arquivo e teste, sem causa confirmada; CI pendente.

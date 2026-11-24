@@ -27,6 +27,7 @@ def transform(s, translations):
     s=once(s,'</nav>','</nav><label class="z-lang-label" for="zLanguage">Idioma</label><select id="zLanguage" aria-label="Idioma"><option value="auto">Automático (Windows)</option><option value="pt-BR">Português</option><option value="en-US">English</option><option value="es-ES">Español</option></select>')
     s=once(s,'</style></head>','.z-lang-label{display:block;margin:10px 0 4px;color:var(--muted);font-size:11px}#zLanguage{max-width:100%;width:100%;padding:6px;border-radius:7px;border:1px solid var(--line);background:var(--panel);color:#eef4f8;font:inherit;font-size:12px}</style></head>')
     s=once(s,'Motor atual: SHA-256, regras heurísticas e análise PE. Modelo treinado de malware: não instalado. Detector neural de vídeo: não instalado. C2PA: verificador de procedência digital separado.','Modelo experimental local: regressão logística treinada com dados sintéticos. Pontuação auxiliar apenas em alertas heurísticos; não altera detecções ou quarentena. Ainda não validado com amostras reais. Não aprende automaticamente.')
+    s=once(s,'OLYMPUS 3.0.1 BETA</div>','OLYMPUS 3.0.2 BETA</div>')
     before,sep,js=s.partition('<script>')
     if not sep or js.count('</script>')!=1: raise ValueError("Unexpected script structure")
     # Translate only known, exact source-code string literals (never external values).

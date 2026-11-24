@@ -1,10 +1,10 @@
 name: ZEUVORYX 3.0.1 Competitive - Windows Build
+run-name: ZEUVORYX 3.0.1 Competitive Windows x64
 
 on:
   push:
-    branches: [zeuvoryx-3.0.1-competitive]
+    branches: [main]
   workflow_dispatch:
-  workflow_call:
 
 permissions:
   contents: read
@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref == 'refs/heads/zeuvoryx-3.0.1-competitive' && github.sha || 'refs/heads/zeuvoryx-3.0.1-competitive' }}
+          ref: ${{ github.sha }}
           persist-credentials: false
       - name: Verify checked out Competitive source
         shell: pwsh
@@ -2330,7 +2330,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed' }
           if (!(Test-Path 'installer/ZEUVORYX-Setup-3.0.1.exe')) { throw 'Installer missing' }
           Get-FileHash installer/ZEUVORYX-Setup-3.0.1.exe -Algorithm SHA256
-      - name: Upload Olympus installer and portable edition
+      - name: Upload Competitive 3.0.1 installer and portable edition
         uses: actions/upload-artifact@v4
         with:
           name: ZEUVORYX-3.0.1-Competitive-Windows

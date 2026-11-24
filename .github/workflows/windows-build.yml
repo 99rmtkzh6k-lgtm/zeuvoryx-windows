@@ -1,8 +1,11 @@
-name: ZEUVORYX 3.0.1 Competitive - Windows Build
-run-name: ZEUVORYX 3.0.1 Competitive Windows x64
+name: ZEUVORYX 3.0.2 Competitive - Windows Build
+run-name: ZEUVORYX 3.0.2 Competitive Windows x64
 
 on:
   push:
+    branches: [main]
+    tags: ['v3.0.2']
+  pull_request:
     branches: [main]
   workflow_dispatch:
 
@@ -2239,6 +2242,13 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'ZEUVORYX upgrade failed' }
           gofmt -w main.go desktop_windows.go engine/scanner.go engine/pe.go engine/quarantine.go engine/scan_upgrade.go engine/scan_upgrade_windows.go engine/scan_upgrade_other.go engine/scan_upgrade_test.go engine/scan_upgrade_integration_test.go
           if ($LASTEXITCODE -ne 0) { throw 'Upgrade formatting failed' }
+      - name: Integrate application update check
+        shell: pwsh
+        run: |
+          python prepare_app_update.py
+          if ($LASTEXITCODE -ne 0) { throw 'Application update integration failed' }
+          gofmt -w updater/check.go updater/check_test.go desktop_windows.go
+          if ($LASTEXITCODE -ne 0) { throw 'Update formatting failed' }
       - name: Validate source code
         shell: pwsh
         run: |
@@ -2293,14 +2303,14 @@ jobs:
           [Setup]
           AppId=ZEUVORYX.Desktop
           AppName=ZEUVORYX
-          AppVersion=3.0.1
+          AppVersion=3.0.2
           DefaultDirName={localappdata}\Programs\ZEUVORYX
           DefaultGroupName=ZEUVORYX
           DisableProgramGroupPage=yes
           PrivilegesRequired=lowest
           ArchitecturesAllowed=x64compatible
           OutputDir=installer
-          OutputBaseFilename=ZEUVORYX-Setup-3.0.1
+          OutputBaseFilename=ZEUVORYX-Setup-3.0.2
           SetupIconFile=dist\ZEUVORYX.ico
           UninstallDisplayIcon={app}\ZEUVORYX.exe
           Compression=lzma2
@@ -2328,13 +2338,48 @@ jobs:
           if (!(Test-Path $iscc)) { throw 'Inno Setup compiler not found' }
           & $iscc setup.iss
           if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed' }
-          if (!(Test-Path 'installer/ZEUVORYX-Setup-3.0.1.exe')) { throw 'Installer missing' }
-          Get-FileHash installer/ZEUVORYX-Setup-3.0.1.exe -Algorithm SHA256
-      - name: Upload Competitive 3.0.1 installer and portable edition
+          if (!(Test-Path 'installer/ZEUVORYX-Setup-3.0.2.exe')) { throw 'Installer missing' }
+          Get-FileHash installer/ZEUVORYX-Setup-3.0.2.exe -Algorithm SHA256
+      - name: Upload Competitive 3.0.2 installer and portable edition
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.1-Competitive-Windows
+          name: ZEUVORYX-3.0.2-Competitive-Windows
           path: |
             dist/
-            installer/ZEUVORYX-Setup-3.0.1.exe
+            installer/ZEUVORYX-Setup-3.0.2.exe
           if-no-files-found: error
+
+  test-updater-macos:
+    runs-on: macos-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+          cache: false
+      - run: go vet ./updater
+      - run: go test -race -count=10 ./updater
+
+  publish-test-release:
+    if: github.event_name == 'push' && github.ref == 'refs/tags/v3.0.2'
+    needs: [build-windows, test-updater-macos]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ZEUVORYX-3.0.2-Competitive-Windows
+          path: release
+      - name: Publish manually reviewable prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -eu
+          cd release/installer
+          sha256sum ZEUVORYX-Setup-3.0.2.exe > SHA256SUMS.txt
+          gh release create v3.0.2 ZEUVORYX-Setup-3.0.2.exe SHA256SUMS.txt --verify-tag --prerelease --title "ZEUVORYX 3.0.2 test" --notes "Experimental build. Unsigned installer; do not enable automatic execution. Install over the existing version only after reviewing the package."

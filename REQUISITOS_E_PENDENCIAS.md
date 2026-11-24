@@ -52,7 +52,7 @@ Atualizado em 24/11/2026. Índice operacional do [memorando histórico completo]
 
 | REQ-041 | Continuidade da varredura completa com monitor apagado/bloqueado; solicitação temporária de energia, respeitar suspensão manual e bateria | E | Próxima versão; código candidato preparado; teste Windows físico e integração pendentes | EVO-027; REQ-003/025/027 |
 
-| REQ-042 | Independência financeira e licenças comerciais gratuitas: sem royalties, assinaturas obrigatórias ou contratação não autorizada; avisos/SBOM e alternativas verificadas | P | Gate pré-lançamento; auditoria preliminar, migração de instalador e revisão de fontes pendentes | EVO-029; REQ-009/038/040 |
+| REQ-042 | Independência financeira e licenças comerciais gratuitas: sem royalties, assinaturas obrigatórias ou contratação não autorizada; avisos/SBOM e alternativas verificadas | E | NSIS fixture e bloqueio de consulta não verificada preparados; migração, cobertura, CI e licenças integrais pendentes | EVO-029/030; REQ-009/038/040 |
 
 ## Controle obrigatório de continuidade
 

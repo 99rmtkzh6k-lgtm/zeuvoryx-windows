@@ -4,6 +4,8 @@ import (
 	"archive/zip"
 	"context"
 	"crypto/sha256"
+	"debug/pe"
+	"encoding/binary"
 	"encoding/hex"
 	"fmt"
 	"os"
@@ -157,4 +159,22 @@ func TestConcurrentScans(t *testing.T) {
 			t.Fatalf("pass %d: %+v %v", n, r, err)
 		}
 	}
+}
+
+func Test307BoundedImports(t *testing.T){
+ for _,width:=range []int{4,8}{
+  for _,scenario:=range []string{"valid","cross-section","fallback","truncated","bad-thunk","ordinal","bad-dir","empty","no-terminator","overflow"}{
+   t.Run(scenario+string(rune('0'+width)),func(t *testing.T){
+    b:=make([]byte,512); f:=&pe.File{Sections:[]*pe.Section{{SectionHeader:pe.SectionHeader{VirtualAddress:0x1000,Size:128,Offset:32}},{SectionHeader:pe.SectionHeader{VirtualAddress:0x2000,Size:256,Offset:256}}}}
+    d:=pe.DataDirectory{VirtualAddress:0x1000,Size:40}; thunk:=uint32(0x1040); off:=96; sym:=uint32(0x1060); symOff:=128
+    if scenario=="cross-section"{thunk=0x2000;off=256;sym=0x2040;symOff=320}
+    binary.LittleEndian.PutUint32(b[32:],thunk);binary.LittleEndian.PutUint32(b[44:],0x1030);binary.LittleEndian.PutUint32(b[48:],thunk);copy(b[80:],"KERNEL32.dll\x00");copy(b[symOff+2:],"WriteProcessMemory\x00")
+    if width==4{binary.LittleEndian.PutUint32(b[off:],sym)}else{binary.LittleEndian.PutUint64(b[off:],uint64(sym))}
+    wantErr:=false; want:=1
+    switch scenario{case "fallback":binary.LittleEndian.PutUint32(b[32:],0);case "truncated":b=b[:100];wantErr=true;case "bad-thunk":binary.LittleEndian.PutUint32(b[32:],0x9000);wantErr=true;case "ordinal":if width==4{binary.LittleEndian.PutUint32(b[off:],0x80000001)}else{binary.LittleEndian.PutUint64(b[off:],0x8000000000000001)};want=0;case "bad-dir":d.Size=19;wantErr=true;case "empty":d=pe.DataDirectory{};want=0;case "no-terminator":d.Size=20;wantErr=true;case "overflow":d.VirtualAddress=0xfffffff0;wantErr=true}
+    if width==4{h:=&pe.OptionalHeader32{NumberOfRvaAndSizes:16};h.DataDirectory[1]=d;f.OptionalHeader=h}else{h:=&pe.OptionalHeader64{NumberOfRvaAndSizes:16};h.DataDirectory[1]=d;f.OptionalHeader=h}
+    got,err:=boundedImportedSymbols(f,b);if (err!=nil)!=wantErr{t.Fatalf("got %v %v want error=%v",got,err,wantErr)};if !wantErr&&(len(got)!=want||(want==1&&got[0]!="WriteProcessMemory:KERNEL32.dll")){t.Fatalf("got %v",got)}
+   })
+  }
+ }
 }

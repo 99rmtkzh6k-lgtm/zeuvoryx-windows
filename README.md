@@ -6,13 +6,14 @@ Scanner complementar de segurança para Windows x64, desenvolvido em Go, com int
 
 **Estado:** beta de laboratório. Compilação 3.0.5 R5 aprovada em 24/11/2026; validação manual em Windows 10/11 e eficácia independente pendentes. Não substitui Microsoft Defender.
 
-**Candidato pós-varredura:** controles e métricas no topo, botões compactos 3D, diagnóstico por categorias nativas e tentativa adicional limitada para bloqueio transitório de leitura. Novo campo de procedência do build. A compilação candidata precisa passar CI e Sandbox; os links abaixo permanecem referentes ao pacote R5 previamente aprovado.
+**Revisão LAB pós-varredura e Global Threat Intelligence:** CI Windows aprovado no commit `07373e9c538794c5f14a3bc13ad85206d3049bc9`; alterações de interface, classificação de erros, retry limitado, procedência do build e consulta consultiva DROP incluídas. Validação visual e em Windows real ainda necessária.
 
 ## Download e instalação de teste
 
-- [Compilação validada — execução 45436304817](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45436304817)
-- [ZIP completo — artefato 14942002196](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45436304817/artifacts/14942002196) (33.725.391 bytes; GitHub Actions pode exigir login e tem prazo de retenção).
-- SHA-256 registrado pelo GitHub: `ae703ec4d3460fe0126102f7ed334df13015571b50e36f9e28e6e72f8eb993ff`.
+- [Compilação validada — execução 45447823825](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45447823825)
+- [ZIP completo — artefato 14946014706](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45447823825/artifacts/14946014706) (33.793.191 bytes; GitHub Actions pode exigir login; expira em 22/02/2027).
+- SHA-256 do ZIP, conferido nos bytes baixados: `7232a6b12003b23a0e4de8a15e188d528533a63b15f11c93ea41771fa33111cb`.
+- Instalador extraído sem executar: 15.497.251 bytes; SHA-256 `e90bedcbbcdd4cbb41020fac39b93d867beb0d4ebef884ff103e96632451ef39`; sem certificado Authenticode incorporado. ZIP CRC conferido.
 - Extraia o ZIP, finalize a varredura anterior e feche o aplicativo. Abra `installer/ZEUVORYX-LAB-Setup-3.0.5.exe`. A edição portátil está em `dist/`.
 - Teste primeiro em Windows Sandbox com Defender ativo e WebView2 disponível. Não desative SmartScreen nem proteções existentes. O binário não tem assinatura Authenticode de produção comprovada.
 - Para uma instalação LAB compatível, mantenha o diretório anterior (AppId ZEUVORYX.Desktop.Lab303). CI aprovou reinstalação com marcador de dados; faça backup e valide histórico/quarentena. Migração de edições 3.0.1/3.0.2 não validada.
@@ -57,6 +58,11 @@ Autoria declarada: Leonardo A Botelho. Não há licença de redistribuição de 
 Macintosh 3.0.5 LAB: regressão portátil Linux e compilação Intel aprovadas; Apple Silicon ARM64 cancelado na tentativa anterior, sem etapas registradas e com log indisponível (404). Reteste exclusivo solicitado e aceito pelo GitHub em 24/11/2026; resultado ainda não confirmado. Não há causa de código comprovada. [Execução 45437873318](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45437873318). [Artefato Intel 14943370193](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45437873318/artifacts/14943370193), 4.283.792 bytes, SHA-256 registrado pelo GitHub `965da629bf97f885a7df1de2434211f3342d82ba4e286f1a1fb52f946bc3f767`. Somente para laboratório; sem validação integral em Macs reais ou assinatura de produção.
 
 
-## Global Threat Intelligence (candidato LAB)
+## Global Threat Intelligence (CI Windows aprovado; laboratório)
 
-Nova consulta consultiva Spamhaus DROP IPv4/IPv6 e inventário de fontes em [THREAT_INTELLIGENCE.md](THREAT_INTELLIGENCE.md). Não é bloqueio de firewall nem limpeza automática. Base de sessão obtida sob demanda; nenhuma contagem real antecipada. Aguardando CI do candidato; instalação anterior aprovada preservada.
+Nova consulta consultiva Spamhaus DROP IPv4/IPv6 e inventário de fontes em [THREAT_INTELLIGENCE.md](THREAT_INTELLIGENCE.md). Não é bloqueio de firewall nem limpeza automática. Base de sessão obtida sob demanda; nenhuma contagem real antecipada. CI Windows aprovado na execução 45447823825; coleta inicial separada 45447823809 falhou com `stale or future feed`, sem artefato de dados. Nenhuma base DROP real embutida. Versões anteriores preservadas.
+
+
+### Evidência mais recente — ZVX-EVO-007
+
+https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45447823825 — gate de identidade, cinco rodadas de links, dez repetições, QA20, 50M sintético, build e reinstalação aprovados. Não equivale a eficácia real, migração entre versões distintas, validação do feed ao vivo ou distribuição pública. Os registros de CI antigos acima são históricos.

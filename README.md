@@ -35,16 +35,21 @@ Execução [45436304817](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/act
 
 ## Desenvolvimento e continuidade
 
-A ramificação `main` consolida a base de código Windows 3.0.5 LAB R5; `security-3.0.5-lab` preserva a referência de laboratório. O workflow `.github/workflows/windows-build-lab-305.yml` chama `windows-build.yml` na ramificação selecionada. A versão antiga está preservada no histórico. A compilação integral em main foi aprovada; a regressão de links independente [45436304882](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45436304882) também foi aprovada. Na execução de fundamentos [45436304993](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45436304993), Windows e Linux passaram, macOS updater permanece na fila nesta consulta. Consulte [instruções](INSTRUCOES_GITHUB.txt), [instalação](LEIA-ME.txt), [histórico de versões](CHANGELOG.md) e o [memorando obrigatório](MEMORANDO_DESENVOLVIMENTO.md).
+A ramificação `main` consolida a base de código Windows 3.0.5 LAB R5; `security-3.0.5-lab` preserva a referência de laboratório. O workflow `.github/workflows/windows-build-lab-305.yml` chama `windows-build.yml` na ramificação selecionada. A versão antiga está preservada no histórico. A compilação integral em main foi aprovada; a regressão de links independente [45436304882](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45436304882) também foi aprovada. Na execução de fundamentos [45436304993](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45436304993), Windows e Linux passaram; o job macos-updater foi cancelado e a execução global ficou com falha. Consulte [instruções](INSTRUCOES_GITHUB.txt), [instalação](LEIA-ME.txt), [histórico de versões](CHANGELOG.md) e o [memorando obrigatório](MEMORANDO_DESENVOLVIMENTO.md).
 
 Próximos passos: painel com comandos de varredura e métricas no topo, botões compactos 3D; teste visual e Windows real; atualização assinada de produção; auditoria ampliada, remediação segura, proteção residente, IA validada, estatísticas globais ultraleves e Macintosh independente. Idiomas adicionais conforme qualidade/desempenho. Nenhum desses requisitos é considerado concluído só por estar planejado.
 
 ## Macintosh — desenvolvimento separado
 
-A edição macOS permanece na versão **3.0.3 LAB**, com Swift/SwiftUI e motor Go somente leitura. [Documentação Macintosh](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/macintosh-3.0.3-lab). Intel compilado; Apple Silicon teve job cancelado e a tentativa 2 permanece na fila nesta consulta. Não há equivalência funcional integral com Windows. Não confundir os instaladores. 
+A edição macOS permanece na versão **3.0.3 LAB**, com Swift/SwiftUI e motor Go somente leitura. [Documentação Macintosh](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/macintosh-3.0.3-lab). Intel compilado; Apple Silicon teve novo cancelamento na tentativa 2. Não há equivalência funcional integral com Windows. Não confundir os instaladores. 
 
-Candidato Macintosh [3.0.5 LAB](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/macintosh-3.0.5-lab): evolução de links e gate de identidade, em validação. Para novos testes, selecione o workflow Macintosh 3.0.5 e a ramificação `macintosh-3.0.5-lab`. A versão 3.0.3 continua preservada; não confundir candidato com pacote aprovado.
+Candidato Macintosh [3.0.5 LAB](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/macintosh-3.0.5-lab): evolução de links e gate de identidade; regressão portátil Linux e compilação Intel aprovadas, ARM64 pendente. Para novos testes, selecione o workflow Macintosh 3.0.5 e a ramificação `macintosh-3.0.5-lab`. A versão 3.0.3 continua preservada; não confundir candidato com pacote aprovado.
 
 ## Licenciamento, autoria e distribuição
 
 Autoria declarada: Leonardo A Botelho. Não há licença de redistribuição de produção definida neste documento; revisar licenças de dependências e direitos de arte antes de publicação. O projeto não reivindica certificação, detecção universal ou substituição de antivírus. Releases públicas e lançamento mundial dependem de autorização do titular e dos critérios do memorando.
+
+
+### Conferência de CI — 24/11/2026
+
+Macintosh 3.0.5 LAB: regressão portátil Linux e compilação Intel aprovadas; Apple Silicon ARM64 permanece pendente. [Execução 45437873318](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45437873318). [Artefato Intel 14943370193](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45437873318/artifacts/14943370193), 4.283.792 bytes, SHA-256 registrado pelo GitHub `965da629bf97f885a7df1de2434211f3342d82ba4e286f1a1fb52f946bc3f767`. Somente para laboratório; sem validação integral em Macs reais ou assinatura de produção.

@@ -47,6 +47,9 @@ Atualizado em 24/11/2026. Índice operacional do [memorando histórico completo]
 
 | REQ-038 | Auditoria de propriedade intelectual, SBOM/licenças, termos de usuário, privacidade, responsabilidade e conformidade por mercado | P | Gate pré-lançamento; revisão jurídica e licenças comerciais ainda pendentes | EVO-024; REQ-023/024/036/037 |
 
+| REQ-039 | Ajuda inteligente offline no software: lupa, perguntas naturais, busca de respostas verificadas e atualizadas, sem IA externa paga | E | Próxima versão; protótipo 56 entradas/4 idiomas, 60 buscas aprovadas; integração Windows pendente | EVO-025; REQ-037 |
+| REQ-040 | Auditoria de utilidade de módulos/pacotes, custos, dependências e consumo, consolidar distribuição sem eliminar funções solicitadas | P | Próxima revisão; verificar funções reais, evitar componentes sem uso, preservar evidência | EVO-025; CP-001/REQ-001/026/038 |
+
 ## Controle obrigatório de continuidade
 
 A cada tarefa, ler o índice e o memorando, identificar requisitos afetados, registrar novos pedidos imediatamente (inclusive "no próximo"), preservar IDs e estados dos demais. Antes de fechar, comparar o índice anterior com o novo, justificar qualquer mudança de prioridade/estado, anexar evidência ou marcar pendência, atualizar a main e a ramificação/plataforma pertinente e confirmar gravação remota. Correção P0 pode adiar implantação de P1/P2, mas não apagar nem declarar cumprida. Decisões posteriores explícitas prevalecem sobre as substituídas, cujo histórico permanece. A fila não é autorização para lançar, contratar ou realizar ações destrutivas. Reconciliar requisitos não localizados com o histórico e pedidos recuperáveis, sem alegar cobertura absoluta de conversas inacessíveis.

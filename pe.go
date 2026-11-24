@@ -73,7 +73,7 @@ func boundedImportedSymbols(f *pe.File, data []byte) ([]string, error) {
  }
  if dir.VirtualAddress==0 && dir.Size==0 { return nil,nil }
  bad := func() error { return fmt.Errorf("PE import directory incomplete or outside analysis budget") }
- if dir.VirtualAddress==0 || dir.Size<20 || uint64(dir.VirtualAddress)+uint64(dir.Size)>1<<32 { return nil,bad() }
+ if len(f.Sections)>96 || dir.VirtualAddress==0 || dir.Size<20 || uint64(dir.VirtualAddress)+uint64(dir.Size)>1<<32 { return nil,bad() }
  slice := func(rva uint64, n uint64) []byte {
   if rva>=1<<32 { return nil }
   for _,s:=range f.Sections {
@@ -94,7 +94,7 @@ func boundedImportedSymbols(f *pe.File, data []byte) ([]string, error) {
    b:=data[start:start+n]; end:=bytes.IndexByte(b,0); if end<=0{return "",false}; return string(b[:end]),true
   }; return "",false
  }
- out:=make([]string,0,64); remaining:=65536
+ out:=make([]string,0,64); remaining:=65536; textBudget:=2<<20
  for i:=uint64(0); i<4096 && (i+1)*20<=uint64(dir.Size); i++ {
   d:=slice(uint64(dir.VirtualAddress)+i*20,20); if d==nil{return nil,bad()}
   if bytes.Equal(d,make([]byte,20)){return out,nil}
@@ -105,7 +105,7 @@ func boundedImportedSymbols(f *pe.File, data []byte) ([]string, error) {
    b:=slice(thunk+j*width,width); if b==nil{return nil,bad()}; var v uint64
    if width==8{v=binary.LittleEndian.Uint64(b)}else{v=uint64(binary.LittleEndian.Uint32(b))}
    if v==0{break}; if v&(uint64(1)<<(width*8-1))!=0{continue}; if v>0xfffffffd{return nil,bad()}
-   symbol,ok:=cstr(v+2); if !ok{return nil,bad()}; out=append(out,symbol+":"+dll)
+   symbol,ok:=cstr(v+2); if !ok{return nil,bad()}; cost:=len(symbol)+1+len(dll); if cost>textBudget{return nil,bad()}; textBudget-=cost; out=append(out,symbol+":"+dll)
   }
  }
  return nil,bad()

@@ -29,3 +29,22 @@ Separar cada módulo, implementar testes unitários, integração, regressão, f
 
 ## Situação atual
 A versão 3.0.2 compilou no GitHub Actions; validação manual no Windows ainda pendente. Quarentena e exclusão manual existem com critérios de evidência; remoção pelo Defender é integração com motor externo. As cinco melhorias acima não foram implantadas nesta atualização do memorando.
+
+## Evolução futura — ZEUVORYX Global Protection Statistics & Feedback
+Solicitação de 24/11/2026. Criar painel de impacto cumulativo, histórico de segurança local e estatísticas mundiais de usuários participantes, com atualização próxima de tempo real quando conectados. Implementação pendente para depois da validação da 3.0.2.
+
+### Histórico local e contadores
+- Registrar eventos de varredura e monitoramento, detecção, bloqueio, quarentena, remoção confirmada, restauração, falha e reparação verificada. Incluir data/hora, categoria de ameaça, motor responsável (ZEUVORYX, Defender ou outro integrado), versão e resultado. Ações de teste, simulações e EICAR devem ser identificadas e excluídas das métricas reais.
+- Manter totais históricos locais persistentes, inclusive após fechar o programa, reiniciar o Windows ou atualizar o produto. Oferecer exportação, política de retenção e exclusão voluntária de histórico; não prometer retenção após desinstalação, perda de armazenamento ou pedido de exclusão. Proteger os dados locais e limitar consumo de disco.
+- Usar contadores inteiros de 64 bits, suportar bilhões de eventos e manter totais separados de detecções, bloqueios, quarentenas, exclusões confirmadas, reparações e restaurações. Uma detecção não equivale a uma remoção. Uma ação de quarentena não equivale a uma exclusão definitiva. Não somar etapas do mesmo incidente como múltiplas ameaças eliminadas. Registrar correções de falsos positivos e restaurações sem inflar totais.
+
+### Painel mundial
+- Com autorização expressa e revogável do usuário para telemetria, enviar somente eventos mínimos necessários, sem arquivos, caminhos, nomes de usuário, IPs no histórico analítico, conteúdo, senhas ou identificadores de hardware. Identificador aleatório pseudônimo de instalação, limitado à finalidade e sujeito à política de privacidade e LGPD/GDPR e requisitos locais. País apenas opcional, autodeclarado ou agregado de forma compatível com privacidade; nunca geolocalização precisa. Sem participação obrigatória nem prejuízo à proteção offline.
+- Criar serviço central seguro para agregar eventos de instalações participantes de qualquer país (inclusive Japão e Brasil), com transporte TLS, autenticação, limitação de requisições, validação, identificadores de eventos idempotentes, deduplicação, fila local limitada e sincronização após reconexão. Não tratar declarações do cliente como prova incontestável: prever fraude, auditoria, correção de métricas e atribuição ao motor responsável.
+- Mostrar totais históricos mundiais de ações confirmadas, categorias (vírus, spyware, ransomware etc.), instalações participantes e dispositivos únicos com remediação confirmada (não afirmar que são "computadores salvos" nem que incidentes prevenidos teriam causado danos). Separar laboratório, telemetria real, ações do Defender e do ZEUVORYX. Exibir horário da última atualização, abrangência e limitações; offline mostrar último total sincronizado identificado como desatualizado.
+- Não usar eventos de usuários como rótulos automáticos para treinamento; eventual pesquisa deve usar consentimento específico e validação independente. Não divulgar rankings ou números inventados.
+
+### Avaliações de usuários
+- Avaliação voluntária de 1 a 5 estrelas dentro do aplicativo, após experiência suficiente ou em menu próprio; não interromper varreduras, não vincular avaliação à proteção e não exigir nota positiva.
+- Mostrar média, número de avaliações e distribuição de estrelas, com atualização após sincronização. Permitir revisar a avaliação, prevenir duplicidade e manipulação, não associar avaliação a identidade pública ou histórico de segurança. Feedback textual opcional separado, sem dados pessoais.
+- Antes da implantação, definir custos e infraestrutura do serviço, política de privacidade, consentimento, exclusão/retificação, retenção, incidentes e segurança. Testar offline/online, concorrência, falhas, reenvio, deduplicação, integridade, contagens de bilhões, privacidade, fraude, acessibilidade e impacto em CPU/RAM/rede. Proibir publicação de métricas fictícias como reais.

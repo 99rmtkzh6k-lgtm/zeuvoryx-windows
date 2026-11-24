@@ -94,3 +94,31 @@ Status inicial destes controles: diretrizes adotadas no processo documental; aut
 - Macintosh 3.0.3: Intel aprovado, ARM64 cancelado novamente (45396837719). Macintosh 3.0.5 candidato (45437873318): testes portáteis Linux e compilação Intel aprovados; ARM64 na fila. Nenhuma aprovação integral multiplataforma ainda.
 - About: Description ainda apenas Windows; Topics e Website vazios. Ação manual permanece em ABOUT_GITHUB.md; conferir depois da edição.
 - Esta revisão incorpora pesquisa e regras documentais; não instala ferramentas, não altera executáveis, não dispara testes desnecessários nem publica releases.
+
+## Primeira aplicação do protocolo de evolução — 24/11/2026 (ZVX-EVO-001)
+
+Solicitação do titular: aplicar a expressão de referência e o ciclo completo de continuidade aos antivírus Windows e Macintosh, registrando descobertas e melhorias. Esta é uma revisão documental e de auditoria, não autorização de release ou mudança funcional indiscriminada. O protocolo permanece no GitHub, não representa treinamento individual do modelo ou garantia de memória ilimitada.
+
+### Verificação efetiva
+- Windows 3.0.5 R5: execução 45436304817 aprovada, commit 214a6de2586433176987efdad8147ce3a1b02c41. Pacote 14942002196 preservado. Fundamentos 45436304993: Windows e Linux aprovados; macos-updater cancelado, execução global falhou.
+- Macintosh 3.0.5 LAB: execução 45437873318, commit 2226582057b455ba6ed906a78efb233ffecbe902. Regressão portátil e compilação Intel aprovadas; ARM64 na fila. Pacote Intel 14943370193 preservado. Macintosh 3.0.3: execução 45396837719 com Intel aprovado e ARM64 cancelado novamente, histórico preservado.
+- Revisão da documentação GitHub (https://docs.github.com/en/actions/reference/runners/github-hosted-runners): macos-15-intel e macos-15 são rótulos válidos Intel e ARM64, respectivamente. Não trocar rótulos sem evidência. Causa do cancelamento não demonstrada; avaliar detalhes do job e disponibilidade do ambiente antes de novo reteste, sem repetir tentativas cegamente.
+- Metadados efetivamente lidos: Description ainda descreve Windows 3.0.5 LAB R5, Topics vazio e Homepage vazio. Edição administrativa não disponível na integração. Ação manual permanece conforme ABOUT_GITHUB.md da main. Repositório principal é a fonte de verdade; a cópia histórica do memorando Windows dentro da ramificação Macintosh não substitui o memorando central atual.
+
+### Pesquisa e melhorias propostas
+| ID | Prioridade | Melhoria e fonte | Aceitação / status |
+| --- | --- | --- | --- |
+| ZVX-EVO-001-A | Alta | actionlint — https://github.com/rhysd/actionlint | Validar workflows e reproduzir regressões YAML/expressões antes de build; selecionar versão fixada, revisar licença e compatibilidade. Proposta, não instalado. |
+| ZVX-EVO-001-B | Alta | govulncheck — https://go.dev/doc/security/vuln/ | Analisar fontes efetivamente compiladas e dependências por plataforma, incluindo arquivos gerados no build Windows; documentar achados, correções e falsos positivos. Proposta, não executado. |
+| ZVX-EVO-001-C | Alta | Atestação de procedência GitHub — https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations | Avaliar permissões mínimas e elegibilidade; vincular EXE/DMG a commit e workflow, verificar atestação; não substitui Authenticode/Developer ID. Proposta, não implantado. |
+| ZVX-EVO-001-D | Alta | Instruções de continuidade AGENTS.md | Arquivo de orientação na raiz das três ramificações ativas, com links canônicos e critérios do memorando; não depende exclusivamente da memória da conversa. Não garante execução automática. |
+
+Pesquisa realizada em fontes públicas de mantenedores nesta revisão. As ferramentas A–C são candidatas de CI, não dependências residentes do produto; aferir custos, riscos, licenças, versões e compatibilidade antes de adotar. Nenhuma nova compilação ou teste funcional executado por esta revisão documental.
+
+### Próxima ordem técnica
+1. Resolver bloqueio ARM64 com diagnóstico fundamentado, preservar evidências e validar nativamente pacote macOS; não tratar cancelamento como falha de código confirmada.
+2. Avaliar gates de consistência (versão e YAML) e análise de dependências em LAB, com resultados antes de promoção.
+3. Prosseguir conforme backlog anterior: painel Windows com comandos/métricas superiores e botões compactos 3D, validação real dos instaladores, assinatura de produção, atualização e recuperação seguras, paridade Macintosh e eficácia independente. Não alterar ordem sem registrar motivo.
+4. Sincronizar documentação, concluir About manualmente pelo titular e verificar valores efetivos. Não publicar release.
+
+Classificação desta etapa: auditoria realizada; atualização documental e instruções de continuidade implementadas após verificação de gravação; ferramentas novas propostas; validação ARM64 e produção pendentes; metadados administrativos bloqueados por capacidade da integração. Preservar histórico e os nove controles ZVX-STD.

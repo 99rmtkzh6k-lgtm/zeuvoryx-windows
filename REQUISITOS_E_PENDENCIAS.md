@@ -43,7 +43,7 @@ Atualizado em 24/11/2026. Índice operacional do [memorando histórico completo]
 | REQ-035 | Ícone ZEUS: preservar escudo; trocar apenas fundo/moldura escura por prata no software, alinhar recursos ICO/PE, taskbar, bandeja, atalhos e instalador | P | Próxima revisão; distinguir realce nativo Windows e validar DPI/temas | EVO-020; REQ-014/030 |
 | REQ-036 | Preparar distribuição mundial nas lojas e canais oficiais após validação integrada, assinatura, revisão de políticas/licenças e autorização | P | Pós-validação; não publicar nem contratar automaticamente | EVO-020; REQ-023/024 |
 
-| REQ-037 | Central pública de suporte internacional versionada, FAQ, ajuda no aplicativo e descoberta por buscadores | P | Proposta pré-lançamento; sem garantia de indexação; preservar privacidade | EVO-021; REQ-023/036 |
+| REQ-037 | Central pública de suporte internacional versionada, FAQ, ajuda no aplicativo e descoberta por buscadores | E | Base publicada em 4 idiomas; Pages, indexação e ajuda no app pendentes | EVO-021/022; REQ-023/036 |
 
 ## Controle obrigatório de continuidade
 
@@ -64,3 +64,7 @@ REQ-029 a 034 adicionados conforme solicitação do titular. REQ-008 e REQ-007 a
 ### Complemento EVO-020 — ícone prata e lojas
 
 REQ-035/036 adicionados, mantendo os 34 anteriores e as quatro cláusulas pétreas. Próxima versão funcional prevista 3.0.7 após relatório do piloto 3.0.6. Correção de arte no software pendente; não alterar aparência global do Windows. Preparação de distribuição somente após gates e autorização. Nenhum novo binário nesta revisão.
+
+### EVO-022 — suporte mundial
+
+[Central pública](support/README.md) e HTML estático preparados; não declarar indexação nem site ativo. REQ-037 parcial, demais requisitos preservados.

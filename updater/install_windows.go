@@ -14,7 +14,7 @@ func StartVerifiedInstall(ctx context.Context,target string)error{
  f:=os.NewFile(uintptr(h),v.Path);defer f.Close()
  if e=releaseguard.VerifyPackage(f,v.Manifest);e!=nil{return e}
  if e=ctx.Err();e!=nil{return e}
- cmd:=exec.Command(v.Path,"/SILENT","/NORESTART","/CLOSEAPPLICATIONS","/RESTARTAPPLICATIONS","/ZEUVORYXUPDATE=1")
+ cmd:=exec.Command(v.Path,"/SILENT","/NORESTART","/CLOSEAPPLICATIONS","/RESTARTAPPLICATIONS","/ZEUVORYXUPDATE=1","/ZEUVORYXTARGET="+target)
  if e=cmd.Start();e!=nil{return e};ok=true
  _=cmd.Process.Release()
  return nil

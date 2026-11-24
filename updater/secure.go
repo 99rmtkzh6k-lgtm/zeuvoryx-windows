@@ -55,3 +55,7 @@ func StageAuthorized(ctx context.Context,target string)(staged,error){
  key,e:=ownerKey();if e!=nil{return staged{},e}
  return stage(ctx,fetchWith(downloadClient()),key,Current,target,os.TempDir(),time.Now())
 }
+
+// CompletedVersion checks the installer-provided version against this executable.
+// This is a UI receipt, not a cryptographic attestation of the installation.
+func CompletedVersion(target string) string { if target==Current {return Current};return "" }

@@ -32,3 +32,5 @@ func TestUpdateTrustAndURL(t *testing.T){
  old:=OwnerPublicKeyHex;defer func(){OwnerPublicKeyHex=old}();OwnerPublicKeyHex="";if SignedEnabled(){t.Fatal("empty key")}
  OwnerPublicKeyHex=hex.EncodeToString(make([]byte,32));if !SignedEnabled(){t.Fatal("key shape")}
 }
+
+func TestCompletedVersion(t *testing.T){for _,x:=range []string{"","3.0.4","3.0.6","3.0.5-lab","v3.0.5"}{if CompletedVersion(x)!=""{t.Fatal(x)}};if CompletedVersion(Current)!=Current{t.Fatal("current version not acknowledged")}}

@@ -1,5 +1,5 @@
 name: ZEUVORYX 3.0.5 LAB - Windows Build
-run-name: ZEUVORYX 3.0.5 LAB R3 Olympus Silver Signed Update Windows x64
+run-name: ZEUVORYX 3.0.5 LAB R4 Olympus Silver Update Receipt Windows x64
 
 on:
   push:
@@ -2377,7 +2377,7 @@ jobs:
           DisableProgramGroupPage=yes
           PrivilegesRequired=lowest
           CloseApplications=yes
-          RestartApplications=yes
+          RestartApplications=no
           UsePreviousAppDir=yes
           ArchitecturesAllowed=x64compatible
           OutputDir=installer
@@ -2400,7 +2400,7 @@ jobs:
           Filename: "{sys}\attrib.exe"; Parameters: "+h +s ""{app}\desktop.ini"""; Flags: runhidden waituntilterminated
           Filename: "{sys}\attrib.exe"; Parameters: "+r ""{app}"""; Flags: runhidden waituntilterminated
           Filename: "{app}\ZEUVORYX.exe"; Description: "Abrir ZEUVORYX"; Flags: nowait postinstall skipifsilent unchecked
-          Filename: "{app}\ZEUVORYX.exe"; Flags: nowait skipifnotsilent; Check: IsSignedUpdate
+          Filename: "{app}\ZEUVORYX.exe"; Parameters: "-updated-version={param:ZEUVORYXTARGET|}"; Flags: nowait skipifnotsilent; Check: IsSignedUpdate
           [Code]
           function IsSignedUpdate: Boolean;
           begin
@@ -2441,7 +2441,7 @@ jobs:
       - name: Upload LAB 3.0.5 installer and portable edition
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.5-LAB-R3-Olympus-Silver-Windows-Complete
+          name: ZEUVORYX-3.0.5-LAB-R4-Olympus-Silver-Windows-Complete
           path: |
             dist/
             installer/ZEUVORYX-LAB-Setup-3.0.5.exe

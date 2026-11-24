@@ -23,3 +23,7 @@ Em toda nova versão funcional autorizada, incrementar e conferir identidade do 
 ## ZVX-CP-004 — controle cumulativo de requisitos
 
 Antes de qualquer tarefa, ler também [REQUISITOS_E_PENDENCIAS.md](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/main/REQUISITOS_E_PENDENCIAS.md) da main. Registrar novos pedidos, inclusive próximos ciclos, com ID e status. No fechamento, reconciliar todos os itens afetados, preservar os demais, justificar adiamentos, anexar evidência e verificar gravação do índice e memorando. Histórico original não pode ser apagado. Não aprovar sem evidência. CP-001/002/003 continuam vigentes.
+
+## Política permanente de independência de terceiros — REQ-042
+
+Consultar [AUDITORIA_LICENCAS.md](AUDITORIA_LICENCAS.md) antes de incluir, atualizar ou distribuir dependências. Preferir licenças com uso comercial gratuito, compatíveis com núcleo proprietário; não contratar, aceitar cobranças ou integrar serviço com termos comerciais indefinidos sem autorização. Preservar avisos e direitos de terceiros; bloquear promoção sem auditoria do pacote real. Não sacrificar proteção ou estabilidade por custo sem aprovação. CP-001–004 vigentes.

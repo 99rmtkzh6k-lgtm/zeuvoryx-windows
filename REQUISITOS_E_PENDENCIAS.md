@@ -52,6 +52,8 @@ Atualizado em 24/11/2026. Índice operacional do [memorando histórico completo]
 
 | REQ-041 | Continuidade da varredura completa com monitor apagado/bloqueado; solicitação temporária de energia, respeitar suspensão manual e bateria | E | Próxima versão; código candidato preparado; teste Windows físico e integração pendentes | EVO-027; REQ-003/025/027 |
 
+| REQ-042 | Independência financeira e licenças comerciais gratuitas: sem royalties, assinaturas obrigatórias ou contratação não autorizada; avisos/SBOM e alternativas verificadas | E | NSIS fixture e bloqueio de consulta não verificada preparados; migração, cobertura, CI e licenças integrais pendentes | EVO-029/030; REQ-009/038/040 |
+
 ## Controle obrigatório de continuidade
 
 A cada tarefa, ler o índice e o memorando, identificar requisitos afetados, registrar novos pedidos imediatamente (inclusive "no próximo"), preservar IDs e estados dos demais. Antes de fechar, comparar o índice anterior com o novo, justificar qualquer mudança de prioridade/estado, anexar evidência ou marcar pendência, atualizar a main e a ramificação/plataforma pertinente e confirmar gravação remota. Correção P0 pode adiar implantação de P1/P2, mas não apagar nem declarar cumprida. Decisões posteriores explícitas prevalecem sobre as substituídas, cujo histórico permanece. A fila não é autorização para lançar, contratar ou realizar ações destrutivas. Reconciliar requisitos não localizados com o histórico e pedidos recuperáveis, sem alegar cobertura absoluta de conversas inacessíveis.
@@ -72,5 +74,6 @@ REQ-029 a 034 adicionados conforme solicitação do titular. REQ-008 e REQ-007 a
 
 REQ-035/036 adicionados, mantendo os 34 anteriores e as quatro cláusulas pétreas. Próxima versão funcional prevista 3.0.7 após relatório do piloto 3.0.6. Correção de arte no software pendente; não alterar aparência global do Windows. Preparação de distribuição somente após gates e autorização. Nenhum novo binário nesta revisão.
 
-### EVO-022
-[Central mundial de ajuda](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/main/support). REQ-037 parcial; demais requisitos mantidos.
+### EVO-022 — suporte mundial
+
+[Central pública](support/README.md) e HTML estático preparados; não declarar indexação nem site ativo. REQ-037 parcial, demais requisitos preservados.

@@ -587,3 +587,10 @@ Primeiro push afdbfc6 teve execuções [45512988414](https://github.com/99rmtkzh
 ### ZVX-EVO-308-A — CI corrigida em andamento
 
 Execução [45513126955](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45513126955), commit bfdc766b80b75a13c8d2198fa7356d96df4ec8ee, job 138865660671: em andamento na consulta. Setup do job, checkout e identificação da fonte concluídos com sucesso; setup Go em execução, todos os gates de motor, desempenho, build e pacote pendentes. Não liberar download nem declarar aprovação antes de obter resultados. Aguardar resultado do GitHub em consulta posterior; não há acompanhamento autônomo no chat.
+
+
+### ZVX-EVO-308-A — fechamento de CI e entrega portátil de teste
+
+24/11/2026 — CI 3.0.8 LAB R1 aprovado na [execução 45513126955](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45513126955), commit bfdc766b80b75a13c8d2198fa7356d96df4ec8ee. ZIP portátil x64 exclusivamente para teste rápido autorizado: [artefato 14976792219](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45513126955/artifacts/14976792219), 6.883.070 bytes; SHA-256 do ZIP conferido nos bytes baixados: 9c5f62efc583f6e8fe18691c008f8bf495cd9b94fcacbf58431e74e94ae6eb5e; CRC íntegro. SHA-256 do EXE confere com o manifesto: 98d07e58e2780d3d1ee0211f9d65869aa09928693e0dd5272c9f5f7f93110cbe. CI aprovou regressões de leitura/PE (30 rodadas cada), 50 regressões de varredura, 10 repetições, 5 rodadas de links, EICAR, cenários sintéticos, build e smoke desktop. Não equivale a proteção real certificada. Testes físicos, desempenho comparativo, cinco ciclos integrados e demais gates pendentes; nenhum instalador, atualização assinada ou release autorizada. Manter Defender e SmartScreen ativos, extrair ZIP em pasta separada e executar apenas rápida em ambiente autorizado.
+
+Campos administrativos consultados: descrição já identifica 3.0.8 LAB under validation; homepage preenchida; tópicos vazios. Escrita administrativa não disponível. Não alterar main, 3.0.7 ou Macintosh. Documentação da ramificação 3.0.8 sincronizada nesta intervenção, sem alteração funcional.

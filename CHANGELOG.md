@@ -27,3 +27,12 @@ O histórico detalhado, critérios e pendências estão no [memorando permanente
 - Macintosh 3.0.3 Intel: compilação histórica aprovada; reteste ARM64 pendente. Macintosh 3.0.5 LAB candidato: análise consultiva de links portada, CLI/UI e gate de versão; [execução 45437873318](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45437873318) na fila nesta consulta. Não equivale a paridade ou aprovação final.
 - Regra permanente ampliada: padronização, auditoria de impacto, memorando vivo, pesquisa técnica e melhoria contínua, sincronização e verificação de metadados. About/Topics/Website ainda requerem intervenção manual conforme [ABOUT_GITHUB.md](ABOUT_GITHUB.md).
 - Nenhuma nova compilação ou alteração funcional por esta revisão documental.
+
+## Protocolo de engenharia e conferência de CI — 24/11/2026
+- Expressão de referência do titular registrada e nove controles ZVX-STD definidos nos memorandos, com referências públicas. Implementação técnica adicional permanece no backlog; nenhuma certificação reivindicada.
+- Windows 3.0.5 R5 aprovado; fundamentos com Windows/Linux aprovados e macOS updater cancelado. Macintosh 3.0.3 ARM64 novamente cancelado. Macintosh 3.0.5: regressão portátil e compilação Intel aprovadas, ARM64 pendente. About ainda requer edição manual.
+
+
+### Conferência de CI — 24/11/2026
+
+Macintosh 3.0.5 LAB: regressão portátil Linux e compilação Intel aprovadas; Apple Silicon ARM64 permanece pendente. [Execução 45437873318](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45437873318). [Artefato Intel 14943370193](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45437873318/artifacts/14943370193), 4.283.792 bytes, SHA-256 registrado pelo GitHub `965da629bf97f885a7df1de2434211f3342d82ba4e286f1a1fb52f946bc3f767`. Somente para laboratório; sem validação integral em Macs reais ou assinatura de produção.

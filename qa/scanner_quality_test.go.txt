@@ -1,0 +1,39 @@
+package engine
+
+import (
+ "crypto/sha256"
+ "encoding/hex"
+ "testing"
+)
+
+func TestZQualityBenignFixtures(t *testing.T) {
+ for _,sample:=range []string{"","A normal document.","Invoice total 123.45","Hello from the ZEUVORYX quality laboratory."}{
+  data:=[]byte(sample)
+  sum:=sha256.Sum256(data)
+  if h:=analyze("ordinary.txt",data,hex.EncodeToString(sum[:]),nil);h!=nil{t.Fatalf("benign fixture raised alert: %+v",h)}
+ }
+}
+
+func TestZQualityIOCPrecedence(t *testing.T){
+ data:=[]byte("harmless known test fixture")
+ sum:=sha256.Sum256(data); hash:=hex.EncodeToString(sum[:])
+ h:=analyze("ordinary.txt",data,hash,map[string]string{hash:"synthetic QA indicator"})
+ if h==nil||h.Evidence!="ioc_match"||!h.QuarantineEligible||h.Risk!=100{t.Fatalf("IOC regression: %+v",h)}
+ if h.AdaptiveScore!=nil{t.Fatal("advisory ML must not replace exact indicator evidence")}
+}
+
+func FuzzZStaticScanner(f *testing.F){
+ f.Add([]byte{})
+ f.Add([]byte("ordinary document"))
+ f.Add([]byte{'M','Z'})
+ f.Add([]byte{'P','K',3,4})
+ f.Fuzz(func(t *testing.T,data []byte){
+  if len(data)>64<<10{t.Skip()}
+  sum:=sha256.Sum256(data)
+  h:=analyze("fuzz-fixture.bin",data,hex.EncodeToString(sum[:]),nil)
+  if h==nil{return}
+  if h.Risk<0||h.Risk>100{t.Fatalf("risk outside bounds: %d",h.Risk)}
+  if h.Evidence=="heuristic"&&h.QuarantineEligible{t.Fatal("heuristic granted quarantine eligibility")}
+  if h.AdaptiveScore!=nil&&(*h.AdaptiveScore<0||*h.AdaptiveScore>100||*h.AdaptiveScore!=*h.AdaptiveScore){t.Fatal("invalid advisory score")}
+ })
+}

@@ -39,11 +39,11 @@ A ramificação `main` consolida a base de código Windows 3.0.5 LAB R5; `securi
 
 Próximos passos: painel com comandos de varredura e métricas no topo, botões compactos 3D; teste visual e Windows real; atualização assinada de produção; auditoria ampliada, remediação segura, proteção residente, IA validada, estatísticas globais ultraleves e Macintosh independente. Idiomas adicionais conforme qualidade/desempenho. Nenhum desses requisitos é considerado concluído só por estar planejado.
 
-## Macintosh — desenvolvimento separado
+## Macintosh — ZEUVORYX 3.0.5 LAB (candidato atual)
 
-A edição macOS permanece na versão **3.0.3 LAB**, com Swift/SwiftUI e motor Go somente leitura. [Documentação Macintosh](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/macintosh-3.0.3-lab). Intel compilado; Apple Silicon teve novo cancelamento na tentativa 2. Não há equivalência funcional integral com Windows. Não confundir os instaladores. 
+A edição Macintosh **3.0.5 LAB** é o candidato atual, desenvolvido separadamente com Swift/SwiftUI e motor Go somente leitura. [Documentação atual](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/macintosh-3.0.5-lab). A regressão portátil Linux e a compilação Intel foram aprovadas. A tentativa ARM64 foi cancelada sem etapas registradas; reteste exclusivo solicitado, sem aprovação confirmada. Não há equivalência funcional integral com Windows nem autorização de distribuição de produção.
 
-Candidato Macintosh [3.0.5 LAB](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/macintosh-3.0.5-lab): evolução de links e gate de identidade; regressão portátil Linux e compilação Intel aprovadas, ARM64 pendente. Para novos testes, selecione o workflow Macintosh 3.0.5 e a ramificação `macintosh-3.0.5-lab`. A versão 3.0.3 continua preservada; não confundir candidato com pacote aprovado.
+Para novos testes, selecione o workflow Macintosh 3.0.5 e a ramificação `macintosh-3.0.5-lab`. A [versão histórica 3.0.3 LAB](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/macintosh-3.0.3-lab) permanece preservada. Não confundir instaladores, arquiteturas ou candidato com pacote aprovado.
 
 ## Licenciamento, autoria e distribuição
 
@@ -52,4 +52,4 @@ Autoria declarada: Leonardo A Botelho. Não há licença de redistribuição de 
 
 ### Conferência de CI — 24/11/2026
 
-Macintosh 3.0.5 LAB: regressão portátil Linux e compilação Intel aprovadas; Apple Silicon ARM64 permanece pendente. [Execução 45437873318](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45437873318). [Artefato Intel 14943370193](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45437873318/artifacts/14943370193), 4.283.792 bytes, SHA-256 registrado pelo GitHub `965da629bf97f885a7df1de2434211f3342d82ba4e286f1a1fb52f946bc3f767`. Somente para laboratório; sem validação integral em Macs reais ou assinatura de produção.
+Macintosh 3.0.5 LAB: regressão portátil Linux e compilação Intel aprovadas; Apple Silicon ARM64 cancelado na tentativa anterior, sem etapas registradas e com log indisponível (404). Reteste exclusivo solicitado e aceito pelo GitHub em 24/11/2026; resultado ainda não confirmado. Não há causa de código comprovada. [Execução 45437873318](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45437873318). [Artefato Intel 14943370193](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45437873318/artifacts/14943370193), 4.283.792 bytes, SHA-256 registrado pelo GitHub `965da629bf97f885a7df1de2434211f3342d82ba4e286f1a1fb52f946bc3f767`. Somente para laboratório; sem validação integral em Macs reais ou assinatura de produção.

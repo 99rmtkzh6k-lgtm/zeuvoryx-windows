@@ -7,12 +7,12 @@ Atualizado em 24/11/2026. Índice operacional do [memorando histórico completo]
 | REQ-001 | Proteção efetiva, estabilidade, velocidade, baixo consumo, simplicidade, privacidade | B | Transversal; sem regressão | CP-001 |
 | REQ-002 | Windows x64, instalação EXE simples, sem Python no cliente, início sem scan automático, atalho e operação simples | E | P0 abertura/instalação | Linha do tempo 2.1–3.0.6 |
 | REQ-003 | Rápida, completa, personalizada, cancelar, progresso e exportação | E | P0 fechamento nas completas | EVO-013/015–018 |
-| REQ-004 | SHA-256 integral, heurísticas, assinaturas, análise PE/ZIP, limites explícitos, erros de acesso e cobertura parcial | E | P0 robustez, isolamento de parsers pendente | EVO-013/016/017 |
+| REQ-004 | SHA-256 integral, heurísticas, assinaturas, análise PE/ZIP, limites explícitos, erros e cobertura parcial | B | P0 base histórica candidata de 6 hashes; eficácia real, integração e cobertura pendentes | EVO-034/035 |
 | REQ-005 | Quarentena reversível, restauração, confirmação de evidência, exclusões/falsos positivos e auditoria | E | P1 teste integrado, sem ação destrutiva automática | Cinco implementações futuras; 3.0.1–3.0.5 |
 | REQ-006 | Remoção automática segura, interrupção de processos, persistência, reparação, bloqueio de execução | P | P1 módulos separados, consentimento/rollback; não confundir com Defender | Cinco implementações futuras |
 | REQ-007 | Proteção residente, análise comportamental e antiransomware | P | P1 arquitetura, baixo consumo, compatibilidade Defender | Cinco implementações futuras |
 | REQ-008 | IA consultiva local, evolução controlada, validação independente, falsos positivos | E | P1 sem promover modelo reprovado; simulações não são ataques reais | Linha do tempo 3.0.2/3.0.3; STD |
-| REQ-009 | Inteligência de ameaças internacional, fontes autorizadas, cache, expiração, revogação, indicadores e atualizações | E | P1 DROP seed rejeitado; conectores, licenças e persistência pendentes | EVO-006/007 |
+| REQ-009 | Inteligência de ameaças internacional, fontes autorizadas gratuitas, cache, expiração, revogação, indicadores e atualizações | B | P0 base histórica mínima; atualização ampla, direitos e validação pendentes; não confundir KEV com malware | EVO-006/007/034/035 |
 | REQ-010 | Análise de links, phishing e proteção contra roubo de dados | E | P1 eficácia real pendente | 3.0.5 R5 |
 | REQ-011 | Limpeza segura de temporários e métricas separadas de malware | E | P1 não remover arquivos ativos automaticamente | EVO-013 |
 | REQ-012 | Histórico local autenticado, relatórios, salvar/exportar, privacidade e retenção | E | P1 preservação e relatório anonimizado pendentes | EVO-003/013; histórico local |

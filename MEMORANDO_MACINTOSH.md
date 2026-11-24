@@ -1,4 +1,6 @@
-# ZEUVORYX Macintosh — laboratório 3.0.3
+# ZEUVORYX Macintosh — candidato atual 3.0.5 LAB
+
+> O registro inicial abaixo documenta a base histórica 3.0.3 LAB; a situação corrente está na seção ZVX-EVO-002 ao final.
 24/11/2026 — autorização do titular. Created & Engineered by Leonardo A Botelho.
 Base comum: Windows 3.0.3 LAB, arte oficial e requisitos do MEMORANDO_DESENVOLVIMENTO.md.
 Pipeline independente: GitHub Actions macOS 15 ARM64 e Intel; Go + Swift/SwiftUI nativo. Pacotes DMG separados, assinatura ad hoc de laboratório, sem notarização. Não publicar.
@@ -122,3 +124,12 @@ Pesquisa realizada em fontes públicas de mantenedores nesta revisão. As ferram
 4. Sincronizar documentação, concluir About manualmente pelo titular e verificar valores efetivos. Não publicar release.
 
 Classificação desta etapa: auditoria realizada; atualização documental e instruções de continuidade implementadas após verificação de gravação; ferramentas novas propostas; validação ARM64 e produção pendentes; metadados administrativos bloqueados por capacidade da integração. Preservar histórico e os nove controles ZVX-STD.
+
+
+## ZVX-EVO-002 — conferência de versão e CI (24/11/2026)
+
+Macintosh 3.0.5 LAB: regressão portátil Linux e compilação Intel aprovadas; Apple Silicon ARM64 cancelado na tentativa anterior, sem etapas registradas e com log indisponível (404). Reteste exclusivo solicitado e aceito pelo GitHub em 24/11/2026; resultado ainda não confirmado. Não há causa de código comprovada.
+- Execução [45437873318](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45437873318); job ARM64 original 138600529888. O workflow usa macos-15 para ARM64 e macos-15-intel para Intel, com fail-fast desativado. Não alterar rótulos ou código sem evidência.
+- Windows 3.0.5 LAB R5: compilação [45436304817](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45436304817) confirmada como aprovada. Macintosh 3.0.3 LAB é histórico preservado. A 3.0.5 LAB é o candidato atual, não uma versão aprovada para distribuição integral.
+- Revisão exclusivamente documental; sem mudança de versão, motor, instaladores, permissões, releases ou assinatura. Estados anteriores nos registros históricos não representam a situação atual. Validação em computadores reais, eficácia independente e assinatura de produção seguem pendentes.
+- About/Topics/Website: edição administrativa não disponível nesta integração; instruções permanecem em [ABOUT_GITHUB.md](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/main/ABOUT_GITHUB.md). Conferir campos reais após ação do titular.

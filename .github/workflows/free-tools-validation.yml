@@ -1,0 +1,51 @@
+name: ZEUVORYX free-tool component validation
+on:
+  push:
+    branches: [lab-help-evo025]
+    paths: ['installer-lab/**','prepare_free_feed_policy.py','test_free_feed_policy.py','.github/workflows/free-tools-validation.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Five source-policy regression rounds
+        shell: pwsh
+        run: |
+          for ($i=0;$i -lt 5;$i++) {
+            python -m unittest -v test_free_feed_policy
+            if ($LASTEXITCODE -ne 0) { throw 'Feed policy test failed' }
+          }
+      - name: Build and test NSIS fixture
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $nsis = Join-Path ${env:ProgramFiles(x86)} 'NSIS/makensis.exe'
+          if (!(Test-Path $nsis)) {
+            $cmd = Get-Command makensis.exe -ErrorAction SilentlyContinue
+            if (!$cmd) { throw 'NSIS unavailable on runner; no automatic third-party installation' }
+            $nsis = $cmd.Source
+          }
+          & $nsis /VERSION
+          Set-Location installer-lab
+          Set-Content payload.txt 'ZEUVORYX inert component test only'
+          & $nsis fixture.nsi
+          if ($LASTEXITCODE -ne 0) { throw 'NSIS compilation failed' }
+          $path = Join-Path $env:LOCALAPPDATA 'ZEUVORYX-Installer-Component-EVO030'
+          if (Test-Path $path) { throw 'Unexpected existing fixture directory' }
+          $setup = Join-Path $PWD 'zeuvoryx-installer-fixture.exe'
+          for ($i=0;$i -lt 5;$i++) {
+            $p=Start-Process -FilePath $setup -ArgumentList '/S' -Wait -PassThru
+            if ($p.ExitCode -ne 0 -or !(Test-Path (Join-Path $path 'payload.txt'))) { throw 'Fixture install failed' }
+            if ($i -eq 0) { Set-Content (Join-Path $path 'user-marker.txt') 'preserve' }
+            if ((Get-Content (Join-Path $path 'user-marker.txt')) -ne 'preserve') { throw 'Marker lost' }
+          }
+          $p=Start-Process -FilePath (Join-Path $path 'Uninstall.exe') -ArgumentList '/S' -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw 'Fixture uninstall failed' }
+          Start-Sleep -Seconds 2
+          if (Test-Path (Join-Path $path 'payload.txt')) { throw 'Fixture payload remains' }
+          if ((Get-Content (Join-Path $path 'user-marker.txt')) -ne 'preserve') { throw 'User marker lost on uninstall' }
+          Write-Host 'NSIS fixture: five installs and non-destructive uninstall passed'

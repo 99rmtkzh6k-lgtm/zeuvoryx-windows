@@ -690,10 +690,18 @@ jobs:
           [IO.File]::WriteAllText((Join-Path $PWD 'engine/self_test.go'), $source, $utf8)
           gofmt -w main.go desktop_windows.go maintenance.go maintenance_test.go engine/self_test.go
           if ($LASTEXITCODE -ne 0) { throw 'Formatting failed' }
-          go get github.com/jchv/go-webview2@v0.0.0-20260205173254-56598839c808
-          if ($LASTEXITCODE -ne 0) { throw 'WebView2 dependency failed' }
-          go mod tidy
-          if ($LASTEXITCODE -ne 0) { throw 'Module resolution failed' }
+          for ($attempt=1; $attempt -le 3; $attempt++) {
+            go get github.com/jchv/go-webview2@v0.0.0-20260205173254-56598839c808
+            if ($LASTEXITCODE -eq 0) { break }
+            if ($attempt -eq 3) { throw 'WebView2 dependency failed after three attempts' }
+            Start-Sleep -Seconds (5*$attempt)
+          }
+          for ($attempt=1; $attempt -le 3; $attempt++) {
+            go mod tidy
+            if ($LASTEXITCODE -eq 0) { break }
+            if ($attempt -eq 3) { throw 'Module resolution failed after three attempts' }
+            Start-Sleep -Seconds (5*$attempt)
+          }
           python make_icon.py
           if ($LASTEXITCODE -ne 0) { throw 'Icon generation failed' }
           go run github.com/akavel/rsrc@v0.10.2 -arch amd64 -ico ZEUVORYX.ico -o rsrc_windows_amd64.syso
@@ -755,13 +763,56 @@ jobs:
           	if p := u.Port(); p != "" && p != "80" && p != "443" {
           		add("Porta não convencional")
           	}
-          	if strings.Contains(strings.ToLower(u.RawQuery), "redirect=") || strings.Contains(strings.ToLower(u.RawQuery), "url=") {
+          	if hasRedirectParameter(u.RawQuery) {
           		add("Parâmetro de possível redirecionamento")
+          	}
+          	if imitatesWikiLeaks(host) {
+          		add("Domínio semelhante a wikileaks.org: confirme o endereço oficial; não comprova fraude")
           	}
           	if len(r.Signals) > 0 {
           		r.Assessment = "Atenção: indicadores estruturais; não comprovam fraude"
           	}
           	return r, nil
+          }
+          
+          // Bounded decoding of query keys only. Never visits the destination.
+          func hasRedirectParameter(raw string) bool {
+           for round:=0;round<3;round++ {
+            for _,part:=range strings.FieldsFunc(raw,func(r rune)bool{return r=='&'||r==';'}) {
+             key,_,ok:=strings.Cut(part,"=");if !ok{continue}
+             key,e:=url.QueryUnescape(key);if e!=nil{continue}
+             switch strings.ToLower(key) {
+             case "redirect","url","redirect_uri","redirect_url","return_url","returnurl","next","continue","target","destination","dest":return true
+             }
+            }
+            decoded,e:=url.QueryUnescape(raw);if e!=nil||decoded==raw{break};raw=decoded
+           }
+           return false
+          }
+          // Advisory, deliberately limited to the identity requested for this regression.
+          // Only DNS labels are examined, not ordinary text or page paths.
+          func imitatesWikiLeaks(host string) bool {
+           const official="wikileaks.org"
+           if host==official||strings.HasSuffix(host,"."+official){return false}
+           for _,label:=range strings.Split(host,".") {
+            s:=strings.ReplaceAll(label,"-","")
+            if strings.Contains(s,"wikileaks")||nearWikiLabel(s){return true}
+           }
+           return false
+          }
+          func nearWikiLabel(s string) bool {
+           const brand="wikileaks"
+           if len(s)<len(brand)-1||len(s)>len(brand)+1{return false}
+           // Bounded edit distance (one insertion, deletion or substitution), including a
+           // single adjacent transposition. ASCII only; other scripts have a separate signal.
+           for _,r:=range s{if !(r>='a'&&r<='z'||r>='0'&&r<='9'){return false}}
+           if len(s)==len(brand){
+            diffs:=[]int{};for i:=range brand{if s[i]!=brand[i]{diffs=append(diffs,i)}}
+            return len(diffs)<=1||(len(diffs)==2&&diffs[1]==diffs[0]+1&&s[diffs[0]]==brand[diffs[1]]&&s[diffs[1]]==brand[diffs[0]])
+           }
+           a,b:=s,brand;if len(a)>len(b){a,b=b,a}
+           for i:=0;i<len(b);i++{if a==b[:i]+b[i+1:]{return true}}
+           return false
           }
           '@
           [IO.File]::WriteAllText((Join-Path $PWD 'linkcheck.go'), $source, $utf8)
@@ -797,6 +848,37 @@ jobs:
           			t.Fatalf("%q: %+v %v", tc.url, r, e)
           		}
           	}
+          }
+          
+          func TestWikiLinkRegression(t *testing.T){
+           cases:=[]struct{raw string;want int;invalid bool}{
+           {"https://wikileaks.org/ ",0,false},
+           {"https://www.wikileaks.org/",0,false},
+           {"https://wikileaks.org./",0,false},
+           {"http://wikileaks.org/",1,false},
+           {"https://wikileaks.org@other.invalid/",1,false},
+           {"https://wikileaks.org.other.invalid/",1,false},
+           {"https://wikileaks-support.invalid/",1,false},
+           {"https://wikileakz.invalid/",1,false},
+           {"https://wikileak.invalid/",1,false},
+           {"https://wiki-leaks.invalid/",1,false},
+           {"https://wikilekas.invalid/",1,false},
+           {"https://example.invalid/news/wikileaks",0,false},
+           {"https://example.invalid/?q=wikileaks",0,false},
+           {"https://wikileaks.org/?redirect=https%3A%2F%2Fother.invalid",1,false},
+           {"https://wikileaks.org/?%72edirect=https%3A%2F%2Fother.invalid",1,false},
+           {"https://wikileaks.org/?%2572edirect=https%3A%2F%2Fother.invalid",1,false},
+           {"https://wikileaks.org/?redirect%3Dhttps%253A%252F%252Fother.invalid",1,false},
+           {"https://wikileaks.org/?redirect_uri=https%3A%2F%2Fother.invalid",1,false},
+           {"https://wikileaks.org/?next=%2Fnews",1,false},
+           {"https://example.invalid/?myurl=value",0,false},
+           {"file:///wikileaks.org",0,true},
+           }
+           for _,c:=range cases{
+            r,e:=assessLink(c.raw);if c.invalid{if e==nil{t.Fatalf("expected invalid: %s",c.raw)};continue}
+            if e!=nil||len(r.Signals)!=c.want{t.Fatalf("%s: got %+v %v want %d signals",c.raw,r,e,c.want)}
+           }
+           t.Logf("%d structural URL cases; no network access or active blocking",len(cases))
           }
           '@
           [IO.File]::WriteAllText((Join-Path $PWD 'linkcheck_test.go'), $source, $utf8)
@@ -2300,6 +2382,11 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Scanner quality regression' }
           go test -run '^$' -fuzz '^FuzzZStaticScanner$' -fuzztime=20s -parallel=2 ./engine
           if ($LASTEXITCODE -ne 0) { throw 'Static scanner fuzz test failed' }
+      - name: Link safety regression five rounds
+        shell: pwsh
+        run: |
+          go test -v -count=5 -run '^(TestLinkTriage|TestWikiLinkRegression)$' .
+          if ($LASTEXITCODE -ne 0) { throw 'Link safety regression failed' }
       - name: Validate source code
         shell: pwsh
         run: |

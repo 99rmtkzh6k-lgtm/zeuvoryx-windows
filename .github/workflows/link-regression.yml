@@ -1,0 +1,38 @@
+name: ZEUVORYX 3.0.5 LAB R5 link regression
+on:
+  push:
+    branches: [security-3.0.5-lab]
+    paths:
+      - '.github/workflows/windows-build.yml'
+      - '.github/workflows/link-regression.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  link-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+          cache: false
+      - name: Extract exact Windows build sources and execute five rounds
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path(".github/workflows/windows-build.yml").read_text()
+          for name in ("linkcheck.go","linkcheck_test.go"):
+              end=s.index("[IO.File]::WriteAllText((Join-Path $PWD '"+name+"')")
+              start=s.rindex("$source = @'",0,end)+len("$source = @'")
+              body=s[start:end].strip("\n").splitlines()
+              lines=[x[10:] if x.startswith(" "*10) else x for x in body]
+              while lines and not lines[-1].strip(): lines.pop()
+              assert lines.pop().strip()=="'@"
+              Path(name).write_text("\n".join(lines)+"\n")
+          PY
+          go test -v -count=5 linkcheck.go linkcheck_test.go

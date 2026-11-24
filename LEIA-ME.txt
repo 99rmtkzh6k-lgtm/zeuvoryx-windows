@@ -2,10 +2,10 @@ ZEUVORYX 3.0.5 LAB R5 | OLYMPUS SILVER — Windows x64
 24/11/2026 | Created & Engineered by Leonardo A Botelho
 
 PACOTE VALIDADO NO CI
-Execução: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45419964764
-Artefato: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45419964764/artifacts/14934540577
-Tamanho: 33.730.421 bytes.
-SHA-256 (GitHub): c42366ea44b6ac25c302b92a1fdbacb237c01224eb8b4e13b3a2e34ada19fcf0
+Execução: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45436304817
+Artefato: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45436304817/artifacts/14942002196
+Tamanho: 33.725.391 bytes.
+SHA-256 (GitHub): ae703ec4d3460fe0126102f7ed334df13015571b50e36f9e28e6e72f8eb993ff
 Instalador: installer/ZEUVORYX-LAB-Setup-3.0.5.exe
 Portátil: pasta dist (mantenha arquivos auxiliares).
 

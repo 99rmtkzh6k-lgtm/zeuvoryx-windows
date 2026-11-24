@@ -4,9 +4,9 @@ ZEUVORYX — INSTRUÇÕES ATUAIS — 3.0.5 LAB R5
 1. Repositório: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows
 2. Selecione main para a base Windows 3.0.5 LAB R5 consolidada, ou security-3.0.5-lab para a referência de laboratório.
 3. Workflow LAB: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/workflows/windows-build-lab-305.yml
-4. A execução aprovada é https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45419964764
+4. A execução aprovada é https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45436304817
 5. Em Artifacts, escolha ZEUVORYX-3.0.5-LAB-R5-Olympus-Silver-Windows-Complete.
-   Download: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45419964764/artifacts/14934540577
+   Download: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45436304817/artifacts/14942002196
 6. Extraia o ZIP e siga LEIA-ME.txt. Não é necessário reenviar arquivos nem
    recriar o workflow para baixar um build já aprovado.
 7. Para nova alteração funcional, preserve o histórico de main, consulte o memorando, revise

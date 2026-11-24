@@ -10,5 +10,5 @@ Etapas relevantes:
 - Integrate experimental AI and three-language desktop
 - Verify final ZEUVORYX 3.0.5 LAB R5 identity
 - Regressão, QA20, build Windows, instalador, reinstalação e upload do ZIP.
-Execução validada: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45419964764
+Execução validada: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45436304817
 Preservar o histórico de main; não executar a versão histórica 3.0.1. Alterações documentais não exigem rebuild.

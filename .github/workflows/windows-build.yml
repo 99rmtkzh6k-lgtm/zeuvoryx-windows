@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: zeuvoryx-windows-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-windows:
     runs-on: windows-latest
@@ -2270,6 +2274,220 @@ jobs:
           name: ZEUVORYX-Adaptive-Lab-50M
           path: lab-results/adaptive-report-50m.json
           if-no-files-found: error
+      - name: Install and run static scanner safety regression tests
+        shell: pwsh
+        run: |
+          Copy-Item qa/scanner_quality_test.go.txt engine/scanner_quality_test.go -ErrorAction Stop
+          gofmt -w engine/scanner_quality_test.go
+          if ($LASTEXITCODE -ne 0) { throw 'Quality test formatting failed' }
+          go test -v -run '^TestZQuality' -count=10 ./engine
+          if ($LASTEXITCODE -ne 0) { throw 'Scanner quality regression' }
+          go test -run '^
+        shell: pwsh
+        run: |
+          go list ./...
+          if ($LASTEXITCODE -ne 0) { throw 'Go package validation failed' }
+          go vet ./...
+          if ($LASTEXITCODE -ne 0) { throw 'Go validation failed' }
+      - name: Run tests ten times
+        shell: pwsh
+        run: |
+          go test -v -count=10 ./...
+          if ($LASTEXITCODE -ne 0) { throw 'Go tests failed' }
+      - name: Ten million synthetic fraud evaluations
+        shell: pwsh
+        run: |
+          $env:ZEUVORYX_STRESS = '1'
+          go test -v -run '^TestSyntheticFraudMillion$' -count=10 .
+          if ($LASTEXITCODE -ne 0) { throw 'Synthetic fraud workload failed' }
+      - name: Build Windows desktop EXE
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force dist | Out-Null
+          go build -trimpath -ldflags '-H=windowsgui' -o dist/ZEUVORYX.exe .
+          if ($LASTEXITCODE -ne 0) { throw 'Windows build failed' }
+          Copy-Item signatures.sha256, ZEUVORYX.ico, ZEUVORYX.png dist/ -ErrorAction Stop
+          $bytes = [IO.File]::ReadAllBytes((Join-Path $PWD 'dist/ZEUVORYX.exe'))
+          $pe = [BitConverter]::ToInt32($bytes, 60)
+          $subsystem = [BitConverter]::ToUInt16($bytes, ($pe + 24 + 68))
+          if ($subsystem -ne 2) { throw 'Expected Windows GUI executable' }
+          Get-FileHash dist/ZEUVORYX.exe -Algorithm SHA256
+      - name: Package C2PA verifier and installer
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $utf8 = New-Object System.Text.UTF8Encoding($false)
+          $url = 'https://github.com/contentauth/c2patool/releases/download/v0.28.1/v0.28.1-x86_64-pc-windows-msvc.zip'
+          Invoke-WebRequest -Uri $url -OutFile c2pa-release.zip
+          $hash = (Get-FileHash c2pa-release.zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($hash -ne 'cc876f899427a01505dcaf7a9c3713217e0034b11b43259ac647d0363dc1e827') { throw 'C2PA archive hash mismatch' }
+          Expand-Archive -Path c2pa-release.zip -DestinationPath c2pa-release -Force
+          $tools = @(Get-ChildItem c2pa-release -Recurse -Filter c2patool.exe -File)
+          if ($tools.Count -ne 1) { throw 'C2PA executable missing or ambiguous' }
+          New-Item -ItemType Directory -Force dist/media-verifier | Out-Null
+          Copy-Item (Join-Path $tools[0].Directory.FullName '*') dist/media-verifier -Recurse -Force
+          & (Join-Path $PWD 'dist/media-verifier/c2patool.exe') -V
+          if ($LASTEXITCODE -ne 0) { throw 'C2PA runtime check failed' }
+          Copy-Item ui/assets/zeuvoryx_capa_4k.jpg, ui/assets/zeuvoryx_painel_4k.jpg dist/ -ErrorAction Stop
+          $ini = "[.ShellClassInfo]`r`nIconResource=ZEUVORYX.ico,0`r`n"
+          [IO.File]::WriteAllText((Join-Path $PWD 'dist/desktop.ini'), $ini, [Text.Encoding]::Unicode)
+          $source = @'
+          [Setup]
+          AppId=ZEUVORYX.Desktop
+          AppName=ZEUVORYX
+          AppPublisher=Leonardo A Botelho
+          VersionInfoCompany=Leonardo A Botelho
+          VersionInfoCopyright=Copyright (C) 2026 Leonardo A Botelho
+          AppVersion=3.0.2
+          DefaultDirName={localappdata}\Programs\ZEUVORYX
+          DefaultGroupName=ZEUVORYX
+          DisableProgramGroupPage=yes
+          PrivilegesRequired=lowest
+          ArchitecturesAllowed=x64compatible
+          OutputDir=installer
+          OutputBaseFilename=ZEUVORYX-Setup-3.0.2
+          SetupIconFile=dist\ZEUVORYX.ico
+          UninstallDisplayIcon={app}\ZEUVORYX.exe
+          Compression=lzma2
+          SolidCompression=yes
+          WizardStyle=modern
+          [Languages]
+          Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"
+          [Tasks]
+          Name: "desktopicon"; Description: "Criar atalho na área de trabalho"
+          [Files]
+          Source: "dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+          [Icons]
+          Name: "{autoprograms}\ZEUVORYX"; Filename: "{app}\ZEUVORYX.exe"; WorkingDir: "{app}"
+          Name: "{autodesktop}\ZEUVORYX"; Filename: "{app}\ZEUVORYX.exe"; WorkingDir: "{app}"; Tasks: desktopicon
+          [Run]
+          Filename: "{sys}\attrib.exe"; Parameters: "+h +s ""{app}\desktop.ini"""; Flags: runhidden waituntilterminated
+          Filename: "{sys}\attrib.exe"; Parameters: "+r ""{app}"""; Flags: runhidden waituntilterminated
+          Filename: "{app}\ZEUVORYX.exe"; Description: "Abrir ZEUVORYX"; Flags: nowait postinstall skipifsilent unchecked
+          [UninstallRun]
+          Filename: "{sys}\attrib.exe"; Parameters: "-r ""{app}"""; Flags: runhidden waituntilterminated
+          Filename: "{sys}\attrib.exe"; Parameters: "-h -s ""{app}\desktop.ini"""; Flags: runhidden waituntilterminated; RunOnceId: "ClearFolderIcon"
+          '@
+          [IO.File]::WriteAllText((Join-Path $PWD 'setup.iss'), $source, [Text.Encoding]::UTF8)
+          $iscc = Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6/ISCC.exe'
+          if (!(Test-Path $iscc)) { throw 'Inno Setup compiler not found' }
+          & $iscc setup.iss
+          if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed' }
+          if (!(Test-Path 'installer/ZEUVORYX-Setup-3.0.2.exe')) { throw 'Installer missing' }
+          Get-FileHash installer/ZEUVORYX-Setup-3.0.2.exe -Algorithm SHA256
+      - name: Upload Competitive 3.0.2 installer and portable edition
+        uses: actions/upload-artifact@v4
+        with:
+          name: ZEUVORYX-3.0.2-Competitive-Windows
+          path: |
+            dist/
+            installer/ZEUVORYX-Setup-3.0.2.exe
+          if-no-files-found: error
+ -fuzz '^FuzzZStaticScanner
+        shell: pwsh
+        run: |
+          go list ./...
+          if ($LASTEXITCODE -ne 0) { throw 'Go package validation failed' }
+          go vet ./...
+          if ($LASTEXITCODE -ne 0) { throw 'Go validation failed' }
+      - name: Run tests ten times
+        shell: pwsh
+        run: |
+          go test -v -count=10 ./...
+          if ($LASTEXITCODE -ne 0) { throw 'Go tests failed' }
+      - name: Ten million synthetic fraud evaluations
+        shell: pwsh
+        run: |
+          $env:ZEUVORYX_STRESS = '1'
+          go test -v -run '^TestSyntheticFraudMillion$' -count=10 .
+          if ($LASTEXITCODE -ne 0) { throw 'Synthetic fraud workload failed' }
+      - name: Build Windows desktop EXE
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force dist | Out-Null
+          go build -trimpath -ldflags '-H=windowsgui' -o dist/ZEUVORYX.exe .
+          if ($LASTEXITCODE -ne 0) { throw 'Windows build failed' }
+          Copy-Item signatures.sha256, ZEUVORYX.ico, ZEUVORYX.png dist/ -ErrorAction Stop
+          $bytes = [IO.File]::ReadAllBytes((Join-Path $PWD 'dist/ZEUVORYX.exe'))
+          $pe = [BitConverter]::ToInt32($bytes, 60)
+          $subsystem = [BitConverter]::ToUInt16($bytes, ($pe + 24 + 68))
+          if ($subsystem -ne 2) { throw 'Expected Windows GUI executable' }
+          Get-FileHash dist/ZEUVORYX.exe -Algorithm SHA256
+      - name: Package C2PA verifier and installer
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $utf8 = New-Object System.Text.UTF8Encoding($false)
+          $url = 'https://github.com/contentauth/c2patool/releases/download/v0.28.1/v0.28.1-x86_64-pc-windows-msvc.zip'
+          Invoke-WebRequest -Uri $url -OutFile c2pa-release.zip
+          $hash = (Get-FileHash c2pa-release.zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($hash -ne 'cc876f899427a01505dcaf7a9c3713217e0034b11b43259ac647d0363dc1e827') { throw 'C2PA archive hash mismatch' }
+          Expand-Archive -Path c2pa-release.zip -DestinationPath c2pa-release -Force
+          $tools = @(Get-ChildItem c2pa-release -Recurse -Filter c2patool.exe -File)
+          if ($tools.Count -ne 1) { throw 'C2PA executable missing or ambiguous' }
+          New-Item -ItemType Directory -Force dist/media-verifier | Out-Null
+          Copy-Item (Join-Path $tools[0].Directory.FullName '*') dist/media-verifier -Recurse -Force
+          & (Join-Path $PWD 'dist/media-verifier/c2patool.exe') -V
+          if ($LASTEXITCODE -ne 0) { throw 'C2PA runtime check failed' }
+          Copy-Item ui/assets/zeuvoryx_capa_4k.jpg, ui/assets/zeuvoryx_painel_4k.jpg dist/ -ErrorAction Stop
+          $ini = "[.ShellClassInfo]`r`nIconResource=ZEUVORYX.ico,0`r`n"
+          [IO.File]::WriteAllText((Join-Path $PWD 'dist/desktop.ini'), $ini, [Text.Encoding]::Unicode)
+          $source = @'
+          [Setup]
+          AppId=ZEUVORYX.Desktop
+          AppName=ZEUVORYX
+          AppPublisher=Leonardo A Botelho
+          VersionInfoCompany=Leonardo A Botelho
+          VersionInfoCopyright=Copyright (C) 2026 Leonardo A Botelho
+          AppVersion=3.0.2
+          DefaultDirName={localappdata}\Programs\ZEUVORYX
+          DefaultGroupName=ZEUVORYX
+          DisableProgramGroupPage=yes
+          PrivilegesRequired=lowest
+          ArchitecturesAllowed=x64compatible
+          OutputDir=installer
+          OutputBaseFilename=ZEUVORYX-Setup-3.0.2
+          SetupIconFile=dist\ZEUVORYX.ico
+          UninstallDisplayIcon={app}\ZEUVORYX.exe
+          Compression=lzma2
+          SolidCompression=yes
+          WizardStyle=modern
+          [Languages]
+          Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"
+          [Tasks]
+          Name: "desktopicon"; Description: "Criar atalho na área de trabalho"
+          [Files]
+          Source: "dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+          [Icons]
+          Name: "{autoprograms}\ZEUVORYX"; Filename: "{app}\ZEUVORYX.exe"; WorkingDir: "{app}"
+          Name: "{autodesktop}\ZEUVORYX"; Filename: "{app}\ZEUVORYX.exe"; WorkingDir: "{app}"; Tasks: desktopicon
+          [Run]
+          Filename: "{sys}\attrib.exe"; Parameters: "+h +s ""{app}\desktop.ini"""; Flags: runhidden waituntilterminated
+          Filename: "{sys}\attrib.exe"; Parameters: "+r ""{app}"""; Flags: runhidden waituntilterminated
+          Filename: "{app}\ZEUVORYX.exe"; Description: "Abrir ZEUVORYX"; Flags: nowait postinstall skipifsilent unchecked
+          [UninstallRun]
+          Filename: "{sys}\attrib.exe"; Parameters: "-r ""{app}"""; Flags: runhidden waituntilterminated
+          Filename: "{sys}\attrib.exe"; Parameters: "-h -s ""{app}\desktop.ini"""; Flags: runhidden waituntilterminated; RunOnceId: "ClearFolderIcon"
+          '@
+          [IO.File]::WriteAllText((Join-Path $PWD 'setup.iss'), $source, [Text.Encoding]::UTF8)
+          $iscc = Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6/ISCC.exe'
+          if (!(Test-Path $iscc)) { throw 'Inno Setup compiler not found' }
+          & $iscc setup.iss
+          if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed' }
+          if (!(Test-Path 'installer/ZEUVORYX-Setup-3.0.2.exe')) { throw 'Installer missing' }
+          Get-FileHash installer/ZEUVORYX-Setup-3.0.2.exe -Algorithm SHA256
+      - name: Upload Competitive 3.0.2 installer and portable edition
+        uses: actions/upload-artifact@v4
+        with:
+          name: ZEUVORYX-3.0.2-Competitive-Windows
+          path: |
+            dist/
+            installer/ZEUVORYX-Setup-3.0.2.exe
+          if-no-files-found: error
+ -fuzztime=20s -parallel=2 ./engine
+          if ($LASTEXITCODE -ne 0) { throw 'Static scanner fuzz test failed' }
       - name: Validate source code
         shell: pwsh
         run: |

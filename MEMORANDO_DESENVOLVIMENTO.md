@@ -220,3 +220,7 @@ Este resumo complementa, não substitui, as decisões e evidências anteriores. 
 
 ### Regra de controle
 O memorando deve acompanhar cada revisão, com data, commit, links, status, evidências e limitações. Registrar também falhas e correções; não apagar histórico. Ao retomar, consultar este arquivo e o GitHub antes de modificar o código. Proteção, velocidade, baixo consumo, estabilidade e simplicidade prevalecem sobre efeitos visuais, idiomas adicionais ou métricas decorativas.
+
+### Sincronização documental e metadados — 24/11/2026
+- README, LEIA-ME, INSTRUCOES_GITHUB, PASSO-WORKFLOW e IDENTIDADE_VISUAL alinhados à compilação R5 validada; criado CHANGELOG consolidado e ABOUT_GITHUB com descrição, temas e link propostos. Registros 3.0.3 rotulados como históricos. Não modificar main ou disparar rebuild por mera documentação; nenhuma mudança funcional, publicação pública ou implantação de interface nesta etapa.
+- O conector disponível não permite editar os campos administrativos Description/Topics/Homepage do repositório. Textos prontos em ABOUT_GITHUB.md para aplicação pelo titular. A página inicial permanece vinculada à main; documentação atual na ramificação LAB.

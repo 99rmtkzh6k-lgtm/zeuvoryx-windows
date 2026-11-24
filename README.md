@@ -1,39 +1,44 @@
-# ZEUVORYX 3.0.2 Competitive — Windows (beta)
+# ZEUVORYX 3.0.5 LAB R5 — Olympus Silver
 
-Projeto experimental de segurança para Windows, em Go. O motor combina heurísticas explicáveis e indicadores SHA-256; não substitui o Microsoft Defender. A IA experimental usa regressão logística treinada com vetores sintéticos; ela não está validada para identificar malware real.
+Scanner complementar de segurança para Windows x64, desenvolvido em Go, com interface desktop, análise de arquivos e links, quarentena reversível e IA consultiva experimental. **Created & Engineered by Leonardo A Botelho.**
 
-## Compilação e download
+[![Windows LAB R5](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/workflows/windows-build-lab-305.yml/badge.svg?branch=security-3.0.5-lab)](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/workflows/windows-build-lab-305.yml)
 
-1. Abra **Actions → ZEUVORYX 3.0.2 Competitive - Windows Build → Run workflow** e selecione `main`. Um push em `main` também inicia a compilação.
-2. Aguarde a conclusão dos testes e do build.
-3. Em **Artifacts**, baixe **ZEUVORYX-3.0.2-Competitive-Windows**.
-4. Extraia o pacote e use `installer/ZEUVORYX-Setup-3.0.2.exe` ou a edição portátil em `dist/`. A interface desktop utiliza Microsoft WebView2.
+**Estado:** beta de laboratório. Compilação 3.0.5 R5 aprovada em 24/11/2026; validação manual em Windows 10/11 e eficácia independente pendentes. Não substitui Microsoft Defender.
 
-O binário não é assinado digitalmente. Verifique a procedência e os hashes; teste em Windows Sandbox ou VM com o Defender ativo antes de usar em uma máquina real.
+## Download e instalação de teste
 
-## Recursos experimentais
+- [Compilação validada — execução 45419964764](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45419964764)
+- [ZIP completo — artefato 14934540577](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45419964764/artifacts/14934540577) (33.730.421 bytes; GitHub Actions pode exigir login e tem prazo de retenção).
+- SHA-256 registrado pelo GitHub: `c42366ea44b6ac25c302b92a1fdbacb237c01224eb8b4e13b3a2e34ada19fcf0`.
+- Extraia o ZIP, finalize a varredura anterior e feche o aplicativo. Abra `installer/ZEUVORYX-LAB-Setup-3.0.5.exe`. A edição portátil está em `dist/`.
+- Teste primeiro em Windows Sandbox com Defender ativo e WebView2 disponível. Não desative SmartScreen nem proteções existentes. O binário não tem assinatura Authenticode de produção comprovada.
+- Para uma instalação LAB compatível, mantenha o diretório anterior (AppId ZEUVORYX.Desktop.Lab303). CI aprovou reinstalação com marcador de dados; faça backup e valide histórico/quarentena. Migração de edições 3.0.1/3.0.2 não validada.
+- Nenhuma release pública está sendo promovida por este documento; o botão de atualização assinada requer chave pública oficial fixada, manifesto/pacote assinados e release autorizada.
 
-- Varredura rápida e completa, análise heurística, hashes SHA-256, teste EICAR e inspeção limitada de arquivos ZIP e PE.
-- Fila de varredura paralela limitada, cancelamento, indicadores de cobertura e desempenho e filtros de alertas.
-- Quarentena reversível mediante ação explícita e critérios de elegibilidade.
-- Interface desktop, diagnóstico local voluntário com exportação JSON e integração com recursos de segurança do Windows.
-- Atualização cumulativa do motor e interface em `zeuvoryx_upgrade.py`, aplicada pelo workflow durante a compilação.
+## Recursos disponíveis para avaliação
 
-## Desenvolvimento e validação
+| Área | Estado |
+| --- | --- |
+| Varreduras | Rápida, completa e personalizada; cancelamento, resultados, métricas, exportação e cobertura parcial |
+| Motor | SHA-256/IOC, heurísticas, inspeção limitada PE/ZIP, EICAR e análise consultiva de links |
+| Quarentena | Ação explícita com critérios de evidência; reversibilidade e restauração sujeitas a validação |
+| Segurança Windows | Integrações com Defender e recursos nativos; não é proteção residente própria |
+| IA local | Modelo experimental auxiliar, sem aprendizado contínuo em produção; candidato reprovado não promovido |
+| Interface | Olympus Silver, Zeus e templo; português, inglês e espanhol, seleção de idioma |
+| Histórico | Registro local autenticado, relatório de erros, avaliação voluntária; sem estatísticas globais |
+| Atualizador | Implementação experimental de descoberta e validação assinada; produção e rollback ainda pendentes |
 
-O workflow `.github/workflows/windows-build.yml` organiza e gera arquivos de código, aplica o script de atualização, executa verificações Go e testes repetidos, compila o executável Windows x64 e gera o instalador. Consulte `LEIA-ME.txt` para instruções e `comparar_relatorios.py` para comparar relatórios equivalentes.
+## Evidência de CI
 
-Os testes automatizados e avaliações sintéticas não comprovam eficácia contra malware real. O aplicativo completo ainda exige testes em Windows, auditoria e validação independente. Não há garantia de detecção universal, proteção residente própria por driver, VPN ou certificação laboratorial.
+Execução [45419964764](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45419964764), commit `11cd939ff0944bf2da9a81f6f4bc166559e5384b`: gate de versão 3.0.5, cinco rodadas de regressão de links, dez repetições de testes, QA20 (20 milhões de iterações sintéticas), build EXE, instalador e teste de reinstalação aprovados. Laboratório de IA com 50 milhões de cenários sintéticos não comprova proteção real; testes de laboratório não equivalem a certificação.
 
-## Licença e identidade visual
+## Desenvolvimento e continuidade
 
-Código experimental para avaliação e adaptação; consulte as licenças das dependências antes de redistribuir. As imagens conceituais do projeto não comprovam funcionalidades técnicas.
+A ramificação ativa é `security-3.0.5-lab`. O workflow `.github/workflows/windows-build-lab-305.yml` chama `windows-build.yml` nessa ramificação. A `main` preserva o código anterior 3.0.1 e não deve ser confundida com o laboratório mais recente. Consulte [instruções](INSTRUCOES_GITHUB.txt), [instalação](LEIA-ME.txt), [histórico de versões](CHANGELOG.md) e o [memorando obrigatório](MEMORANDO_DESENVOLVIMENTO.md).
 
-## Novidades da versão 3.0.2 (beta)
+Próximos passos: painel com comandos de varredura e métricas no topo, botões compactos 3D; teste visual e Windows real; atualização assinada de produção; auditoria ampliada, remediação segura, proteção residente, IA validada, estatísticas globais ultraleves e Macintosh independente. Idiomas adicionais conforme qualidade/desempenho. Nenhum desses requisitos é considerado concluído só por estar planejado.
 
-- Português brasileiro, inglês e espanhol: interface principal e mensagens selecionadas, detecção do idioma de exibição do Windows, escolha manual persistente e inglês como fallback. Mensagens técnicas externas e partes dos relatórios podem permanecer no idioma original.
-- Adaptive Intelligence Engine 0.1: modelo de regressão logística local treinado em exemplos sintéticos, sem dependências de IA externas. A pontuação é experimental e aparece apenas em alertas heurísticos existentes. Não altera o veredito, não libera nem isola arquivos e não é uma probabilidade de malware.
-- Treinamento supervisionado limitado e testável em código. Não existe aprendizado contínuo em produção, coleta automática de dados ou atualização automática de modelo.
-- Created & Engineered by Leonardo A Botelho: autoria na interface e nos metadados do instalador. Não equivale à assinatura criptográfica Authenticode.
+## Licenciamento, autoria e distribuição
 
-O build e a validação em Windows Sandbox devem ser confirmados antes de distribuição.
+Autoria declarada: Leonardo A Botelho. Não há licença de redistribuição de produção definida neste documento; revisar licenças de dependências e direitos de arte antes de publicação. O projeto não reivindica certificação, detecção universal ou substituição de antivírus. Releases públicas e lançamento mundial dependem de autorização do titular e dos critérios do memorando.

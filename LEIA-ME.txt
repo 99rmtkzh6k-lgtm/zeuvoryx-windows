@@ -1,47 +1,31 @@
-ZEUVORYX 3.0.2 | OLYMPUS — Competitive Beta
-24/11/2026
+ZEUVORYX 3.0.5 LAB R5 | OLYMPUS SILVER — Windows x64
+24/11/2026 | Created & Engineered by Leonardo A Botelho
 
-Atualização cumulativa da versão experimental 3.0.1. Substitui o script
-zeuvoryx_upgrade.py anterior; não execute as duas versões em sequência.
-Não é instalador, executável ou certificação de proteção.
+PACOTE VALIDADO NO CI
+Execução: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45419964764
+Artefato: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45419964764/artifacts/14934540577
+Tamanho: 33.730.421 bytes.
+SHA-256 (GitHub): c42366ea44b6ac25c302b92a1fdbacb237c01224eb8b4e13b3a2e34ada19fcf0
+Instalador: installer/ZEUVORYX-LAB-Setup-3.0.5.exe
+Portátil: pasta dist (mantenha arquivos auxiliares).
 
-COMPILAÇÃO NO GITHUB (main)
-1. Abra Actions > ZEUVORYX 3.0.2 Competitive - Windows Build.
-2. Selecione Run workflow, branch main. Push em main também inicia o CI.
-3. Aguarde os testes e a compilação. Baixe somente o artefato
-   ZEUVORYX-3.0.2-Competitive-Windows de uma execução bem-sucedida.
-4. Extraia o ZIP e use ZEUVORYX-Setup-3.0.2.exe ou a edição portátil.
-5. No Windows Sandbox ou VM, mantenha o Defender ativo. Teste análise
-   rápida e completa, alertas, filtros e relatório. Não coloque arquivos
-   de sistema em quarentena. Exporte o JSON e o diagnóstico de testes.
-   Esta versão permanece experimental até validação independente.
+INSTALAÇÃO DE TESTE
+1. Extraia o ZIP no Windows; mantenha o Defender ativo. Use Windows Sandbox
+   ou VM autorizada com WebView2. Não contorne proteções do Windows.
+2. Termine qualquer varredura e feche a cópia anterior do ZEUVORYX.
+3. Faça backup dos dados de teste e execute o instalador. Para edição LAB
+   compatível, mantenha o mesmo diretório. Não precisa desinstalar antes.
+4. Confirme a identificação 3.0.5 LAB. Teste varreduras, cancelamento, alertas,
+   histórico, exportação e restauração somente com arquivos de teste.
+5. Compare relatórios equivalentes usando comparar_relatorios.py.
+6. CI aprovou reinstalação com marcador; migração entre versões diferentes e
+   preservação integral de dados não foram comprovadas em Windows real.
 
-ALTERNATIVA COM CÓPIA LOCAL DO REPOSITÓRIO
-Para manutenção do workflow, na raiz da cópia local, rode:
-  python zeuvoryx_upgrade.py --install
-Isso insere a etapa no workflow (não gera o EXE). Revise o diff antes do commit.
-Não envie o arquivo de backup .bak. O --apply é reservado à etapa do CI
-após a geração de código do workflow existente.
+Não há assinatura Authenticode de produção comprovada, release pública aprovada
+ou garantia de eficácia contra malware real. A atualização assinada requer chave
+oficial e pacote autorizado. Mantenha o Defender ativo.
 
-RECURSOS: preserva as correções 3.0.1 anteriores; caminho rápido do scanner
-para a fila paralela; redução de alocações; lookup exato de imports PE;
-assinatura digital local limitada; isolamento somente com evidência elegível;
-resumo de cobertura, alertas distintos, velocidade e duplicatas; interface
-original grafite, azul-gelo, verde-água e âmbar, sem imagens decorativas
-na tela ativa; filtro e renderização paginada dos alertas.
-
-TESTES LOCAIS: reprodução do motor, 10 rodadas Go, 5 com race detector,
-go vet, compilação cruzada do teste para Windows amd64, sintaxe JS e
-transformação HTML em fixture. O aplicativo completo e o comportamento
-visual e Authenticode no Windows dependem de execução posterior no GitHub/VM.
-A IA validada com malware real, defesa residente própria, VPN, proteção multiplataforma e
-certificação laboratorial NÃO são entregues por este pacote.
-
-COMPARAÇÃO: python comparar_relatorios.py antigo.json novo.json
-Compare apenas escopos, máquina, disco, configurações e corpus equivalentes.
-
-3.0.2: três idiomas selecionáveis; autoria Leonardo A Botelho; modelo
-experimental auxiliar treinado com dados sintéticos, sem aprendizado em
-produção. Antes de promover a beta para main, confirme o build da branch
-localization-3.0.2 e teste no Windows Sandbox. Não utilize como substituto
-do Defender.
+RECURSOS E HISTÓRICO
+Consulte README.md, CHANGELOG.md e MEMORANDO_DESENVOLVIMENTO.md na ramificação
+security-3.0.5-lab. A interface Olympus Silver atual é a R5; a reorganização
+visual solicitada (varredura/gráfico no topo e botões 3D) ainda está planejada.

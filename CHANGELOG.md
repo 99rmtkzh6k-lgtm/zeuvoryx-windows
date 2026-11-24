@@ -64,3 +64,5 @@ Macintosh 3.0.5 LAB: regressão portátil Linux e compilação Intel aprovadas; 
 - ZVX-EVO-008 (planejado): cinco estrelas fixas, seleção explícita, avaliação única persistente por instalação e deduplicação; nenhuma nota inicial contabilizada. Implementação e testes na próxima revisão funcional.
 
 - ZVX-EVO-009 (planejado): central mundial de estatísticas/avaliações entre canais, métricas de proteção verificadas, arquitetura e gates em GLOBAL_SECURITY_INTELLIGENCE.md. Sem implantação ou alteração funcional.
+
+- ZVX-EVO-010 (obrigatório na próxima revisão funcional): sincronização mundial ultraleve, consentimento e criptografia, dados mínimos, envio diário, testes ponta a ponta de privacidade, consumo e paridade entre canais. Especificação atualizada; serviço ainda não implantado.

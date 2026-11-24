@@ -52,3 +52,5 @@ Macintosh 3.0.5 LAB: regressão portátil Linux e compilação Intel aprovadas; 
 - Scanner: categorização de erros nativos no percurso de discos; uma nova tentativa para sharing/lock violation Windows, cancelável e sem elevar privilégios. Testes positivos/negativos e regressões adicionados. Preservados AppId, assinatura exigida, versão-base 3.0.5 e R5 anterior. Validação em andamento; nenhuma release promovida.
 
 - ZVX-EVO-005: corrigida âncora do gerador de retry após gofmt, causa comprovada no log de 45445139048. Reteste obrigatório.
+
+- ZVX-EVO-006: candidato consulta DROP oficial IPv4/IPv6, validação de formato/idade, limites, atribuição e busca local de IP; testes novos e inventário de fontes. Sem bloqueio automático, amostras de malware ou release.

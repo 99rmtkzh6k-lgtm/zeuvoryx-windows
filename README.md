@@ -55,3 +55,8 @@ Autoria declarada: Leonardo A Botelho. Não há licença de redistribuição de 
 ### Conferência de CI — 24/11/2026
 
 Macintosh 3.0.5 LAB: regressão portátil Linux e compilação Intel aprovadas; Apple Silicon ARM64 cancelado na tentativa anterior, sem etapas registradas e com log indisponível (404). Reteste exclusivo solicitado e aceito pelo GitHub em 24/11/2026; resultado ainda não confirmado. Não há causa de código comprovada. [Execução 45437873318](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45437873318). [Artefato Intel 14943370193](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45437873318/artifacts/14943370193), 4.283.792 bytes, SHA-256 registrado pelo GitHub `965da629bf97f885a7df1de2434211f3342d82ba4e286f1a1fb52f946bc3f767`. Somente para laboratório; sem validação integral em Macs reais ou assinatura de produção.
+
+
+## Global Threat Intelligence (candidato LAB)
+
+Nova consulta consultiva Spamhaus DROP IPv4/IPv6 e inventário de fontes em [THREAT_INTELLIGENCE.md](THREAT_INTELLIGENCE.md). Não é bloqueio de firewall nem limpeza automática. Base de sessão obtida sob demanda; nenhuma contagem real antecipada. Aguardando CI do candidato; instalação anterior aprovada preservada.

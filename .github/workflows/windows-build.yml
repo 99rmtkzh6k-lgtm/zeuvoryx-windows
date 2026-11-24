@@ -2340,6 +2340,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Update check integration failed' }
           python prepare_audit305.py
           if ($LASTEXITCODE -ne 0) { throw '3.0.5 audit integration failed' }
+          python prepare_globalintel.py
+          if ($LASTEXITCODE -ne 0) { throw 'Global intelligence integration failed' }
+          gofmt -w globalintel
+          if ($LASTEXITCODE -ne 0) { throw 'Global intelligence formatting failed' }
           python prepare_olympus_silver.py
           if ($LASTEXITCODE -ne 0) { throw 'Olympus silver interface integration failed' }
           gofmt -w audit main.go engine/scanner.go engine/scan_upgrade.go desktop_windows.go

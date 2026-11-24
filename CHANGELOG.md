@@ -1,5 +1,11 @@
 # Histórico de versões — ZEUVORYX Windows
 
+
+## 3.0.7 LAB R1 — em validação, não liberado (24/11/2026)
+
+- Parser PE com limites explícitos e regressões PE32/PE32+ (20 casos, 30 repetições locais).
+- Identidade candidata sincronizada; CI integral, desempenho e Windows físico pendentes. Sem novo instalador.
+
 O histórico detalhado, critérios e pendências estão no [memorando permanente](MEMORANDO_DESENVOLVIMENTO.md). Datas conforme GitHub; início de concepção anterior ao primeiro commit não confirmado.
 
 | Versão | Evolução |

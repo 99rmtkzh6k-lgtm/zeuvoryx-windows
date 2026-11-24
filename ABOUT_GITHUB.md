@@ -34,3 +34,5 @@ A integração disponível não oferece operação de edição administrativa de
 - ZVX-EVO-004: candidato incremental Windows 3.0.5 LAB identificado por commit; descrição pública continua referindo-se ao R5 previamente aprovado até nova aprovação. Não promover candidato por meio dos metadados.
 
 - ZVX-EVO-007: valores reais reconferidos 24/11/2026; descrição antiga mantida pelo GitHub, tópicos e homepage vazios, main pública, has_downloads=false, zero releases. CI Windows 45447823825 aprovado; consulta DROP consultiva compilada, seed real não obtido. Texto proposto atualizado sem alegar bloqueio residente ou paridade macOS. Exibições de Releases/Packages/Deployments: conferir na engrenagem About pelo titular; sem release autorizada não anunciar lançamento. Nenhuma edição administrativa realizada pela integração.
+
+- EVO-018: 3.0.6 LAB R1 é candidato, não substituir descrição pública aprovada antes dos gates. Macintosh permanece 3.0.5 LAB. A integração não permite edição administrativa dos campos públicos.

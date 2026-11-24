@@ -15,3 +15,6 @@
 
 ## Aceitação
 - Cinco rodadas mínimas: nova revisão com mesma base, versão igual/antiga, aprovação revogada, artefato expirado, CI falho/cancelado, concorrência, plataforma incorreta, 404/403/429, offline, link exato, catálogo malformado, assinatura inválida, hash divergente, chave ausente, migração preservando avaliação/quarentena/histórico, rollback. Teste real em Sandbox, depois Windows autorizado; Macintosh separado. Interface traduzida e estados claros. Fechamento ZVX-STD com evidência e links corretos.
+
+## Candidato Windows 3.0.6
+Current=3.0.6 no candidato; perfil de instalação/AppId preservados; nova versão numérica reconhecível pelo comparador. Sem publicação de release ou mudança de requisitos de assinatura. Teste de migração real 3.0.5 -> 3.0.6 no CI.

@@ -34,7 +34,8 @@ func TestLabIsolation(t *testing.T){
  var r release; r.Pre=true;r.Tag="v3.0.6-lab";r.Assets=append(r.Assets,struct{Name string `json:"name"`}{"ZEUVORYX-Setup-3.0.6.exe"})
  if selectRelease([]release{r},Current,"windows","amd64",true).Found{t.Fatal("wrong installer identity")}
  r.Assets[0].Name="ZEUVORYX-LAB-Setup-3.0.6.exe"
- if !selectRelease([]release{r},Current,"windows","amd64",true).Available{t.Fatal("lab update missing")}
+ if !selectRelease([]release{r},"3.0.5","windows","amd64",true).Available{t.Fatal("lab update missing")}
+ if selectRelease([]release{r},Current,"windows","amd64",true).Available{t.Fatal("same version offered")}
  r.Tag="v3.0.6";if selectRelease([]release{r},Current,"windows","amd64",true).Found{t.Fatal("wrong tag")}
 }
 

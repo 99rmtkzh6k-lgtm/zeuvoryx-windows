@@ -82,3 +82,7 @@ Macintosh 3.0.5 LAB: regressão portátil Linux e compilação Intel aprovadas; 
 
 ### 3.0.5 LAB — candidato EVO-017 (não publicado)
 - Diagnóstico local de encerramento, checkpoints numéricos e perfil de memória/concorrência para Windows de dois núcleos. Causa e eficácia ainda pendentes de CI e piloto.
+
+
+### 3.0.6 LAB R1 — EVO-018 (candidato)
+- Identidade nova, teste de atualização real, perfil WebView2 separado, diagnóstico de abertura, consulta de atualização manual e gate de varredura controlada. CI e piloto físico pendentes.

@@ -1,0 +1,13 @@
+name: ZEUVORYX 3.0.6 LAB R1 - Windows Build
+run-name: ZEUVORYX 3.0.6 LAB R1 - Windows x64
+on:
+  push:
+    branches: [windows-3.0.6-lab]
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  build-lab-306:
+    if: github.ref == 'refs/heads/windows-3.0.6-lab'
+    uses: ./.github/workflows/windows-build.yml

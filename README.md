@@ -1,14 +1,16 @@
-# ZEUVORYX 3.0.5 LAB R5 — Olympus Silver
+# ZEUVORYX 3.0.6 LAB R1 — Olympus Silver
 
 Scanner complementar de segurança para Windows x64, desenvolvido em Go, com interface desktop, análise de arquivos e links, quarentena reversível e IA consultiva experimental. **Created & Engineered by Leonardo A Botelho.**
 
-[![Windows LAB R5](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/workflows/windows-build-lab-305.yml/badge.svg?branch=main)](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/workflows/windows-build-lab-305.yml)
+[![Windows LAB R5](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/workflows/windows-build-lab-306.yml/badge.svg?branch=windows-3.0.6-lab)](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/workflows/windows-build-lab-306.yml)
 
-**Estado:** beta de laboratório. Compilação 3.0.5 R5 aprovada em 24/11/2026; validação manual em Windows 10/11 e eficácia independente pendentes. Não substitui Microsoft Defender.
+**Estado:** candidato 3.0.6 LAB R1, CI e validação física pendentes. Não substitui Microsoft Defender.
 
 **Revisão LAB pós-varredura e Global Threat Intelligence:** CI Windows aprovado no commit `07373e9c538794c5f14a3bc13ad85206d3049bc9`; alterações de interface, classificação de erros, retry limitado, procedência do build e consulta consultiva DROP incluídas. Validação visual e em Windows real ainda necessária.
 
 ## Download e instalação de teste
+
+**3.0.6:** candidato não aprovado ainda. Os links abaixo são históricos da 3.0.5; não utilizar como pacote da 3.0.6. Nova instalação deverá usar `installer/ZEUVORYX-LAB-Setup-3.0.6.exe` após aprovação.
 
 - [Compilação validada — execução 45447823825](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45447823825)
 - [ZIP completo — artefato 14946014706](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45447823825/artifacts/14946014706) (33.793.191 bytes; GitHub Actions pode exigir login; expira em 22/02/2027).

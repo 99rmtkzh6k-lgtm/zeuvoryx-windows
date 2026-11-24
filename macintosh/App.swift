@@ -3,6 +3,7 @@ import AppKit
 
 struct ScanFinding: Decodable { let path: String; let kind: String; let sha256: String }
 struct ScanReport: Decodable { let files: Int; let bytes: Int64; let skipped: Int; let partial: Bool; let findings: [ScanFinding] }
+struct LinkReport: Decodable { let host: String; let signals: [String]; let assessment: String }
 struct CheckReport: Decodable { let update: Bool; let statistics: Bool; let policy: Bool }
 
 struct ContentView: View {
@@ -11,6 +12,8 @@ struct ContentView: View {
     @State private var report: ScanReport?
     @State private var status = ""
     @State private var checked = false
+    @State private var link = ""
+    @State private var linkReport: LinkReport?
     func tr(_ pt: String, _ en: String, _ es: String) -> String {
         language == "en" ? en : language == "es" ? es : pt
     }
@@ -26,7 +29,7 @@ struct ContentView: View {
             }
             VStack(alignment: .leading, spacing: 14) {
                 Text("ZEUVORYX Macintosh").font(.largeTitle.bold())
-                Text("3.0.3 LAB BETA").foregroundColor(.orange)
+                Text("3.0.5 LAB BETA").foregroundColor(.orange)
                 Picker("Language / Idioma", selection: $language) {
                     Text("Português").tag("pt"); Text("English").tag("en"); Text("Español").tag("es")
                 }.pickerStyle(.segmented)
@@ -34,6 +37,17 @@ struct ContentView: View {
                 HStack {
                     Button(tr("Examinar arquivo ou pasta","Scan file or folder","Examinar archivo o carpeta")) { choose() }.disabled(busy)
                     Button(tr("Diagnóstico local","Local diagnostics","Diagnóstico local")) { run(["selftest"]) }.disabled(busy)
+                }
+                HStack {
+                    TextField(tr("URL para análise local", "URL for local assessment", "URL para análisis local"), text: $link)
+                    Button(tr("Analisar link", "Assess link", "Analizar enlace")) { run(["link", link]) }
+                        .disabled(busy || link.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || link.utf8.count > 8192)
+                }
+                if let l = linkReport {
+                    Text(tr("Domínio: ", "Host: ", "Dominio: ") + l.host).textSelection(.enabled)
+                    Text(tr("Indicadores estruturais: ", "Structural signals: ", "Indicadores estructurales: ") + String(l.signals.count))
+                    Text(tr("Análise local, sem acessar o site. Ausência de indicadores não garante segurança.", "Local analysis, no website access. No signals does not guarantee safety.", "Análisis local, sin acceder al sitio. Ausencia de indicadores no garantiza seguridad.")).font(.caption)
+                    if language == "pt" { ForEach(Array(l.signals.enumerated()), id: \.offset) { item in Text(item.element).font(.caption) } }
                 }
                 if busy { ProgressView().controlSize(.small) }
                 if checked { Text(tr("Diagnóstico dos componentes aprovado (dados fictícios).","Component diagnostics passed (test data).","Diagnóstico de componentes aprobado (datos ficticios).")) }
@@ -65,8 +79,9 @@ struct ContentView: View {
         if p.runModal() == .OK, let u = p.url { run(["scan", u.path]) }
     }
     func run(_ arguments: [String]) {
-        guard !busy, let exe = Bundle.main.url(forAuxiliaryExecutable: "zeuvoryx-engine") else { return }
-        busy = true; status = ""; checked = false; report = nil
+        guard !busy else { return }
+        guard let exe = Bundle.main.url(forAuxiliaryExecutable: "zeuvoryx-engine") else { status = tr("Motor indisponível.", "Engine unavailable.", "Motor no disponible."); return }
+        busy = true; status = ""; checked = false; report = nil; linkReport = nil
         DispatchQueue.global(qos: .utility).async {
             let process = Process(); let pipe = Pipe()
             process.executableURL = exe; process.arguments = arguments; process.standardOutput = pipe
@@ -79,6 +94,9 @@ struct ContentView: View {
                 if arguments.first == "selftest" {
                     let r = try JSONDecoder().decode(CheckReport.self, from: data)
                     DispatchQueue.main.async { checked = r.update && r.statistics && r.policy; busy = false }
+                } else if arguments.first == "link" {
+                    let r = try JSONDecoder().decode(LinkReport.self, from: data)
+                    DispatchQueue.main.async { linkReport = r; busy = false }
                 } else {
                     let r = try JSONDecoder().decode(ScanReport.self, from: data)
                     DispatchQueue.main.async { report = r; busy = false }

@@ -6,8 +6,8 @@
 <key>CFBundleName</key><string>ZEUVORYX Macintosh</string>
 <key>CFBundleDisplayName</key><string>ZEUVORYX Macintosh</string>
 <key>CFBundlePackageType</key><string>APPL</string>
-<key>CFBundleShortVersionString</key><string>3.0.3</string>
-<key>CFBundleVersion</key><string>303</string>
+<key>CFBundleShortVersionString</key><string>3.0.5</string>
+<key>CFBundleVersion</key><string>305</string>
 <key>LSMinimumSystemVersion</key><string>13.0</string>
 <key>NSHighResolutionCapable</key><true/>
 <key>NSHumanReadableCopyright</key><string>Copyright 2026 Leonardo A Botelho</string>

@@ -30,3 +30,34 @@ func TestLinkTriage(t *testing.T) {
 		}
 	}
 }
+
+func TestWikiLinkRegression(t *testing.T){
+ cases:=[]struct{raw string;want int;invalid bool}{
+ {"https://wikileaks.org/ ",0,false},
+ {"https://www.wikileaks.org/",0,false},
+ {"https://wikileaks.org./",0,false},
+ {"http://wikileaks.org/",1,false},
+ {"https://wikileaks.org@other.invalid/",1,false},
+ {"https://wikileaks.org.other.invalid/",1,false},
+ {"https://wikileaks-support.invalid/",1,false},
+ {"https://wikileakz.invalid/",1,false},
+ {"https://wikileak.invalid/",1,false},
+ {"https://wiki-leaks.invalid/",1,false},
+ {"https://wikilekas.invalid/",1,false},
+ {"https://example.invalid/news/wikileaks",0,false},
+ {"https://example.invalid/?q=wikileaks",0,false},
+ {"https://wikileaks.org/?redirect=https%3A%2F%2Fother.invalid",1,false},
+ {"https://wikileaks.org/?%72edirect=https%3A%2F%2Fother.invalid",1,false},
+ {"https://wikileaks.org/?%2572edirect=https%3A%2F%2Fother.invalid",1,false},
+ {"https://wikileaks.org/?redirect%3Dhttps%253A%252F%252Fother.invalid",1,false},
+ {"https://wikileaks.org/?redirect_uri=https%3A%2F%2Fother.invalid",1,false},
+ {"https://wikileaks.org/?next=%2Fnews",1,false},
+ {"https://example.invalid/?myurl=value",0,false},
+ {"file:///wikileaks.org",0,true},
+ }
+ for _,c:=range cases{
+  r,e:=assessLink(c.raw);if c.invalid{if e==nil{t.Fatalf("expected invalid: %s",c.raw)};continue}
+  if e!=nil||len(r.Signals)!=c.want{t.Fatalf("%s: got %+v %v want %d signals",c.raw,r,e,c.want)}
+ }
+ t.Logf("%d structural URL cases; no network access or active blocking",len(cases))
+}

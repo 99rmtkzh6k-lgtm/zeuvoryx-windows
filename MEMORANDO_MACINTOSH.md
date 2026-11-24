@@ -15,3 +15,6 @@ Repositório atual é Windows; ramificação macintosh-3.0.3-lab separa trabalho
 
 ## Correção GitHub — 24/11/2026
 - README da ramificação corrigido de Windows 3.0.2 para Macintosh 3.0.3 LAB. Execução 45396837719: Intel aprovado, artefato 14921063483, ARM64 cancelado, sem log disponível. Reteste solicitado (tentativa 2); não afirmar aprovação ARM64 até resultado e artefato. Main Windows consolidada em 3.0.5 LAB R5, com launcher Macintosh disponível para seleção desta ramificação. Nenhuma alteração do motor Macintosh ou publicação de produção nesta etapa.
+
+## Candidato 3.0.5 LAB — 24/11/2026
+- Consultado memorando central e histórico antes das alterações. Preservar versão 3.0.3, sem renomear pacote existente. Portar analisador local de links R5 e testes exatos do Windows; expor na CLI e UI somente como diagnóstico consultivo, sem abrir sites nem bloquear conexões. Gate de versão CLI, interface e Info.plist; testes Linux de módulos e cross-build Go Darwin, além de CI nativo Intel/ARM64 e DMG. Não declarar testes aprovados antes da evidência. Sem paridade integral, alteração do modelo IA, assinatura oficial, atualização automática, publicação ou mudança de permissões.

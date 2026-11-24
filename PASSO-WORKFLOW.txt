@@ -1,0 +1,7 @@
+      - name: Apply ZEUVORYX 3.0.1 scanner hardening
+        shell: pwsh
+        run: |
+          python zeuvoryx_upgrade.py --apply
+          if ($LASTEXITCODE -ne 0) { throw 'ZEUVORYX upgrade failed' }
+          gofmt -w main.go desktop_windows.go engine/scanner.go engine/pe.go engine/quarantine.go engine/scan_upgrade.go engine/scan_upgrade_windows.go engine/scan_upgrade_other.go engine/scan_upgrade_test.go engine/scan_upgrade_integration_test.go
+          if ($LASTEXITCODE -ne 0) { throw 'Upgrade formatting failed' }

@@ -7,4 +7,4 @@ Topics sugeridos:
 `cybersecurity`, `windows`, `golang`, `go`, `malware-analysis`, `security-scanner`, `antivirus`, `file-scanner`, `heuristics`, `quarantine`, `sha256`, `desktop-application`, `webview2`, `github-actions`, `experimental`.
 
 Website: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/security-3.0.5-lab (documentação da versão LAB; não é site de distribuição oficial).
-Não definir uma licença de redistribuição nem publicar uma Release sem aprovação específica. Não mudar a ramificação padrão nem promover a LAB para main. Metadados propostos neste arquivo não modificam automaticamente o painel About do GitHub.
+Não definir uma licença de redistribuição nem publicar uma Release sem aprovação específica. A main consolida a base Windows LAB R5; não equivale à publicação de uma release de produção. Metadados propostos neste arquivo não modificam automaticamente o painel About do GitHub.

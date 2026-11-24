@@ -35,7 +35,7 @@ Execução [45419964764](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/act
 
 ## Desenvolvimento e continuidade
 
-A ramificação ativa é `security-3.0.5-lab`. O workflow `.github/workflows/windows-build-lab-305.yml` chama `windows-build.yml` nessa ramificação. A `main` preserva o código anterior 3.0.1 e não deve ser confundida com o laboratório mais recente. Consulte [instruções](INSTRUCOES_GITHUB.txt), [instalação](LEIA-ME.txt), [histórico de versões](CHANGELOG.md) e o [memorando obrigatório](MEMORANDO_DESENVOLVIMENTO.md).
+A ramificação ativa é `security-3.0.5-lab`. O workflow `.github/workflows/windows-build-lab-305.yml` chama `windows-build.yml` nessa ramificação. A `main` agora consolida o código Windows 3.0.5 LAB R5 (commit 214a6de2586433176987efdad8147ce3a1b02c41), sem release de produção. O histórico 3.0.1 permanece preservado; esta ramificação mantém a referência do build original. Consulte [instruções](INSTRUCOES_GITHUB.txt), [instalação](LEIA-ME.txt), [histórico de versões](CHANGELOG.md) e o [memorando obrigatório](MEMORANDO_DESENVOLVIMENTO.md).
 
 Próximos passos: painel com comandos de varredura e métricas no topo, botões compactos 3D; teste visual e Windows real; atualização assinada de produção; auditoria ampliada, remediação segura, proteção residente, IA validada, estatísticas globais ultraleves e Macintosh independente. Idiomas adicionais conforme qualidade/desempenho. Nenhum desses requisitos é considerado concluído só por estar planejado.
 

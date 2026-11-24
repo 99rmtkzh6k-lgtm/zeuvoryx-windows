@@ -224,3 +224,6 @@ O memorando deve acompanhar cada revisão, com data, commit, links, status, evid
 ### Sincronização documental e metadados — 24/11/2026
 - README, LEIA-ME, INSTRUCOES_GITHUB, PASSO-WORKFLOW e IDENTIDADE_VISUAL alinhados à compilação R5 validada; criado CHANGELOG consolidado e ABOUT_GITHUB com descrição, temas e link propostos. Registros 3.0.3 rotulados como históricos. Não modificar main ou disparar rebuild por mera documentação; nenhuma mudança funcional, publicação pública ou implantação de interface nesta etapa.
 - O conector disponível não permite editar os campos administrativos Description/Topics/Homepage do repositório. Textos prontos em ABOUT_GITHUB.md para aplicação pelo titular. A página inicial permanece vinculada à main; documentação atual na ramificação LAB.
+
+## Correção GitHub — 24/11/2026
+- Main consolidada com a base Windows 3.0.5 LAB R5 no commit 214a6de2586433176987efdad8147ce3a1b02c41, sem excluir histórico ou publicar release. CI da main pendente de confirmação. Macintosh 3.0.3 permanece em ramificação própria, README corrigido e repetição dos jobs cancelados solicitada. Novo painel e botões 3D, assinatura de produção e atualização assinada real não implementados por esta correção de organização.

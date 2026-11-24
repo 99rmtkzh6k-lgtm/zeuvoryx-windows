@@ -12,7 +12,7 @@ def main(s):
     if *showVersion { fmt.Println(engine.ScanEngineVersion); return }''')
     return s
 def desktop(s):
-    s=s.replace("3.0.5","3.0.7")
+    s=s.replace("3.0.5","3.0.8")
     s=once(s,'w := webview.NewWithOptions(','''profileBase,profileErr:=os.UserConfigDir()
     if profileErr!=nil { log.Print("stability webview_profile_unavailable"); desktopError("Não foi possível localizar o perfil local do Windows."); return }
     profile:=filepath.Join(profileBase,"ZEUVORYX","webview-306")
@@ -20,15 +20,15 @@ def desktop(s):
     log.Print("stability webview_init")
     w := webview.NewWithOptions(''')
     s=once(s,'webview.WebViewOptions{Debug:', 'webview.WebViewOptions{DataPath:profile, Debug:')
-    s=once(s,'w.SetHtml(localized)', '''if !bind("zStartupReady",func()bool{log.Print("stability ui_ready version=3.0.7-lab");return true}){return}
+    s=once(s,'w.SetHtml(localized)', '''if !bind("zStartupReady",func()bool{log.Print("stability ui_ready version=3.0.8-lab");return true}){return}
     w.SetHtml(localized)''')
-    s=s.replace("windows-build-lab-305.yml","windows-build-lab-307.yml")
+    s=s.replace("windows-build-lab-305.yml","windows-build-lab-308.yml")
     return s
 def html(s):
-    s=s.replace("3.0.5","3.0.7")
+    s=s.replace("3.0.5","3.0.8")
     # Final labels must agree with the updater, not the historical generator version.
     match = re.search(r'const Current\s*=\s*"([0-9]+\.[0-9]+\.[0-9]+)"', Path("updater/check.go").read_text(encoding="utf-8"))
-    if match is None or match.group(1) != "3.0.7":
+    if match is None or match.group(1) != "3.0.8":
         raise RuntimeError("Updater identity mismatch")
     version = match.group(1)
     for label in ("Diagnóstico local", "Local diagnostics", "Atualizações LAB —", "LAB updates —", "Actualizaciones LAB —"):
@@ -43,4 +43,4 @@ def html(s):
 edit("main.go",main)
 edit("desktop_windows.go",desktop)
 edit("desktop.html",html)
-edit("engine/scan_upgrade.go",lambda s:once(s,'const ScanEngineVersion = "3.0.5-lab"','const ScanEngineVersion = "3.0.7-lab"'))
+edit("engine/scan_upgrade.go",lambda s:once(s,'const ScanEngineVersion = "3.0.5-lab"','const ScanEngineVersion = "3.0.8-lab"'))

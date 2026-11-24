@@ -148,7 +148,7 @@ func analyze(path string, data []byte, fullHash string, ioc map[string]string) *
 			reasons = append(reasons, rule.label)
 		}
 	}
-	if len(data) >= 4096 && entropy(data) > 7.8 && riskyExtensions[ext] {
+	if len(data) >= 4096 && riskyExtensions[ext] && entropy(data) > 7.8 {
 		score += 15
 		reasons = append(reasons, "Entropia elevada em script")
 	}

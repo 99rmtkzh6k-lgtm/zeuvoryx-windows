@@ -65,7 +65,7 @@ func startStabilityDiagnostics() func() {
    _=cf.Close()
   }
  }
- log.Printf("stability session_start version=3.0.6-lab cpu_count=%d go=%s workers=%d soft_go_limit=%d",runtime.NumCPU(),runtime.Version(),stabilityWorkers(runtime.NumCPU()),debug.SetMemoryLimit(-1))
+ log.Printf("stability session_start version=3.0.8-lab cpu_count=%d go=%s workers=%d soft_go_limit=%d",runtime.NumCPU(),runtime.Version(),stabilityWorkers(runtime.NumCPU()),debug.SetMemoryLimit(-1))
  return func(){
   log.Print("stability main_return")
   if crashEnabled { _=debug.SetCrashOutput(nil,debug.CrashOptions{}) }

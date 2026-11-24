@@ -55,3 +55,10 @@ Topics: `zeuvoryx antivirus security windows golang malware-scanner cybersecurit
 Website: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows#readme
 
 Campos administrativos não editáveis pelo conector atual; titular pode aplicar em About/Sobre > engrenagem. A gravação deste arquivo não altera os campos efetivos. Revalidar após alteração. Nenhuma publicação autorizada.
+
+
+## Proposta vigente — 3.0.8 LAB intervenção A
+
+Description: ZEUVORYX — Experimental Windows security scanner in Go. 3.0.7 LAB pilot partial; 3.0.8 LAB candidate under validation. macOS LAB separate. Complementary to Microsoft Defender; not certified.
+
+Topics e Website conforme proposta anterior; campos administrativos pendentes de edição e verificação. Nenhuma release definitiva.

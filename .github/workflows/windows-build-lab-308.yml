@@ -1,0 +1,15 @@
+name: ZEUVORYX 3.0.8 LAB - validation only
+run-name: ZEUVORYX 3.0.8 LAB - Windows validation
+on:
+  push:
+    branches: [windows-3.0.8-lab]
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  validate-lab-308:
+    if: github.ref == 'refs/heads/windows-3.0.8-lab'
+    uses: ./.github/workflows/windows-build.yml

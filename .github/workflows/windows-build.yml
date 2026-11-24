@@ -1,5 +1,5 @@
-name: ZEUVORYX 3.0.7 LAB - Windows Build
-run-name: ZEUVORYX 3.0.7 LAB R1 Olympus Silver QA20 Windows x64
+name: ZEUVORYX 3.0.8 LAB - Windows Build
+run-name: ZEUVORYX 3.0.8 LAB R1 Olympus Silver QA20 Windows x64
 
 on:
   workflow_call:
@@ -108,6 +108,8 @@ jobs:
               var wg sync.WaitGroup
               jobs := make(chan string, 32)
               addError := func(path string, err error) {
+                  // User cancellation is the report state, not an I/O or engine failure.
+                  if ctx.Err()!=nil && (err==context.Canceled || err==context.DeadlineExceeded) { return }
                   mu.Lock(); defer mu.Unlock()
                   r.Skipped++
                   if len(r.Errors) < 30 { r.Errors = append(r.Errors, path+": "+err.Error()) }
@@ -2320,7 +2322,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Diagnostics integration failed' }
           gofmt -w diagnostics.go diagnostics_test.go desktop_windows.go
           if ($LASTEXITCODE -ne 0) { throw 'Diagnostics formatting failed' }
-      - name: Apply scanner hardening for ZEUVORYX 3.0.7 LAB R1
+      - name: Apply scanner hardening for ZEUVORYX 3.0.8 LAB R1
         shell: pwsh
         run: |
           python zeuvoryx_upgrade.py --apply
@@ -2340,7 +2342,7 @@ jobs:
           python prepare_app_update.py
           if ($LASTEXITCODE -ne 0) { throw 'Update check integration failed' }
           python prepare_audit305.py
-          if ($LASTEXITCODE -ne 0) { throw '3.0.7 audit integration failed' }
+          if ($LASTEXITCODE -ne 0) { throw '3.0.8 audit integration failed' }
           python prepare_globalintel.py
           if ($LASTEXITCODE -ne 0) { throw 'Global intelligence integration failed' }
           gofmt -w globalintel
@@ -2348,7 +2350,9 @@ jobs:
           python prepare_olympus_silver.py
           if ($LASTEXITCODE -ne 0) { throw 'Olympus silver interface integration failed' }
           python prepare_release306.py
-          if ($LASTEXITCODE -ne 0) { throw '3.0.7 final integration failed' }
+          if ($LASTEXITCODE -ne 0) { throw '3.0.8 final integration failed' }
+          gofmt -w engine/scan308_test.go
+          if ($LASTEXITCODE -ne 0) { throw '3.0.8 test formatting failed' }
           gofmt -w audit main.go engine/scanner.go engine/scan_upgrade.go desktop_windows.go stability_windows.go stability_windows_test.go scan306_windows_test.go
           if ($LASTEXITCODE -ne 0) { throw 'Audit formatting failed' }
           gofmt -w updater
@@ -2361,7 +2365,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'JavaScript extraction failed' }
           node --check desktop-syntax.js
           if ($LASTEXITCODE -ne 0) { throw 'Desktop JavaScript syntax failed' }
-      - name: Verify final ZEUVORYX 3.0.7 LAB R1 identity
+      - name: Verify final ZEUVORYX 3.0.8 LAB R1 identity
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -2369,12 +2373,12 @@ jobs:
           $html = Get-Content -Raw -LiteralPath 'desktop.html'
           $engine = Get-Content -Raw -LiteralPath 'engine/scan_upgrade.go'
           $updater = Get-Content -Raw -LiteralPath 'updater/check.go'
-          if (!$desktop.Contains('ZEUVORYX | 3.0.7 LAB')) { throw 'Incorrect application title' }
-          if (!$html.Contains('3.0.7 LAB BETA</div>')) { throw 'Incorrect desktop version' }
+          if (!$desktop.Contains('ZEUVORYX | 3.0.8 LAB')) { throw 'Incorrect application title' }
+          if (!$html.Contains('3.0.8 LAB BETA</div>')) { throw 'Incorrect desktop version' }
           if ($html.Contains('OLYMPUS 3.0.1 BETA</div>')) { throw 'Stale desktop version' }
-          if ($engine -notmatch 'const\s+ScanEngineVersion\s*=\s*"3\.0\.7-lab"') { throw 'Incorrect scan engine version' }
-          if ($updater -notmatch 'const\s+Current\s*=\s*"3\.0\.7"') { throw 'Incorrect updater version' }
-          Write-Host 'Verified final identity: ZEUVORYX 3.0.7 LAB R1'
+          if ($engine -notmatch 'const\s+ScanEngineVersion\s*=\s*"3\.0\.8-lab"') { throw 'Incorrect scan engine version' }
+          if ($updater -notmatch 'const\s+Current\s*=\s*"3\.0\.8"') { throw 'Incorrect updater version' }
+          Write-Host 'Verified final identity: ZEUVORYX 3.0.8 LAB R1'
       - name: Run adaptive model tests
         shell: pwsh
         run: |
@@ -2388,7 +2392,7 @@ jobs:
       - name: Upload adaptive training and validation evidence
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.7-Adaptive-Lab-50M
+          name: ZEUVORYX-3.0.8-Adaptive-Lab-50M
           path: lab-results/adaptive-report-50m.json
           if-no-files-found: error
       - name: Install and run static scanner safety regression tests
@@ -2401,11 +2405,16 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Scanner quality regression' }
           go test -run '^$' -fuzz '^FuzzZStaticScanner$' -fuzztime=20s -parallel=2 ./engine
           if ($LASTEXITCODE -ne 0) { throw 'Static scanner fuzz test failed' }
-      - name: Thirty bounded PE parser regression rounds
+      - name: Thirty rounds of bounded reads and coverage equivalence
+        shell: pwsh
+        run: |
+          go test -v -count=30 -run '^Test308' ./engine
+          if ($LASTEXITCODE -ne 0) { throw '3.0.8 bounded read regression failed' }
+          go test -run '^
         shell: pwsh
         run: |
           go test -v -count=30 -run '^Test307BoundedImports$' ./engine
-          if ($LASTEXITCODE -ne 0) { throw '3.0.7 PE parser regression failed' }
+          if ($LASTEXITCODE -ne 0) { throw '3.0.8 PE parser regression failed' }
       - name: Link safety regression five rounds
         shell: pwsh
         run: |
@@ -2453,7 +2462,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.7-R1-QA20-evidence
+          name: ZEUVORYX-3.0.8-R1-QA20-evidence
           path: qa20-*.log
           if-no-files-found: ignore
       - name: Build Windows desktop EXE
@@ -2479,7 +2488,7 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $exe = (Resolve-Path dist/ZEUVORYX.exe).Path
           $v = Start-Process -FilePath $exe -ArgumentList '-version' -RedirectStandardOutput version.txt -RedirectStandardError version-error.txt -Wait -PassThru
-          if ($v.ExitCode -ne 0 -or (Get-Content -Raw version.txt).Trim() -ne '3.0.7-lab') { throw 'Portable executable version mismatch' }
+          if ($v.ExitCode -ne 0 -or (Get-Content -Raw version.txt).Trim() -ne '3.0.8-lab') { throw 'Portable executable version mismatch' }
           $logDir = Join-Path $env:APPDATA 'ZEUVORYX/stability-lab'
           $p = Start-Process -FilePath $exe -WorkingDirectory (Split-Path $exe) -PassThru
           try {
@@ -2489,7 +2498,7 @@ jobs:
               $p.Refresh()
               if ($p.HasExited) { throw "Desktop exited before ready: $($p.ExitCode)" }
               $logs = @(Get-ChildItem $logDir -Filter "session-*-$($p.Id).log" -ErrorAction SilentlyContinue)
-              if ($logs.Count -eq 1 -and (Select-String -LiteralPath $logs[0].FullName -Pattern 'stability ui_ready version=3.0.7-lab' -Quiet)) { $ready = $true; break }
+              if ($logs.Count -eq 1 -and (Select-String -LiteralPath $logs[0].FullName -Pattern 'stability ui_ready version=3.0.8-lab' -Quiet)) { $ready = $true; break }
               Start-Sleep -Seconds 1
             } while ((Get-Date) -lt $deadline)
             if (!$ready) { throw 'WebView2 UI handshake not observed' }
@@ -2511,7 +2520,7 @@ jobs:
           $hash = (Get-FileHash dist/ZEUVORYX.exe -Algorithm SHA256).Hash.ToLowerInvariant()
           Set-Content -Encoding ascii -Path dist/SHA256SUMS.txt -Value "$hash  ZEUVORYX.exe"
           @(
-            'ZEUVORYX 3.0.7 LAB - TESTE PORTATIL x64, NAO INSTALADOR'
+            'ZEUVORYX 3.0.8 LAB - TESTE PORTATIL x64, NAO INSTALADOR'
             "Commit: $env:GITHUB_SHA"
             "Execucao: $env:GITHUB_RUN_ID"
             'Extraia todo o ZIP para uma pasta separada. Feche outras versoes antes de testar.'
@@ -2525,13 +2534,153 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.7-desktop-smoke
+          name: ZEUVORYX-3.0.8-desktop-smoke
           path: desktop-smoke.log
           if-no-files-found: ignore
-      - name: Upload portable 3.0.7 LAB only for physical quick scan
+      - name: Upload portable 3.0.8 LAB only for physical quick scan
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.7-LAB-PORTATIL-TESTE-Windows-x64
+          name: ZEUVORYX-3.0.8-LAB-PORTATIL-TESTE-Windows-x64
+          path: dist/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Block installer and release until integrated physical validation
+        shell: pwsh
+        run: |
+          Write-Host 'Portable LAB test only; no installer, signed update or public release.'
+ -bench '^Benchmark308' -benchmem -benchtime=250ms -count=5 ./engine | Tee-Object -FilePath qa20-308-benchmark.log
+          if ($LASTEXITCODE -ne 0) { throw '3.0.8 benchmark failed' }
+      - name: Thirty bounded PE parser regression rounds
+        shell: pwsh
+        run: |
+          go test -v -count=30 -run '^Test307BoundedImports$' ./engine
+          if ($LASTEXITCODE -ne 0) { throw '3.0.8 PE parser regression failed' }
+      - name: Link safety regression five rounds
+        shell: pwsh
+        run: |
+          go test -v -count=5 -run '^(TestLinkTriage|TestWikiLinkRegression)$' .
+          if ($LASTEXITCODE -ne 0) { throw 'Link safety regression failed' }
+      - name: Validate source code
+        shell: pwsh
+        run: |
+          go list ./...
+          if ($LASTEXITCODE -ne 0) { throw 'Go package validation failed' }
+          go vet ./...
+          if ($LASTEXITCODE -ne 0) { throw 'Go validation failed' }
+      - name: Run tests ten times
+        shell: pwsh
+        run: |
+          go test -v -count=10 ./...
+          if ($LASTEXITCODE -ne 0) { throw 'Go tests failed' }
+      - name: Fifty controlled full-root scan regressions
+        shell: pwsh
+        run: |
+          go test -v -count=50 -timeout=15m -run '^Test306ControlledRoots$' .
+          if ($LASTEXITCODE -ne 0) { throw 'Controlled root scan regression failed' }
+      - name: Ten million synthetic fraud evaluations
+        shell: pwsh
+        run: |
+          $env:ZEUVORYX_STRESS = '1'
+          go test -v -run '^TestSyntheticFraudMillion$' -count=10 .
+          if ($LASTEXITCODE -ne 0) { throw 'Synthetic fraud workload failed' }
+      - name: QA20 actual synthetic workload and official Windows read-only checks
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Copy-Item qa/stress_scanner_test.go.txt engine/stress_scanner_test.go
+          Copy-Item qa/stress_native_test.go.txt stress_native_test.go
+          gofmt -w engine/stress_scanner_test.go stress_native_test.go adaptive/stress20_test.go updater/stress20_test.go remediation/stress20_test.go
+          if ($LASTEXITCODE -ne 0) { throw 'QA20 formatting failed' }
+          $env:ZEUVORYX_QA20 = '1'
+          go test -v -count=1 -timeout=20m -run '^TestZStress' ./engine ./adaptive ./updater ./remediation | Tee-Object -FilePath qa20-stress.log
+          if ($LASTEXITCODE -ne 0) { throw 'QA20 workload failed' }
+          go test -v -count=1 -timeout=3m -run '^TestZ(RealWindowsFiles|OfficialEICAR)$' ./engine | Tee-Object -FilePath qa20-windows-files.log
+          if ($LASTEXITCODE -ne 0) { throw 'Windows fixture checks failed' }
+          go test -v -count=1 -timeout=2m -run '^TestZRealSecurityAudit$' . | Tee-Object -FilePath qa20-native.log
+          if ($LASTEXITCODE -ne 0) { throw 'Native Windows audit failed' }
+      - name: Upload QA20 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ZEUVORYX-3.0.8-R1-QA20-evidence
+          path: qa20-*.log
+          if-no-files-found: ignore
+      - name: Build Windows desktop EXE
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force dist | Out-Null
+          $key = $env:ZEUVORYX_OWNER_PUBLIC_KEY
+          if ($key -and $key -notmatch '^[0-9a-fA-F]{64}$') { throw 'Invalid owner public key' }
+          $flags = '-H=windowsgui'
+          if ($key) { $flags += ' -X github.com/zeuvoryx/zeuvoryx/updater.OwnerPublicKeyHex=' + $key }
+          go build -trimpath -ldflags $flags -o dist/ZEUVORYX.exe .
+          if ($LASTEXITCODE -ne 0) { throw 'Windows build failed' }
+          Copy-Item signatures.sha256, ZEUVORYX.ico, ZEUVORYX.png dist/ -ErrorAction Stop
+          $bytes = [IO.File]::ReadAllBytes((Join-Path $PWD 'dist/ZEUVORYX.exe'))
+          $pe = [BitConverter]::ToInt32($bytes, 60)
+          $subsystem = [BitConverter]::ToUInt16($bytes, ($pe + 24 + 68))
+          if ($subsystem -ne 2) { throw 'Expected Windows GUI executable' }
+          Get-FileHash dist/ZEUVORYX.exe -Algorithm SHA256
+      - name: Verify portable LAB version and desktop startup
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $exe = (Resolve-Path dist/ZEUVORYX.exe).Path
+          $v = Start-Process -FilePath $exe -ArgumentList '-version' -RedirectStandardOutput version.txt -RedirectStandardError version-error.txt -Wait -PassThru
+          if ($v.ExitCode -ne 0 -or (Get-Content -Raw version.txt).Trim() -ne '3.0.8-lab') { throw 'Portable executable version mismatch' }
+          $logDir = Join-Path $env:APPDATA 'ZEUVORYX/stability-lab'
+          $p = Start-Process -FilePath $exe -WorkingDirectory (Split-Path $exe) -PassThru
+          try {
+            $deadline = (Get-Date).AddSeconds(60)
+            $ready = $false
+            do {
+              $p.Refresh()
+              if ($p.HasExited) { throw "Desktop exited before ready: $($p.ExitCode)" }
+              $logs = @(Get-ChildItem $logDir -Filter "session-*-$($p.Id).log" -ErrorAction SilentlyContinue)
+              if ($logs.Count -eq 1 -and (Select-String -LiteralPath $logs[0].FullName -Pattern 'stability ui_ready version=3.0.8-lab' -Quiet)) { $ready = $true; break }
+              Start-Sleep -Seconds 1
+            } while ((Get-Date) -lt $deadline)
+            if (!$ready) { throw 'WebView2 UI handshake not observed' }
+            Start-Sleep -Seconds 15
+            $p.Refresh()
+            if ($p.HasExited) { throw "Desktop exited during idle test: $($p.ExitCode)" }
+            Write-Host 'Portable desktop rendered and stayed alive for 15 seconds after handshake'
+          } finally {
+            if (!$p.HasExited) {
+              [void]$p.CloseMainWindow()
+              if (!$p.WaitForExit(10000)) { Stop-Process -Id $p.Id -Force }
+            }
+            Get-ChildItem $logDir -Filter "session-*-$($p.Id).log" -ErrorAction SilentlyContinue | Copy-Item -Destination desktop-smoke.log
+          }
+      - name: Prepare portable LAB-only evidence and checksum
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $hash = (Get-FileHash dist/ZEUVORYX.exe -Algorithm SHA256).Hash.ToLowerInvariant()
+          Set-Content -Encoding ascii -Path dist/SHA256SUMS.txt -Value "$hash  ZEUVORYX.exe"
+          @(
+            'ZEUVORYX 3.0.8 LAB - TESTE PORTATIL x64, NAO INSTALADOR'
+            "Commit: $env:GITHUB_SHA"
+            "Execucao: $env:GITHUB_RUN_ID"
+            'Extraia todo o ZIP para uma pasta separada. Feche outras versoes antes de testar.'
+            'Mantenha a protecao do Windows ativa. Use somente em ambiente de teste autorizado.'
+            'Abra ZEUVORYX.exe e execute apenas a varredura rapida para este teste.'
+            'O pacote nao inclui o verificador de video C2PA nem instalador/atualizacao assinada.'
+            'Nao substitui o Microsoft Defender. Validacao fisica e desempenho ainda pendentes.'
+            'Nao instale, nao promova para release, nao desative SmartScreen ou outros controles.'
+          ) | Set-Content -Encoding utf8 -Path dist/LEIA-ME-LAB.txt
+      - name: Upload desktop launch diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ZEUVORYX-3.0.8-desktop-smoke
+          path: desktop-smoke.log
+          if-no-files-found: ignore
+      - name: Upload portable 3.0.8 LAB only for physical quick scan
+        uses: actions/upload-artifact@v4
+        with:
+          name: ZEUVORYX-3.0.8-LAB-PORTATIL-TESTE-Windows-x64
           path: dist/
           if-no-files-found: error
           retention-days: 7

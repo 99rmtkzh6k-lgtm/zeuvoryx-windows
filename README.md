@@ -1,6 +1,6 @@
 # ZEUVORYX Antivirus — Windows e Macintosh LAB
 
-> **Estado vigente — 24/11/2026:** Windows **3.0.7 LAB**: CI aprovado ([execução 45507766010](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45507766010)), teste rápido físico parcial e exportação confirmados; eficácia e estabilidade integral pendentes. **3.0.8 LAB**: preparação em [ramificação isolada](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/windows-3.0.8-lab), base 3.0.7 corrigida, sem motor/compilação 3.0.8 aprovado. Macintosh permanece independente, candidato 3.0.5 LAB. Não substitui o Defender. [Memorando](MEMORANDO_DESENVOLVIMENTO.md) · [metadados](ABOUT_GITHUB.md). Nenhuma release definitiva.
+> **Estado vigente — 24/11/2026:** Windows **3.0.7 LAB**: CI aprovado ([execução 45507766010](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45507766010)), teste rápido físico parcial e exportação confirmados; eficácia e estabilidade integral pendentes. **3.0.8 LAB**: primeira intervenção funcional em [ramificação isolada](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/windows-3.0.8-lab), otimização de entropia, leitura em blocos e tratamento de cancelamento; CI e validação ainda pendentes, nenhum pacote aprovado. Macintosh permanece independente, candidato 3.0.5 LAB. Não substitui o Defender. [Memorando](MEMORANDO_DESENVOLVIMENTO.md) · [metadados](ABOUT_GITHUB.md). Nenhuma release definitiva.
 
 ## Histórico e documentação técnica (as versões abaixo são registros anteriores)
 

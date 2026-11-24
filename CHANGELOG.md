@@ -1,5 +1,9 @@
 # Histórico de versões — ZEUVORYX Windows
 
+## 3.0.8 LAB — intervenção A, CI pendente
+
+- Evita entropia desnecessária; preserva regras e hash integral. Limita leitura individual a 256 KiB; separa cancelamento voluntário do erro I/O no desktop. Novos testes e microbenchmarks; desempenho físico e eficácia não comprovados.
+
 ## 3.0.7 LAB — evidência física parcial; 3.0.8 LAB em preparação (24/11/2026)
 
 - CI 45507766010 aprovado no commit e8bd034; teste rápido físico parcial: 19.701 arquivos, 13,05 GiB, 10min23s, 22,48 MB/s, três bloqueios de compartilhamento e um cancelamento voluntário, exportação JSON bem-sucedida. Nenhum alerta ou falha interna registrado; eficácia não comprovada.

@@ -54,3 +54,5 @@ Macintosh 3.0.5 LAB: regressão portátil Linux e compilação Intel aprovadas; 
 - ZVX-EVO-005: corrigida âncora do gerador de retry após gofmt, causa comprovada no log de 45445139048. Reteste obrigatório.
 
 - ZVX-EVO-006: candidato consulta DROP oficial IPv4/IPv6, validação de formato/idade, limites, atribuição e busca local de IP; testes novos e inventário de fontes. Sem bloqueio automático, amostras de malware ou release.
+
+- Ajuste de frequência DROP para 24h; seed opcional com validação e coleta manual de dados oficiais separada, sem alegar base preenchida.

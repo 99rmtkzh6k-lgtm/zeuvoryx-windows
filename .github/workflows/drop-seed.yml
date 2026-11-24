@@ -1,0 +1,25 @@
+name: ZEUVORYX manual DROP seed collection
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+          cache: false
+      - name: Validate parser and source contract
+        run: go test -count=5 ./globalintel
+      - name: Collect official data once
+        run: go run ./cmd/drop-seed
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DROP-initial-source-LAB
+          path: drop-seed/
+          retention-days: 1
+          if-no-files-found: error

@@ -1,0 +1,41 @@
+ZEUVORYX 3.0.1 | OLYMPUS — Competitive Beta
+24/11/2026
+
+Atualização cumulativa da versão experimental 3.0.1. Substitui o script
+zeuvoryx_upgrade.py anterior; não execute as duas versões em sequência.
+Não é instalador, executável ou certificação de proteção.
+
+COMPILAÇÃO NO GITHUB (main)
+1. Abra Actions > ZEUVORYX 3.0.1 Competitive - Windows Build.
+2. Selecione Run workflow, branch main. Push em main também inicia o CI.
+3. Aguarde os testes e a compilação. Baixe somente o artefato
+   ZEUVORYX-3.0.1-Competitive-Windows de uma execução bem-sucedida.
+4. Extraia o ZIP e use ZEUVORYX-Setup-3.0.1.exe ou a edição portátil.
+5. No Windows Sandbox ou VM, mantenha o Defender ativo. Teste análise
+   rápida e completa, alertas, filtros e relatório. Não coloque arquivos
+   de sistema em quarentena. Exporte o JSON e o diagnóstico de testes.
+   Esta versão permanece experimental até validação independente.
+
+ALTERNATIVA COM CÓPIA LOCAL DO REPOSITÓRIO
+Para manutenção do workflow, na raiz da cópia local, rode:
+  python zeuvoryx_upgrade.py --install
+Isso insere a etapa no workflow (não gera o EXE). Revise o diff antes do commit.
+Não envie o arquivo de backup .bak. O --apply é reservado à etapa do CI
+após a geração de código do workflow existente.
+
+RECURSOS: preserva as correções 3.0.1 anteriores; caminho rápido do scanner
+para a fila paralela; redução de alocações; lookup exato de imports PE;
+assinatura digital local limitada; isolamento somente com evidência elegível;
+resumo de cobertura, alertas distintos, velocidade e duplicatas; interface
+original grafite, azul-gelo, verde-água e âmbar, sem imagens decorativas
+na tela ativa; filtro e renderização paginada dos alertas.
+
+TESTES LOCAIS: reprodução do motor, 10 rodadas Go, 5 com race detector,
+go vet, compilação cruzada do teste para Windows amd64, sintaxe JS e
+transformação HTML em fixture. O aplicativo completo e o comportamento
+visual e Authenticode no Windows dependem de execução posterior no GitHub/VM.
+A IA treinada, defesa residente própria, VPN, proteção multiplataforma e
+certificação laboratorial NÃO são entregues por este pacote.
+
+COMPARAÇÃO: python comparar_relatorios.py antigo.json novo.json
+Compare apenas escopos, máquina, disco, configurações e corpus equivalentes.

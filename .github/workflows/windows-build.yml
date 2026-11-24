@@ -1,4 +1,5 @@
-name: ZEUVORYX 3.0 Olympus Fortified - Fraud and Remediation
+name: ZEUVORYX 3.0.1 Competitive - Windows Build
+run-name: ZEUVORYX 3.0.1 Competitive Windows x64
 
 on:
   push:
@@ -11,12 +12,21 @@ permissions:
 jobs:
   build-windows:
     runs-on: windows-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     env:
       GOARCH: amd64
       CGO_ENABLED: '0'
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify checked out Competitive source
+        shell: pwsh
+        run: |
+          git log -1 --format='%H %s'
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot identify source commit' }
+          if (!(Test-Path -LiteralPath 'zeuvoryx_upgrade.py' -PathType Leaf)) { throw 'Wrong source: Competitive upgrade missing' }
       - uses: actions/setup-go@v5
         with:
           go-version: '1.24.x'
@@ -24,6 +34,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Validate upgrade prerequisites
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          foreach ($f in @('go.mod','main.go','zeuvoryx_upgrade.py')) {
+            if (!(Test-Path -LiteralPath $f -PathType Leaf)) { throw "Required file missing: $f" }
+          }
+          python -m py_compile zeuvoryx_upgrade.py
+          if ($LASTEXITCODE -ne 0) { throw 'Upgrade script syntax validation failed' }
       - name: Organize project
         shell: pwsh
         run: |
@@ -252,7 +271,7 @@ jobs:
           func runDesktop(s *State, _ bool) {
           	runtime.LockOSThread()
           	defer runtime.UnlockOSThread()
-          	w := webview.NewWithOptions(webview.WebViewOptions{Debug: false, AutoFocus: true, WindowOptions: webview.WindowOptions{Title: "ZEUVORYX | Olympus 3.0", Width: 920, Height: 650, Center: true}})
+          	w := webview.NewWithOptions(webview.WebViewOptions{Debug: false, AutoFocus: true, WindowOptions: webview.WindowOptions{Title: "ZEUVORYX | Olympus 3.0.1 Competitive", Width: 920, Height: 650, Center: true}})
           	if w == nil {
           		desktopError("Não foi possível inicializar a interface. Verifique a instalação do Microsoft WebView2 Runtime.")
           		return
@@ -2213,9 +2232,18 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Diagnostics integration failed' }
           gofmt -w diagnostics.go diagnostics_test.go desktop_windows.go
           if ($LASTEXITCODE -ne 0) { throw 'Diagnostics formatting failed' }
+      - name: Apply ZEUVORYX 3.0.1 scanner hardening
+        shell: pwsh
+        run: |
+          python zeuvoryx_upgrade.py --apply
+          if ($LASTEXITCODE -ne 0) { throw 'ZEUVORYX upgrade failed' }
+          gofmt -w main.go desktop_windows.go engine/scanner.go engine/pe.go engine/quarantine.go engine/scan_upgrade.go engine/scan_upgrade_windows.go engine/scan_upgrade_other.go engine/scan_upgrade_test.go engine/scan_upgrade_integration_test.go
+          if ($LASTEXITCODE -ne 0) { throw 'Upgrade formatting failed' }
       - name: Validate source code
         shell: pwsh
         run: |
+          go list ./...
+          if ($LASTEXITCODE -ne 0) { throw 'Go package validation failed' }
           go vet ./...
           if ($LASTEXITCODE -ne 0) { throw 'Go validation failed' }
       - name: Run tests ten times
@@ -2265,14 +2293,14 @@ jobs:
           [Setup]
           AppId=ZEUVORYX.Desktop
           AppName=ZEUVORYX
-          AppVersion=3.0
+          AppVersion=3.0.1
           DefaultDirName={localappdata}\Programs\ZEUVORYX
           DefaultGroupName=ZEUVORYX
           DisableProgramGroupPage=yes
           PrivilegesRequired=lowest
           ArchitecturesAllowed=x64compatible
           OutputDir=installer
-          OutputBaseFilename=ZEUVORYX-Setup-3.0
+          OutputBaseFilename=ZEUVORYX-Setup-3.0.1
           SetupIconFile=dist\ZEUVORYX.ico
           UninstallDisplayIcon={app}\ZEUVORYX.exe
           Compression=lzma2
@@ -2300,13 +2328,13 @@ jobs:
           if (!(Test-Path $iscc)) { throw 'Inno Setup compiler not found' }
           & $iscc setup.iss
           if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed' }
-          if (!(Test-Path 'installer/ZEUVORYX-Setup-3.0.exe')) { throw 'Installer missing' }
-          Get-FileHash installer/ZEUVORYX-Setup-3.0.exe -Algorithm SHA256
-      - name: Upload Olympus installer and portable edition
+          if (!(Test-Path 'installer/ZEUVORYX-Setup-3.0.1.exe')) { throw 'Installer missing' }
+          Get-FileHash installer/ZEUVORYX-Setup-3.0.1.exe -Algorithm SHA256
+      - name: Upload Competitive 3.0.1 installer and portable edition
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0-Olympus-Windows
+          name: ZEUVORYX-3.0.1-Competitive-Windows
           path: |
             dist/
-            installer/ZEUVORYX-Setup-3.0.exe
+            installer/ZEUVORYX-Setup-3.0.1.exe
           if-no-files-found: error

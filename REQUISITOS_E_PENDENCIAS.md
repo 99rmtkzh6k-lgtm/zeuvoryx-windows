@@ -83,3 +83,8 @@ REQ-035/036 adicionados, mantendo os 34 anteriores e as quatro cláusulas pétre
 ### Escopo integral da próxima revisão — EVO-033
 
 Revisar todos os 43 IDs, implementar as melhorias vigentes aplicáveis à próxima versão e reconciliar evidências por requisito. REQ-022 adiado, REQ-043 suspenso. Não omitir requisitos ativos; registrar dependências, bloqueios e justificativas sem aprovar por promessa. Cláusula comercial consolidada no memorando; gratuidade inicial sem anúncios, possibilidade futura de oferta paga com data, preço, condições e aceitação expressa. Nenhuma mudança funcional nesta revisão.
+
+
+### ZVX-PILOTO-307-20261124 — teste rápido parcial e preparação 3.0.8
+
+REQ-003/004/018/025/027 permanecem abertos: CI 3.0.7 aprovado, exportação após cancelamento comprovada no teste físico parcial; 19.701 arquivos, 13,05 GiB, 623 s, 22,48 MB/s, três bloqueios de compartilhamento, um cancelamento voluntário, zero falhas internas e zero testes positivos. Não concluir eficácia, desempenho comparativo ou estabilidade integral. REQ-026: entrega da 3.0.7 portátil registrada no memorando; README/CHANGELOG e proposta About sincronizados; campo administrativo real não editável pelo conector. Ramificação 3.0.8 realinhada à base funcional 3.0.7 corrigida, sem build novo. Demais IDs e pendências preservados. Obrigatório conferir descrições a cada intervenção sem solicitação adicional.

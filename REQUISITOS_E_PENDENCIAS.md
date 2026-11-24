@@ -45,6 +45,8 @@ Atualizado em 24/11/2026. Índice operacional do [memorando histórico completo]
 
 | REQ-037 | Central pública de suporte internacional versionada, FAQ, ajuda no aplicativo e descoberta por buscadores | E | Base publicada em 4 idiomas; Pages, indexação e ajuda no app pendentes | EVO-021/022; REQ-023/036 |
 
+| REQ-038 | Auditoria de propriedade intelectual, SBOM/licenças, termos de usuário, privacidade, responsabilidade e conformidade por mercado | P | Gate pré-lançamento; revisão jurídica e licenças comerciais ainda pendentes | EVO-024; REQ-023/024/036/037 |
+
 ## Controle obrigatório de continuidade
 
 A cada tarefa, ler o índice e o memorando, identificar requisitos afetados, registrar novos pedidos imediatamente (inclusive "no próximo"), preservar IDs e estados dos demais. Antes de fechar, comparar o índice anterior com o novo, justificar qualquer mudança de prioridade/estado, anexar evidência ou marcar pendência, atualizar a main e a ramificação/plataforma pertinente e confirmar gravação remota. Correção P0 pode adiar implantação de P1/P2, mas não apagar nem declarar cumprida. Decisões posteriores explícitas prevalecem sobre as substituídas, cujo histórico permanece. A fila não é autorização para lançar, contratar ou realizar ações destrutivas. Reconciliar requisitos não localizados com o histórico e pedidos recuperáveis, sem alegar cobertura absoluta de conversas inacessíveis.

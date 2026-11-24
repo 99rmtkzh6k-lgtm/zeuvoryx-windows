@@ -26,6 +26,18 @@ def desktop(s):
     return s
 def html(s):
     s=s.replace("3.0.5","3.0.7")
+    # Final labels must agree with the updater, not the historical generator version.
+    match = re.search(r'const Current\s*=\s*"([0-9]+\.[0-9]+\.[0-9]+)"', Path("updater/check.go").read_text(encoding="utf-8"))
+    if match is None or match.group(1) != "3.0.7":
+        raise RuntimeError("Updater identity mismatch")
+    version = match.group(1)
+    for label in ("Diagnóstico local", "Local diagnostics", "Atualizações LAB —", "LAB updates —", "Actualizaciones LAB —"):
+        pattern = re.escape(label) + r" [0-9]+\.[0-9]+\.[0-9]+"
+        s, count = re.subn(pattern, lambda _: label + " " + version, s)
+        if count == 0:
+            raise RuntimeError("Missing localized identity: " + label)
+        if any(m.group() != label + " " + version for m in re.finditer(pattern, s)):
+            raise RuntimeError("Stale localized identity: " + label)
     s=once(s,"setTimeout(zUpdateRun,1500);","/* Explicit update checks only; no network call during startup. */")
     return once(s,"</script></body></html>",";window.zStartupReady().catch(()=>{});\n</script></body></html>")
 edit("main.go",main)

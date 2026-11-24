@@ -33,6 +33,13 @@ Atualizado em 24/11/2026. Índice operacional do [memorando histórico completo]
 | REQ-027 | Diagnóstico do fechamento: logs persistentes, saída, memória, WebView2, recuperação, correlação de eventos | B | P0; causa raiz ainda não comprovada | EVO-015–018 |
 | REQ-028 | Operação pelo iPhone, instruções completas copiar/colar quando necessário, GitHub e ZIP/EXE direto para compartilhamento | E | P1 reduzir trabalho manual; entrega apenas de pacote validado | Diretriz operacional; continuidade |
 
+| REQ-029 | Aprendizagem local contínua e automática após consentimento, perfil comportamental, candidato separado e validação/rollback | P | Próxima revisão; baixo consumo, sem rótulos autogerados nem envio externo | EVO-019; REQ-008 |
+| REQ-030 | Autostart consentido no login, residente com ícone de bandeja, único processo, opção de sair/desativar | P | Próxima revisão; sem scan completo automático, sem ocultação | EVO-019; REQ-002/007 |
+| REQ-031 | Monitoramento de eventos de arquivos/downloads, escopos locais/nuvem acessível, fila limitada, análise de links autorizada | P | Próxima revisão; observação primeiro, sem hidratar nuvem ou interceptar TLS | EVO-019; REQ-007/010 |
+| REQ-032 | Corrigir Diagnóstico local 3.0.3 e todos rótulos obsoletos; versão única e estados reais | P | Próxima revisão; gate de UI em todos idiomas | EVO-019; REQ-026 |
+| REQ-033 | Preservar ClamAV opcional, sob demanda e dependente de instalação externa | E | Manter; medir custo e distinguir motores | EVO-019 |
+| REQ-034 | Revisão integrada de toda fila após relatório 3.0.6; cinco ciclos e 50 equivalência quando viáveis | P | Próxima revisão, sem perder EVO-008–012 | EVO-019; REQ-025 |
+
 ## Controle obrigatório de continuidade
 
 A cada tarefa, ler o índice e o memorando, identificar requisitos afetados, registrar novos pedidos imediatamente (inclusive "no próximo"), preservar IDs e estados dos demais. Antes de fechar, comparar o índice anterior com o novo, justificar qualquer mudança de prioridade/estado, anexar evidência ou marcar pendência, atualizar a main e a ramificação/plataforma pertinente e confirmar gravação remota. Correção P0 pode adiar implantação de P1/P2, mas não apagar nem declarar cumprida. Decisões posteriores explícitas prevalecem sobre as substituídas, cujo histórico permanece. A fila não é autorização para lançar, contratar ou realizar ações destrutivas. Reconciliar requisitos não localizados com o histórico e pedidos recuperáveis, sem alegar cobertura absoluta de conversas inacessíveis.
@@ -44,3 +51,7 @@ Windows 3.0.6 LAB R1: candidato isolado, execução 45479946405 em andamento na 
 ### Evidência atualizada EVO-018
 
 REQ-002/018: migração e abertura de 15 segundos aprovadas no CI, estado E (piloto físico pendente). REQ-003/025/027: 60 testes de raiz controlada aprovados, estabilidade física e cinco ciclos integrados pendentes; não encerrar bloqueadores. REQ-026: pacote 3.0.6 LAB R1, hash verificado; metadados públicos dependem de acesso administrativo e aprovação de promoção. Todos os demais IDs preservados. [CI aprovado](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45479946405).
+
+### Próxima evolução EVO-019 — aguardando relatório do piloto 3.0.6
+
+REQ-029 a 034 adicionados conforme solicitação do titular. REQ-008 e REQ-007 ampliados, não encerrados; REQ-026 inclui correção do rótulo herdado 3.0.3. REQ-015 a 019 e demais pendências continuam na fila. Nenhum novo binário nesta revisão documental.

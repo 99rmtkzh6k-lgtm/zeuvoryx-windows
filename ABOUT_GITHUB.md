@@ -30,3 +30,5 @@ https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows#readme
 5. Após salvar, conferir novamente os valores efetivos no GitHub. Este arquivo não modifica automaticamente os campos administrativos.
 
 A integração disponível não oferece operação de edição administrativa de About/Topics/Website. O memorando permanente exige atualização e verificação após toda revisão, com registro de impedimentos e ações manuais.
+
+- ZVX-EVO-004: candidato incremental Windows 3.0.5 LAB identificado por commit; descrição pública continua referindo-se ao R5 previamente aprovado até nova aprovação. Não promover candidato por meio dos metadados.

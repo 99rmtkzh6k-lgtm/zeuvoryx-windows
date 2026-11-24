@@ -12,7 +12,7 @@ def rx(s,a,b,expected=1):
 def edit(name,fn):
     p=Path(name);p.write_text(fn(p.read_text(encoding="utf-8-sig")),encoding="utf-8")
 def scanner(s):
-    fields=[("BuildCommit","string","build_commit,omitempty"),("ScanID","string","scan_id"),("ScanMode","string","scan_mode"),("ErrorCount","int","error_count"),("OmittedErrorDetails","int","omitted_error_details"),("ScanError","string","scan_error,omitempty"),("AuditError","string","audit_error,omitempty")]
+    fields=[("ErrorCategories","map[string]int","error_categories,omitempty"),("BuildCommit","string","build_commit,omitempty"),("ScanID","string","scan_id"),("ScanMode","string","scan_mode"),("ErrorCount","int","error_count"),("OmittedErrorDetails","int","omitted_error_details"),("ScanError","string","scan_error,omitempty"),("AuditError","string","audit_error,omitempty")]
     s=one(s,'type Report struct {','type Report struct {\n'+''.join('    '+a+' '+b+' '+chr(96)+'json:"'+c+'"'+chr(96)+'\n' for a,b,c in fields))
     return rx(s,r'if len\(report\.Errors\) < 30 \{','report.ErrorCount++\nif len(report.Errors) < 10000 {',2)
 def summary(s):
@@ -26,7 +26,7 @@ def summary(s):
     r.Partial = r.Cancelled || r.Skipped > 0 || r.ErrorCount > 0 || r.ScanError != ""''')
 def main(s):
     s=one(s,'import (','import (\n "github.com/zeuvoryx/zeuvoryx/audit"')
-    s=rx(s,r'if len\(r\.Errors\) < 30 \{','r.ErrorCount++\nif len(r.Errors) < 10000 {')
+    s=rx(s,r'if len\(r\.Errors\) < 30 \{','r.ErrorCount++\nengine.CountScanError(&r,err)\nif len(r.Errors) < 10000 {')
     s=one(s,'s.report = engine.Report{}','''s.report = engine.Report{}
     scanID,idErr:=audit.NewID()
     mode:="custom"; if automatic { mode="full"; if path==":quick:" {mode="quick"} }
@@ -70,3 +70,91 @@ edit("engine/scan_upgrade.go",summary)
 edit("main.go",main)
 edit("desktop_windows.go",desktop)
 edit("desktop.html",html)
+
+# Native Windows error classification and bounded retry. No ACL bypass or privilege changes.
+retry=Path("engine/scan_retry.go")
+retry.write_text(r'''package engine
+
+import (
+ "context"
+ "errors"
+ "io/fs"
+ "runtime"
+ "syscall"
+ "time"
+)
+
+func ScanErrorCategory(err error) string {
+ if err==nil {return "none"}
+ if errors.Is(err,context.Canceled)||errors.Is(err,context.DeadlineExceeded){return "cancelled"}
+ if errors.Is(err,fs.ErrPermission){return "access_denied"}
+ if errors.Is(err,fs.ErrNotExist){return "not_found"}
+ if runtime.GOOS=="windows" {
+  var code syscall.Errno
+  if errors.As(err,&code) {
+   switch code {
+   case 5:return "access_denied"
+   case 2,3:return "not_found"
+   case 32:return "sharing_violation"
+   case 33:return "lock_violation"
+   }
+  }
+ }
+ return "other"
+}
+
+// Caller owns the report lock. Counts final errors; retries are not counted as new files.
+func CountScanError(r *Report,err error) {
+ if err==nil{return}
+ if r.ErrorCategories==nil {r.ErrorCategories=make(map[string]int)}
+ r.ErrorCategories[ScanErrorCategory(err)]++
+}
+
+func retryScanRead(ctx context.Context,read func()([]Finding,error))([]Finding,error) {
+ if e:=ctx.Err();e!=nil{return nil,e}
+ hits,err:=read()
+ category:=ScanErrorCategory(err)
+ if category!="sharing_violation"&&category!="lock_violation"{return hits,err}
+ timer:=time.NewTimer(25*time.Millisecond)
+ defer timer.Stop()
+ select{case <-ctx.Done():return nil,ctx.Err();case <-timer.C:}
+ return read()
+}
+''',encoding="utf-8")
+edit("engine/scan_upgrade.go",lambda s:one(s,"return s.examine(ctx,path,size)","return retryScanRead(ctx,func()([]Finding,error){return s.examine(ctx,path,size)})"))
+Path("engine/scan_retry_test.go").write_text(r'''package engine
+
+import (
+ "context"
+ "errors"
+ "io/fs"
+ "runtime"
+ "syscall"
+ "testing"
+)
+
+func TestScanErrorCategories(t *testing.T) {
+ for _,tc:=range []struct{err error; want string}{
+ {fs.ErrPermission,"access_denied"},{fs.ErrNotExist,"not_found"},
+ {context.Canceled,"cancelled"},{errors.New("unknown"),"other"},
+ }{if got:=ScanErrorCategory(tc.err);got!=tc.want{t.Fatal(got,tc.want)}}
+ var r Report
+ CountScanError(&r,fs.ErrPermission);CountScanError(&r,fs.ErrPermission);CountScanError(&r,fs.ErrNotExist)
+ if r.ErrorCategories["access_denied"]!=2||r.ErrorCategories["not_found"]!=1{t.Fatal(r.ErrorCategories)}
+}
+func TestScanRetryBounded(t *testing.T){
+ n:=0
+ _,err:=retryScanRead(context.Background(),func()([]Finding,error){n++;return nil,fs.ErrPermission})
+ if n!=1||!errors.Is(err,fs.ErrPermission){t.Fatal(n,err)}
+ ctx,cancel:=context.WithCancel(context.Background());cancel()
+ n=0;_,err=retryScanRead(ctx,func()([]Finding,error){n++;return nil,nil})
+ if n!=0||!errors.Is(err,context.Canceled){t.Fatal(n,err)}
+ if runtime.GOOS!="windows"{return}
+ for _,code:=range []syscall.Errno{32,33}{
+  n=0;_,err=retryScanRead(context.Background(),func()([]Finding,error){n++;if n==1{return nil,code};return nil,nil})
+  if n!=2||err!=nil{t.Fatal(n,err)}
+  n=0;_,err=retryScanRead(context.Background(),func()([]Finding,error){n++;return nil,code})
+  if n!=2||err==nil{t.Fatal(n,err)}
+ }
+}
+''',encoding="utf-8")

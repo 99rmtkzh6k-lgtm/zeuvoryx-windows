@@ -43,6 +43,18 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .zeus-art,.mythic{background:#d7d9dc;border-color:#8a9097}
 .ring svg circle:first-child{stroke:#a4aab1}.ring svg .arc,#curve{stroke:#30363e}.chart text{fill:#34383e}.chart svg path{stroke:#a3aab1}
 .risk,#msg{color:#58250c}.z-authorship strong{color:#111315;border-color:#92989e}
+/* Compact controls; preserve IDs, focus and native accessibility. */
+button{min-height:34px;padding:6px 12px;border-radius:7px;box-shadow:inset 0 1px 0 #fff9,0 2px 0 #777e86,0 3px 5px #0002}
+button:active:not(:disabled){transform:translateY(1px);box-shadow:inset 0 1px 3px #0003,0 1px 0 #777e86}
+button:disabled{box-shadow:none;transform:none}
+header{min-height:92px;padding:10px;margin-bottom:10px}
+#overview .hero{margin-top:0}
+#overview .actions{flex-wrap:wrap;gap:8px}
+#overview .chart{margin-top:10px}
+#overview .chart svg{max-height:115px}
+#overview .grid{gap:8px}
+@media(max-width:720px){button{min-height:40px}#overview .grid{grid-template-columns:repeat(auto-fit,minmax(120px,1fr))}}
+@media(forced-colors:active){button{box-shadow:none;transform:none}}
 [hidden]{display:none!important}
 @media(max-width:720px){header{min-height:105px;padding:8px;flex-wrap:wrap}header>div:first-child{max-width:100%}.brand img{width:30px;height:30px}}
 @media(forced-colors:active){main,aside,header,.hero{background:Canvas!important;color:CanvasText}button{forced-color-adjust:auto}}
@@ -62,8 +74,33 @@ def apply():
     if s.count("</style></head>")!=1: raise ValueError("Style anchor missing")
     s=s.replace("</style></head>",css+"</style></head>",1)
     if len(s.encode("utf-8"))>1500000: raise ValueError("Embedded page exceeds budget")
+    # Reorder existing DOM nodes, never duplicate controls or replace handlers.
+    if s.count("</script></body></html>")!=1: raise ValueError("Script anchor missing")
+    layout="""
+;(()=>{const overview=document.getElementById('overview');if(!overview)return;
+const direct=sel=>Array.from(overview.children).find(n=>n.matches(sel));
+const primary=[direct('.hero'),direct('.grid'),direct('.chart'),direct('#zSummary')].filter(Boolean);
+const fragment=document.createDocumentFragment();for(const n of primary)fragment.appendChild(n);
+overview.prepend(fragment);
+const details=document.createElement('p');details.id='zScanDiagnostics';details.className='sub';
+const chart=direct('.chart');if(chart)chart.appendChild(details);
+const copy={
+'pt-BR':['Erros','Ignorados','Tempo','Conteúdos distintos','Alertas repetidos'],
+'en-US':['Errors','Skipped','Time','Distinct contents','Repeated alerts'],
+'es-ES':['Errores','Omitidos','Tiempo','Contenidos distintos','Alertas repetidas']};
+async function showDiagnostics(){try{const state=await window.getScanState();const r=state.report||{};
+if(!state.done||state.running){details.textContent='';return}
+const t=copy[document.documentElement.lang]||copy['pt-BR'];
+const fmt=v=>Number(v||0).toLocaleString(document.documentElement.lang||'pt-BR');
+const seconds=Math.max(0,Math.floor(Number(r.duration_ms||0)/1000));
+details.textContent=t[0]+': '+fmt(r.error_count)+' | '+t[1]+': '+fmt(r.skipped)+' | '+t[2]+': '+fmt(Math.floor(seconds/60))+'m '+fmt(seconds%60)+'s | '+t[3]+': '+fmt(r.unique_finding_hashes)+' | '+t[4]+': '+fmt(r.duplicate_alert_paths);
+}catch(_){details.textContent=''}}
+setInterval(showDiagnostics,5000);showDiagnostics();
+})();
+"""
+    s=s.replace("</script></body></html>",layout+"</script></body></html>",1)
     chk=Check();chk.feed(s)
-    for name in ("zUpdateCheck","start","quick","stop","export","auditLoad","auditSave","auditState","zLocalAuditState"):
+    for name in ("zUpdateCheck","zUpdateBuilds","start","quick","stop","export","auditLoad","auditSave","auditState","zLocalAuditState"):
         if chk.ids.count(name)!=1: raise ValueError("Invalid control: "+name)
     if not any(x.get("alt")=="Zeus" and x.get("src","").startswith("data:image/jpeg;base64,") for x in chk.pictures): raise ValueError("Missing Zeus portrait")
     p.write_text(s,encoding="utf-8")

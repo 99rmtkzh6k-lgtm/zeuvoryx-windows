@@ -6,6 +6,8 @@ Scanner complementar de segurança para Windows x64, desenvolvido em Go, com int
 
 **Estado:** beta de laboratório. Compilação 3.0.5 R5 aprovada em 24/11/2026; validação manual em Windows 10/11 e eficácia independente pendentes. Não substitui Microsoft Defender.
 
+**Candidato pós-varredura:** controles e métricas no topo, botões compactos 3D, diagnóstico por categorias nativas e tentativa adicional limitada para bloqueio transitório de leitura. Novo campo de procedência do build. A compilação candidata precisa passar CI e Sandbox; os links abaixo permanecem referentes ao pacote R5 previamente aprovado.
+
 ## Download e instalação de teste
 
 - [Compilação validada — execução 45436304817](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45436304817)

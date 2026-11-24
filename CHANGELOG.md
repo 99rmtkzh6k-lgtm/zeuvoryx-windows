@@ -45,3 +45,8 @@ Macintosh 3.0.5 LAB: regressão portátil Linux e compilação Intel aprovadas; 
 
 ### 24/11/2026 — ajustes candidatos pós-varredura completa (ZVX-EVO-003)
 - Identificação do commit de compilação nos relatórios JSON; navegação manual para pacotes Windows LAB em Actions mesmo sem Releases; mensagens nos três idiomas e teste de regressão para releases vazios/mesma versão. Sem publicação, sem alteração da política de assinatura; aprovação do novo build e validação manual pendentes. Ver memorando central.
+
+
+### 24/11/2026 — ZVX-EVO-004 candidato pós-varredura
+- Olympus Silver: controles de varredura, métricas e gráfico reposicionados no painel inicial; botões compactos com efeito 3D em CSS, estados de foco e pressionado; sem novos recursos externos. Exibe erros, ignorados, duração e hashes distintos/repetidos ao concluir. Não altera ou elimina alertas individuais.
+- Scanner: categorização de erros nativos no percurso de discos; uma nova tentativa para sharing/lock violation Windows, cancelável e sem elevar privilégios. Testes positivos/negativos e regressões adicionados. Preservados AppId, assinatura exigida, versão-base 3.0.5 e R5 anterior. Validação em andamento; nenhuma release promovida.

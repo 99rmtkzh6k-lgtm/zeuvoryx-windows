@@ -36,3 +36,6 @@ O histórico detalhado, critérios e pendências estão no [memorando permanente
 ### Conferência de CI — 24/11/2026
 
 Macintosh 3.0.5 LAB: regressão portátil Linux e compilação Intel aprovadas; Apple Silicon ARM64 permanece pendente. [Execução 45437873318](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45437873318). [Artefato Intel 14943370193](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45437873318/artifacts/14943370193), 4.283.792 bytes, SHA-256 registrado pelo GitHub `965da629bf97f885a7df1de2434211f3342d82ba4e286f1a1fb52f946bc3f767`. Somente para laboratório; sem validação integral em Macs reais ou assinatura de produção.
+
+## ZVX-EVO-001 — primeira revisão do protocolo, 24/11/2026
+- Auditoria Windows/macOS e metadados, pesquisa actionlint, govulncheck e atestação de artefatos; propostas registradas, sem implantação funcional. AGENTS.md adiciona orientações e links canônicos. Windows e Macintosh Intel 3.0.5 LAB aprovados em CI; ARM64 pendente; macos-updater cancelado. About requer edição manual. Sem novo build/release.

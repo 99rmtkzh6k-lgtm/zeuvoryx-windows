@@ -2259,16 +2259,16 @@ jobs:
         run: |
           go test -v -count=10 ./adaptive
           if ($LASTEXITCODE -ne 0) { throw 'Adaptive tests failed' }
-      - name: Train and evaluate AI on 20 million synthetic scenarios
+      - name: Train and evaluate AI on 50 million held-out synthetic scenarios
         shell: pwsh
         run: |
-          go run ./cmd/adaptive-lab -out lab-results/adaptive-report.json
+          go run ./cmd/adaptive-lab50 -out lab-results/adaptive-report-50m.json
           if ($LASTEXITCODE -ne 0) { throw 'Adaptive lab failed' }
       - name: Upload adaptive training and validation evidence
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-Adaptive-Lab-20M
-          path: lab-results/adaptive-report.json
+          name: ZEUVORYX-Adaptive-Lab-50M
+          path: lab-results/adaptive-report-50m.json
           if-no-files-found: error
       - name: Validate source code
         shell: pwsh

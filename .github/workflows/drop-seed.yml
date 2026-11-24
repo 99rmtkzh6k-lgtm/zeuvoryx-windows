@@ -1,6 +1,9 @@
 name: ZEUVORYX manual DROP seed collection
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/drop-seed.yml']
 permissions:
   contents: read
 jobs:

@@ -4,9 +4,9 @@
 
 ## Valores efetivamente observados
 
-- Description: ZEUVORYX — Experimental Windows security scanner in Go. SHA-256 indicators, heuristics, advisory AI, file quarantine and Olympus Silver interface. Complementary to Microsoft Defender. 3.0.5 LAB R5.
+- Description: ZEUVORYX Antivirus — Experimental Windows security scanner in Go. 3.0.8 LAB under validation. macOS LAB separate. Complementary to Microsoft Defender.
 - Topics: vazio.
-- Website/Homepage: vazio.
+- Website/Homepage: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows#readme
 - Ramificação padrão: main.
 - Visibilidade: pública; não alterar sem autorização.
 
@@ -62,3 +62,10 @@ Campos administrativos não editáveis pelo conector atual; titular pode aplicar
 Description: ZEUVORYX — Experimental Windows security scanner in Go. 3.0.7 LAB pilot partial; 3.0.8 LAB candidate under validation. macOS LAB separate. Complementary to Microsoft Defender; not certified.
 
 Topics e Website conforme proposta anterior; campos administrativos pendentes de edição e verificação. Nenhuma release definitiva.
+
+
+## Conferência vigente — CI 3.0.8 LAB R1
+
+24/11/2026 — CI 3.0.8 LAB R1 aprovado na [execução 45513126955](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45513126955), commit bfdc766b80b75a13c8d2198fa7356d96df4ec8ee. ZIP portátil x64 exclusivamente para teste rápido autorizado: [artefato 14976792219](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45513126955/artifacts/14976792219), 6.883.070 bytes; SHA-256 do ZIP conferido nos bytes baixados: 9c5f62efc583f6e8fe18691c008f8bf495cd9b94fcacbf58431e74e94ae6eb5e; CRC íntegro. SHA-256 do EXE confere com o manifesto: 98d07e58e2780d3d1ee0211f9d65869aa09928693e0dd5272c9f5f7f93110cbe. CI aprovou regressões de leitura/PE (30 rodadas cada), 50 regressões de varredura, 10 repetições, 5 rodadas de links, EICAR, cenários sintéticos, build e smoke desktop. Não equivale a proteção real certificada. Testes físicos, desempenho comparativo, cinco ciclos integrados e demais gates pendentes; nenhum instalador, atualização assinada ou release autorizada. Manter Defender e SmartScreen ativos, extrair ZIP em pasta separada e executar apenas rápida em ambiente autorizado.
+
+Campos efetivos conferidos via API: descrição 3.0.8 LAB under validation, homepage preenchida, tópicos vazios, main padrão. Descrição e homepage efetivas coerentes com candidato, sem alegar aprovação física. Tópicos ainda pendentes; integração não expõe escrita administrativa. Nenhuma edição administrativa realizada neste fechamento.

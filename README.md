@@ -1,4 +1,9 @@
-# ZEUVORYX 3.0.6 LAB R1 — Olympus Silver
+# ZEUVORYX Antivirus — Windows e Macintosh LAB
+
+> **Estado vigente — 24/11/2026:** Windows **3.0.7 LAB**: CI aprovado ([execução 45507766010](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45507766010)), teste rápido físico parcial e exportação confirmados; eficácia e estabilidade integral pendentes. **3.0.8 LAB**: preparação em [ramificação isolada](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/windows-3.0.8-lab), base 3.0.7 corrigida, sem motor/compilação 3.0.8 aprovado. Macintosh permanece independente, candidato 3.0.5 LAB. Não substitui o Defender. [Memorando](MEMORANDO_DESENVOLVIMENTO.md) · [metadados](ABOUT_GITHUB.md). Nenhuma release definitiva.
+
+## Histórico e documentação técnica (as versões abaixo são registros anteriores)
+
 
 > **24/11/2026 — Windows 3.0.7 LAB R1, em desenvolvimento (não liberado):** correção experimental do parser PE baseada nos relatórios 3.0.6; 30 rodadas locais de testes do componente aprovadas. CI integral, estabilidade em Windows real, desempenho, cobertura e instalação/migração pendentes. [Ramificação candidata](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/windows-3.0.7-lab) · [Memorando ZVX-EVO-019](MEMORANDO_DESENVOLVIMENTO.md). Não há instalador 3.0.7 para download. Links anteriores são históricos de laboratório.
 

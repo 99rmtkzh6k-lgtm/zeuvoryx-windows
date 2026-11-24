@@ -21,6 +21,7 @@ type Status struct {
  Available bool `json:"available"`
  Found bool `json:"found"`
  Preview bool `json:"preview"`
+ DownloadURL string `json:"download_url,omitempty"`
 }
 type release struct {
  Tag string `json:"tag_name"`
@@ -60,7 +61,7 @@ func selectRelease(list []release, current, platform, arch string, includePrevie
   }
   for _,a:=range r.Assets {
    if a.Name==name && (!result.Found||newer(v,best)){
-    result.Found=true;result.Preview=r.Pre;best=v;result.Latest=strings.TrimPrefix(tag,"v")
+    result.Found=true;result.Preview=r.Pre;best=v;result.Latest=strings.TrimPrefix(tag,"v");result.DownloadURL=ReleasesURL+"/download/"+r.Tag+"/"+name
    }
   }
  }

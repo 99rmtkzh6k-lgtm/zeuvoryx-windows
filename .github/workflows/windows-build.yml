@@ -1,5 +1,5 @@
 name: ZEUVORYX 3.0.5 LAB - Windows Build
-run-name: ZEUVORYX 3.0.5 LAB Windows x64
+run-name: ZEUVORYX 3.0.5 LAB R2 Olympus Silver Windows x64
 
 on:
   push:
@@ -2259,6 +2259,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Update check integration failed' }
           python prepare_audit305.py
           if ($LASTEXITCODE -ne 0) { throw '3.0.5 audit integration failed' }
+          python prepare_olympus_silver.py
+          if ($LASTEXITCODE -ne 0) { throw 'Olympus silver interface integration failed' }
           gofmt -w audit main.go engine/scanner.go engine/scan_upgrade.go desktop_windows.go
           if ($LASTEXITCODE -ne 0) { throw 'Audit formatting failed' }
           gofmt -w updater
@@ -2404,7 +2406,7 @@ jobs:
       - name: Upload LAB 3.0.5 installer and portable edition
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.5-LAB-Windows-Complete
+          name: ZEUVORYX-3.0.5-LAB-R2-Olympus-Silver-Windows-Complete
           path: |
             dist/
             installer/ZEUVORYX-LAB-Setup-3.0.5.exe

@@ -37,3 +37,10 @@ func TestLabIsolation(t *testing.T){
  if !selectRelease([]release{r},Current,"windows","amd64",true).Available{t.Fatal("lab update missing")}
  r.Tag="v3.0.6";if selectRelease([]release{r},Current,"windows","amd64",true).Found{t.Fatal("wrong tag")}
 }
+
+func TestDownloadURL(t *testing.T) {
+ var r release; r.Pre=true;r.Tag="v3.0.6-lab";r.Assets=append(r.Assets,struct{Name string `json:"name"`}{"ZEUVORYX-LAB-Setup-3.0.6.exe"})
+ v:=selectRelease([]release{r},"3.0.5","windows","amd64",true)
+ if !v.Available||v.DownloadURL!=ReleasesURL+"/download/v3.0.6-lab/ZEUVORYX-LAB-Setup-3.0.6.exe"{t.Fatal(v)}
+ r.Tag="v3.0.6-lab/../evil";if selectRelease([]release{r},"3.0.5","windows","amd64",true).DownloadURL!=""{t.Fatal("invalid tag")}
+}

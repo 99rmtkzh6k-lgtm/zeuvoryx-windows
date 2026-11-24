@@ -10,19 +10,23 @@ s=once(s,needle,'''if !bind("checkLabRelease",func()(updater.Status,error){
     return updater.Check(context.Background(),runtime.GOOS,runtime.GOARCH,true)
 }) { return }
 if !bind("openLabReleases",func()error{
-    return exec.Command("rundll32.exe","url.dll,FileProtocolHandler",updater.ReleasesURL).Start()
+    s.mu.Lock(); running:=s.running; s.mu.Unlock()
+    if running{return fmt.Errorf("Aguarde a conclusão da varredura")}
+    status,e:=updater.Check(context.Background(),runtime.GOOS,runtime.GOARCH,true);if e!=nil{return e}
+    if !status.Available||status.DownloadURL==""{return fmt.Errorf("Nenhum pacote LAB mais recente encontrado")}
+    return exec.Command("rundll32.exe","url.dll,FileProtocolHandler",status.DownloadURL).Start()
 }) { return }
 '''+needle)
 s=once(s,'ZEUVORYX | 3.0.3 LAB','ZEUVORYX | 3.0.4 LAB')
 p.write_text(s,encoding="utf-8")
 p=Path("desktop.html");s=p.read_text(encoding="utf-8")
 s=once(s,'3.0.3 LAB BETA</div>','3.0.4 LAB BETA</div>')
-s=once(s,'<section id="overview">','''<section id="overview"><div class="card" style="margin-bottom:10px"><h2 id="zUpdateTitle">Atualizações LAB — 3.0.4</h2><p id="zUpdateState" class="sub" role="status"></p><div class="actions"><button id="zUpdateCheck">Verificar atualizações</button><button id="zUpdateOpen" hidden>Ver versões no GitHub</button></div><p id="zUpdateNote" class="sub"></p></div>''')
+s=once(s,'<section id="overview">','''<section id="overview"><div class="card" style="margin-bottom:10px"><h2 id="zUpdateTitle">Atualizações LAB — 3.0.4</h2><p id="zUpdateState" class="sub" role="status"></p><div class="actions"><button id="zUpdateCheck">Verificar atualizações</button><button id="zUpdateOpen" hidden>Baixar atualização LAB</button></div><p id="zUpdateNote" class="sub"></p></div>''')
 s=once(s,'</script></body></html>','''
 const zUpdateCopy={
-'pt-BR':['Atualizações LAB — 3.0.4','Verificar atualizações','Ver versões no GitHub','Consulta apenas. Não instala automaticamente. Teste em Sandbox.','Consultando...','Nova versão LAB: ','Nenhuma atualização LAB encontrada.','Falha de consulta. Tente novamente.'],
-'en-US':['LAB updates — 3.0.4','Check for updates','View GitHub releases','Discovery only. No automatic installation. Test in Sandbox.','Checking...','New LAB version: ','No LAB update found.','Check failed. Try again.'],
-'es-ES':['Actualizaciones LAB — 3.0.4','Buscar actualizaciones','Ver versiones en GitHub','Solo consulta. Sin instalación automática. Pruebe en Sandbox.','Consultando...','Nueva versión LAB: ','Sin actualizaciones LAB.','Error de consulta. Inténtelo de nuevo.']
+'pt-BR':['Atualizações LAB — 3.0.4','Verificar atualizações','Baixar atualização LAB','Download pelo GitHub; instalação manual em Sandbox. Confira a origem do pacote.','Consultando...','Nova versão LAB: ','Nenhuma atualização LAB encontrada.','Falha de consulta. Tente novamente.'],
+'en-US':['LAB updates — 3.0.4','Check for updates','Download LAB update','GitHub download; manual Sandbox installation. Verify package origin.','Checking...','New LAB version: ','No LAB update found.','Check failed. Try again.'],
+'es-ES':['Actualizaciones LAB — 3.0.4','Buscar actualizaciones','Descargar actualización LAB','Descarga de GitHub; instalación manual en Sandbox. Verifique el origen.','Consultando...','Nueva versión LAB: ','Sin actualizaciones LAB.','Error de consulta. Inténtelo de nuevo.']
 };
 let zUpdateBusy=false,zUpdateResult=null,zUpdateError=false;
 function zUpdatePaint(){

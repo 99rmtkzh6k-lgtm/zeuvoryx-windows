@@ -66,3 +66,5 @@ Macintosh 3.0.5 LAB: regressão portátil Linux e compilação Intel aprovadas; 
 - ZVX-EVO-009 (planejado): central mundial de estatísticas/avaliações entre canais, métricas de proteção verificadas, arquitetura e gates em GLOBAL_SECURITY_INTELLIGENCE.md. Sem implantação ou alteração funcional.
 
 - ZVX-EVO-010 (obrigatório na próxima revisão funcional): sincronização mundial ultraleve, consentimento e criptografia, dados mínimos, envio diário, testes ponta a ponta de privacidade, consumo e paridade entre canais. Especificação atualizada; serviço ainda não implantado.
+
+- ZVX-EVO-011 (planejado): botão lateral Avaliação e resultados, painel funcional Olympus 3D estático, estrelas e gráficos baseados exclusivamente em dados reais, seleção Local/Mundial e testes de interação/desempenho. Conceito visual aprovado; implantação na próxima revisão funcional.

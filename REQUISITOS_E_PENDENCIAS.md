@@ -26,7 +26,7 @@ Atualizado em 24/11/2026. Índice operacional do [memorando histórico completo]
 | REQ-020 | PT-BR, inglês e espanhol, detecção Windows, seleção manual e fallback inglês; mais oito idiomas desejáveis | E | P2 11 idiomas sem sacrificar desempenho; validar os três atuais | Linha do tempo 3.0.2 |
 | REQ-021 | Macintosh separado Intel/ARM64, paridade funcional progressiva, pacote e assinatura próprios | E | P1 não confundir compilação Intel com aprovação integral; consultar memo macOS | EVO-002; memorando Macintosh |
 | REQ-022 | iOS e veículos: pesquisa futura, sem implantação agora | A | Retomar somente por decisão do titular | Sequência aprovada; prioridades |
-| REQ-023 | Distribuição mundial inicialmente gratuita, sem publicidade; possibilidade de comercialização futura ou aquisição do projeto, sem promessa de gratuidade perpétua | P | Novas ofertas pagas somente após formalização, autorização, informação prévia e aceitação; preservar direitos adquiridos | EVO-031/032; REQ-036/038/042/043 |
+| REQ-023 | Distribuição mundial inicialmente gratuita, sem publicidade; possibilidade de comercialização futura ou aquisição do projeto | P | Aviso prévio com data, preço e condições; aceitação expressa, sem cobrança retroativa; preservar direitos adquiridos | EVO-031/032/033; REQ-036/038/042/043 |
 | REQ-024 | Autoria, controle exclusivo de código e publicação; registro/licença/patente e revisão jurídica | E | P1 segurança da conta, assinatura, permissões; revisão jurídica pendente | Controle exclusivo; liberação |
 | REQ-025 | Testes repetidos, 5 ciclos integrados, 50 equivalência/desempenho quando viáveis, Windows 10/11 e máquinas reais, 4 GB/2 núcleos | B | P0; CI não basta | CP-001; EVO-018 |
 | REQ-026 | Versionamento uniforme, documentação, metadados, release/artefato e memorando atualizado sem lembrete | E | P0; About administrativo bloqueado | CP-002/003 |
@@ -78,3 +78,7 @@ REQ-035/036 adicionados, mantendo os 34 anteriores e as quatro cláusulas pétre
 
 ### EVO-022
 [Central mundial de ajuda](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/main/support). REQ-037 parcial; demais requisitos mantidos.
+
+### Escopo integral da próxima revisão — EVO-033
+
+Revisar todos os 43 IDs, implementar as melhorias vigentes aplicáveis à próxima versão e reconciliar evidências por requisito. REQ-022 adiado, REQ-043 suspenso. Não omitir requisitos ativos; registrar dependências, bloqueios e justificativas sem aprovar por promessa. Cláusula comercial consolidada no memorando; gratuidade inicial sem anúncios, possibilidade futura de oferta paga com data, preço, condições e aceitação expressa. Nenhuma mudança funcional nesta revisão.

@@ -20,7 +20,7 @@ def summary(s):
     commit=os.environ.get("GITHUB_SHA","")
     if commit and not re.fullmatch(r"[0-9a-f]{40}",commit):
         raise RuntimeError("Invalid build commit")
-    s=one(s,'r.EngineVersion = ScanEngineVersion','r.EngineVersion = ScanEngineVersion\\n    r.BuildCommit = "'+commit+'"')
+    s=one(s,'r.EngineVersion = ScanEngineVersion','r.EngineVersion = ScanEngineVersion\n    r.BuildCommit = "'+commit+'"')
     return one(s,'r.Partial = r.Cancelled || r.Skipped > 0 || len(r.Errors) > 0','''if r.ErrorCount < len(r.Errors) { r.ErrorCount = len(r.Errors) }
     r.OmittedErrorDetails = r.ErrorCount - len(r.Errors)
     r.Partial = r.Cancelled || r.Skipped > 0 || r.ErrorCount > 0 || r.ScanError != ""''')

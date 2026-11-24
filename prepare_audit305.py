@@ -1,6 +1,7 @@
 """Integrate local audit and report accounting after 3.0.4 generators."""
 from pathlib import Path
 import re
+import os
 def one(s,a,b):
     if s.count(a)!=1: raise RuntimeError("Expected one anchor: "+a[:100]+" count="+str(s.count(a)))
     return s.replace(a,b,1)
@@ -11,11 +12,15 @@ def rx(s,a,b,expected=1):
 def edit(name,fn):
     p=Path(name);p.write_text(fn(p.read_text(encoding="utf-8-sig")),encoding="utf-8")
 def scanner(s):
-    fields=[("ScanID","string","scan_id"),("ScanMode","string","scan_mode"),("ErrorCount","int","error_count"),("OmittedErrorDetails","int","omitted_error_details"),("ScanError","string","scan_error,omitempty"),("AuditError","string","audit_error,omitempty")]
+    fields=[("BuildCommit","string","build_commit,omitempty"),("ScanID","string","scan_id"),("ScanMode","string","scan_mode"),("ErrorCount","int","error_count"),("OmittedErrorDetails","int","omitted_error_details"),("ScanError","string","scan_error,omitempty"),("AuditError","string","audit_error,omitempty")]
     s=one(s,'type Report struct {','type Report struct {\n'+''.join('    '+a+' '+b+' '+chr(96)+'json:"'+c+'"'+chr(96)+'\n' for a,b,c in fields))
     return rx(s,r'if len\(report\.Errors\) < 30 \{','report.ErrorCount++\nif len(report.Errors) < 10000 {',2)
 def summary(s):
     s=rx(s,r'const ScanEngineVersion = "[^"]+"','const ScanEngineVersion = "3.0.5-lab"')
+    commit=os.environ.get("GITHUB_SHA","")
+    if commit and not re.fullmatch(r"[0-9a-f]{40}",commit):
+        raise RuntimeError("Invalid build commit")
+    s=one(s,'r.EngineVersion = ScanEngineVersion','r.EngineVersion = ScanEngineVersion\\n    r.BuildCommit = "'+commit+'"')
     return one(s,'r.Partial = r.Cancelled || r.Skipped > 0 || len(r.Errors) > 0','''if r.ErrorCount < len(r.Errors) { r.ErrorCount = len(r.Errors) }
     r.OmittedErrorDetails = r.ErrorCount - len(r.Errors)
     r.Partial = r.Cancelled || r.Skipped > 0 || r.ErrorCount > 0 || r.ScanError != ""''')

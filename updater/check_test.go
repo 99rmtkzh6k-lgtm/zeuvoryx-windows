@@ -44,3 +44,10 @@ func TestDownloadURL(t *testing.T) {
  if !v.Available||v.DownloadURL!=ReleasesURL+"/download/v3.0.6-lab/ZEUVORYX-LAB-Setup-3.0.6.exe"{t.Fatal(v)}
  r.Tag="v3.0.6-lab/../evil";if selectRelease([]release{r},"3.0.5","windows","amd64",true).DownloadURL!=""{t.Fatal("invalid tag")}
 }
+
+// A LAB artifact in Actions is not a published release. Never claim a same-version update is newer.
+func TestEmptyAndSameVersionRelease(t *testing.T) {
+ if got:=selectRelease(nil, "3.0.5", "windows", "amd64", true);got.Found||got.Available||got.DownloadURL!="" {t.Fatal(got)}
+ var r release; r.Pre=true; r.Tag="v3.0.5-lab"; r.Assets=append(r.Assets,struct{Name string `json:"name"`}{"ZEUVORYX-LAB-Setup-3.0.5.exe"})
+ if got:=selectRelease([]release{r},"3.0.5","windows","amd64",true);!got.Found||got.Available {t.Fatal(got)}
+}

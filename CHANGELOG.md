@@ -41,3 +41,7 @@ Macintosh 3.0.5 LAB: regressão portátil Linux e compilação Intel aprovadas; 
 - Auditoria Windows/macOS e metadados, pesquisa actionlint, govulncheck e atestação de artefatos; propostas registradas, sem implantação funcional. AGENTS.md adiciona orientações e links canônicos. Windows e Macintosh Intel 3.0.5 LAB aprovados em CI; ARM64 pendente; macos-updater cancelado. About requer edição manual. Sem novo build/release.
 
 - ZVX-EVO-002: documentação sincronizada para distinguir candidato Macintosh 3.0.5, histórico 3.0.3 e cancelamento ARM64; reteste solicitado. Sem alteração de código ou versão.
+
+
+### 24/11/2026 — ajustes candidatos pós-varredura completa (ZVX-EVO-003)
+- Identificação do commit de compilação nos relatórios JSON; navegação manual para pacotes Windows LAB em Actions mesmo sem Releases; mensagens nos três idiomas e teste de regressão para releases vazios/mesma versão. Sem publicação, sem alteração da política de assinatura; aprovação do novo build e validação manual pendentes. Ver memorando central.

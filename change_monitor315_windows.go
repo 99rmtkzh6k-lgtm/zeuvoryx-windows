@@ -32,14 +32,22 @@ func runChangeMonitor315(ctx context.Context,enabled func()bool,request func()bo
  for{select{case <-ctx.Done():return;case now:=<-tick.C:
   if !enabled(){if cancel!=nil{stop()};continue}
   if cancel==nil{
-   var sub context.Context
-   sub,cancel=context.WithCancel(ctx)
    tr.Enable(true);last=now;handled=tr.Snapshot().Signals
-   for _,root:=range tr.Snapshot().Roots{workers.Add(1);go func(root string){defer workers.Done();if e:=changeguard.Watch(sub,root,tr);e!=nil&&sub.Err()==nil{tr.Problem(root,e)}}(root)}
+   cancel=startChangeWatchers315(ctx,tr,&workers)
   }
   s:=tr.Snapshot()
   if now.Sub(last)>=5*time.Minute||(s.Signals>handled&&now.Sub(last)>=time.Minute){
    if request(){last=now;handled=s.Signals;tr.ScanRequest(now)}
   }
  }}
+}
+
+// The caller owns cancellation and joins the workers on disable or exit.
+func startChangeWatchers315(ctx context.Context,tr *changeguard.Tracker,workers *sync.WaitGroup) context.CancelFunc {
+ sub,cancel:=context.WithCancel(ctx)
+ for _,root:=range tr.Snapshot().Roots{
+  workers.Add(1)
+  go func(root string){defer workers.Done();if e:=changeguard.Watch(sub,root,tr);e!=nil&&sub.Err()==nil{tr.Problem(root,e)}}(root)
+ }
+ return cancel
 }

@@ -1,7 +1,7 @@
 // Local audit: authenticated records, not a remote or immutable ledger.
 package audit
 import("crypto/hmac";"crypto/rand";"crypto/sha256";"encoding/hex";"encoding/json";"errors";"io";"os";"path/filepath";"sort";"strings";"time")
-const Version="3.0.6"
+const Version="3.0.9"
 const maxRecord=64<<20
 type Event struct { ID,ScanID,Kind,Mode,Version,Error string; At time.Time; Stars,Files,Skipped,Alerts,ErrorCount int; Bytes int64; Cancelled,Partial bool }
 type Envelope struct { Data json.RawMessage; MAC string }

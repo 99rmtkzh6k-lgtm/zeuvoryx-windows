@@ -297,7 +297,7 @@ jobs:
               native := &defenderController{ctx:nativeCtx, run:runDefenderOperation}
               var operationGate sync.Mutex
               startLocal := func(path string) (bool,error) {
-                  operationGate.Lock(); defer operationGate.Unlock()
+                  if !operationGate.TryLock(){return false,fmt.Errorf("Aguarde a operação atual")}; defer operationGate.Unlock()
                   if native.status().Running { return false,fmt.Errorf("Aguarde a operação do Windows") }
                   if !s.startScan(path,true) { return false,fmt.Errorf("Varredura já em andamento") }
                   return true,nil
@@ -2376,7 +2376,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw '310 feedback integration failed' }
           python prepare_optimization310.py
           if ($LASTEXITCODE -ne 0) { throw '310 integrated optimization failed' }
-          gofmt -w alert310_windows.go maintenance310_windows.go maintenance310_windows_test.go optimization310_windows.go optimization310_windows_test.go
+          gofmt -w alert310_windows.go maintenance310_windows.go maintenance310_windows_test.go optimization310_windows.go optimization310_windows_test.go driveopt310_windows.go driveopt310_windows_test.go
           if ($LASTEXITCODE -ne 0) { throw '310 native formatting failed' }
           gofmt -w live_report309.go live_report309_test.go engine/live_report309.go main.go engine/scanner.go desktop_windows.go
           if ($LASTEXITCODE -ne 0) { throw 'Live report formatting failed' }
@@ -2419,7 +2419,7 @@ jobs:
           if (!$html.Contains('id="zLiveFailures"') -or !$html.Contains('id="zLiveCoverage"') -or !$desktop.Contains('snapshotForExport')) { throw 'Live reporting missing' }
           if (!$html.Contains('id="z310Speed"') -or !$html.Contains('id="z310Notice"') -or !$desktop.Contains('z310Beep')) { throw '310 feedback missing' }
           if (!$html.Contains('id="z310MaintenancePanel"') -or !$desktop.Contains('z310Maintenance')) { throw '310 maintenance panel missing' }
-          if (!$html.Contains('id="z310Optimizer"') -or !$desktop.Contains('z310OptimizeApply')) { throw 'Integrated optimizer missing' }
+          if (!$html.Contains('id="z310Optimizer"') -or !$desktop.Contains('z310OptimizeApply') -or !$desktop.Contains('z310DriveOptimize')) { throw 'Integrated optimizer missing' }
           Write-Host 'Verified final identity: ZEUVORYX 3.0.10 LAB'
       - name: Run adaptive model tests
         shell: pwsh

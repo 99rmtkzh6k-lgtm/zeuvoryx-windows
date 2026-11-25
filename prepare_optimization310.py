@@ -5,6 +5,12 @@ def once(s,a,b):
     return s.replace(a,b,1)
 p=Path("desktop_windows.go");s=p.read_text(encoding="utf-8-sig")
 s=once(s,'if !bind("getScanState",','''var optimizePlan opt310Plan
+    if !bind("z310DriveOptimize",func()(uint32,error){
+     if !operationGate.TryLock(){return 0,fmt.Errorf("Another operation is running")};defer operationGate.Unlock()
+     s.mu.Lock();running:=s.running;s.mu.Unlock()
+     if running||native.status().Running{return 0,fmt.Errorf("Finish the scan before optimization")}
+     return drive310Optimize()
+    }){return}
     if !bind("z310OptimizePreview",func()(opt310Plan,error){
      operationGate.Lock();defer operationGate.Unlock()
      s.mu.Lock();running:=s.running;s.mu.Unlock()
@@ -40,7 +46,17 @@ js=r"""
  function sync(){z('z310Apply').disabled=busy||!plan||!z('z310FileList').querySelector('input:checked')}
  function lang(){const a=w();z('z310GoOptimize').textContent=z('z310Diagnose').textContent=a[0];z('z310Apply').textContent=a[1]}
  function clear(){plan=null;z('z310FileList').replaceChildren();z('z310PlanSummary').textContent='';sync()}
- z('z310GoOptimize').onclick=()=>document.querySelector('[data-page=tools]').click();
+ z('z310GoOptimize').onclick=()=>{document.querySelector('[data-page=tools]').click();z('z310Diagnose').click()};
+ z('z310Drive').onclick=async()=>{
+  const lang=document.documentElement.lang;
+  const a=({'pt-BR':['Otimizar a unidade do Windows agora? O Windows escolhe a operação adequada ao disco. Mantenha o computador na tomada e aguarde.','Otimizando — aguarde o Windows. Não inicie varreduras.','Windows informou conclusão (código 0). Ganho de desempenho não medido.'],
+  'en-US':['Optimize the Windows drive now? Windows selects the appropriate operation. Keep AC connected.','Optimizing — wait for Windows. Do not start scans.','Windows reported completion (exit 0). Performance gain not measured.'],
+  'es-ES':['¿Optimizar la unidad de Windows? Mantenga el equipo conectado a la corriente.','Optimizando — espere a Windows.','Windows informó finalización (código 0). Mejora no medida.']})[lang]||['Optimize Windows drive?','Optimizing…','Windows reported completion.'];
+  if(busy||z310Latest?.running){z('z310MaintStatus').textContent=w()[15];return}
+  busy=true;z('z310Drive').disabled=true;
+  try{if(!await ask(a[0]))return;z('z310MaintStatus').textContent=a[1];await window.z310DriveOptimize();z('z310MaintStatus').textContent=a[2]}catch(e){z('z310MaintStatus').textContent=String(e)}finally{busy=false;z('z310Drive').disabled=false;sync()}
+ };
+
  z('z310Diagnose').onclick=async()=>{
   if(busy)return;const a=w();if(z310Latest?.running){z('z310Diagnosis').textContent=a[15];return}
   busy=true;z('z310Diagnose').disabled=true;clear();z('z310Result').textContent='';z('z310Diagnosis').textContent=a[16];

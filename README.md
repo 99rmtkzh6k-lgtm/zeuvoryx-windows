@@ -1,3 +1,5 @@
+> **3.0.15 LAB — cinco revisões próprias:** decodificação UTF-16 com menos alocações intermediárias; limite de todos os eventos Sysmon; recuperação do monitor e contador saturado; distinção de resumo e cobertura conhecida; inventário com aritmética verificada. Commit cab3ab1b7c930eb487ab2ff8d0b2efec976df86b. Cinco ciclos de testes em Linux/Windows e benchmark configurados; resultados pendentes. Sem aprovação de produção.
+
 > **3.0.15 LAB — aperfeiçoamento próprio:** ScriptGuard UTF-8/16/32 com BOM e limites; BehaviorWatch com limite XML e deduplicação de persistência; ChangeGuard com timestamps monotônicos; contabilidade explicita quando o número de erros é desconhecido. Testes acrescentados, validação CI pendente; não equivale a novos motores completos nem a eficácia comprovada.
 
 > **3.0.15 LAB — motores independentes:** teste operacional AMSI separado por tag `amsi_integration`, executado em workflow próprio a cada revisão candidata; falha de provedor permanece reprovação da validação AMSI, nunca sucesso. Compilação LAB do scanner próprio e ClamAV independente, sem aprovação pública ou física. [Mini memorando](AUDITORIA_CAMPO_2026-11-25.md).

@@ -1,3 +1,6 @@
+## Evidência de vídeo e CI corretiva — 25/11/2026
+Vídeo do PC físico: scanner próprio encerrado, aguardando ClamAV e consolidação; 202/209 arquivos, 770,1/770,5 MB, saldo exibido 371,8 KB e 7 arquivos, 0 B/s, 0 alertas exibidos. CPU/RAM elevadas nas amostras (RAM total 3,9 GiB). Não confirma deadlock nem cobertura total. Prioridade P0: medir preparação das assinaturas, execução ClamAV, consolidação e consultas auxiliares separadamente; registrar tempo, heartbeat e cancelamento; distinguir ausência de progresso próprio de falha do motor de assinaturas; investigar consumo e evitar processos concorrentes desnecessários em PC de 4 GiB. CI corretiva do inventário ad42721 aprovada 48/48 no run 45661075658, módulos run 45661075714 aprovados. Artefato LAB 15047060195, 192799452 bytes. Ainda requer teste físico; esta revisão não comprova resolução da espera pelo ClamAV. Sem promoção pública.
+
 # Referência atual
 
 ZEUVORYX Windows — 3.0.15 LAB, revisão corretiva — 25/11/2026

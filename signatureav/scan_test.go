@@ -60,3 +60,9 @@ func TestOfflineDatabaseStatus(t *testing.T){
  {"ClamAV 1.5.4/1/Mon Dec  7 06:26:59 2026","unknown"},
  }{if got:=DatabaseStatus(c.v,now);got!=c.want{t.Fatalf("%q: %s != %s",c.v,got,c.want)}}
 }
+
+func TestOfficialBundleOnly(t *testing.T){
+ exe:=filepath.Join(t.TempDir(),"clamscan.exe")
+ if !officialBundleOnly(exe,BundledDatabase(exe)){t.Fatal("official isolation not selected")}
+ if officialBundleOnly(exe,"")||officialBundleOnly(exe,filepath.Join(filepath.Dir(exe),"optional")){t.Fatal("wrong isolation")}
+}

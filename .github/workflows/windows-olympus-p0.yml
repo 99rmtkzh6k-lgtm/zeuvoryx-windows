@@ -1,7 +1,7 @@
 name: ZEUVORYX 3.0.15 LAB - Olympus P0
 on:
   push:
-    branches: [lab-olympus-assinaturas-opcionais-20261125]
+    branches: [lab-olympus-termos-extensoes-20261125]
     paths-ignore: ['**.md']
   workflow_dispatch:
 permissions:

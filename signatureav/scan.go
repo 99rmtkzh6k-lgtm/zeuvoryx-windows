@@ -60,6 +60,7 @@ func command(ctx context.Context, exe string,args ...string)*exec.Cmd {
 }
 // BundledDatabase is the same directory written by the integrated FreshClam.
 func BundledDatabase(exe string) string {return filepath.Join(filepath.Dir(exe),"database")}
+func officialBundleOnly(exe,db string)bool{return db!=""&&strings.EqualFold(filepath.Clean(db),filepath.Clean(BundledDatabase(exe)))}
 func databaseArgs(db string)([]string,error){
  if db==""{return nil,nil}
  if !filepath.IsAbs(db){return nil,errors.New("absolute ClamAV DB required")}
@@ -147,6 +148,7 @@ func ScanRoots(ctx context.Context, exe string, roots []string, db string) (r Re
  r.DatabaseStatus=DatabaseStatus(r.Version,time.Now())
  args:=[]string{"--stdout","--infected","--recursive","--alert-exceeds-max=yes","--follow-dir-symlinks=0","--follow-file-symlinks=0"}
  dbArgs,e:=databaseArgs(db);if e!=nil{return r,e};args=append(args,dbArgs...)
+ if officialBundleOnly(exe,db){args=append(args,"--official-db-only=yes")}
  args=append(args,"--");args=append(args,r.Roots...)
  cmd:=command(ctx,exe,args...)
  var out bounded

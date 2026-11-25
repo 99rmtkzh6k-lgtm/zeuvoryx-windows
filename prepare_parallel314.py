@@ -27,6 +27,8 @@ def report(s):
  Inventory314 scopeprogress.Inventory `json:"inventory_314"`
  BehaviorLocal map[string]any `json:"behavior_local,omitempty"`
  BehaviorProblem string `json:"behavior_problem,omitempty"`
+ WindowsLocal314 map[string]any `json:"windows_local_314,omitempty"`
+ WindowsProblem314 string `json:"windows_problem_314,omitempty"`
 ''')
 def desktop(s):
     a=s.index('if !bind("behavior313"')

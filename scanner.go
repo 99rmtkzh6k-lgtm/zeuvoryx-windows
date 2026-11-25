@@ -27,6 +27,8 @@ type Finding struct {
 	Risk    int      `json:"risk"`
 	Level   string   `json:"level"`
 	Reasons []string `json:"reasons"`
+ EvidenceKind string `json:"evidence_kind"`
+ AdvisoryOnly bool `json:"advisory_only"`
 	Size    int64    `json:"size"`
 }
 type Report struct {
@@ -130,6 +132,7 @@ func tier(score int) string {
 }
 func analyze(path string, data []byte, fullHash string, ioc map[string]string) *Finding {
 	score := 0
+ evidenceKind := "heuristic_advisory"
 	var reasons []string
 	name := filepath.Base(path)
 	ext := strings.ToLower(filepath.Ext(name))
@@ -154,10 +157,12 @@ func analyze(path string, data []byte, fullHash string, ioc map[string]string) *
 	}
 	if bytes.Contains(data, []byte("X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*")) {
 		score = 100
+ evidenceKind = "test_artifact"
 		reasons = append(reasons, "Assinatura de teste EICAR detectada (não é malware real)")
 	}
 	if label, ok := ioc[strings.ToLower(fullHash)]; ok {
 		score = 100
+ if evidenceKind != "test_artifact" { evidenceKind = "known_hash_match" }
 		reasons = append(reasons, "Correspondência SHA-256: "+label)
 	}
 	if score > 100 {
@@ -173,7 +178,7 @@ func analyze(path string, data []byte, fullHash string, ioc map[string]string) *
 	if score < 30 {
 		return nil
 	}
-	return &Finding{Path: path, SHA256: fullHash, Risk: score, Level: tier(score), Reasons: reasons, Size: int64(len(data))}
+	return &Finding{Path: path, SHA256: fullHash, Risk: score, Level: tier(score), Reasons: reasons, Size: int64(len(data)), EvidenceKind:evidenceKind, AdvisoryOnly:true}
 }
 func (s *Scanner) examine(path string, size int64) ([]Finding, error) {
 	f, e := os.Open(path)
@@ -181,23 +186,14 @@ func (s *Scanner) examine(path string, size int64) ([]Finding, error) {
 		return nil, e
 	}
 	defer f.Close()
-	// Hash the complete file, not merely the sample used by heuristics.
-	h := sha256.New()
-	if _, e = io.Copy(h, f); e != nil {
-		return nil, e
-	}
-	hash := hex.EncodeToString(h.Sum(nil))
-	if _, e = f.Seek(0, io.SeekStart); e != nil {
-		return nil, e
-	}
-	limit := s.MaxFileBytes
-	if limit <= 0 {
-		limit = 32 << 20
-	}
-	b, e := io.ReadAll(io.LimitReader(f, limit))
-	if e != nil {
-		return nil, e
-	}
+ // One sequential pass hashes the complete file while retaining only the bounded sample.
+ h := sha256.New()
+ limit := s.MaxFileBytes
+ if limit <= 0 {limit = 32 << 20}
+ b,e:=io.ReadAll(io.TeeReader(io.LimitReader(f,limit),h))
+ if e!=nil{return nil,e}
+ if _,e=io.Copy(h,f);e!=nil{return nil,e}
+ hash:=hex.EncodeToString(h.Sum(nil))
 	var found []Finding
 	if hit := analyze(path, b, hash, s.IOC); hit != nil {
 		hit.Size = size

@@ -1,0 +1,21 @@
+package engine
+import("context";"crypto/sha256";"encoding/hex";"encoding/json";"os";"path/filepath";"strings";"testing")
+func TestEvidenceSeparation315(t *testing.T){
+ f:=analyze("glossary.md",[]byte("Glossary: Invoke-Expression and FromBase64String( are documented concepts."),"",nil)
+ if f==nil||f.EvidenceKind!="heuristic_advisory"||!f.AdvisoryOnly{t.Fatal("heuristic evidence not preserved",f)}
+ for _,name:=range []string{"reference.md","example.ps1","example.txt"}{
+  b:=[]byte("Harmless signature control "+name);sum:=sha256.Sum256(b);h:=hex.EncodeToString(sum[:])
+  f=analyze(name,b,h,map[string]string{h:"LAB harmless control"})
+  if f==nil||f.EvidenceKind!="known_hash_match"||!f.AdvisoryOnly||f.Risk!=100{t.Fatal("hash evidence not preserved",f)}
+ }
+ b,e:=json.Marshal(f);if e!=nil||!strings.Contains(string(b),"\"evidence_kind\":\"known_hash_match\""){t.Fatal(string(b),e)}
+}
+func TestSinglePassFullHash315(t *testing.T){
+ d:=t.TempDir();s:=New();s.MaxFileBytes=17
+ for _,body:=range []string{"small",strings.Repeat("harmless data ",4096),""}{
+  p:=filepath.Join(d,"sample.txt");b:=[]byte(body);if e:=os.WriteFile(p,b,0600);e!=nil{t.Fatal(e)}
+  sum:=sha256.Sum256(b);h:=hex.EncodeToString(sum[:]);s.IOC=map[string]string{h:"LAB harmless hash"}
+  r,e:=s.Scan(context.Background(),p,nil)
+  if e!=nil||r.Files!=1||r.Bytes!=int64(len(b))||len(r.Findings)!=1||r.Findings[0].SHA256!=h||r.Findings[0].EvidenceKind!="known_hash_match"{t.Fatalf("complete hash coverage %+v %v",r,e)}
+ }
+}

@@ -32,3 +32,11 @@ jobs:
           Copy-Item lab/comparative_test.go.txt comparative_lab_test.go
           go test -v -count=5 scanner.go pe.go comparative_lab_test.go
           if ($LASTEXITCODE -ne 0) { throw 'Comparative diagnostic failed' }
+      - name: Evidence classification and single-pass full-file hash regression
+        shell: pwsh
+        run: |
+          Copy-Item lab/evolution315_test.go.txt evolution315_lab_test.go
+          go test -v -count=5 scanner.go pe.go evolution315_lab_test.go
+          if ($LASTEXITCODE -ne 0) { throw 'Evidence or complete hash regression failed' }
+          go test -v -count=5 ./remediation
+          if ($LASTEXITCODE -ne 0) { throw 'Remediation safety regression failed' }

@@ -35,7 +35,7 @@ func clamScanFile(path string)(map[string]any,error){
  clam311Mu.Lock();if clam311Cancel!=nil{clam311Mu.Unlock();return nil,fmt.Errorf("Análise ClamAV já em andamento")}
  ctx,cancel:=context.WithTimeout(context.Background(),6*time.Hour);clam311Cancel=cancel;clam311Mu.Unlock()
  defer func(){cancel();clam311Mu.Lock();clam311Cancel=nil;clam311Mu.Unlock()}()
- if _,e:=ensureClam314(ctx,false);e!=nil{return nil,e}
+ baseInfo,e:=ensureClam314(ctx,false);if e!=nil{return nil,e}
  rep,scanErr:=signatureav.Scan(ctx,tool,path,"")
  base,e:=os.UserConfigDir();if e!=nil{return nil,e};dir:=filepath.Join(base,"ZEUVORYX","signature-reports")
  if e=os.MkdirAll(dir,0700);e!=nil{return nil,e}
@@ -44,5 +44,5 @@ func clamScanFile(path string)(map[string]any,error){
  status:="Nenhuma detecção reportada pelo ClamAV (não garante segurança)"
  if rep.Status=="detections_reported"{status="Detecções reportadas pelo ClamAV; não execute os arquivos"}
  if rep.Partial||scanErr!=nil{status="Inconclusivo / cobertura parcial; consulte o JSON"}
- return map[string]any{"status":status,"code":rep.ExitCode,"details":fmt.Sprintf("%s\nArquivos: %d | assinaturas: %d | alertas: %d\nJSON local: %s\n%s",rep.Version,rep.Scanned,rep.KnownSignatures,len(rep.Findings),f.Name(),rep.Raw),"report_path":f.Name()},nil
+ return map[string]any{"status":status,"code":rep.ExitCode,"details":fmt.Sprintf("%s\nArquivos: %d | assinaturas: %d | alertas: %d\nJSON local: %s\n%s",rep.Version,rep.Scanned,rep.KnownSignatures,len(rep.Findings),f.Name(),rep.Raw),"report_path":f.Name(),"database_status":baseInfo},nil
 }

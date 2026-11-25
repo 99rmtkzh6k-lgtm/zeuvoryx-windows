@@ -69,6 +69,8 @@ func Version(ctx context.Context, exe string)(string,error){
  return v,nil
 }
 // Version freshness is a conservative check, not proof of database authenticity.
+// DatabaseFresh validates a reported daily database version and date; not an authenticity proof.
+func DatabaseFresh(v string, now time.Time) bool {return recentDatabase(v,now)}
 func recentDatabase(v string, now time.Time) bool {
  parts:=strings.SplitN(v,"/",3);if len(parts)!=3{return false}
  if n,e:=strconv.Atoi(parts[1]);e!=nil||n<=0{return false}

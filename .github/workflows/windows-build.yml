@@ -2796,7 +2796,10 @@ jobs:
           $ErrorActionPreference='Stop'
           $app=Join-Path $env:LOCALAPPDATA 'Programs/ZEUVORYX-Lab303/ZEUVORYX.exe'
           $base=Split-Path $app
-          if(!(Test-Path (Join-Path $base 'clamav/clamscan.exe'))){throw 'Bundled engine missing after install'}
+          foreach($name in 'clamscan.exe','freshclam.exe','libclamav.dll'){if(!(Test-Path (Join-Path $base "clamav/$name") -PathType Leaf)){throw "Bundled engine missing after install: $name"}}
+          # No external install is required. Record external presence, without modifying it.
+          $external=Join-Path $env:ProgramFiles 'ClamAV/clamscan.exe'
+          Write-Host "External ClamAV present: $(Test-Path -LiteralPath $external -PathType Leaf)"
           if(!(Test-Path (Join-Path $base 'third-party/clamav-1.5.5.tar.gz'))){throw 'Corresponding source archive missing'}
           $fixture=Join-Path $env:RUNNER_TEMP 'z314-fixture'
           New-Item -ItemType Directory -Force $fixture | Out-Null

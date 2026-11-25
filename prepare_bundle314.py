@@ -5,6 +5,7 @@ def once(s,a,b):
 def edit(path,fn):
     p=Path(path);p.write_text(fn(p.read_text(encoding="utf-8-sig")),encoding="utf-8")
 Path("bundle314_windows.go").write_text(Path("lab/bundle314_windows.go.txt").read_text(encoding="utf-8"),encoding="utf-8")
+Path("bundle314_windows_test.go").write_text(Path("lab/bundle314_windows_test.go.txt").read_text(encoding="utf-8"),encoding="utf-8")
 def main(s):
     return once(s,'func main() {','func main() {\n if len(os.Args)==3 && os.Args[1]=="-signature-check314" {os.Exit(signatureCheck314(os.Args[2]))}\n')
 def html(s):

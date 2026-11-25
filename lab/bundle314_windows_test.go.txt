@@ -1,0 +1,12 @@
+package main
+import("os";"path/filepath";"testing")
+func TestBundled314OnlyAdjacent(t *testing.T){
+ root:=t.TempDir()
+ app:=filepath.Join(root,"ZEUVORYX.exe")
+ if _,e:=bundled314At(app);e==nil{t.Fatal("accepted missing bundle")}
+ dir:=filepath.Join(root,"clamav");if e:=os.Mkdir(dir,0700);e!=nil{t.Fatal(e)}
+ for _,n:=range []string{"clamscan.exe","freshclam.exe","libclamav.dll"}{if e:=os.WriteFile(filepath.Join(dir,n),[]byte("path fixture only"),0600);e!=nil{t.Fatal(e)}}
+ got,e:=bundled314At(app);if e!=nil||got!=filepath.Join(dir,"clamscan.exe"){t.Fatalf("resolver=%q err=%v",got,e)}
+ if e=os.Remove(filepath.Join(dir,"freshclam.exe"));e!=nil{t.Fatal(e)}
+ if _,e=bundled314At(app);e==nil{t.Fatal("accepted incomplete bundle")}
+}

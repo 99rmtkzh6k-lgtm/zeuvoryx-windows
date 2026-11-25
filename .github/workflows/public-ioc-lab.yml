@@ -26,3 +26,9 @@ jobs:
           Copy-Item lab/public_ioc_test.go.txt public_ioc_lab_test.go
           go test -v -count=5 scanner.go pe.go public_ioc_lab_test.go
           if ($LASTEXITCODE -ne 0) { throw 'Public indicator regression failed' }
+      - name: Protection proxies, benign alert survey and IO baseline
+        shell: pwsh
+        run: |
+          Copy-Item lab/comparative_test.go.txt comparative_lab_test.go
+          go test -v -count=5 scanner.go pe.go comparative_lab_test.go
+          if ($LASTEXITCODE -ne 0) { throw 'Comparative diagnostic failed' }

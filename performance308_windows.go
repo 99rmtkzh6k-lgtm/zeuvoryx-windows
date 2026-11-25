@@ -49,4 +49,4 @@ func(p *pSampler) sample()map[string]any{
  }else{for _,k:=range []string{"disk_root","disk_total","disk_free","disk_percent","local_total","local_free","local_count","local_omitted"}{x[k]=p.cache[k]}}
  p.last,p.cache=now,x;p.ready=x["cpu"]!=nil&&x["ram_percent"]!=nil;return x
 }
-func(p *pSampler) rendered()bool{p.mu.Lock();defer p.mu.Unlock();if !p.ready{return false};log.Print("stability performance_ui_ready revision=R4");return true}
+func(p *pSampler) rendered()bool{p.mu.Lock();defer p.mu.Unlock();if !p.ready{return false};log.Print("stability performance_ui_ready revision=R5");return true}

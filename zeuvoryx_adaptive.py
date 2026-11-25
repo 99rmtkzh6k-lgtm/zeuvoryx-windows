@@ -23,16 +23,17 @@ if old in s:
     matches = [old]
 if len(matches) != 1:
     raise RuntimeError("Expected exactly one final Finding constructor")
+# Run the actual advisory model before the alert threshold, even for clean files.
+gates = re.findall(r'if\s+score\s*<\s*30\s*\{', s)
+if len(gates) != 1:
+    raise RuntimeError("Expected exactly one analysis threshold")
+s = one(s, gates[0], '''prediction, adaptiveErr := adaptive.Observe(adaptive.FromReasons(reasons))
+    ''' + gates[0])
 s = one(s, matches[0], '''hit := &Finding{Path: path, SHA256: fullHash, Risk: score, Level: tier(score), Reasons: reasons, Size: int64(len(data)), Evidence:kind,QuarantineEligible:eligible&&!strings.Contains(path," :: ")}
-    if kind == "heuristic" {
-        x := adaptive.FromReasons(reasons)
-        if x != (adaptive.Vector{}) {
-            if prediction, err := adaptive.Observe(x); err == nil {
-                    value := prediction * 100
-                    hit.AdaptiveScore = &value
-                    hit.AdaptiveModel = adaptive.Version
-            }
-        }
+    if kind == "heuristic" && adaptiveErr == nil {
+        value := prediction * 100
+        hit.AdaptiveScore = &value
+        hit.AdaptiveModel = adaptive.Version
     }
     return hit''')
 p.write_text(s, encoding="utf-8")

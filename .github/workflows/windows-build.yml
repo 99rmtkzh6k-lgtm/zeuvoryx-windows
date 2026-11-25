@@ -1,5 +1,5 @@
 name: ZEUVORYX 3.0.8 LAB - Windows Build
-run-name: ZEUVORYX 3.0.8 LAB R4 Olympus Silver QA20 Windows x64
+run-name: ZEUVORYX 3.0.8 LAB R5 Olympus Silver QA20 Windows x64
 
 on:
   workflow_call:
@@ -2323,7 +2323,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Diagnostics integration failed' }
           gofmt -w diagnostics.go diagnostics_test.go desktop_windows.go
           if ($LASTEXITCODE -ne 0) { throw 'Diagnostics formatting failed' }
-      - name: Apply scanner hardening for ZEUVORYX 3.0.8 LAB R4
+      - name: Apply scanner hardening for ZEUVORYX 3.0.8 LAB R5
         shell: pwsh
         run: |
           python zeuvoryx_upgrade.py --apply
@@ -2365,7 +2365,7 @@ jobs:
           gofmt -w scan_power_windows.go scan_power_windows_test.go main.go adaptive/activity.go adaptive/activity_test.go
           if ($LASTEXITCODE -ne 0) { throw 'Integration formatting failed' }
           python prepare_performance308.py
-          if ($LASTEXITCODE -ne 0) { throw 'R4 performance panel integration failed' }
+          if ($LASTEXITCODE -ne 0) { throw 'R5 performance panel integration failed' }
           gofmt -w performance308_windows.go performance308_windows_test.go desktop_windows.go
           if ($LASTEXITCODE -ne 0) { throw 'Performance panel formatting failed' }
           gofmt -w engine/scan308_test.go
@@ -2384,7 +2384,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Layered security color regression failed' }
           node --check desktop-syntax.js
           if ($LASTEXITCODE -ne 0) { throw 'Desktop JavaScript syntax failed' }
-      - name: Verify final ZEUVORYX 3.0.8 LAB R4 identity
+      - name: Verify final ZEUVORYX 3.0.8 LAB R5 identity
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -2397,10 +2397,11 @@ jobs:
           if ($html.Contains('OLYMPUS 3.0.1 BETA</div>')) { throw 'Stale desktop version' }
           if ($engine -notmatch 'const\s+ScanEngineVersion\s*=\s*"3\.0\.8-lab"') { throw 'Incorrect scan engine version' }
           if ($updater -notmatch 'const\s+Current\s*=\s*"3\.0\.8"') { throw 'Incorrect updater version' }
-          if (!$desktop.Contains('ZEUVORYX | 3.0.8 LAB R4') -or !$html.Contains('id="zPerformancePanel"')) { throw 'Missing R4 performance interface' }
+          if (!$desktop.Contains('ZEUVORYX | 3.0.8 LAB R5') -or !$html.Contains('id="zPerformancePanel"')) { throw 'Missing R5 performance interface' }
           if (!$html.Contains('id="zStorageCard"') -or !$html.Contains('zHelpOpen') -or !$html.Contains('id="zAIActivity"') -or !$desktop.Contains('zAISelfCheck')) { throw 'Missing integrated UI' }
           if (!$html.Contains('zLayerStatus') -or !$html.Contains('id="zLayerLegend"') -or !$html.Contains('zLayer-green') -or $html.Contains('zCameraPanel')) { throw 'Layered security UI incorrect' }
-          Write-Host 'Verified final identity: ZEUVORYX 3.0.8 LAB R4'
+          if (!$html.Contains('id="zAIRobot"') -or !$html.Contains('id="zAIOverviewRobot"')) { throw 'Missing live AI robot' }
+          Write-Host 'Verified final identity: ZEUVORYX 3.0.8 LAB R5'
       - name: Run adaptive model tests
         shell: pwsh
         run: |
@@ -2529,7 +2530,7 @@ jobs:
             Start-Sleep -Seconds 15
             $p.Refresh()
             if ($p.HasExited) { throw "Desktop exited during idle test: $($p.ExitCode)" }
-            if (!(Select-String -LiteralPath $logs[0].FullName -Pattern 'stability performance_ui_ready revision=R4' -Quiet)) { throw 'Real CPU/RAM panel render not observed' }
+            if (!(Select-String -LiteralPath $logs[0].FullName -Pattern 'stability performance_ui_ready revision=R5' -Quiet)) { throw 'Real CPU/RAM panel render not observed' }
           Write-Host 'Portable desktop and real CPU/RAM panel rendered; survived 15 seconds'
           } finally {
             if (!$p.HasExited) {
@@ -2545,7 +2546,7 @@ jobs:
           $hash = (Get-FileHash dist/ZEUVORYX.exe -Algorithm SHA256).Hash.ToLowerInvariant()
           Set-Content -Encoding ascii -Path dist/SHA256SUMS.txt -Value "$hash  ZEUVORYX.exe"
           @(
-            'ZEUVORYX 3.0.8 LAB R4 - TESTE PORTATIL x64, NAO INSTALADOR'
+            'ZEUVORYX 3.0.8 LAB R5 - TESTE PORTATIL x64, NAO INSTALADOR'
             "Commit: $env:GITHUB_SHA"
             "Execucao: $env:GITHUB_RUN_ID"
             'Extraia todo o ZIP para uma pasta separada. Feche outras versoes antes de testar.'
@@ -2565,7 +2566,7 @@ jobs:
       - name: Upload portable 3.0.8 LAB only for physical quick scan
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.8-R4-LAYERS-LAB-PORTATIL-TESTE-Windows-x64
+          name: ZEUVORYX-3.0.8-R5-ACTIVE-AI-LAB-PORTATIL-TESTE-Windows-x64
           path: dist/
           if-no-files-found: error
           retention-days: 7

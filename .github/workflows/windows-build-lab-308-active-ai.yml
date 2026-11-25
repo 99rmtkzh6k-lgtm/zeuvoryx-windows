@@ -1,0 +1,15 @@
+name: ZEUVORYX 3.0.8 R5 LAB active AI validation
+run-name: ZEUVORYX 3.0.8 R5 LAB - active AI validation
+on:
+  push:
+    branches: [windows-3.0.8-active-ai-lab]
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  validate-active-ai:
+    if: github.ref == 'refs/heads/windows-3.0.8-active-ai-lab'
+    uses: ./.github/workflows/windows-build.yml

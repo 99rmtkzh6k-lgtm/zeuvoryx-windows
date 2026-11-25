@@ -1,7 +1,7 @@
 name: ZEUVORYX LAB - Public threat indicator verification
 on:
   push:
-    branches: [lab-public-ioc-20261125, lab-protection-wave-20261125]
+    branches: [lab-public-ioc-20261125, lab-protection-wave-20261125, lab-fieldlearn-20261125]
   workflow_dispatch:
 permissions:
   contents: read

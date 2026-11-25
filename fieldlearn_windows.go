@@ -32,6 +32,7 @@ func fieldExport(s *State)(string,error){
   motors=append(motors,fieldlearn.Motor{Name:"ZEUVORYX",State:"scan_report",Started:r.Started,Finished:r.Finished,Files:fieldlearn.Count(int64(r.Files)),Bytes:fieldlearn.Count(r.Bytes),Alerts:fieldlearn.Count(int64(len(r.Findings))),Partial:r.Partial||r.InProgress||r.Cancelled})
   for _,q:=range r.SignatureReports{motors=append(motors,fieldlearn.Motor{Name:"ClamAV",State:q.Status,Version:q.Version,Started:q.Started,Finished:q.Finished,Files:fieldlearn.Count(q.Scanned),Alerts:fieldlearn.Count(q.Infected),Errors:fieldlearn.Count(q.Errors),Signatures:fieldlearn.Count(int64(q.Evidence.SignatureRecords)),Tests:fieldlearn.Count(int64(q.Evidence.TestRecords)),Limits:fieldlearn.Count(int64(q.Evidence.HeuristicOrLimitRecords)),Partial:q.Partial})}
  }
+ if d.State==""{d.State="unavailable"}
  report:=fieldlearn.Build(start,end,d,motors,problem)
  path,e:=jsonReport315("zeuvoryx-aprendizado",report);if e!=nil{return "",e}
  fieldSession.Lock();fieldSession.start=time.Time{};fieldSession.Unlock()

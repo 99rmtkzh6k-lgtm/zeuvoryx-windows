@@ -12,3 +12,13 @@ func TestObservation(t *testing.T){
  d,e=Parse(strings.NewReader("<Events>"+strings.Repeat(event(1000,1,a),501)+"</Events>"),a,b);if e!=nil||!d.Truncated{t.Fatal(d,e)}
  d,e=Parse(strings.NewReader("<Events/>"),a,b);if e!=nil||d.State!="no_events_observed"{t.Fatal(d,e)}
 }
+
+func TestIncompleteEvidence(t *testing.T){
+ a:=time.Date(2026,11,25,12,0,0,0,time.UTC);b:=a.Add(time.Hour)
+ for _,raw:=range []string{"","<Unexpected/>","<Event/>","<Events><Event></Events>"}{if _,e:=Parse(strings.NewReader(raw),a,b);e==nil{t.Fatal("invalid source accepted",raw)}}
+ d:=EventLog{State:"recorded_events"}
+ for _,m:=range [][]Motor{nil,{{Name:"ZEUVORYX",Started:a,Finished:a.Add(-time.Second)}},{{Name:"ClamAV",Started:a,Finished:b.Add(time.Second)}}}{
+  if r:=Build(a,b,d,m,"");r.Comparison!="incomplete_evidence"||r.TrainingEligible{t.Fatal(r)}
+ }
+ if r:=Build(a,b,EventLog{State:"no_events_observed"},[]Motor{{Name:"ZEUVORYX",Started:a,Finished:b}},"");r.Comparison!="incomplete_evidence"{t.Fatal(r)}
+}

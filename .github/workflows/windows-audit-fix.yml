@@ -3,11 +3,12 @@ on:
   push:
     branches:
       - windows-3.0.14-audit-fix
+      - lab-fieldlearn-20261125
   workflow_dispatch:
 permissions:
   contents: read
   actions: read
 jobs:
   audit-candidate:
-    if: github.ref == 'refs/heads/windows-3.0.14-audit-fix'
+    if: github.ref == 'refs/heads/windows-3.0.14-audit-fix' || github.ref == 'refs/heads/lab-fieldlearn-20261125'
     uses: ./.github/workflows/windows-build.yml

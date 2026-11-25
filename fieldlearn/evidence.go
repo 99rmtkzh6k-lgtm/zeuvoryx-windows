@@ -26,11 +26,11 @@ func known(id int)bool{switch id{case 1000,1001,1002,1116,1117,1118,1119:return 
 func Parse(r io.Reader,start,end time.Time)(EventLog,error){
  out:=EventLog{State:"recorded_events",Counts:map[int]int{},Events:[]Event{}}
  if start.IsZero()||!end.After(start){return EventLog{},errors.New("invalid interval")}
- limited:=&io.LimitedReader{R:r,N:MaxBytes+1};d:=xml.NewDecoder(limited);seen:=map[uint64]bool{};n:=0
+ limited:=&io.LimitedReader{R:r,N:MaxBytes+1};d:=xml.NewDecoder(limited);seen:=map[uint64]bool{};n:=0;envelope:=false
  for{
   tok,e:=d.Token();if limited.N<=0{return EventLog{},errors.New("event byte limit")}
   if e==io.EOF{break};if e!=nil{return EventLog{},e}
-  st,ok:=tok.(xml.StartElement);if !ok||st.Name.Local!="Event"{continue}
+  st,ok:=tok.(xml.StartElement);if !ok{continue};if st.Name.Local=="Events"{envelope=true;continue};if st.Name.Local!="Event"{continue};if !envelope{return EventLog{},errors.New("missing Events envelope")}
   n++;if n>MaxEvents{out.Truncated=true;out.State="partial";break}
   var v struct{System struct{ID int `xml:"EventID"`;Record uint64 `xml:"EventRecordID"`;Time struct{At string `xml:"SystemTime,attr"`} `xml:"TimeCreated"`;Provider struct{Name string `xml:"Name,attr"`} `xml:"Provider"`} `xml:"System"`}
   if e=d.DecodeElement(&v,&st);e!=nil{return EventLog{},e}
@@ -40,6 +40,7 @@ func Parse(r io.Reader,start,end time.Time)(EventLog,error){
   if at.Before(start)||at.After(end)||seen[x.Record]{continue}
   seen[x.Record]=true;out.Events=append(out.Events,Event{x.ID,x.Record,at.UTC()});out.Counts[x.ID]++
  }
+ if !envelope{return EventLog{},errors.New("missing Events envelope")}
  sort.Slice(out.Events,func(i,j int)bool{if out.Events[i].At.Equal(out.Events[j].At){return out.Events[i].Record<out.Events[j].Record};return out.Events[i].At.Before(out.Events[j].At)})
  if len(out.Events)==0&&!out.Truncated{out.State="no_events_observed"}
  return out,nil
@@ -48,10 +49,10 @@ func Build(start,end time.Time,d EventLog,motors []Motor,problem string)Review{
  r:=Review{Schema:1,Started:start.UTC(),Ended:end.UTC(),Defender:d,Motors:[]Motor{},Problem:problem,Comparison:"unpaired_observation",TrainingEligible:false}
  for _,m:=range motors{
   if m.Started.IsZero()||m.Started.Before(start)||m.Started.After(end){continue}
-  if m.Finished.IsZero()||m.Finished.After(end){m.Partial=true}
+  if m.Finished.IsZero()||m.Finished.Before(m.Started)||m.Finished.After(end){m.Partial=true}
   r.Motors=append(r.Motors,m)
  }
- if problem!=""||d.Truncated{r.Comparison="incomplete_evidence"}
+ if problem!=""||d.Truncated||d.State!="recorded_events"||len(r.Motors)==0||start.IsZero()||!end.After(start){r.Comparison="incomplete_evidence"}
  for _,m:=range r.Motors{if m.Partial{r.Comparison="incomplete_evidence"}}
  return r
 }

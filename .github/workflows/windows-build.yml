@@ -900,6 +900,9 @@ jobs:
           
           // Read-only audit. Errors remain visible; unknown is never reported as protected.
           func windowsSecurityAudit() (map[string]any, error) {
+           return windowsSecurityAuditContext(context.Background())
+          }
+          func windowsSecurityAuditContext(parent context.Context) (map[string]any, error) {
           	root := os.Getenv("SystemRoot")
           	if root == "" {
           		return nil, fmt.Errorf("SystemRoot indisponível")
@@ -927,7 +930,7 @@ jobs:
            } catch {$r.errors+='Histórico Defender não verificado'}
            try {$r.defenderHistory.activeThreats=@(Get-MpThreat -ErrorAction Stop | Where-Object {$_.IsActive -eq $true}).Count} catch {$r.errors+='Ameaças ativas Defender não verificadas'}
            $r|ConvertTo-Json -Depth 6 -Compress`
-          	ctx, cancel := context.WithTimeout(context.Background(), 45*time.Second)
+          	ctx, cancel := context.WithTimeout(parent, 45*time.Second)
           	defer cancel()
           	cmd := exec.CommandContext(ctx, ps, "-NoProfile", "-NonInteractive", "-Command", script)
           	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}

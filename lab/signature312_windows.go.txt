@@ -1,0 +1,26 @@
+package main
+import (
+ "context"
+ "time"
+ "github.com/zeuvoryx/zeuvoryx/engine"
+ "github.com/zeuvoryx/zeuvoryx/signatureav"
+)
+// Called once per normal desktop scan, outside the State mutex, before persisting the final report.
+func (s *State) signaturePhase312(ctx context.Context, rep *engine.Report, customPath string, automatic bool) {
+ rep.SignatureState="pending"
+ defer func(){rep.Finished=time.Now();if ctx.Err()!=nil{rep.Cancelled=true;rep.SignatureState="partial"}}()
+ if ctx.Err()!=nil{rep.SignatureState="partial";return}
+ tool,e:=clamExecutable()
+ if e!=nil{rep.SignatureState="unavailable";rep.SignatureProblem=e.Error();return}
+ roots:=rep.SignatureRoots
+ if !automatic{roots=[]string{customPath}}
+ if len(roots)==0{rep.SignatureState="unavailable";rep.SignatureProblem="No verified roots for signature scan";return}
+ rep.SignatureState="running";s.publishLive(*rep)
+ rep.SignatureState="finished"
+ for _,root:=range roots{
+  if ctx.Err()!=nil{rep.SignatureState="partial";break}
+  r,e:=signatureav.Scan(ctx,tool,root,"")
+  rep.SignatureReports=append(rep.SignatureReports,r)
+  if e!=nil||r.Partial{rep.SignatureState="partial"}
+ }
+}

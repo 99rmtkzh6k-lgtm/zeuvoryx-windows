@@ -17,11 +17,17 @@ func TestRealClamAV(t *testing.T){
  ctx,cancel:=context.WithTimeout(context.Background(),3*time.Minute);defer cancel()
  root:=t.TempDir()
  clean:=filepath.Join(root,"clean.txt");if e:=os.WriteFile(clean,[]byte("ZEUVORYX harmless content"),0600);e!=nil{t.Fatal(e)}
- r,e:=Scan(ctx,exe,clean,"");if e!=nil||r.Status!="no_detection_reported"{t.Fatalf("clean: %+v %v",r,e)}
+ r,e:=Scan(ctx,exe,clean,os.Getenv("CLAMAV_REAL_DB"));if e!=nil||r.Status!="no_detection_reported"{t.Fatalf("clean: %+v %v",r,e)}
  // Official EICAR harmless test fixture, not a live virus.
  fixture:="X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*"
  path:=filepath.Join(root,"test.txt");if e=os.WriteFile(path,[]byte(fixture),0600);e!=nil{t.Fatal(e)}
- r,e=Scan(ctx,exe,root,"");if e!=nil||r.Status!="detections_reported"||r.Scanned<2||len(r.Findings)!=1||r.Findings[0].Kind!="test_eicar"||!strings.Contains(strings.ToLower(r.Findings[0].Signature),"eicar"){t.Fatalf("actual engine: %+v %v",r,e)}
+ r,e=Scan(ctx,exe,root,os.Getenv("CLAMAV_REAL_DB"));if e!=nil||r.Status!="detections_reported"||r.Scanned<2||len(r.Findings)!=1||r.Findings[0].Kind!="test_eicar"||!strings.Contains(strings.ToLower(r.Findings[0].Signature),"eicar"){t.Fatalf("actual engine: %+v %v",r,e)}
  if b,e:=os.ReadFile(path);e!=nil||string(b)!=fixture{t.Fatal("scanner altered fixture")}
  t.Logf("ClamAV actual engine: %s, database signatures: %d, detection: %s",r.Version,r.KnownSignatures,r.Findings[0].Signature)
+}
+
+func TestDatabaseAge(t *testing.T){
+ now:=time.Date(2026,11,25,12,0,0,0,time.UTC)
+ if !recentDatabase("ClamAV 1.5.4/28194/Wed Nov 25 06:26:59 2026",now){t.Fatal("fresh database rejected")}
+ for _,v:=range []string{"ClamAV 1.5.4","ClamAV 1.5.4/0/Wed Nov 25 06:26:59 2026","ClamAV 1.5.4/1/Wed Nov 11 06:26:59 2026","ClamAV 1.5.4/1/Mon Dec  7 06:26:59 2026"}{if recentDatabase(v,now){t.Fatal("invalid date accepted",v)}}
 }

@@ -62,6 +62,15 @@ func Version(ctx context.Context, exe string)(string,error){
  if b.overflow||!strings.HasPrefix(v,"ClamAV "){return "",errors.New("unexpected ClamAV version response")}
  return v,nil
 }
+// Version freshness is a conservative check, not proof of database authenticity.
+func recentDatabase(v string, now time.Time) bool {
+ parts:=strings.SplitN(v,"/",3);if len(parts)!=3{return false}
+ if n,e:=strconv.Atoi(parts[1]);e!=nil||n<=0{return false}
+ date,e:=time.Parse("Mon Jan 2 15:04:05 2006",strings.TrimSpace(parts[2]))
+ if e!=nil{return false}
+ age:=now.UTC().Sub(date)
+ return age>=-24*time.Hour && age<=7*24*time.Hour
+}
 func parse(r *Report, raw string, code int, overflow bool) {
  r.Raw=raw; r.ExitCode=code; r.Scanned=-1; r.Infected=-1; r.KnownSignatures=-1; r.Errors=-1
  r.Partial=overflow
@@ -111,6 +120,7 @@ func Scan(ctx context.Context, exe, root, db string) (r Report, err error) {
  e:=cmd.Run();code:=0
  if e!=nil{var ee *exec.ExitError;if errors.As(e,&ee){code=ee.ExitCode()}else{code=-1}}
  parse(&r,string(out.b),code,out.overflow)
+ if !recentDatabase(r.Version,time.Now()){r.Partial=true;r.Status="inconclusive_or_partial";return r,errors.New("ClamAV daily database date unknown or older than 7 days") }
  if ctx.Err()!=nil{return r,ctx.Err()}
  if e!=nil&&code!=1{return r,fmt.Errorf("ClamAV scan: %w",e)}
  if r.Partial{return r,errors.New("ClamAV report partial or inconsistent; see engine output")}

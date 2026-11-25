@@ -6,6 +6,20 @@ def once(s,a,b):
     return s.replace(a,b,1)
 p=Path("desktop.html");s=p.read_text(encoding="utf-8")
 s=once(s,'</nav>','<button data-page="reports315">Relatórios</button></nav>')
+# The generated desktop uses an explicit navigation registry. Without this entry,
+# selecting Reports hides the other sections but leaves the Reports panel hidden.
+nav_pattern=r"(\[[^\[\]\r\n]*'overview'[^\[\]\r\n]*'intel'[^\[\]\r\n]*\])(?=\.forEach\(id=>el\(id\)\.classList\.toggle\('hidden',id!==b\.dataset\.page\))"
+def reports_nav(m):
+    items=m.group(1)
+    if "'reports315'" in items:raise RuntimeError("reports navigation already registered")
+    # Diagnostics is now nested inside Reports, not a top-level destination.
+    items=items.replace(",'diagnostics'","")
+    return items[:-1]+",'reports315']"
+s,n=re.subn(nav_pattern,reports_nav,s)
+if n!=1:raise RuntimeError("reports navigation registry count "+str(n))
+if len(re.findall(r"'reports315'\]\.forEach\(id=>el\(id\)\.classList\.toggle\('hidden',id!==b\.dataset\.page\)",s))!=1:
+    raise RuntimeError("reports navigation registration not verified")
+
 s=once(s,'</main>','''<section id="reports315" class="hidden card"><h2>Central de relatórios</h2><p class="sub">Dados reais do ZEUVORYX e do Windows, salvos localmente. Nenhum envio automático.</p><label for="z315ReportSource">Relatório</label><select id="z315ReportSource"><option value="current">Varredura atual ou última</option><option value="history">Varredura do histórico</option><option value="diag">Diagnóstico gravado</option></select><label for="z315ReportSearch">Pesquisar histórico</label><input id="z315ReportSearch" type="search" placeholder="Data, modo ou identificador"><select id="z315ReportHistory" aria-label="Relatório histórico"><option value="">Selecione uma varredura</option></select><p id="z315ReportPreview" role="status"></p><button id="z315ReportSave" class="primary">Gerar relatório JSON</button><div id="z315Transfer" class="entry" hidden><strong id="z315ReportFile" role="button" tabindex="0" style="cursor:grab;touch-action:none;user-select:none;overflow-wrap:anywhere">Arquivo JSON</strong><p class="sub">Mantenha o botão esquerdo pressionado sobre o arquivo e arraste. Ou copie e cole no destino compatível.</p><button id="z315CopyFile">Copiar arquivo</button></div><p id="z315ReportStatus" role="status" style="overflow-wrap:anywhere"></p><details><summary>Histórico e avaliação</summary><div id="z315ReportAudit"></div></details><details><summary>Diagnóstico técnico</summary><div id="z315ReportDiag"></div></details></section></main>''')
 s=once(s,'</style></head>','#reports315{gap:10px}#reports315 #z315ReportHistory,#reports315 #z315ReportSearch{max-width:100%}#reports315 [hidden]{display:none!important}#reports315 details{margin-top:10px}#reports315 #auditList{max-height:220px;overflow:auto}</style></head>')
 s=once(s,'let h=await window.auditHistory();out.replaceChildren();','let h=await window.auditHistory();z315ReportHistory(h.Events||[]);out.replaceChildren();')

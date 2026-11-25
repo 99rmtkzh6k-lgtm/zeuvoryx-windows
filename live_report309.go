@@ -13,7 +13,7 @@ func(s *State) publishLive(src engine.Report) {
  if src.Files<old.Files||src.Bytes<old.Bytes||len(src.Findings)<len(old.Findings)||len(src.Errors)<len(old.Errors){return}
  src.ScanID=old.ScanID;src.ScanMode=old.ScanMode
  if src.Inventory314.State==""{src.Inventory314=old.Inventory314}
- if src.SignatureState==""{src.SignatureState=old.SignatureState;src.SignatureProblem=old.SignatureProblem}
+ if src.SignatureState==""{src.SignatureState=old.SignatureState;src.SignatureProblem=old.SignatureProblem;src.SignatureRoots=old.SignatureRoots;src.SignatureReports=old.SignatureReports}
  if src.Started.IsZero(){src.Started=old.Started}
  src.Finished=time.Time{}
  src.InProgress=true;src.Partial=true;src.SnapshotAt=time.Now()

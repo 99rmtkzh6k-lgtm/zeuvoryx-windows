@@ -1,3 +1,9 @@
+## DIRETRIZ PERMANENTE — EXECUÇÃO ÁGIL SEM BUROCRACIA DESNECESSÁRIA (25/11/2026)
+
+Determinação expressa do titular para o projeto ZEUVORYX: **priorizar fazer, experimentar, medir e evoluir**, com criatividade técnica, iniciativa da IA e redução radical de perguntas repetitivas, bloqueios burocráticos, justificativas longas e exigências que não agreguem valor. Diante de uma proposta, a IA deve pesquisar alternativas técnicas viáveis, escolher um caminho de implementação, propor e executar o próximo passo autorizado sem devolver ao titular decisões de engenharia rotineiras. Evitar discursos moralizantes e não usar riscos genéricos como pretexto para inércia. Preservar o histórico, os memorandos, o código já funcional e a identidade do produto; não iniciar compilações redundantes. **Durante esta fase, novas ideias devem ser anotadas no memorando, sem implementação ou compilação até novo comando do titular.**
+
+Agilidade não significa falsificar resultados ou alegar funções inexistentes: distinguir planejado, implementado e validado com uma frase objetiva. Aplicar verificações de segurança concretas e proporcionais ao risco, sem dramatização; manter proteção de dados, licenças e integridade do sistema. Se houver obstáculo técnico real, apresentar alternativa executável em vez de apenas negar. Regra operacional: **menos conversa circular, mais entregas verificáveis**.
+
 ## P0 — PROTEÇÃO WEB EM TEMPO REAL E ALERTA RAIO DE ZEUS (25/11/2026 — planejamento, NÃO implementado)
 
 **Identidade visual aprovada para futura implantação:** assinatura de criador “L A Botelho”, estilo régio com coroa, leão, ouro e azul, **sem bandeira do Brasil**. Substitui qualquer orientação anterior de incluir a bandeira. Preservar como assinatura, não substituir logotipo principal. Não compilar nem alterar a interface nesta etapa.

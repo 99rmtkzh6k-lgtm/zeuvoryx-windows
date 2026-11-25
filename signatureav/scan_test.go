@@ -80,3 +80,14 @@ func TestNativeMetrics(t *testing.T){
  if !r.OutputTruncated||r.DataScannedMiB!=nil||r.DataReadMiB!=nil||r.NativeDurationSeconds!=nil||r.LimitNotices!=0{t.Fatalf("stale metrics: %+v",r)}
  for _,v:=range []string{"NaN MB","-1 MB","Inf MB","4 GB","bad MB"}{if summaryNumber(v,"MB")!=nil{t.Fatal(v)}}
 }
+
+func TestNativeBinaryUnits(t *testing.T){
+ raw:="----------- SCAN SUMMARY -----------\nKnown viruses: 3628228\nScanned files: 146\nInfected files: 0\nTotal errors: 13\nData scanned: 132.20 MiB\nData read: 1.29 GiB (ratio 0.10:1)\nTime: 90.660 sec\n"
+ r:=Report{};parse(&r,raw,2,false)
+ if !r.Partial||r.DataScannedMiB==nil||*r.DataScannedMiB!=132.20||r.DataReadMiB==nil||*r.DataReadMiB!=1.29*1024||r.NativeDurationSeconds==nil||*r.NativeDurationSeconds!=90.660{t.Fatalf("%+v",r)}
+ for _,c:=range []struct{input string;want float64}{{"512 KiB",0.5},{"1048576 B",1},{"0 MiB",0},{"2 MB",2},{"2 GiB",2048}}{
+  got:=summaryNumber(c.input,"MB");if got==nil||*got!=c.want{t.Fatalf("%s: %v",c.input,got)}
+ }
+ for _,v:=range []string{"1e308 GiB","-1 GiB","NaN MiB","4 GB","bad MiB","1 sec"}{if summaryNumber(v,"MB")!=nil{t.Fatal(v)}}
+ if summaryNumber("1 MiB","sec")!=nil{t.Fatal("wrong time unit accepted")}
+}

@@ -1,0 +1,29 @@
+name: ZEUVORYX 3.0.15 LAB - Olympus P0
+on:
+  push:
+    branches: [lab-olympus-p0-defender-20261125]
+    paths-ignore: ['**.md']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  module-regression:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+          cache: false
+      - name: Five module regression cycles
+        run: go test -count=5 ./scriptguard ./behaviorwatch ./changeguard ./auditmetrics ./scopeprogress ./adaptive ./signatureav
+  windows-build:
+    uses: ./.github/workflows/windows-build.yml

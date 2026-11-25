@@ -2392,8 +2392,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw '314 Titanium visual integration failed' }
           python prepare_games314.py
           if ($LASTEXITCODE -ne 0) { throw '314 games catalog integration failed' }
-          gofmt -w games314_windows.go gamecatalog
-          go test -count=5 ./gamecatalog
+          gofmt -w games314_windows.go gamecatalog familygate
+          go test -count=5 ./gamecatalog ./familygate
           if ($LASTEXITCODE -ne 0) { throw '314 game allowlist regression failed' }
           gofmt -w globalintel adaptive signatureav
           go test -count=5 ./globalintel ./adaptive ./signatureav ./scopeprogress

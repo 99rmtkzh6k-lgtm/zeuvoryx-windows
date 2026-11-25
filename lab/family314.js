@@ -1,0 +1,14 @@
+;(()=>{
+const z=id=>document.getElementById(id),p=z('zFamily314'),n=z('zFamilyNav314'),status=z('zFamilyStatus');
+const fields=['Sex','Violence','Drugs','Gambling','Language'];
+function close(){p.classList.add('hidden');n.classList.remove('active');z('zFamilyPassword').value=''}
+function rating(s){const v=(s.ratings||{})[z('zFamilyGame').value];z('zRatingAge').value=v?String(v.age):'0';for(const k of fields)z('zRating'+k).checked=!!v?.[k.toLowerCase()];z('zRatingConfirm').checked=false}
+async function load(){try{const s=await window.familyStatus314();z('zFamilyEnable').checked=s.policy.enabled;z('zFamilyAge').value=String(s.policy.max_age);for(const k of fields)z('zFamily'+k).checked=!!s.policy[k.toLowerCase()];rating(s);status.textContent=s.problem||((s.policy.enabled?'Proteção do catálogo ativada':'Proteção opcional desativada')+(s.configured?' · senha configurada':' · cadastre uma senha'));}catch(e){status.textContent=String(e)}}
+n.onclick=()=>{for(const b of document.querySelectorAll('[data-page]')){b.classList.remove('active');const s=z(b.dataset.page);if(s)s.classList.add('hidden')}z('zGames314').classList.add('hidden');z('zGamesNav314').classList.remove('active');z('zGamesNav314').setAttribute('aria-expanded','false');p.classList.remove('hidden');n.classList.add('active');load()};
+for(const b of document.querySelectorAll('[data-page]'))b.addEventListener('click',close);z('zGamesNav314').addEventListener('click',close);
+z('zFamilyBack').onclick=()=>{close();document.querySelector('[data-page="overview"]').click()};
+z('zFamilySave').onclick=async()=>{const b=z('zFamilySave');b.disabled=true;try{const q={enabled:z('zFamilyEnable').checked,max_age:Number(z('zFamilyAge').value)};for(const k of fields)q[k.toLowerCase()]=z('zFamily'+k).checked;await window.familySave314(q,z('zFamilyPassword').value);await load()}catch(e){status.textContent=String(e)}finally{z('zFamilyPassword').value='';b.disabled=false}};
+z('zFamilyGame').onchange=async()=>{try{rating(await window.familyStatus314())}catch(e){status.textContent=String(e)}};
+z('zRatingSave').onclick=async()=>{if(!z('zRatingConfirm').checked){status.textContent='Confirme a revisão pessoal antes de registrar.';return}const b=z('zRatingSave');b.disabled=true;try{const q={age:Number(z('zRatingAge').value)};for(const k of fields)q[k.toLowerCase()]=z('zRating'+k).checked;await window.familyRate314(z('zFamilyGame').value,q,z('zFamilyPassword').value);await load();status.textContent='Classificação local registrada pelo responsável.'}catch(e){status.textContent=String(e)}finally{z('zFamilyPassword').value='';b.disabled=false}};
+z('zFamilyMicrosoft').onclick=async()=>{try{await window.openFamilySafety314();status.textContent='Serviço oficial aberto. Configure a conta familiar no navegador.'}catch(e){status.textContent=String(e)}};
+})();

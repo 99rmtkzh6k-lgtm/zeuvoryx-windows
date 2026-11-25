@@ -71,3 +71,12 @@ func TestCoverageDetail(t *testing.T){
  r:=Report{Scanned:146,Errors:8,Findings:[]Finding{{Signature:"Heuristics.Limits.Exceeded.MaxFileSize"},{Signature:"Other.Signature"}}}
  s:=coverageDetail(r);for _,want:=range []string{"146","limite=1","motor=8","não confirmam malware"}{if !strings.Contains(s,want){t.Fatal(s)}}
 }
+
+func TestNativeMetrics(t *testing.T){
+ raw:="C:\\a.zip: Heuristics.Limits.Exceeded.MaxFileSize FOUND\n----------- SCAN SUMMARY -----------\nKnown viruses: 123\nScanned files: 146\nInfected files: 0\nTotal errors: 10\nData scanned: 132.20 MB\nData read: 1136.64 MB (ratio 0.12:1)\nTime: 89.035 sec (1 m 29 s)\n"
+ r:=Report{};parse(&r,raw,2,false)
+ if !r.Partial||r.LimitNotices!=1||r.Errors!=10||r.DataScannedMiB==nil||*r.DataScannedMiB!=132.20||r.DataReadMiB==nil||*r.DataReadMiB!=1136.64||r.NativeDurationSeconds==nil||*r.NativeDurationSeconds!=89.035{t.Fatalf("%+v",r)}
+ parse(&r,"ERROR: interrupted",2,true)
+ if !r.OutputTruncated||r.DataScannedMiB!=nil||r.DataReadMiB!=nil||r.NativeDurationSeconds!=nil||r.LimitNotices!=0{t.Fatalf("stale metrics: %+v",r)}
+ for _,v:=range []string{"NaN MB","-1 MB","Inf MB","4 GB","bad MB"}{if summaryNumber(v,"MB")!=nil{t.Fatal(v)}}
+}

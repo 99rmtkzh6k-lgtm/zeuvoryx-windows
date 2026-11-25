@@ -6,11 +6,12 @@ on:
       - lab-fieldlearn-20261125
       - lab-regression-recovery-20261125
       - lab-adaptive-resources-20261125
+      - lab-report-copy-20261125
   workflow_dispatch:
 permissions:
   contents: read
   actions: read
 jobs:
   audit-candidate:
-    if: github.ref == 'refs/heads/windows-3.0.14-audit-fix' || github.ref == 'refs/heads/lab-fieldlearn-20261125' || github.ref == 'refs/heads/lab-regression-recovery-20261125' || github.ref == 'refs/heads/lab-adaptive-resources-20261125'
+    if: github.ref == 'refs/heads/windows-3.0.14-audit-fix' || github.ref == 'refs/heads/lab-fieldlearn-20261125' || github.ref == 'refs/heads/lab-regression-recovery-20261125' || github.ref == 'refs/heads/lab-adaptive-resources-20261125' || github.ref == 'refs/heads/lab-report-copy-20261125'
     uses: ./.github/workflows/windows-build.yml

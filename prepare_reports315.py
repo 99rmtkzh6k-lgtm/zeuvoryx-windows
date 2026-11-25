@@ -94,3 +94,51 @@ el('z315OpenFolder').onclick=async()=>{try{await window.openReports315()}catch(e
 setInterval(async()=>{try{if(!el('reports315').classList.contains('hidden')){const v=await window.autoReportStatus315();if(v)el('z315AutoStatus').textContent=v}}catch(e){el('z315AutoStatus').textContent=String(e)}},2000);
 </script></body></html>''')
 p.write_text(s,encoding="utf-8")
+
+# Display copyable JSON directly, even when disk export is unavailable.
+p=Path("desktop_windows.go");s=p.read_text(encoding="utf-8")
+s=once(s,'if !bind("openReports315",','''if !bind("reportText315",func(kind,id string)(string,error){
+ switch kind {
+ case "current":
+  r,ok:=s.snapshotForExport();if !ok{return "",fmt.Errorf("Nenhuma varredura iniciada")}
+  return formatReportText315(r)
+ case "history":
+  a,e:=audit.Default();if e!=nil{return "",e};data,e:=a.ReadReport(id);if e!=nil{return "",e}
+  return formatRawReportText315(data)
+ case "diag":
+  r:=diag.report();if len(r.Samples)==0{return "",fmt.Errorf("Nenhuma amostra de diagnóstico")}
+  return formatReportText315(r)
+ default:return "",fmt.Errorf("Tipo de relatório inválido")
+ }
+ }){return}
+ if !bind("savedReportText315",readLastReportText315){return}
+ if !bind("openReports315",''')
+p.write_text(s,encoding="utf-8")
+p=Path("desktop.html");s=p.read_text(encoding="utf-8")
+s=once(s,'<button id="z315ReportSave" class="primary">Gerar relatório JSON</button>','''<button id="z315ShowText" class="primary">Exibir relatório JSON para copiar</button><button id="z315ReportSave">Salvar arquivo JSON</button><div id="z315TextPanel" hidden><label for="z315Text">Relatório JSON — revise antes de compartilhar</label><textarea id="z315Text" rows="12" readonly spellcheck="false" aria-label="Relatório JSON selecionável" style="width:100%;box-sizing:border-box;resize:vertical;font-family:monospace"></textarea><button id="z315SelectText">Selecionar tudo</button><button id="z315CopyText">Copiar texto JSON</button><p id="z315TextStatus" role="status"></p></div>''')
+s=once(s,'</script></body></html>',r'''
+;(()=>{
+ const source=el('z315ReportSource'),panel=el('z315TextPanel'),area=el('z315Text'),status=el('z315TextStatus'),show=el('z315ShowText');
+ let busy=false;
+ function clear(){area.value='';panel.hidden=true;status.textContent=''}
+ source.addEventListener('change',clear);el('z315ReportHistory').addEventListener('change',clear);
+ show.onclick=async()=>{if(busy||z315ReportBusy)return;busy=true;show.disabled=true;clear();panel.hidden=false;status.textContent='Obtendo dados reais do relatório...';
+ const kind=source.value,id=el('z315ReportHistory').value;
+ try{let v;if(kind==='learning'){await window.fieldExport();v=await window.savedReportText315()}else{v=await window.reportText315(kind,id)}
+ if(source.value!==kind||(kind==='history'&&id!==el('z315ReportHistory').value)){clear();return}
+ if(typeof v!=='string'||!v.trim())throw Error('Relatório vazio');JSON.parse(v);area.value=v;
+ status.textContent='Relatório disponível. Clique em Copiar texto JSON ou use Ctrl+A e Ctrl+C.';area.focus();area.select();
+ }catch(e){status.textContent=String(e);area.value=''}finally{busy=false;show.disabled=false}};
+ el('z315SelectText').onclick=()=>{area.focus();area.select()};
+ el('z315CopyText').onclick=async()=>{if(!area.value)return;area.focus();area.select();try{
+ if(navigator.clipboard&&navigator.clipboard.writeText){try{await navigator.clipboard.writeText(area.value);status.textContent='Texto JSON copiado.';return}catch(_){}}
+ if(document.execCommand('copy'))status.textContent='Texto JSON copiado.';else status.textContent='Texto selecionado. Pressione Ctrl+C para copiar.';
+ }catch(_){status.textContent='Texto selecionado. Pressione Ctrl+C para copiar.'}};
+})();
+</script></body></html>''')
+# Keep a direct shortcut on the main screen; no additional page registry.
+s=once(s,'<section id="overview">','<section id="overview"><div class="card"><button id="z315ReportShortcut">Gerar relatório para copiar</button></div>')
+s=once(s,'</script></body></html>',r'''el('z315ReportShortcut').onclick=()=>{document.querySelector('[data-page="reports315"]').click();el('z315ReportSource').value='current';el('z315ReportSource').dispatchEvent(new Event('change'));el('z315ShowText').click()};</script></body></html>''')
+for id in ("z315ShowText","z315Text","z315CopyText","z315ReportShortcut"):
+    if s.count('id="'+id+'"')!=1:raise RuntimeError("missing report text control "+id)
+p.write_text(s,encoding="utf-8")

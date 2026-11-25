@@ -1,6 +1,7 @@
 package main
 
 import (
+ "bytes"
  "encoding/json"
  "fmt"
  "io"
@@ -42,4 +43,24 @@ func lastReport315()(string,error){
 // Automatic recovery uses separate files; it never changes the manual transfer selection.
 func writeAutoReport315(dir,prefix string,v any)(string,error){
  return writeReport315(dir,prefix,func(w io.Writer)error{return json.NewEncoder(w).Encode(v)})
+}
+
+const maxReportText315=2<<20
+// Do not truncate JSON or silently change evidence. Large reports remain files.
+func formatRawReportText315(data []byte)(string,error){
+ if len(data)>maxReportText315{return "",fmt.Errorf("Relatório grande demais para a caixa de texto; use Salvar arquivo JSON")}
+ if !json.Valid(data){return "",fmt.Errorf("Relatório JSON inválido")}
+ var out bytes.Buffer
+ if e:=json.Indent(&out,data,"","  ");e!=nil{return "",e}
+ if out.Len()>maxReportText315{return "",fmt.Errorf("Relatório grande demais para a caixa de texto; use Salvar arquivo JSON")}
+ return out.String(),nil
+}
+func formatReportText315(v any)(string,error){
+ b,e:=json.Marshal(v);if e!=nil{return "",e};return formatRawReportText315(b)
+}
+func readLastReportText315()(string,error){
+ path,e:=lastReport315();if e!=nil{return "",e}
+ f,e:=os.Open(path);if e!=nil{return "",e};defer f.Close()
+ b,e:=io.ReadAll(io.LimitReader(f,maxReportText315+1));if e!=nil{return "",e}
+ return formatRawReportText315(b)
 }

@@ -21,3 +21,11 @@ func TestReport315DurableFileAutomatic(t *testing.T){
  if _,e=writeAutoReport315(dir,"fail",make(chan int));e==nil{t.Fatal("encoding failure reported as success")}
  files,e:=os.ReadDir(dir);if e!=nil||len(files)!=2{t.Fatalf("unexpected residue: %v %v",files,e)}
 }
+
+func TestReport315DurableFileCopyText(t *testing.T){
+ s,e:=formatReportText315(map[string]any{"partial":true,"files":42,"note":"ação"})
+ if e!=nil||!json.Valid([]byte(s)){t.Fatalf("invalid display: %q %v",s,e)}
+ var v struct{Partial bool;Files int;Note string};if e=json.Unmarshal([]byte(s),&v);e!=nil||!v.Partial||v.Files!=42||v.Note!="ação"{t.Fatal(v,e)}
+ if _,e=formatRawReportText315([]byte("{"));e==nil{t.Fatal("accepted invalid JSON")}
+ if _,e=formatRawReportText315(make([]byte,maxReportText315+1));e==nil{t.Fatal("accepted oversized report")}
+}

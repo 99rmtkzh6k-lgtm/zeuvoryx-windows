@@ -5,7 +5,7 @@ Relatório físico de varredura rápida do commit a4603eb66de729fa85ba8bdaaa37c7
 
 ## Correções candidatas já escritas
 - Tempo global indeterminado enquanto motores independentes não concluírem. Ocultar barra percentual quando inventário parcial; distinguir escopo lógico e disco ocupado.
-- Publicar resultados ClamAV de cada raiz antes do fim, preservá-los nas cópias do scanner próprio e no JSON parcial. Não apresentar -1 como número medido. Manter estado em execução até concluir raízes ou cancelar.
+- Publicar alertas ClamAV durante a análise e preservar o relatório do lote nas cópias do scanner próprio e no JSON parcial. Não apresentar -1 como número medido. Manter estado em execução até concluir raízes ou cancelar.
 - Limpar sinais recentes na nova análise, separar detecções por assinatura, heurísticas/limites e EICAR; aviso visível com significado correto. Contagem recente limitada a 100, independente do scanner próprio, não somar.
 - Teste de regressão de preservação de relatórios e exportação adicionado. CI e teste físico ainda não verificados.
 
@@ -20,3 +20,11 @@ Relatório físico de varredura rápida do commit a4603eb66de729fa85ba8bdaaa37c7
 8. Gate obrigatório: cinco ciclos de testes funcionais por módulo, CI Windows, teste de instalação e físico, arquivos benignos e EICAR/AMTSO em ambiente seguro, avaliação laboratorial independente de proteção, falsos positivos e desempenho. Não declarar superioridade ou liberar como antivírus autônomo até evidência suficiente. Preservar main, versão pública e atualizações assinadas.
 
 Referências: https://docs.clamav.net/manual/Usage/Scanning.html ; https://www.bitdefender.com/en-us/oem/ ; https://oem.avira.com/en/solutions/anti-malware ; https://learn.microsoft.com/en-us/windows/security/operating-system-security/
+
+## 3.0.15 LAB — nova revisão candidata
+- Preservar integralmente arte Zeus/Atenas, identidade, layout, botões, gráficos, jogos, controle parental, menus e demais recursos. Alterações de segurança, desempenho e identidade de versão apenas.
+- Carregar a base ClamAV uma vez por varredura para todas as raízes acessíveis. Registrar raízes indisponíveis e cobertura parcial. Teste de integração de lote benigno e raiz inexistente adicionado. Ganho de tempo ainda não medido.
+- Diagnóstico Windows/Defender e Sysmon disponível no JSON parcial e final; últimos 100 sinais ClamAV identificados como janela limitada, sem confundir com relatório completo.
+- Identificação 3.0.15 LAB no executável, interface, instalador, CI e artefatos. Compilação, teste real instalado e físico ainda pendentes.
+- Proprietário aceita estudar ferramentas comerciais mesmo para uso pessoal. Não instalar, copiar ou redistribuir SDK proprietário sem licença e acesso oficiais; não contratar valores sem termos e autorização específica. Nenhum SDK comercial disponível nesta revisão.
+- Proteção residente própria, proteção web automática, memória, antirransomware, treinamento real de IA e validação independente continuam pendentes. Não substituir Defender nem promover esta versão a produção.

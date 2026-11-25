@@ -11,6 +11,7 @@ type SignatureEvidence struct {
  TestRecords int `json:"test_records"`
  UnclassifiedRecords int `json:"unclassified_records"`
  ObservedRecords int `json:"observed_records"`
+ CoverageComplete bool `json:"coverage_complete"`
  ErrorCountKnown bool `json:"error_count_known"`
  SummaryUsable bool `json:"summary_usable"`
  Partial bool `json:"partial"`
@@ -23,5 +24,6 @@ func Signature(scanned, infected, signatures, errs int64, kinds []string, partia
  for _,kind:=range kinds{switch kind{case "signature_detection":e.SignatureRecords++;case "heuristic_or_limit":e.HeuristicOrLimitRecords++;case "test_eicar":e.TestRecords++;default:e.UnclassifiedRecords++}}
  e.Partial=partial||scanned<=0||infected<0||infected>scanned||signatures<=0||errs>0||infected!=int64(len(kinds))||e.HeuristicOrLimitRecords>0||e.UnclassifiedRecords>0
  e.SummaryUsable=!e.Partial
+ e.CoverageComplete=e.SummaryUsable&&e.ErrorCountKnown
  return e
 }

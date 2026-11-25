@@ -1,6 +1,6 @@
 // Package scopeprogress measures logical file lengths, not disk allocation.
 package scopeprogress
-import("context";"io/fs";"path/filepath";"time")
+import("context";"errors";"io/fs";"path/filepath";"time")
 type Inventory struct{
  State string `json:"state"`
  Files int64 `json:"files"`
@@ -9,6 +9,12 @@ type Inventory struct{
  Excluded int64 `json:"excluded"`
  ReadyAt time.Time `json:"ready_at"`
  ScannerDone bool `json:"scanner_done"`
+}
+var errInventoryOverflow=errors.New("logical inventory counter overflow")
+func addFile(r *Inventory,size int64)error{
+ const max=int64(^uint64(0)>>1)
+ if size<0||r.Files==max||size>max-r.Bytes{return errInventoryOverflow}
+ r.Files++;r.Bytes+=size;return nil
 }
 func Enumerate(ctx context.Context,roots []string,exclude func(string)bool,update func(Inventory))Inventory{
  r:=Inventory{State:"counting"};last:=time.Now()
@@ -23,10 +29,9 @@ func Enumerate(ctx context.Context,roots []string,exclude func(string)bool,updat
    if !d.Type().IsRegular(){r.Excluded++;return nil}
    st,e:=d.Info();if e!=nil{r.Errors++;return nil}
    if !st.Mode().IsRegular()||st.Size()<0{r.Excluded++;return nil}
-   if st.Size()>int64(^uint64(0)>>1)-r.Bytes{r.Errors++;return fs.SkipAll}
-   r.Files++;r.Bytes+=st.Size();return nil
+   return addFile(&r,st.Size())
   })
-  if err!=nil&&ctx.Err()==nil{r.Errors++}
+  if err!=nil&&ctx.Err()==nil{r.Errors++;if errors.Is(err,errInventoryOverflow){break}}
  }
  r.ReadyAt=time.Now().UTC()
  switch{case ctx.Err()!=nil:r.State="cancelled";case len(roots)==0:r.State="unavailable";case r.Errors>0:r.State="partial";default:r.State="ready"}

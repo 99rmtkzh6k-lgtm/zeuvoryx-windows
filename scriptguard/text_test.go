@@ -34,3 +34,15 @@ func TestAdditionalUnicode315(t *testing.T){
  prefix:=strings.Repeat("a",MaxDecodedBytes-1)
  if got,ok:=DecodeBOM(append([]byte{0xef,0xbb,0xbf},[]byte(prefix+"🌞")...));!ok||got!=prefix{t.Fatal("split UTF8 boundary")}
 }
+
+func TestUTF16Streaming315(t *testing.T){
+ for _,o:=range []binary.ByteOrder{binary.LittleEndian,binary.BigEndian}{
+  want:=strings.Repeat("Aé日🌞",2048)
+  if got,ok:=DecodeBOM(encode(want,o));!ok||got!=want{t.Fatal("streamed decode mismatch")}
+ }
+}
+func BenchmarkUTF16Streaming315(b *testing.B){
+ data:=encode(strings.Repeat("Aé日🌞",12000),binary.LittleEndian)
+ b.ReportAllocs();b.SetBytes(int64(len(data)));b.ResetTimer()
+ for i:=0;i<b.N;i++{if _,ok:=DecodeBOM(data);!ok{b.Fatal("decode failed")}}
+}

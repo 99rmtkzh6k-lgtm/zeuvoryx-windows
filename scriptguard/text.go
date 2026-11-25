@@ -6,6 +6,7 @@ import (
  "bytes"
  "unicode/utf8"
  "unicode/utf16"
+ "strings"
 )
 
 const MaxDecodedBytes = 256 << 10
@@ -28,17 +29,21 @@ func DecodeBOM(b []byte) (string, bool) {
  if len(b)==0 {return "",false}
  clipped:=len(b)>MaxDecodedBytes
  if clipped {b=b[:MaxDecodedBytes]}
- u:=make([]uint16,0,len(b)/2)
- for i:=0;i<len(b);i+=2 {u=append(u,order.Uint16(b[i:i+2]))}
- if clipped && len(u)>0 && u[len(u)-1]>=0xd800 && u[len(u)-1]<=0xdbff {u=u[:len(u)-1]}
- for i:=0;i<len(u);i++ {
-  c:=u[i]
-  if c>=0xd800 && c<=0xdbff {if i+1>=len(u)||u[i+1]<0xdc00||u[i+1]>0xdfff{return "",false};i++;continue}
-  if c>=0xdc00 && c<=0xdfff{return "",false}
-  if c==0 || (c<32 && c!=9 && c!=10 && c!=12 && c!=13) {return "",false}
+ // Decode directly, avoiding intermediate UTF-16 and rune allocations.
+ var out strings.Builder
+ out.Grow(len(b)/2)
+ for i:=0;i<len(b);i+=2{
+  v:=rune(order.Uint16(b[i:i+2]))
+  if v>=0xd800&&v<=0xdbff{
+   if i+2>=len(b){if clipped{break};return "",false}
+   low:=rune(order.Uint16(b[i+2:i+4]))
+   if low<0xdc00||low>0xdfff{return "",false}
+   v=utf16.DecodeRune(v,low);i+=2
+  }else if v>=0xdc00&&v<=0xdfff{return "",false}
+  if !allowed(v){return "",false}
+  out.WriteRune(v)
  }
- s:=string(utf16.Decode(u))
- return s,s!=""
+ return out.String(),out.Len()>0
 }
 
 func allowed(r rune) bool {

@@ -18,3 +18,8 @@ func TestBoundedCorrelation315(t *testing.T){
  for i:=0;i<4;i++{es=append(es,Event{ID:13,GUID:"abc",Target:"HKU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\example"})}
  got:=Analyze(es);if len(got)!=1||got[0].StartupWrites!=1{t.Fatalf("duplicate evidence %+v",got)}
 }
+
+func TestAllEventRecordsBound315(t *testing.T){
+ raw:="<Events>"+strings.Repeat("<Event><System><EventID>11</EventID></System></Event>",20001)+"</Events>"
+ if _,e:=Parse(strings.NewReader(raw));e==nil{t.Fatal("unidentified records bypassed event budget")}
+}

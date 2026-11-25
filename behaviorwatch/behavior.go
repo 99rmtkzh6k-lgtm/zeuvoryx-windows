@@ -8,8 +8,8 @@ func Parse(r io.Reader)([]Event,error){
  const maxXML=8<<20
  const maxEvents=20000
  bounded:=&io.LimitedReader{R:r,N:maxXML+1}
- dec:=xml.NewDecoder(bounded);out:=[]Event{}
- for{tok,e:=dec.Token();if bounded.N<=0{return nil,fmt.Errorf("Sysmon XML exceeds %d bytes",maxXML)};if e==io.EOF{return out,nil};if e!=nil{return nil,e};st,ok:=tok.(xml.StartElement);if !ok||st.Name.Local!="Event"{continue};var x xmlEvent;if e=dec.DecodeElement(&x,&st);e!=nil{return nil,e};v:=Event{ID:x.ID};for _,d:=range x.Data{switch d.Name{case "ProcessGuid":v.GUID=d.Value;case "Image":v.Image=d.Value;case "TargetFilename","TargetObject":v.Target=d.Value}};if v.GUID!=""{if len(out)>=maxEvents{return nil,fmt.Errorf("Sysmon event count exceeds %d",maxEvents)};out=append(out,v)}}
+ dec:=xml.NewDecoder(bounded);out:=[]Event{};seen:=0
+ for{tok,e:=dec.Token();if bounded.N<=0{return nil,fmt.Errorf("Sysmon XML exceeds %d bytes",maxXML)};if e==io.EOF{return out,nil};if e!=nil{return nil,e};st,ok:=tok.(xml.StartElement);if !ok||st.Name.Local!="Event"{continue};seen++;if seen>maxEvents{return nil,fmt.Errorf("Sysmon event count exceeds %d",maxEvents)};var x xmlEvent;if e=dec.DecodeElement(&x,&st);e!=nil{return nil,e};if bounded.N<=0{return nil,fmt.Errorf("Sysmon XML exceeds %d bytes",maxXML)};v:=Event{ID:x.ID};for _,d:=range x.Data{switch d.Name{case "ProcessGuid":v.GUID=d.Value;case "Image":v.Image=d.Value;case "TargetFilename","TargetObject":v.Target=d.Value}};if v.GUID!=""{out=append(out,v)}}
 }
 func Analyze(events []Event)[]Signal{
  type state struct{image string;creates map[string]bool;writes map[string]bool;start bool}

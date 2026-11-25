@@ -8,3 +8,11 @@ func TestInventory314(t *testing.T){
  r=Enumerate(context.Background(),[]string{a,filepath.Join(d,"missing")},nil,nil);if r.State!="partial"||r.Errors!=1||r.Files!=1{t.Fatalf("%+v",r)}
  ctx,cancel:=context.WithCancel(context.Background());cancel();if r=Enumerate(ctx,[]string{d},nil,nil);r.State!="cancelled"||r.Files!=0{t.Fatal(r)}
 }
+
+func TestInventoryOverflow315(t *testing.T){
+ const max=int64(^uint64(0)>>1)
+ r:=Inventory{Files:1,Bytes:max-1}
+ if e:=addFile(&r,1);e!=nil||r.Bytes!=max||r.Files!=2{t.Fatal(r,e)}
+ if e:=addFile(&r,1);e==nil||r.Bytes!=max||r.Files!=2{t.Fatal("overflow changed counters",r,e)}
+ r=Inventory{Files:max};if e:=addFile(&r,0);e==nil||r.Files!=max{t.Fatal("file counter wrapped",r,e)}
+}

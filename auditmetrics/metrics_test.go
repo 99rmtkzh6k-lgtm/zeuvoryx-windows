@@ -14,3 +14,10 @@ func TestErrorCountEvidence315(t *testing.T){
  a:=Signature(10,0,100,-1,nil,false);b:=Signature(10,0,100,0,nil,false)
  if a.ErrorCountKnown||a.EngineErrors!=nil||!b.ErrorCountKnown||b.EngineErrors==nil||*b.EngineErrors!=0{t.Fatal(a,b)}
 }
+
+func TestCoverageEvidence315(t *testing.T){
+ for _,v:=range []SignatureEvidence{Signature(10,0,100,-1,nil,false),Signature(10,0,100,1,nil,false),Signature(10,0,100,0,nil,true)}{
+  if v.CoverageComplete{t.Fatal("unverified coverage")}
+ }
+ if !Signature(10,0,100,0,nil,false).CoverageComplete{t.Fatal("consistent complete observation rejected")}
+}

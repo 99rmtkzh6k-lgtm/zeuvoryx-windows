@@ -6,3 +6,9 @@ func TestMonotonicEvidence315(t *testing.T){
  tr:=New(nil);now:=time.Now();tr.Signal(now);tr.Signal(now.Add(-time.Minute));tr.ScanRequest(now);tr.ScanRequest(now.Add(-time.Minute))
  s:=tr.Snapshot();if s.Signals!=2||!s.LastSignal.Equal(now)||!s.LastScanRequest.Equal(now){t.Fatal(s)}
 }
+
+func TestMonitorRecoveryAndSaturation315(t *testing.T){
+ tr:=New([]string{"Downloads"});tr.Active("Downloads",true);tr.Problem("Downloads",errors.New("temporary"));tr.Active("Downloads",true)
+ if _,ok:=tr.Snapshot().Problems["Downloads"];ok{t.Fatal("stale error after recovery")}
+ tr.s.Signals=^uint64(0);tr.Signal(time.Now());if tr.Snapshot().Signals!=^uint64(0){t.Fatal("counter wrapped")}
+}

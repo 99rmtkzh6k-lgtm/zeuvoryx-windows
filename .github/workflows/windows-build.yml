@@ -2393,6 +2393,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw '3.0.15 local game regressions failed' }
           python prepare_games314.py
           if ($LASTEXITCODE -ne 0) { throw '314 games catalog integration failed' }
+          go test -count=5 ./auditmetrics
+          if ($LASTEXITCODE -ne 0) { throw '3.0.15 engine accounting regressions failed' }
           python prepare_reports315.py
           if ($LASTEXITCODE -ne 0) { throw '3.0.15 report center integration failed' }
           go test -count=5 -run '^TestReport315DurableFile

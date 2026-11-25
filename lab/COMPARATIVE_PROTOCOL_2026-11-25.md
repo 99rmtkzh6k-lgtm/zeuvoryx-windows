@@ -14,3 +14,6 @@ Owner requested opt-in comparison of Defender, ClamAV and future motors; export 
 
 ## FieldLearn readiness gate
 Existing exact-source parser test verified locally five times (Git blob identities checked). Corrected absent/malformed XML envelope, no observed events, missing motors, inconsistent scan time and unavailable source status. Added regression cases. Enabled both dual-platform test and existing controlled installer workflow on dedicated FieldLearn branch, without release promotion. Physical acceptance still requires Windows Defender operational events plus a ZEUVORYX/ClamAV scan in the same observation interval. Observation is aggregate, not proof of paired malware detection or model training.
+
+## Build correction — run 45649565871
+Dual-platform run 45649565706 passed all jobs including FieldLearn, resident coordination and quarantine. Full installer failed patch_scan.py line 9 because lab scanner changed the exact legacy comment used as a source anchor. Restored compatible comment only; scanner logic unchanged. Existing generator already emits the same one-pass hashing approach. Retest full build; installer not approved. Native event collection on a physical PC still pending.

@@ -186,7 +186,7 @@ func (s *Scanner) examine(path string, size int64) ([]Finding, error) {
 		return nil, e
 	}
 	defer f.Close()
- // One sequential pass hashes the complete file while retaining only the bounded sample.
+	// Hash the complete file in one sequential pass while retaining only the bounded sample.
  h := sha256.New()
  limit := s.MaxFileBytes
  if limit <= 0 {limit = 32 << 20}

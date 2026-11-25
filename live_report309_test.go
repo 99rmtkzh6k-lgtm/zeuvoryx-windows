@@ -1,5 +1,5 @@
 package main
-import("testing";"time";"context";"os";"path/filepath";"github.com/zeuvoryx/zeuvoryx/engine")
+import("testing";"time";"context";"os";"path/filepath";"github.com/zeuvoryx/zeuvoryx/engine";"github.com/zeuvoryx/zeuvoryx/signatureav")
 func Test309LiveReportSnapshots(t *testing.T){
  s:=&State{running:true,report:engine.Report{ScanID:"test",ScanMode:"full",Started:time.Now()}}
  raw:=engine.Report{Root:"test",Started:time.Now(),Files:1,Bytes:10,Findings:[]engine.Finding{{Path:"first",Risk:100}},Errors:[]string{"denied"},ErrorCount:1,Skipped:1,ErrorCategories:map[string]int{"access_denied":1}}
@@ -29,4 +29,20 @@ func Test309CustomLiveBeforeCompletion(t *testing.T){
  r,e:=engine.New().Scan(engine.WithLiveReport(context.Background(),s.publishLive),dir,nil)
  v,_:=s.snapshotForExport()
  if e!=nil||r.Files!=1||v.Files!=1||!v.InProgress{t.Fatalf("custom live %+v %+v %v",r,v,e)}
+}
+
+func Test314SignatureReportSurvivesScannerSnapshot(t *testing.T){
+ s:=&State{running:true,report:engine.Report{ScanID:"test314",Started:time.Now()}}
+ roots:=[]string{"root-a","root-b"}
+ rep:=engine.Report{SignatureState:"running",SignatureRoots:roots,SignatureReports:[]signatureav.Report{{Root:"root-a",Partial:true,Scanned:-1,Findings:[]signatureav.Finding{{Kind:"heuristic_or_limit",Signature:"Heuristics.Limits.Exceeded.MaxScanTime"}}}}}
+ s.publishSignatureProgress314(&rep)
+ s.publishLive(engine.Report{Files:4,Bytes:10})
+ snap,ok:=s.snapshotForExport()
+ if !ok||snap.SignatureState!="running"||len(snap.SignatureReports)!=1||snap.SignatureReports[0].Scanned!=-1||!snap.Partial{t.Fatalf("lost signature progress: %+v",snap)}
+ rep.SignatureReports=append(rep.SignatureReports,signatureav.Report{Root:"root-b",Scanned:2})
+ rep.SignatureState="partial";s.publishSignatureProgress314(&rep)
+ after,_:=s.snapshotForExport()
+ if len(after.SignatureReports)!=2||after.SignatureState!="partial"||len(snap.SignatureReports)!=1{t.Fatal("snapshot changed or missing second root")}
+ s.running=false;rep.SignatureState="finished";s.publishSignatureProgress314(&rep)
+ if s.report.SignatureState!="partial"{t.Fatal("late report changed finished session")}
 }

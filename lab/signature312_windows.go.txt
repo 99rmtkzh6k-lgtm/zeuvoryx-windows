@@ -16,6 +16,7 @@ func (s *State) signaturePhase312(ctx context.Context, rep *engine.Report, custo
  if !automatic{roots=[]string{customPath}}
  if len(roots)==0{rep.SignatureState="unavailable";rep.SignatureProblem="No verified roots for signature scan";return}
  rep.SignatureState="running";s.publishLive(*rep)
+ if _,e:=ensureClam314(ctx,false);e!=nil{rep.SignatureState="unavailable";rep.SignatureProblem=e.Error();return}
  rep.SignatureState="finished"
  for _,root:=range roots{
   if ctx.Err()!=nil{rep.SignatureState="partial";break}

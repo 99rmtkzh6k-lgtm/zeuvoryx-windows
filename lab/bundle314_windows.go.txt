@@ -1,0 +1,37 @@
+package main
+import("context";"encoding/json";"errors";"fmt";"os";"os/exec";"path/filepath";"strings";"sync";"syscall";"time";"github.com/zeuvoryx/zeuvoryx/signatureav")
+var bundled314Mu sync.Mutex
+// The app is installed per user without elevated privileges. Never search PATH or external installation.
+func bundled314()(string,error){
+ app,e:=os.Executable();if e!=nil{return "",e};dir:=filepath.Join(filepath.Dir(app),"clamav")
+ for _,name:=range []string{"clamscan.exe","freshclam.exe","libclamav.dll"}{
+  p:=filepath.Join(dir,name);st,e:=os.Lstat(p);if e!=nil||!st.Mode().IsRegular(){return "",fmt.Errorf("Motor integrado incompleto: %s. Reinstale o pacote ZEUVORYX.",name)}
+ }
+ return filepath.Join(dir,"clamscan.exe"),nil
+}
+func ensureClam314(ctx context.Context, force bool)(string,error){
+ bundled314Mu.Lock();defer bundled314Mu.Unlock()
+ exe,e:=bundled314();if e!=nil{return "",e};dir:=filepath.Dir(exe);db:=filepath.Join(dir,"database")
+ if e=os.MkdirAll(db,0700);e!=nil{return "",e}
+ marker:=filepath.Join(db,"zeuvoryx-refresh-ok")
+ if !force{if st,e:=os.Stat(marker);e==nil&&time.Since(st.ModTime())>=0&&time.Since(st.ModTime())<24*time.Hour{
+   v,e:=signatureav.Version(ctx,exe);if e==nil&&strings.Count(v,"/")>=2{return v,nil}
+ }}
+ if strings.ContainsAny(db,"\"\r\n"){return "",errors.New("invalid database path")}
+ conf:=filepath.Join(dir,"freshclam.conf")
+ if e=os.WriteFile(conf,[]byte("DatabaseMirror database.clamav.net\nDatabaseDirectory \""+db+"\"\n"),0600);e!=nil{return "",e}
+ upctx,cancel:=context.WithTimeout(ctx,15*time.Minute);defer cancel()
+ cmd:=exec.CommandContext(upctx,filepath.Join(dir,"freshclam.exe"),"--config-file="+conf);cmd.Dir=dir;cmd.SysProcAttr=&syscall.SysProcAttr{HideWindow:true}
+ var out limit313;cmd.Stdout=&out;cmd.Stderr=&out
+ if e=cmd.Run();e!=nil||out.overflow{return "",fmt.Errorf("FreshClam não confirmou atualização: %v; %s",e,out.b.String())}
+ v,e:=signatureav.Version(upctx,exe);if e!=nil||strings.Count(v,"/")<2{return "",fmt.Errorf("Base oficial não confirmada: %s %v",v,e)}
+ if e=os.WriteFile(marker,[]byte(v),0600);e!=nil{return "",e};return v,nil
+}
+// Restricted read-only diagnostic used by CI, also available for local technical support.
+func signatureCheck314(path string)int{
+ ctx,cancel:=context.WithTimeout(context.Background(),20*time.Minute);defer cancel()
+ if _,e:=ensureClam314(ctx,false);e!=nil{fmt.Fprintln(os.Stderr,e);return 2}
+ exe,e:=bundled314();if e!=nil{fmt.Fprintln(os.Stderr,e);return 2}
+ r,e:=signatureav.Scan(ctx,exe,path,"");if je:=json.NewEncoder(os.Stdout).Encode(r);je!=nil{return 2}
+ if e!=nil||r.Partial{return 2};return 0
+}

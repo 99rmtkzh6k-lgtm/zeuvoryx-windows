@@ -1,3 +1,5 @@
+> **25/11/2026 — candidato 3.0.14 LAB:** correção da dependência externa do ClamAV evidenciada em teste físico 3.0.13. Motor oficial incluído no instalador, atualização automática da base e testes reais via aplicativo instalado; CI pendente. [Estado e limites](BUNDLED_314_LAB.md). Não é release de produção.
+
 > **25/11/2026 — 3.0.13 LAB candidato consolidado:** assinatura, varredura normal, atualização FreshClam sob demanda, quarentena revalidada e telemetria Sysmon opcional. CI e validação física pendentes. [Estado e limites](CONSOLIDATED_313_LAB.md). Não é release de produção.
 
 > **25/11/2026 — candidato 3.0.12 LAB:** segunda etapa independente na varredura normal e relatório consolidado; CI pendente. [Evidência e limites](SIGNATURE_312_LAB.md). 3.0.11: ClamAV real aprovado em cinco testes EICAR/benigno no Linux; não comprova proteção real. Sem release de produção.

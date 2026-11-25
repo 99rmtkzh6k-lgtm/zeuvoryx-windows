@@ -12,11 +12,7 @@ import(
  "time"
  "github.com/zeuvoryx/zeuvoryx/signatureav"
 )
-func clamExecutable()(string,error){
- root:=os.Getenv("ProgramFiles");if !filepath.IsAbs(root){return "",fmt.Errorf("Program Files indisponível")}
- p:=filepath.Join(root,"ClamAV","clamscan.exe");st,e:=os.Lstat(p);if e!=nil||!st.Mode().IsRegular(){return "",fmt.Errorf("Instale ClamAV oficial em Program Files\\ClamAV e atualize a base via FreshClam")}
- return p,nil
-}
+func clamExecutable()(string,error){return bundled314()}
 func clamStatus311()string{
  tool,e:=clamExecutable();if e!=nil{return e.Error()}
  ctx,cancel:=context.WithTimeout(context.Background(),15*time.Second);defer cancel()
@@ -39,6 +35,7 @@ func clamScanFile(path string)(map[string]any,error){
  clam311Mu.Lock();if clam311Cancel!=nil{clam311Mu.Unlock();return nil,fmt.Errorf("Análise ClamAV já em andamento")}
  ctx,cancel:=context.WithTimeout(context.Background(),6*time.Hour);clam311Cancel=cancel;clam311Mu.Unlock()
  defer func(){cancel();clam311Mu.Lock();clam311Cancel=nil;clam311Mu.Unlock()}()
+ if _,e:=ensureClam314(ctx,false);e!=nil{return nil,e}
  rep,scanErr:=signatureav.Scan(ctx,tool,path,"")
  base,e:=os.UserConfigDir();if e!=nil{return nil,e};dir:=filepath.Join(base,"ZEUVORYX","signature-reports")
  if e=os.MkdirAll(dir,0700);e!=nil{return nil,e}

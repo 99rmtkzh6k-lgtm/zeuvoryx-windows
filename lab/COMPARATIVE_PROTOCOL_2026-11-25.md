@@ -20,3 +20,6 @@ Dual-platform run 45649565706 passed all jobs including FieldLearn, resident coo
 
 ## Build correction — run 45651697816
 Dual-platform tests passed again (45651697134). Installer reached hardening phase but zeuvoryx_upgrade.py expected original Finding literal, not extended lab evidence fields. Generator now accepts either exact source anchor, retaining lab evidence and existing quarantine gate. No gate disabled. New build required; physical acceptance remains pending.
+
+## Build correction — 45653618067
+Third full build failed at same Finding anchor after gofmt normalized spaces before hardening. Replaced exact lab-only matching with bounded whitespace-tolerant match, rejecting ambiguity and preserving fields. Dual platform test 45653617885 passed. Full build pending, not authorized for installation.

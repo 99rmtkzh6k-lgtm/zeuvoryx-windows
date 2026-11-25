@@ -1,0 +1,958 @@
+{
+  "pt-br": [
+    {
+      "id": "about",
+      "title": "O que é o ZEUVORYX?",
+      "tags": "zeuvoryx antivírus o que é funciona protege",
+      "answer": "Scanner de segurança para Windows x64 desenvolvido em Go, com análise de arquivos, indicadores SHA-256, heurísticas, quarentena reversível e IA consultiva experimental. Macintosh 3.0.5 LAB é um projeto separado em validação."
+    },
+    {
+      "id": "install",
+      "title": "Instalação e atualização",
+      "tags": "instalar instalação atualizar atualização versão upgrade zip exe pacote",
+      "answer": "Use somente um pacote de teste autorizado pelo mantenedor e confira sua versão e SHA-256 com a referência do GitHub. Extraia o ZIP antes de abrir o instalador. Termine ou cancele a varredura, feche o aplicativo, faça backup de configurações e quarentena e instale sobre a edição LAB compatível. Não desative Defender, SmartScreen ou outras proteções. O CI verificou migração de 3.0.5 LAB para 3.0.6 LAB; outras migrações não estão comprovadas."
+    },
+    {
+      "id": "startup",
+      "title": "O aplicativo não abre ou fecha sozinho",
+      "tags": "não abre fechar fechou sozinho travou erro iniciar webview2",
+      "answer": "Não repita a instalação indefinidamente. Confirme a versão, se o Windows é x64, se o Microsoft Edge WebView2 Runtime está instalado e se há espaço e memória disponíveis. Consulte o Histórico de confiabilidade (perfmon /rel) e o Visualizador de Eventos (eventvwr.msc), logs Aplicativo e Sistema, no horário da falha. Não apague a quarentena nem desative a proteção do Windows. Envie somente informações anonimizadas pelo canal de suporte."
+    },
+    {
+      "id": "fullscan",
+      "title": "A varredura completa trava ou encerra",
+      "tags": "varredura completa lenta travou fechou scan congela travamento",
+      "answer": "O fechamento inesperado em computadores físicos ainda está em investigação. A versão 3.0.6 corrigiu pontos de inicialização e foi aberta por 15 segundos após a confirmação da interface no CI; 60 testes de um pequeno conjunto de arquivos passaram. Isso não demonstra estabilidade em toda a varredura. Se ocorrer novamente, interrompa os testes na máquina de trabalho, registre horário, versão, modo, uso de CPU/RAM e último progresso. Não execute arquivos suspeitos."
+    },
+    {
+      "id": "errors",
+      "title": "Erros, ignorados e alertas",
+      "tags": "erro ignorados acesso negado arquivo bloqueado alerta detecção vírus zero",
+      "answer": "Acesso negado, arquivo bloqueado por outro processo e arquivo que desapareceu podem impedir a leitura. Um relatório parcial ou zero detecções não comprova ausência de malware. Uma heurística ou pontuação de IA é um indício, não diagnóstico definitivo. Não remova arquivos do Windows apenas por um alerta; revise a evidência e mantenha as proteções do sistema."
+    },
+    {
+      "id": "ai",
+      "title": "IA, tempo real, ClamAV e atualizações",
+      "tags": "inteligência artificial aprende ia tempo real clamav defender atualização automática estatísticas",
+      "answer": "A IA atual é consultiva, sem aprendizagem local contínua validada. Monitoramento residente próprio, aprendizagem contínua, atualização automática de produção e estatísticas globais permanecem em desenvolvimento. ClamAV é integração opcional e depende de instalação externa. Não confunda aprovação do botão Testar componentes com serviço global operacional. Releases de produção não foram anunciadas."
+    },
+    {
+      "id": "support",
+      "title": "Como solicitar suporte",
+      "tags": "ajuda suporte contato relatório bug problema código",
+      "answer": "Abra uma questão no GitHub Issues indicando versão, Windows 10/11 e build, arquitetura, RAM aproximada, modo da varredura, horário e fuso, resultado esperado, resultado observado e passos para reproduzir. Se possível, informe a categoria do erro e o código de saída. Remova nomes de pessoas, caminhos pessoais, e-mails, tokens, identificadores, conteúdo de arquivos e hashes de arquivos privados. Não publique amostras de malware, logs brutos, arquivos de quarentena ou credenciais. Não há atendimento 24 horas garantido."
+    },
+    {
+      "id": "quick",
+      "title": "Qual é a diferença entre varredura rápida, completa e personalizada?",
+      "tags": "rápida completa personalizada escolher pasta disco scan cancelar parar",
+      "answer": "A rápida verifica locais prioritários; a completa, discos locais acessíveis; a personalizada, o local selecionado, quando disponível. Use Cancelar para interromper a análise. Arquivos protegidos, indisponíveis ou bloqueados podem ser omitidos; confira a cobertura no relatório."
+    },
+    {
+      "id": "quarantine",
+      "title": "Como utilizar quarentena e restauração?",
+      "tags": "quarentena recuperar restaurar remover excluir falso positivo isolamento",
+      "answer": "Em Quarentena, consulte os itens isolados. Revise a evidência antes de confirmar qualquer ação. Restaure somente após verificar que o arquivo é legítimo e que o destino é seguro. Não apague arquivos do sistema só por alerta heurístico; não existe garantia de recuperação de arquivos criptografados."
+    },
+    {
+      "id": "links",
+      "title": "Como verificar links, golpes e mensagens?",
+      "tags": "link url phishing fraude golpe internet mensagem banco",
+      "answer": "Na seção Links e fraudes, examine o endereço ou texto suspeito sem incluir dados pessoais, senhas ou códigos. A análise local é consultiva e não visita o endereço, não bloqueia phishing automaticamente e não comprova legitimidade."
+    },
+    {
+      "id": "report",
+      "title": "Como exportar o relatório?",
+      "tags": "exportar salvar enviar relatório log json arquivos bytes velocidade",
+      "answer": "Use Exportar relatório quando estiver disponível. Confira modo, versão, contagem, erros, omitidos e cancelamento. Antes de compartilhar, retire caminhos, nomes, identificadores e hashes de arquivos privados; não publique logs brutos."
+    },
+    {
+      "id": "cloud",
+      "title": "O ZEUVORYX analisa arquivos da nuvem?",
+      "tags": "onedrive drive nuvem arquivos online sincronizados",
+      "answer": "A varredura depende de arquivos acessíveis ao Windows. Arquivos somente online podem não estar disponíveis localmente. Não force o download de todos os arquivos para tentar aumentar a cobertura. Monitoramento de eventos de nuvem está planejado."
+    },
+    {
+      "id": "media",
+      "title": "A ferramenta detecta vídeo falso?",
+      "tags": "vídeo deepfake c2pa autenticidade procedência",
+      "answer": "A opção de mídia verifica credenciais digitais C2PA. A presença ou ausência dessas credenciais não confirma que o vídeo seja verdadeiro ou falso. Não é um detector neural de deepfakes."
+    },
+    {
+      "id": "cleanup",
+      "title": "Como limpar temporários com segurança?",
+      "tags": "limpar limpeza cache temporários liberar espaço",
+      "answer": "Em Ferramentas, revise os temporários candidatos antes de confirmar. A limpeza é opcional; não é remoção de malware. Não apague arquivos ativos ou críticos."
+    },
+    {
+      "id": "defender",
+      "title": "Como usar a Segurança do Windows e Microsoft Defender?",
+      "tags": "defender antivirus segurança windows microsoft histórico proteção",
+      "answer": "Abra Segurança do Windows > Proteção contra vírus e ameaças. Confira o estado e o Histórico de proteção. Mantenha o Defender ativo; ZEUVORYX não substitui esse motor. Em computador corporativo, respeite as políticas da organização.",
+      "source": "https://support.microsoft.com/en-us/windows/security/windows-security/protection-history-in-the-windows-security-app",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "windowsupdate",
+      "title": "Como atualizar o Windows?",
+      "tags": "windows update atualização sistema operacional atualização segurança reiniciar",
+      "answer": "Abra Configurações > Windows Update (no Windows 10, Atualização e Segurança). Verifique atualizações e reinicie quando solicitado, após salvar o trabalho. Não instale atualizações de sites desconhecidos.",
+      "source": "https://support.microsoft.com/en-us/windows/deployment/updates-lifecycle/windows-update-faq",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "win10",
+      "title": "Windows 10 ainda é seguro?",
+      "tags": "windows 10 suporte fim outubro 2025 esu windows11",
+      "answer": "O suporte regular do Windows 10 terminou em 14/10/2025. Existem exceções por edição e programas de atualizações de segurança estendidas (ESU). Verifique sua elegibilidade e planeje migrar para uma versão suportada. Antivírus não substitui correções do sistema.",
+      "source": "https://support.microsoft.com/en-us/windows/deployment/updates-lifecycle/windows-10-support-has-ended-on-october-14-2025",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "performance",
+      "title": "Computador lento, CPU ou memória alta",
+      "tags": "cpu ram memória disco lento desempenho gerenciador tarefas 100",
+      "answer": "Abra Gerenciador de Tarefas (Ctrl+Shift+Esc) e confira CPU, memória e disco. Uma análise completa pode usar recursos temporariamente. Salve o trabalho e cancele a análise se a máquina ficar instável. Não encerre processos críticos nem desative a proteção para ganhar velocidade.",
+      "source": "https://support.microsoft.com/windows",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "firewall",
+      "title": "Para que serve firewall?",
+      "tags": "firewall rede conexão porta proteção internet wifi",
+      "answer": "O firewall controla conexões de rede conforme suas regras. Mantenha o Firewall do Windows habilitado e não abra portas ou crie exceções sem necessidade. O ZEUVORYX consulta recursos nativos; não é um firewall próprio.",
+      "source": "https://support.microsoft.com/windows",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "backup",
+      "title": "Como fazer backup e recuperar arquivos?",
+      "tags": "backup copia segurança restaurar recuperação arquivos disco externo",
+      "answer": "Mantenha cópias versionadas e uma cópia separada ou offline, teste a restauração e desconecte a unidade de backup quando não estiver em uso. Sincronização não é necessariamente backup. Não dependa do antivírus para recuperar arquivos perdidos.",
+      "source": "https://support.microsoft.com/pt-br/windows/security/protect-your-pc-from-ransomware",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "ransomware",
+      "title": "O que fazer se suspeitar de ransomware?",
+      "tags": "ransomware sequestro criptografados resgate extorsão arquivos",
+      "answer": "Desconecte o computador afetado da rede para limitar a propagação, não execute arquivos suspeitos e preserve evidências. Use outro dispositivo confiável para buscar ajuda e proteger contas. Consulte um especialista e restaure backups verificados após contenção. Não há garantia de descriptografia.",
+      "source": "https://support.microsoft.com/pt-br/windows/security/protect-your-pc-from-ransomware",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "passwords",
+      "title": "Como proteger senhas e contas?",
+      "tags": "senha senhas password conta autenticação mfa 2fa passkey",
+      "answer": "Use senhas únicas e longas, gerenciador confiável e autenticação multifator ou passkeys quando disponíveis. Nunca informe códigos de verificação a terceiros. Se suspeitar de invasão, use dispositivo confiável, altere a senha e revise sessões e recuperação.",
+      "source": "https://cartilha.cert.br/",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "internet",
+      "title": "Como navegar com segurança e evitar golpes?",
+      "tags": "internet navegador site golpe pix banco phishing download wi-fi wifi https",
+      "answer": "Digite endereços oficiais ou use favoritos conhecidos. HTTPS não garante que um site seja legítimo. Confirme pedidos de pagamento por canal independente, não compartilhe códigos e evite instalar programas desconhecidos. Em caso de fraude bancária, contate imediatamente o banco pelos canais oficiais.",
+      "source": "https://cartilha.cert.br/",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "privacy",
+      "title": "O que é LGPD e quais são meus direitos?",
+      "tags": "lgpd lpgt lgpt lpgd lei proteção dados pessoais privacidade titular anpd consentimento exclusão",
+      "answer": "A Lei Geral de Proteção de Dados (Lei 13.709/2018) regula o tratamento de dados pessoais no Brasil. Conforme a situação, há direitos de informação, acesso, correção, revogação do consentimento e eliminação, sujeitos às hipóteses legais. Procure primeiro o controlador; se necessário consulte a ANPD. Esta é orientação geral, não parecer jurídico.",
+      "source": "https://www.gov.br/anpd/pt-br/assuntos/titular-de-dados-1/direito-dos-titulares",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "gdpr",
+      "title": "O que é GDPR na Europa?",
+      "tags": "gdpr rgpd europa união europeia dados privacidade direitos",
+      "answer": "O GDPR estabelece regras de proteção de dados pessoais na União Europeia e pode alcançar empresas fora da UE em determinadas situações. Direitos e deveres dependem da atividade e da legislação aplicável. Consulte a Comissão Europeia e orientação profissional para casos concretos.",
+      "source": "https://commission.europa.eu/law/law-topic/data-protection/information-individuals_en",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "databreach",
+      "title": "Vazamento de dados: o que fazer?",
+      "tags": "vazamento dados incidente lgpd anpd invasão exposição roubo dados",
+      "answer": "Se seus dados foram expostos, proteja contas em dispositivo confiável, guarde evidências e contate o responsável. No Brasil, a comunicação de incidente com risco ou dano relevante é obrigação do controlador, em regra em três dias úteis, conforme a regulamentação da ANPD. Nem todo ataque é automaticamente notificável. Não publique dados pessoais.",
+      "source": "https://www.gov.br/anpd/pt-br/canais_atendimento/agente-de-tratamento/comunicado-de-incidente-de-seguranca-cis",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "license",
+      "title": "O que é licença de software e direitos autorais?",
+      "tags": "licença licenciamento software direitos autorais código propriedade eula inpi",
+      "answer": "A licença define usos autorizados do programa. Software pode conter componentes de terceiros sujeitos a licenças próprias. A Lei 9.609/1998 regula a proteção de programas de computador no Brasil. Não presuma direito de redistribuição do código ou de componentes externos. Consulte os termos da versão e orientação jurídica se necessário.",
+      "source": "https://www.planalto.gov.br/ccivil_03/leis/l9609.htm",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "consumer",
+      "title": "Antivírus garante proteção total? Quais são meus direitos?",
+      "tags": "garantia responsabilidade consumidor cdc direito dano suporte proteção 100",
+      "answer": "Nenhum antivírus garante detectar toda ameaça. No Brasil, o CDC pode proteger consumidores conforme a relação e o caso; defeito, dano, nexo causal e hipóteses de exclusão de responsabilidade precisam ser avaliados. Guarde comprovantes, versão e evidências e procure o fornecedor ou órgão de defesa do consumidor. Não é parecer jurídico.",
+      "source": "https://planalto.gov.br/ccivil_03/leis/l8078compilado.htm",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "telemetry",
+      "title": "O ZEUVORYX envia meus dados para a internet?",
+      "tags": "telemetria coleta dados arquivos upload internet estatísticas privacidade offline",
+      "answer": "A busca de ajuda funciona localmente e não envia perguntas. As análises locais não precisam transmitir arquivos para pontuar riscos; algumas integrações e verificações externas podem consultar serviços quando solicitadas. A central mundial de estatísticas ainda não está operacional na versão 3.0.6 LAB. Revise cada função e seus avisos antes de usar; não inclua dados pessoais em consultas ou relatórios públicos.",
+      "source": "https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/main/support",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "store",
+      "title": "Onde baixar e comprar com segurança?",
+      "tags": "loja microsoft store download compra assinatura pagamento preço licença atualização",
+      "answer": "Use apenas os canais oficiais identificados pelo mantenedor. O 3.0.6 é candidato de teste; não há lançamento comercial confirmado. Não pague a terceiros por chaves supostamente oficiais nem ignore avisos de assinatura. A avaliação da loja não comprova eficácia do antivírus.",
+      "source": "https://learn.microsoft.com/en-us/windows/apps/publish/store-policies",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "threatintel",
+      "title": "O que são SHA-256, IOC e CVE?",
+      "tags": "sha256 sha-256 hash ioc cve assinatura indicadores vulnerabilidade cisa",
+      "answer": "SHA-256 é uma impressão digital de conteúdo; um IOC é um indicador de possível ameaça e CVE identifica vulnerabilidades publicadas. Correspondência ou consulta a catálogo não confirma sozinha infecção ou vulnerabilidade instalada. Use fontes autorizadas e não execute amostras suspeitas.",
+      "source": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    }
+  ],
+  "en": [
+    {
+      "id": "about",
+      "title": "What is ZEUVORYX?",
+      "tags": "zeuvoryx antivirus what is protection",
+      "answer": "A Windows x64 security scanner written in Go, with file analysis, SHA-256 indicators, heuristics, reversible quarantine and experimental advisory AI. Macintosh 3.0.5 LAB is a separate candidate under validation."
+    },
+    {
+      "id": "install",
+      "title": "Installation and updates",
+      "tags": "install installer update upgrade version zip exe package",
+      "answer": "Use only a test package authorized by the maintainer; verify the version and SHA-256 against the GitHub reference. Extract the ZIP, finish or cancel scanning, close the app, back up settings and quarantine, then install over a compatible LAB edition. Keep Defender, SmartScreen and other protections enabled. CI checked the 3.0.5 LAB to 3.0.6 LAB upgrade; other migrations are not proven."
+    },
+    {
+      "id": "startup",
+      "title": "App will not open or closes unexpectedly",
+      "tags": "not open closes crash startup webview2 launch",
+      "answer": "Do not repeatedly reinstall. Confirm version, Windows x64, Microsoft Edge WebView2 Runtime availability, free disk space and memory. Check Reliability Monitor (perfmon /rel) and Event Viewer (eventvwr.msc), Application and System logs around the failure. Do not delete quarantine or disable Windows security. Share only anonymized information via support."
+    },
+    {
+      "id": "fullscan",
+      "title": "Full scan freezes or exits",
+      "tags": "full scan stuck freezes exits slow crash",
+      "answer": "Unexpected exits on physical PCs remain under investigation. Version 3.0.6 includes startup changes; CI observed the installed UI staying open for 15 seconds after its readiness signal, and 60 small controlled corpus scan tests passed. This does not establish full-disk stability. If it recurs, stop testing on your work PC and record time, version, scan mode, CPU/RAM and last progress. Do not run suspicious files."
+    },
+    {
+      "id": "errors",
+      "title": "Errors, skipped files and alerts",
+      "tags": "errors skipped access denied locked missing alert detection zero",
+      "answer": "Access denied, files locked by other processes and disappearing files can prevent reading. A partial report or zero detections does not prove a computer is clean. A heuristic or advisory AI score is a signal, not confirmed malware. Do not remove system files solely because of an alert; review evidence and keep system protections enabled."
+    },
+    {
+      "id": "ai",
+      "title": "AI, real-time protection, ClamAV and updates",
+      "tags": "ai artificial intelligence learn realtime clamav defender automatic update statistics",
+      "answer": "Current AI is advisory, without validated continuous local learning. Independent resident protection, continuous learning, production automatic updates and global statistics remain under development. ClamAV is optional and requires a separate installation. Component self-test success does not establish a working worldwide service. No production release has been announced."
+    },
+    {
+      "id": "support",
+      "title": "How to request support",
+      "tags": "help support contact report bug issue error code",
+      "answer": "Open a GitHub issue with the app version, Windows 10/11 build, architecture, approximate RAM, scan mode, timestamp and time zone, expected and observed result, reproduction steps, and error category or exit code if available. Remove personal names, personal paths, emails, tokens, identifiers, file contents and private file hashes. Do not post malware samples, raw logs, quarantine files or credentials. No guaranteed 24-hour support."
+    },
+    {
+      "id": "quick",
+      "title": "Quick, full and custom scans",
+      "tags": "quick full custom scan folder disk cancel stop",
+      "answer": "Quick scans prioritize selected locations; full scans examine accessible local disks; custom scans examine the selected location when available. Use Cancel to stop. Protected, unavailable or locked files may be skipped; check coverage in the report."
+    },
+    {
+      "id": "quarantine",
+      "title": "Quarantine and restore",
+      "tags": "quarantine restore recover delete remove false positive",
+      "answer": "Review isolated items and their evidence before confirming an action. Restore only after checking legitimacy and destination safety. Do not delete system files based on heuristic alerts. Recovery of encrypted files is not guaranteed."
+    },
+    {
+      "id": "links",
+      "title": "Check links and fraud messages",
+      "tags": "link url phishing fraud scam internet message bank",
+      "answer": "In Links and fraud, examine a suspicious address or text without personal data, passwords or codes. Local analysis is advisory, does not visit the URL, automatically block phishing or prove legitimacy."
+    },
+    {
+      "id": "report",
+      "title": "Export a scan report",
+      "tags": "export save send report log json files bytes speed",
+      "answer": "Use Export report when available. Check mode, version, counts, errors, skips and cancellation. Remove personal paths, names, identifiers and private hashes before sharing; do not publish raw logs."
+    },
+    {
+      "id": "cloud",
+      "title": "Cloud and online files",
+      "tags": "onedrive cloud online synced files",
+      "answer": "Scanning depends on files accessible to Windows. Online-only files may be unavailable locally. Do not force bulk downloads to increase coverage. Cloud file event monitoring is planned."
+    },
+    {
+      "id": "media",
+      "title": "Video authenticity",
+      "tags": "video deepfake c2pa authenticity provenance",
+      "answer": "The media option checks C2PA digital credentials. Their presence or absence does not prove a video genuine or fake. It is not a neural deepfake detector."
+    },
+    {
+      "id": "cleanup",
+      "title": "Safe temporary file cleanup",
+      "tags": "clean cleanup cache temporary free space",
+      "answer": "In Tools, review candidate temporary files before confirming. Cleanup is optional and is not malware removal. Do not delete active or critical files."
+    },
+    {
+      "id": "defender",
+      "title": "How do I use Windows Security and Defender?",
+      "tags": "defender antivirus windows security microsoft protection history",
+      "answer": "Open Windows Security > Virus & threat protection and check its status and Protection history. Keep Defender enabled; ZEUVORYX does not replace it. Follow organizational policy on managed PCs.",
+      "source": "https://support.microsoft.com/en-us/windows/security/windows-security/protection-history-in-the-windows-security-app",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "windowsupdate",
+      "title": "How do I update Windows?",
+      "tags": "windows update operating system patches restart",
+      "answer": "Open Settings > Windows Update (Update & Security on Windows 10), check for updates and restart when requested after saving work. Avoid unofficial update downloads.",
+      "source": "https://support.microsoft.com/en-us/windows/deployment/updates-lifecycle/windows-update-faq",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "win10",
+      "title": "Is Windows 10 still supported?",
+      "tags": "windows 10 end support esu windows11 2025",
+      "answer": "Regular Windows 10 support ended on October 14, 2025. Edition-specific exceptions and Extended Security Updates (ESU) exist. Check eligibility and plan a move to a supported OS. Antivirus does not replace OS patches.",
+      "source": "https://support.microsoft.com/en-us/windows/deployment/updates-lifecycle/windows-10-support-has-ended-on-october-14-2025",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "performance",
+      "title": "High CPU, RAM or disk usage",
+      "tags": "cpu ram memory disk slow performance task manager",
+      "answer": "Open Task Manager (Ctrl+Shift+Esc) and check CPU, memory and disk. Full scans may temporarily use resources. Save work and cancel the scan if unstable. Do not kill critical processes or disable security to improve speed.",
+      "source": "https://support.microsoft.com/windows",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "firewall",
+      "title": "What is a firewall?",
+      "tags": "firewall network connection port wifi",
+      "answer": "A firewall controls network connections according to rules. Keep Windows Firewall enabled and avoid unnecessary open ports or exceptions. ZEUVORYX consults native features; it is not an independent firewall.",
+      "source": "https://support.microsoft.com/windows",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "backup",
+      "title": "Backup and file recovery",
+      "tags": "backup recovery restore copies external drive",
+      "answer": "Keep versioned backups and a separate or offline copy, test restoration and disconnect backup drives when not in use. Sync is not necessarily backup. Do not rely on antivirus to recover lost files.",
+      "source": "https://support.microsoft.com/pt-br/windows/security/protect-your-pc-from-ransomware",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "ransomware",
+      "title": "Suspected ransomware: what now?",
+      "tags": "ransomware encrypted files ransom extortion",
+      "answer": "Disconnect the affected PC from the network to limit spread, avoid suspicious files and preserve evidence. Use a trusted device for help and account protection. Seek expert assistance and restore verified backups after containment. Decryption is not guaranteed.",
+      "source": "https://support.microsoft.com/pt-br/windows/security/protect-your-pc-from-ransomware",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "passwords",
+      "title": "How to protect passwords and accounts",
+      "tags": "password passwords accounts mfa 2fa passkey",
+      "answer": "Use unique long passwords, a trusted password manager and MFA or passkeys when available. Never share verification codes. After suspected compromise, use a trusted device to change passwords and review sessions and recovery settings.",
+      "source": "https://cartilha.cert.br/",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "internet",
+      "title": "Safe browsing and online scams",
+      "tags": "internet browser website scam bank phishing download wifi https",
+      "answer": "Use official addresses or trusted bookmarks. HTTPS alone does not prove legitimacy. Verify payment requests independently, never share codes and avoid unknown downloads. Contact your bank immediately via official channels if you suspect financial fraud.",
+      "source": "https://cartilha.cert.br/",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "privacy",
+      "title": "What is Brazil's LGPD and what are my rights?",
+      "tags": "lgpd lpgt lgpt lpgd brazil privacy personal data rights anpd consent deletion",
+      "answer": "Brazil's General Data Protection Law (Law 13,709/2018) governs personal data processing. Depending on the circumstances, rights include information, access, correction, consent withdrawal and deletion subject to legal exceptions. Contact the controller first and consult ANPD if needed. General information, not legal advice.",
+      "source": "https://www.gov.br/anpd/pt-br/assuntos/titular-de-dados-1/direito-dos-titulares",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "gdpr",
+      "title": "What is GDPR?",
+      "tags": "gdpr europe eu personal data privacy rights",
+      "answer": "GDPR sets EU personal data protection rules and can apply to organizations outside the EU in certain circumstances. Rights and duties depend on the activity and applicable law. Consult the European Commission and qualified advice for specific cases.",
+      "source": "https://commission.europa.eu/law/law-topic/data-protection/information-individuals_en",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "databreach",
+      "title": "What to do after a data breach",
+      "tags": "data breach leak incident lgpd anpd exposure",
+      "answer": "If your data was exposed, secure accounts from a trusted device, preserve evidence and contact the responsible organization. In Brazil, the controller generally has three business days to notify qualifying incidents involving relevant risk or harm under ANPD rules. Not every attack is automatically reportable. Do not post personal data.",
+      "source": "https://www.gov.br/anpd/pt-br/canais_atendimento/agente-de-tratamento/comunicado-de-incidente-de-seguranca-cis",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "license",
+      "title": "Software licenses and copyright",
+      "tags": "license licensing software copyright code intellectual property eula",
+      "answer": "A license defines authorized use. Software may contain third-party components with separate terms. Brazilian software law is Law 9,609/1998. Do not assume redistribution rights to code or third-party components. Consult the version's terms and qualified advice where needed.",
+      "source": "https://www.planalto.gov.br/ccivil_03/leis/l9609.htm",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "consumer",
+      "title": "Does antivirus guarantee complete protection?",
+      "tags": "guarantee liability consumer rights damages support protection 100",
+      "answer": "No antivirus guarantees detection of every threat. Brazilian consumer law may apply depending on the relationship and facts; defects, damage, causation and exclusions require case-specific assessment. Preserve records and contact the provider or consumer authority. Not legal advice.",
+      "source": "https://planalto.gov.br/ccivil_03/leis/l8078compilado.htm",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "telemetry",
+      "title": "Does ZEUVORYX send data online?",
+      "tags": "telemetry privacy upload files online statistics offline",
+      "answer": "Help search runs locally and does not send questions. Local risk analysis does not need file uploads; some optional integrations may contact external services when requested. Global statistics are not operational in 3.0.6 LAB. Review feature notices before use and avoid personal data in queries or public reports.",
+      "source": "https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/main/support",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "store",
+      "title": "Where to download or buy safely?",
+      "tags": "store microsoft download buy subscription payment price license",
+      "answer": "Use only maintainer-identified official channels. 3.0.6 is a test candidate, not a confirmed commercial launch. Do not pay third parties for supposed official keys or bypass signature warnings. Store review does not certify antivirus effectiveness.",
+      "source": "https://learn.microsoft.com/en-us/windows/apps/publish/store-policies",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "threatintel",
+      "title": "What are SHA-256, IOC and CVE?",
+      "tags": "sha256 sha-256 hash ioc cve signatures indicators vulnerability cisa",
+      "answer": "SHA-256 is a content fingerprint, an IOC is an indicator of possible threat and CVE identifies published vulnerabilities. A match or catalog lookup alone does not establish infection or an installed vulnerability. Use authorized sources and never execute suspicious samples.",
+      "source": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    }
+  ],
+  "es": [
+    {
+      "id": "about",
+      "title": "¿Qué es ZEUVORYX?",
+      "tags": "zeuvoryx antivirus qué es protección",
+      "answer": "Escáner de seguridad para Windows x64 desarrollado en Go, con análisis de archivos, indicadores SHA-256, heurística, cuarentena reversible e IA consultiva experimental. Macintosh 3.0.5 LAB es un candidato independiente en validación."
+    },
+    {
+      "id": "install",
+      "title": "Instalación y actualización",
+      "tags": "instalar instalación actualizar actualización versión zip exe paquete",
+      "answer": "Utilice solo paquetes de prueba autorizados y compruebe la versión y SHA-256 con la referencia de GitHub. Extraiga el ZIP, termine o cancele el análisis, cierre la aplicación, haga una copia de seguridad de la configuración y cuarentena e instale sobre una edición LAB compatible. Mantenga Defender y SmartScreen activos. El CI comprobó la migración de 3.0.5 LAB a 3.0.6 LAB; otras migraciones no están verificadas."
+    },
+    {
+      "id": "startup",
+      "title": "La aplicación no abre o se cierra",
+      "tags": "no abre cierra inicio webview2 fallo arranque",
+      "answer": "No reinstale repetidamente. Compruebe la versión, Windows x64, Microsoft Edge WebView2 Runtime, espacio y memoria disponibles. Consulte el Monitor de confiabilidad (perfmon /rel) y el Visor de eventos (eventvwr.msc), registros Aplicación y Sistema cerca del fallo. No borre la cuarentena ni desactive la seguridad de Windows. Comparta solo información anonimizada."
+    },
+    {
+      "id": "fullscan",
+      "title": "El análisis completo se bloquea o termina",
+      "tags": "análisis completo escaneo bloqueado lento se cierra",
+      "answer": "Los cierres en equipos físicos siguen en investigación. En CI, la interfaz instalada 3.0.6 permaneció abierta 15 segundos tras confirmar su inicio y pasaron 60 pruebas de un conjunto pequeño controlado. Esto no demuestra estabilidad en todo el disco. Si vuelve a ocurrir, detenga las pruebas en su equipo de trabajo y anote hora, versión, modo, CPU/RAM y último progreso. No ejecute archivos sospechosos."
+    },
+    {
+      "id": "errors",
+      "title": "Errores, archivos omitidos y alertas",
+      "tags": "errores omitidos acceso denegado bloqueado alerta detección cero",
+      "answer": "El acceso denegado, archivos bloqueados o desaparecidos pueden impedir la lectura. Un informe parcial o cero detecciones no demuestra ausencia de malware. Una heurística o puntuación de IA es un indicio, no una confirmación. No elimine archivos del sistema solo por una alerta."
+    },
+    {
+      "id": "ai",
+      "title": "IA, tiempo real, ClamAV y actualizaciones",
+      "tags": "inteligencia artificial aprende ia tiempo real clamav defender actualización automática estadísticas",
+      "answer": "La IA actual es consultiva, sin aprendizaje local continuo validado. Protección residente propia, aprendizaje continuo, actualizaciones automáticas de producción y estadísticas globales siguen en desarrollo. ClamAV es opcional y requiere instalación separada. La autoprueba no demuestra un servicio mundial operativo. No hay versión de producción anunciada."
+    },
+    {
+      "id": "support",
+      "title": "Cómo solicitar ayuda",
+      "tags": "ayuda soporte contacto informe error código",
+      "answer": "Abra una incidencia en GitHub con versión, compilación de Windows 10/11, arquitectura, RAM aproximada, modo de análisis, hora y zona horaria, resultado esperado y observado, pasos de reproducción y categoría de error o código de salida. Quite nombres, rutas personales, correos, tokens, identificadores, contenido y hashes de archivos privados. No publique malware, registros sin depurar, cuarentena ni credenciales. No se garantiza atención las 24 horas."
+    },
+    {
+      "id": "quick",
+      "title": "Análisis rápido, completo y personalizado",
+      "tags": "rápido completo personalizado carpeta disco cancelar parar",
+      "answer": "El rápido prioriza ubicaciones; el completo examina discos locales accesibles; el personalizado, la ubicación elegida cuando esté disponible. Use Cancelar para detenerlo. Los archivos protegidos, no disponibles o bloqueados pueden omitirse; revise la cobertura."
+    },
+    {
+      "id": "quarantine",
+      "title": "Cuarentena y restauración",
+      "tags": "cuarentena restaurar recuperar eliminar falso positivo",
+      "answer": "Revise los elementos aislados y las evidencias antes de confirmar. Restaure solo tras comprobar su legitimidad y destino seguro. No elimine archivos del sistema por heurísticas. No se garantiza recuperación de archivos cifrados."
+    },
+    {
+      "id": "links",
+      "title": "Enlaces y fraudes",
+      "tags": "enlace url phishing fraude estafa internet mensaje banco",
+      "answer": "Examine una dirección o texto sospechoso sin datos personales, contraseñas ni códigos. La evaluación local es consultiva, no visita la URL, no bloquea phishing automáticamente ni prueba legitimidad."
+    },
+    {
+      "id": "report",
+      "title": "Exportar informe",
+      "tags": "exportar guardar enviar informe registro json archivos velocidad",
+      "answer": "Use Exportar informe cuando esté disponible. Revise modo, versión, conteos, errores, omitidos y cancelación. Elimine rutas personales, nombres, identificadores y hashes privados antes de compartir; no publique registros brutos."
+    },
+    {
+      "id": "cloud",
+      "title": "Archivos en la nube",
+      "tags": "onedrive nube online sincronizados archivos",
+      "answer": "El análisis depende de archivos accesibles a Windows. Los archivos solo en línea pueden no estar disponibles localmente. No fuerce descargas masivas. La monitorización de eventos en la nube está prevista."
+    },
+    {
+      "id": "media",
+      "title": "Autenticidad de vídeo",
+      "tags": "video deepfake c2pa autenticidad procedencia",
+      "answer": "La opción verifica credenciales digitales C2PA. Su presencia o ausencia no demuestra autenticidad ni falsedad. No es un detector neuronal de deepfakes."
+    },
+    {
+      "id": "cleanup",
+      "title": "Limpieza de temporales",
+      "tags": "limpiar limpieza cache temporales espacio",
+      "answer": "En Herramientas, revise los temporales candidatos antes de confirmar. Es opcional y no equivale a eliminar malware. No borre archivos activos o críticos."
+    },
+    {
+      "id": "defender",
+      "title": "¿Cómo usar Seguridad de Windows y Defender?",
+      "tags": "defender antivirus seguridad windows microsoft historial protección",
+      "answer": "Abra Seguridad de Windows > Protección contra virus y amenazas y consulte su estado e historial. Mantenga Defender activo; ZEUVORYX no lo sustituye. Respete las políticas de equipos administrados.",
+      "source": "https://support.microsoft.com/en-us/windows/security/windows-security/protection-history-in-the-windows-security-app",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "windowsupdate",
+      "title": "¿Cómo actualizar Windows?",
+      "tags": "windows update actualización sistema operativo reiniciar",
+      "answer": "Abra Configuración > Windows Update (Actualización y seguridad en Windows 10), busque actualizaciones y reinicie tras guardar su trabajo. Evite descargas no oficiales.",
+      "source": "https://support.microsoft.com/en-us/windows/deployment/updates-lifecycle/windows-update-faq",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "win10",
+      "title": "¿Windows 10 sigue teniendo soporte?",
+      "tags": "windows 10 fin soporte esu windows11 2025",
+      "answer": "El soporte regular terminó el 14/10/2025. Hay excepciones por edición y actualizaciones de seguridad extendidas (ESU). Compruebe elegibilidad y migre a un sistema compatible. El antivirus no sustituye los parches.",
+      "source": "https://support.microsoft.com/en-us/windows/deployment/updates-lifecycle/windows-10-support-has-ended-on-october-14-2025",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "performance",
+      "title": "CPU, memoria o disco elevados",
+      "tags": "cpu ram memoria disco lento rendimiento administrador tareas",
+      "answer": "Abra el Administrador de tareas (Ctrl+Shift+Esc) y revise CPU, memoria y disco. Un análisis completo puede consumir recursos temporalmente. Guarde el trabajo y cancele si hay inestabilidad. No cierre procesos críticos ni desactive protección.",
+      "source": "https://support.microsoft.com/windows",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "firewall",
+      "title": "¿Para qué sirve el firewall?",
+      "tags": "firewall cortafuegos red conexión puerto wifi",
+      "answer": "Controla conexiones según reglas. Mantenga el firewall de Windows activo y evite puertos o excepciones innecesarios. ZEUVORYX consulta funciones nativas; no es un firewall propio.",
+      "source": "https://support.microsoft.com/windows",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "backup",
+      "title": "Copias de seguridad y recuperación",
+      "tags": "backup copia seguridad recuperar restaurar disco externo",
+      "answer": "Mantenga copias con versiones y una copia separada o sin conexión, pruebe la restauración y desconecte el disco cuando no se use. Sincronizar no equivale necesariamente a respaldar.",
+      "source": "https://support.microsoft.com/pt-br/windows/security/protect-your-pc-from-ransomware",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "ransomware",
+      "title": "¿Qué hacer ante ransomware?",
+      "tags": "ransomware archivos cifrados rescate extorsión",
+      "answer": "Desconecte el equipo de la red, no ejecute archivos sospechosos y conserve evidencias. Use otro dispositivo fiable para pedir ayuda y proteger cuentas. Busque asistencia especializada y restaure copias verificadas tras contener el incidente.",
+      "source": "https://support.microsoft.com/pt-br/windows/security/protect-your-pc-from-ransomware",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "passwords",
+      "title": "Cómo proteger contraseñas y cuentas",
+      "tags": "contraseña contraseñas cuenta mfa 2fa passkey",
+      "answer": "Use contraseñas únicas y largas, gestor fiable y MFA o passkeys. No comparta códigos. Si sospecha una intrusión, cambie la contraseña desde un dispositivo fiable y revise sesiones y recuperación.",
+      "source": "https://cartilha.cert.br/",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "internet",
+      "title": "Navegación segura y estafas",
+      "tags": "internet navegador sitio estafa banco phishing descarga wifi https",
+      "answer": "Use direcciones oficiales. HTTPS no garantiza legitimidad. Confirme solicitudes de pago por otro canal, no comparta códigos y evite descargas desconocidas. Ante fraude financiero contacte al banco por canales oficiales.",
+      "source": "https://cartilha.cert.br/",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "privacy",
+      "title": "¿Qué es la LGPD y cuáles son mis derechos?",
+      "tags": "lgpd lpgt lgpt lpgd brasil privacidad datos personales derechos anpd consentimiento",
+      "answer": "La Ley 13.709/2018 regula el tratamiento de datos personales en Brasil. Según el caso, existen derechos de información, acceso, rectificación, revocación y eliminación con excepciones legales. Contacte primero al responsable y consulte ANPD si procede. Orientación general, no asesoramiento jurídico.",
+      "source": "https://www.gov.br/anpd/pt-br/assuntos/titular-de-dados-1/direito-dos-titulares",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "gdpr",
+      "title": "¿Qué es el RGPD?",
+      "tags": "gdpr rgpd europa unión europea datos privacidad",
+      "answer": "El RGPD establece reglas de protección de datos en la UE y puede aplicarse a organizaciones fuera de ella en ciertos supuestos. Consulte la Comisión Europea y asesoramiento especializado para casos concretos.",
+      "source": "https://commission.europa.eu/law/law-topic/data-protection/information-individuals_en",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "databreach",
+      "title": "Qué hacer ante una fuga de datos",
+      "tags": "fuga datos incidente lgpd anpd exposición",
+      "answer": "Proteja cuentas desde un dispositivo fiable, conserve evidencias y contacte al responsable. En Brasil, el responsable debe comunicar incidentes relevantes según las reglas de ANPD, generalmente en tres días hábiles. No todo ataque es notificable. No publique datos personales.",
+      "source": "https://www.gov.br/anpd/pt-br/canais_atendimento/agente-de-tratamento/comunicado-de-incidente-de-seguranca-cis",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "license",
+      "title": "Licencias de software y derechos de autor",
+      "tags": "licencia software derechos autor código propiedad eula",
+      "answer": "Una licencia define usos permitidos. Los componentes externos pueden tener condiciones propias. La Ley brasileña 9.609/1998 regula la protección de programas. No presuponga derechos de redistribución. Consulte los términos y asesoramiento cuando proceda.",
+      "source": "https://www.planalto.gov.br/ccivil_03/leis/l9609.htm",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "consumer",
+      "title": "¿El antivirus garantiza protección total?",
+      "tags": "garantía responsabilidad consumidor derechos daño soporte protección",
+      "answer": "Ningún antivirus garantiza detectar todas las amenazas. La ley brasileña de consumo puede aplicarse según el caso; defecto, daño, causalidad y exclusiones requieren evaluación. Conserve evidencias y contacte al proveedor o autoridad. No es asesoramiento jurídico.",
+      "source": "https://planalto.gov.br/ccivil_03/leis/l8078compilado.htm",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "telemetry",
+      "title": "¿ZEUVORYX envía datos por internet?",
+      "tags": "telemetría privacidad subir archivos internet estadísticas offline",
+      "answer": "La ayuda funciona localmente sin enviar preguntas. El análisis local no necesita subir archivos; algunas integraciones pueden consultar servicios externos cuando se solicitan. Las estadísticas mundiales no operan en 3.0.6 LAB. Revise avisos y no incluya datos personales.",
+      "source": "https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/main/support",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "store",
+      "title": "¿Dónde descargar o comprar con seguridad?",
+      "tags": "tienda microsoft store descargar compra suscripción precio licencia",
+      "answer": "Use solo canales oficiales del mantenedor. 3.0.6 es un candidato de prueba, sin lanzamiento comercial confirmado. No pague a terceros por supuestas claves oficiales ni ignore avisos de firma. La revisión de la tienda no certifica eficacia.",
+      "source": "https://learn.microsoft.com/en-us/windows/apps/publish/store-policies",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "threatintel",
+      "title": "¿Qué son SHA-256, IOC y CVE?",
+      "tags": "sha256 sha-256 hash ioc cve firmas indicadores vulnerabilidad",
+      "answer": "SHA-256 es una huella del contenido; IOC indica una posible amenaza y CVE identifica vulnerabilidades publicadas. Una coincidencia o consulta no confirma por sí sola infección ni vulnerabilidad instalada. Use fuentes autorizadas.",
+      "source": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    }
+  ],
+  "ja": [
+    {
+      "id": "about",
+      "title": "ZEUVORYX とは？",
+      "tags": "ZEUVORYX ウイルス対策 とは 保護",
+      "answer": "Go で開発された Windows x64 向けセキュリティスキャナーです。ファイル分析、SHA-256 指標、ヒューリスティック分析、復元可能な隔離、実験的な補助 AI を備えています。Macintosh 3.0.5 LAB は別の検証中の候補版です。"
+    },
+    {
+      "id": "install",
+      "title": "インストールと更新",
+      "tags": "インストール 更新 バージョン ZIP EXE",
+      "answer": "管理者が許可したテストパッケージのみを使用し、GitHub の参照情報でバージョンと SHA-256 を確認してください。ZIP を展開し、スキャンを終了または中止してアプリを閉じ、設定と隔離データをバックアップしてから互換性のある LAB 版に上書きインストールしてください。Defender、SmartScreen などの保護機能は無効にしないでください。CI で 3.0.5 LAB から 3.0.6 LAB への更新を確認しましたが、他の移行は未検証です。"
+    },
+    {
+      "id": "startup",
+      "title": "起動しない、または突然終了する場合",
+      "tags": "起動 開かない 終了 エラー WebView2",
+      "answer": "再インストールを繰り返さず、バージョン、Windows x64、Microsoft Edge WebView2 Runtime、空き容量とメモリを確認してください。信頼性モニター（perfmon /rel）とイベントビューアー（eventvwr.msc）のアプリケーション／システムログを障害時刻の前後で確認します。隔離データを削除したり Windows の保護機能を無効にしたりしないでください。サポートには匿名化した情報だけを共有してください。"
+    },
+    {
+      "id": "fullscan",
+      "title": "フルスキャンが停止・終了する場合",
+      "tags": "フルスキャン 停止 遅い 強制終了 スキャン",
+      "answer": "実機での突然の終了は調査中です。3.0.6 の CI では起動確認後に画面が15秒間開いていることを確認し、小規模な管理されたファイル群のスキャンテストが60回成功しました。ディスク全体の安定性を証明するものではありません。再発した場合は業務用 PC でのテストを中止し、時刻、バージョン、スキャンモード、CPU/RAM 使用状況、最後の進捗を記録してください。不審なファイルは実行しないでください。"
+    },
+    {
+      "id": "errors",
+      "title": "エラー、スキップ、警告",
+      "tags": "エラー スキップ アクセス拒否 検出 警告",
+      "answer": "アクセス拒否、他のプロセスによるロック、ファイルの消失により読み取れない場合があります。部分的なレポートや検出数ゼロは安全性の証明ではありません。ヒューリスティックや AI スコアは参考情報であり、マルウェアの確定ではありません。警告だけを理由にシステムファイルを削除しないでください。"
+    },
+    {
+      "id": "ai",
+      "title": "AI、リアルタイム保護、ClamAV、更新",
+      "tags": "AI 学習 リアルタイム ClamAV Defender 自動更新 統計",
+      "answer": "現行 AI は補助的な分析を行い、継続的なローカル学習は未検証です。独自の常駐保護、継続学習、製品版の自動更新、世界統計は開発中です。ClamAV は別途インストールが必要な任意機能です。自己診断の成功は世界規模のサービス稼働を意味しません。製品版の公開は未発表です。"
+    },
+    {
+      "id": "support",
+      "title": "サポートへの問い合わせ",
+      "tags": "サポート 問い合わせ レポート 不具合 エラーコード",
+      "answer": "GitHub Issues にバージョン、Windows 10/11 のビルド、アーキテクチャ、おおよその RAM、スキャンモード、時刻とタイムゾーン、期待した結果と実際の結果、再現手順、可能であればエラー分類や終了コードを記載してください。氏名、個人のパス、メール、トークン、識別子、ファイル内容、非公開ファイルのハッシュは削除してください。マルウェアのサンプル、生ログ、隔離ファイル、認証情報は投稿しないでください。24時間の対応は保証されません。"
+    },
+    {
+      "id": "quick",
+      "title": "クイック・フル・カスタムスキャン",
+      "tags": "クイック フル カスタム スキャン フォルダ ディスク 中止",
+      "answer": "クイックは優先場所、フルはアクセス可能なローカルディスク、カスタムは利用可能な場合に選択した場所を検査します。中止ボタンで停止できます。アクセスできないファイルはスキップされる場合があります。"
+    },
+    {
+      "id": "quarantine",
+      "title": "隔離と復元",
+      "tags": "隔離 復元 削除 誤検知 回復",
+      "answer": "操作を確定する前に隔離項目と根拠を確認してください。正当性と復元先の安全性を確認してから復元します。ヒューリスティック警告だけでシステムファイルを削除しないでください。"
+    },
+    {
+      "id": "links",
+      "title": "リンクと詐欺の確認",
+      "tags": "リンク URL フィッシング 詐欺 メッセージ 銀行",
+      "answer": "個人情報、パスワード、コードを含めずに疑わしいURLや文章を調べます。ローカル分析は参考情報で、URLにアクセスせず、自動遮断や安全性の保証をしません。"
+    },
+    {
+      "id": "report",
+      "title": "レポートの出力",
+      "tags": "レポート 出力 保存 送信 ログ JSON",
+      "answer": "出力ボタンが利用可能なときに使用します。モード、バージョン、件数、エラー、スキップ、中止を確認します。個人のパス、氏名、識別子、非公開ハッシュを削除し、生ログを公開しないでください。"
+    },
+    {
+      "id": "cloud",
+      "title": "クラウドファイル",
+      "tags": "クラウド OneDrive オンライン 同期",
+      "answer": "Windowsからアクセス可能なファイルが対象です。オンライン専用ファイルはローカルにない場合があります。一括ダウンロードを強制しないでください。クラウドイベント監視は計画中です。"
+    },
+    {
+      "id": "media",
+      "title": "動画の真正性",
+      "tags": "動画 ディープフェイク C2PA 真正性",
+      "answer": "C2PAのデジタル資格情報を確認します。資格情報の有無は動画の真偽を証明しません。ニューラルディープフェイク検出器ではありません。"
+    },
+    {
+      "id": "cleanup",
+      "title": "一時ファイルの整理",
+      "tags": "一時ファイル キャッシュ 整理 空き容量",
+      "answer": "ツールで対象を確認してから操作を確定します。任意の整理機能であり、マルウェア除去ではありません。使用中のファイルや重要ファイルは削除しないでください。"
+    },
+    {
+      "id": "defender",
+      "title": "Windows セキュリティと Defender",
+      "tags": "Windows セキュリティ Defender 保護 履歴",
+      "answer": "Windows セキュリティのウイルスと脅威の防止で状態と保護の履歴を確認します。Defender を有効に保ってください。ZEUVORYX は代替ではありません。管理対象PCでは組織の方針に従ってください。",
+      "source": "https://support.microsoft.com/en-us/windows/security/windows-security/protection-history-in-the-windows-security-app",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "windowsupdate",
+      "title": "Windows の更新方法",
+      "tags": "Windows Update 更新 再起動",
+      "answer": "設定の Windows Update（Windows 10 は更新とセキュリティ）で更新を確認し、作業を保存して必要に応じて再起動します。非公式の更新は避けてください。",
+      "source": "https://support.microsoft.com/en-us/windows/deployment/updates-lifecycle/windows-update-faq",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "win10",
+      "title": "Windows 10 のサポート終了",
+      "tags": "Windows 10 サポート 終了 ESU 更新",
+      "answer": "通常サポートは2025年10月14日に終了しました。エディション別の例外や拡張セキュリティ更新 ESU があります。対象条件を確認し、サポート中のOSへの移行を検討してください。",
+      "source": "https://support.microsoft.com/en-us/windows/deployment/updates-lifecycle/windows-10-support-has-ended-on-october-14-2025",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "performance",
+      "title": "CPU・メモリ・ディスク使用率",
+      "tags": "CPU RAM メモリ ディスク 遅い タスクマネージャー",
+      "answer": "Ctrl+Shift+Esc でタスクマネージャーを開き、CPU、メモリ、ディスクを確認します。不安定なら作業を保存してスキャンを中止します。重要なプロセスや保護機能を停止しないでください。",
+      "source": "https://support.microsoft.com/windows",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "firewall",
+      "title": "ファイアウォールとは",
+      "tags": "ファイアウォール ネットワーク ポート 接続",
+      "answer": "ルールに従って通信を制御します。Windows のファイアウォールを有効にし、不要なポートや例外を設定しないでください。ZEUVORYX 自体は独立したファイアウォールではありません。",
+      "source": "https://support.microsoft.com/windows",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "backup",
+      "title": "バックアップと復元",
+      "tags": "バックアップ コピー 復元 外付け",
+      "answer": "世代管理されたバックアップと別の場所またはオフラインのコピーを保持し、復元を試してください。使用しない外付けバックアップは取り外します。同期だけでは十分とは限りません。",
+      "source": "https://support.microsoft.com/pt-br/windows/security/protect-your-pc-from-ransomware",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "ransomware",
+      "title": "ランサムウェアが疑われる場合",
+      "tags": "ランサムウェア 暗号化 身代金 感染",
+      "answer": "拡散を抑えるためネットワークから切断し、不審なファイルを実行せず証拠を保全します。信頼できる別端末から支援を求め、アカウントを保護してください。復号は保証されません。",
+      "source": "https://support.microsoft.com/pt-br/windows/security/protect-your-pc-from-ransomware",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "passwords",
+      "title": "パスワードとアカウントの保護",
+      "tags": "パスワード アカウント MFA 二段階 パスキー",
+      "answer": "長く固有のパスワード、信頼できる管理ツール、多要素認証やパスキーを使います。確認コードは共有しないでください。侵害の疑いがあれば別の安全な端末から認証情報やセッションを確認します。",
+      "source": "https://cartilha.cert.br/",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "internet",
+      "title": "安全なインターネット利用",
+      "tags": "インターネット ブラウザ 詐欺 銀行 フィッシング ダウンロード",
+      "answer": "公式アドレスを利用し、HTTPS だけで正当性を判断しないでください。送金依頼は別の経路で確認し、コードを共有せず不明なダウンロードを避けます。金融詐欺の疑いがあれば銀行の公式窓口へ連絡します。",
+      "source": "https://cartilha.cert.br/",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "privacy",
+      "title": "ブラジルの個人データ保護法 LGPD",
+      "tags": "LGPD LPGT LGPT ブラジル 個人情報 プライバシー 権利 ANPD",
+      "answer": "ブラジル法13.709/2018は個人データの処理を規律します。状況に応じて情報、アクセス、訂正、同意撤回、削除等の権利があります。法定例外があります。まず管理者に連絡し、必要ならANPDを参照してください。一般情報であり法的助言ではありません。",
+      "source": "https://www.gov.br/anpd/pt-br/assuntos/titular-de-dados-1/direito-dos-titulares",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "gdpr",
+      "title": "EU の GDPR とは",
+      "tags": "GDPR EU 欧州 個人データ プライバシー",
+      "answer": "EU の個人データ保護規則で、一定の場合はEU域外の組織にも適用されます。具体的な義務は活動と適用法によります。欧州委員会の情報や専門家に相談してください。",
+      "source": "https://commission.europa.eu/law/law-topic/data-protection/information-individuals_en",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "databreach",
+      "title": "個人データ漏えい時の対応",
+      "tags": "データ漏えい インシデント LGPD ANPD 個人情報",
+      "answer": "安全な端末からアカウントを保護し、証拠を保全して責任組織に連絡します。ブラジルでは重大なリスク・損害を伴う所定の事故は管理者が原則3営業日以内に通知します。すべての攻撃が通知対象とは限りません。",
+      "source": "https://www.gov.br/anpd/pt-br/canais_atendimento/agente-de-tratamento/comunicado-de-incidente-de-seguranca-cis",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "license",
+      "title": "ソフトウェアライセンスと著作権",
+      "tags": "ライセンス 著作権 ソフトウェア コード",
+      "answer": "ライセンスは利用許諾の範囲を定めます。第三者の部品には別の条件があり得ます。ブラジルでは法律9.609/1998がソフトウェア保護を規定します。再配布が許可されていると決めつけず、条件を確認してください。",
+      "source": "https://www.planalto.gov.br/ccivil_03/leis/l9609.htm",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "consumer",
+      "title": "ウイルス対策は完全な保護を保証するか",
+      "tags": "保証 責任 消費者 権利 損害",
+      "answer": "すべての脅威を検出する保証はありません。ブラジル消費者法の適用、欠陥、損害、因果関係や免責は個別事情によります。記録を保存し、提供元や消費者相談窓口へ相談してください。法的助言ではありません。",
+      "source": "https://planalto.gov.br/ccivil_03/leis/l8078compilado.htm",
+      "reviewed": "2026-11-24",
+      "scope": "legal-general"
+    },
+    {
+      "id": "telemetry",
+      "title": "ZEUVORYX はデータを送信するか",
+      "tags": "テレメトリ プライバシー アップロード 統計 オフライン",
+      "answer": "ヘルプ検索はローカルで実行され質問を送信しません。ローカル分析にファイル送信は不要ですが、一部の任意機能は外部サービスに問い合わせる場合があります。3.0.6 LAB の世界統計は未稼働です。各機能の注意事項を確認してください。",
+      "source": "https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/main/support",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "store",
+      "title": "安全なダウンロードと購入",
+      "tags": "Microsoft Store ダウンロード 購入 価格 ライセンス",
+      "answer": "管理者が示す公式経路のみ利用します。3.0.6 はテスト候補版で商用公開は未確認です。非公式のキーに支払ったり署名警告を回避したりしないでください。",
+      "source": "https://learn.microsoft.com/en-us/windows/apps/publish/store-policies",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    },
+    {
+      "id": "threatintel",
+      "title": "SHA-256・IOC・CVE とは",
+      "tags": "SHA256 IOC CVE ハッシュ 脆弱性 指標",
+      "answer": "SHA-256 は内容の指紋、IOC は脅威の可能性を示す指標、CVE は公開脆弱性の識別子です。一致や照会だけで感染や脆弱性の存在を確定できません。",
+      "source": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+      "reviewed": "2026-11-24",
+      "scope": "general"
+    }
+  ]
+}

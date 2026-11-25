@@ -1,4 +1,4 @@
-"""R2 native performance panel after all desktop generators."""
+"""R3 native performance panel after all desktop generators."""
 from pathlib import Path
 from html.parser import HTMLParser
 def once(s,a,b):
@@ -9,7 +9,7 @@ s=once(s,'if !bind("getScanState",','''var perf pSampler
     if !bind("zPerformance", perf.sample) { return }
     if !bind("zPerformanceRendered", perf.rendered) { return }
     if !bind("getScanState",''')
-s=s.replace('ZEUVORYX | 3.0.8 LAB','ZEUVORYX | 3.0.8 LAB R2')
+s=s.replace('ZEUVORYX | 3.0.8 LAB','ZEUVORYX | 3.0.8 LAB R3')
 p.write_text(s,encoding="utf-8")
 p=Path("desktop.html");s=p.read_text(encoding="utf-8-sig")
 css="""
@@ -31,7 +31,9 @@ for k,label in [('cpu','Processador'),('ram','Memória RAM'),('free','RAM dispon
 panel+='</div><p id="zpStatus" class="sub" role="status">Aguardando dados do Windows</p></div>'
 s=once(s,'</style></head>',css+'</style></head>')
 s=once(s,'<section id="overview">','<section id="overview">'+panel)
-s=once(s,'3.0.8 LAB BETA</div>','3.0.8 LAB BETA</div><div class="sub" id="zpRevision">R2 · Performance</div>')
+s=once(s,'<div class="metric" id="hits">—</div></div></div>','<div class="metric" id="hits">—</div></div><div class="card" id="zStorageCard"><div class="label" id="zsLabel">ARMAZENAMENTO E PROGRESSO</div><div class="metric" id="zsCapacity">—</div><p class="sub" id="zsSpace">—</p><p class="sub" id="zsProgress">—</p></div></div>')
+s=once(s,'</style></head>','#overview .grid{grid-template-columns:repeat(auto-fit,minmax(132px,1fr))}</style></head>')
+s=once(s,'3.0.8 LAB BETA</div>','3.0.8 LAB BETA</div><div class="sub" id="zpRevision">R3 · Performance</div>')
 js="""
 ;(()=>{
 const z=id=>document.getElementById(id);
@@ -57,8 +59,18 @@ async function refresh(){
   gauge('free',ram?100-d.ram_percent:null,ram?gib(d.ram_available)+' '+t[7]+' '+t[8]+' '+gib(d.ram_total):t[11]);
   const disk=valid(d.disk_percent)&&d.disk_total>0&&d.disk_free<=d.disk_total;
   gauge('disk',disk?d.disk_percent:null,disk?d.disk_root+' · '+gib(d.disk_total-d.disk_free)+' '+t[6]+' / '+gib(d.disk_total):t[11]);
+  const st={
+   'pt-BR':['ARMAZENAMENTO E PROGRESSO','ocupado','livre','volumes acessíveis','omitidos','Analisado','Total elegível/restante: indeterminado'],
+   'en-US':['STORAGE AND PROGRESS','used','free','accessible volumes','omitted','Scanned','Eligible total/remaining: unknown'],
+   'es-ES':['ALMACENAMIENTO Y PROGRESO','ocupado','libre','volúmenes accesibles','omitidos','Analizado','Total elegible/restante: indeterminado']
+  }[lang]||['ARMAZENAMENTO E PROGRESSO','ocupado','livre','volumes acessíveis','omitidos','Analisado','Total elegível/restante: indeterminado'];
+  z('zsLabel').textContent=st[0];
+  const local=d.local_count>0&&d.local_total>0&&d.local_free<=d.local_total;
+  z('zsCapacity').textContent=local?gib(d.local_total):'—';
+  z('zsSpace').textContent=local?gib(d.local_total-d.local_free)+' '+st[1]+' / '+gib(d.local_free)+' '+st[2]+' · '+d.local_count+' '+st[3]+' · '+d.local_omitted+' '+st[4]:t[11];
+  z('zsProgress').textContent=st[5]+': '+z('bytes').textContent+' · '+st[6];
   z('zpStatus').textContent=ram&&valid(d.cpu)?t[9]+' · '+new Date(d.at).toLocaleTimeString(lang):t[10];
-  if(!confirmed&&ram&&valid(d.cpu)&&z('zp-cpu-value').textContent.endsWith('%')&&z('zp-ram-value').textContent.endsWith('%')) confirmed=await window.zPerformanceRendered();
+  if(!confirmed&&ram&&valid(d.cpu)&&z('zp-cpu-value').textContent.endsWith('%')&&z('zp-ram-value').textContent.endsWith('%')&&z('zsCapacity').textContent!=='—'&&document.getElementById('zHelpOpen')&&document.getElementById('zAIActivity')) confirmed=await window.zPerformanceRendered();
  }catch(_){['cpu','ram','free','disk'].forEach(k=>gauge(k,null,t[11]));z('zpStatus').textContent=t[11];z('zpClock').textContent='—';}
  finally{busy=false}
 }
@@ -74,7 +86,7 @@ class Check(HTMLParser):
         a=dict(attrs)
         if "id" in a:self.ids.append(a["id"])
 c=Check();c.feed(s)
-for k in ['zPerformancePanel','zpTitle','zpClock','zpRevision','start','quick','stop','export']+[f'zp-{k}-{x}' for k in ('cpu','ram','free','disk') for x in ('label','arc','value','detail')]:
+for k in ['zPerformancePanel','zpTitle','zpClock','zpRevision','zStorageCard','zsCapacity','zsProgress','start','quick','stop','export']+[f'zp-{k}-{x}' for k in ('cpu','ram','free','disk') for x in ('label','arc','value','detail')]:
     if c.ids.count(k)!=1:raise ValueError("Bad panel/control "+k)
 p.write_text(s,encoding="utf-8")
-print("R2 native performance panel and controls verified")
+print("R3 native performance panel and controls verified")

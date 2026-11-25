@@ -27,12 +27,10 @@ s = one(s, matches[0], '''hit := &Finding{Path: path, SHA256: fullHash, Risk: sc
     if kind == "heuristic" {
         x := adaptive.FromReasons(reasons)
         if x != (adaptive.Vector{}) {
-            if model, err := adaptive.Baseline(); err == nil {
-                if prediction, err := model.Score(x); err == nil {
+            if prediction, err := adaptive.Observe(x); err == nil {
                     value := prediction * 100
                     hit.AdaptiveScore = &value
                     hit.AdaptiveModel = adaptive.Version
-                }
             }
         }
     }

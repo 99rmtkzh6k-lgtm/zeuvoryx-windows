@@ -1,0 +1,15 @@
+name: ZEUVORYX 3.0.8 R4 LAB layered security validation
+run-name: ZEUVORYX 3.0.8 R4 LAB - layered security Windows validation
+on:
+  push:
+    branches: [windows-3.0.8-layered-lab]
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  validate-layered:
+    if: github.ref == 'refs/heads/windows-3.0.8-layered-lab'
+    uses: ./.github/workflows/windows-build.yml

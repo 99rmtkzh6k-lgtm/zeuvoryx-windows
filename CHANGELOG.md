@@ -114,3 +114,7 @@ Macintosh 3.0.5 LAB: regressão portátil Linux e compilação Intel aprovadas; 
 
 ### 3.0.6 LAB R1 — EVO-018 (candidato)
 - Identidade nova, teste de atualização real, perfil WebView2 separado, diagnóstico de abertura, consulta de atualização manual e gate de varredura controlada. CI e piloto físico pendentes.
+
+
+## 3.0.8 LAB R4 — correção de interpretação: Segurança em camadas (24/11/2026)
+Titular esclareceu inequivocamente que não pediu câmera: a solicitação é na tela Segurança em camadas, com Consultar proteção, Abrir Segurança do Windows, Verificar Windows Update. A ramificação equivocada windows-3.0.8-camera-lab NÃO deve ser integrada, distribuída nem usada como base; seu requisito de câmera foi invalidado pelo titular. R4 correta parte da revisão integrada R3 e mantém todos seus componentes. Cada linha do diagnóstico existente recebe ponto colorido e texto original: verde ativado/bloqueio, vermelho desativado/não verificado/consulta indisponível, amarelo auditoria/aviso/modo intermediário, azul informação técnica. BitLocker On/Off normalizado para Ativado/Desativado. RDP desativado pode ser configuração desejável; cor descreve estado, não risco ou vulnerabilidade. Consulta somente leitura, sem alterar políticas, permissões, Defender ou Windows. Teste Node de classificação (13 casos x 5) e controles preservados, gate de identidade sem painel de câmera. CI e validação visual/física pendentes. Nenhum instalador ou lançamento. Manter memorando integral e demais pendências da R3.

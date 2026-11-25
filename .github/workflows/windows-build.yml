@@ -2402,6 +2402,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw '314 expanded integration failed' }
           python prepare_titanium314.py
           if ($LASTEXITCODE -ne 0) { throw '314 Titanium visual integration failed' }
+          node lab/test_games315.js
+          if ($LASTEXITCODE -ne 0) { throw '3.0.15 local game regressions failed' }
           python prepare_games314.py
           if ($LASTEXITCODE -ne 0) { throw '314 games catalog integration failed' }
           python prepare_version315.py

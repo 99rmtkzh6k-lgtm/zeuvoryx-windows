@@ -305,16 +305,13 @@ jobs:
               var monitorEnabled atomic.Bool
               monitorCtx, stopMonitor := context.WithCancel(context.Background())
               defer stopMonitor()
-              go func() {
-                  ticker := time.NewTicker(5*time.Minute); defer ticker.Stop()
-                  for { select {
-                  case <-monitorCtx.Done(): return
-                  case <-ticker.C:
-                      if !monitorEnabled.Load() || native.status().Running { continue }
-                      s.mu.Lock(); ready := !s.running && len(s.report.Findings)==0; s.mu.Unlock()
-                      if ready { _, _ = startLocal(":quick:") }
-                  } }
-              }()
+              initChangeMonitor315()
+              go runChangeMonitor315(monitorCtx,monitorEnabled.Load,func()bool{
+                  if native.status().Running{return false}
+                  s.mu.Lock(); ready:=!s.running&&len(s.report.Findings)==0;s.mu.Unlock()
+                  if !ready{return false}
+                  ok,e:=startLocal(":quick:");return ok&&e==nil
+              })
               var cleanupMu sync.Mutex
               var cleanupPlan []tempCandidate
           	bind := func(name string, fn any) bool {
@@ -2404,7 +2401,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw '3.0.15 local game regressions failed' }
           python prepare_games314.py
           if ($LASTEXITCODE -ne 0) { throw '314 games catalog integration failed' }
-          go test -count=5 ./auditmetrics
+          go test -count=5 ./auditmetrics ./changeguard
           if ($LASTEXITCODE -ne 0) { throw '3.0.15 engine accounting regressions failed' }
           python prepare_reports315.py
           if ($LASTEXITCODE -ne 0) { throw '3.0.15 report center integration failed' }

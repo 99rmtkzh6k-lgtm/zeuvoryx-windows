@@ -6,6 +6,7 @@ type behaviorResult314 struct{data map[string]any; problem string}
 // One ClamAV process plus the bounded ZEUVORYX worker pool, no per-file process fanout.
 // Windows resident protection is not disabled or replaced. No parallel destructive operations.
 func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engine.Report,error))(engine.Report,error){
+ resetSignature314()
  publishScope:=func(v scopeprogress.Inventory){s.mu.Lock();defer s.mu.Unlock();if s.running{s.report.Inventory314=v}}
  publishScope(scopeprogress.Inventory{State:"counting"})
  self,_:=os.Executable()

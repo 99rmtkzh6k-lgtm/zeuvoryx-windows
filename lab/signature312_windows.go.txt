@@ -17,15 +17,10 @@ func (s *State) signaturePhase312(ctx context.Context, rep *engine.Report, custo
  if len(roots)==0{rep.SignatureState="unavailable";rep.SignatureProblem="No verified roots for signature scan";return}
  rep.SignatureState="running"
  if _,e:=ensureClam314(ctx,false);e!=nil{rep.SignatureState="unavailable";rep.SignatureProblem=e.Error();return}
- partial:=false
- for _,root:=range roots{
-  if ctx.Err()!=nil{partial=true;break}
-  r,e:=signatureav.Scan(signatureav.WithObserver(ctx,publishSignature314),tool,root,"")
-  rep.SignatureReports=append(rep.SignatureReports,r)
-  if e!=nil||r.Partial{partial=true}
-  s.publishSignatureProgress314(rep)
- }
- if partial{rep.SignatureState="partial"}else{rep.SignatureState="finished"}
+ r,e:=signatureav.ScanRoots(signatureav.WithObserver(ctx,publishSignature314),tool,roots,"")
+ rep.SignatureReports=append(rep.SignatureReports,r)
+ if e!=nil||r.Partial{rep.SignatureState="partial"}else{rep.SignatureState="finished"}
+ s.publishSignatureProgress314(rep)
 }
 
 // Publish completed roots during scanning; individual reports are immutable after append.

@@ -1,0 +1,12 @@
+﻿ZEUVORYX ANTIVIRUS — TERMOS DE USO: MOTORES INTEGRADOS E EXTENSÕES DE TERCEIROS
+25/11/2026 — revisão LAB, cláusula complementar; não substitui as licenças de terceiros.
+
+1. O ZEUVORYX Antivirus disponibiliza o motor ClamAV integrado ao aplicativo, incluindo suas funcionalidades oficiais e atualizações gratuitas, respeitando as respectivas licenças de software livre.
+2. A contratação de serviços, assinaturas, licenças ou bases complementares de terceiros é facultativa e dependerá da iniciativa e do consentimento do usuário final.
+3. Os pagamentos, renovações, cancelamentos e condições comerciais desses serviços serão tratados diretamente entre o usuário e o respectivo fornecedor.
+4. O ZEUVORYX não condicionará suas funcionalidades gratuitas à aquisição de serviços complementares.
+5. A expiração, suspensão, cancelamento ou indisponibilidade de uma extensão não deverá impedir o funcionamento dos motores gratuitos do ZEUVORYX.
+6. Extensões incompatíveis ou que apresentem riscos à estabilidade e à segurança poderão ser desativadas pelo aplicativo, mediante informação ao usuário.
+7. A contratação de assinaturas adicionais não constitui garantia de proteção absoluta ou de eliminação de todas as ameaças.
+8. Permanecem preservados os direitos legais do consumidor, as responsabilidades legalmente atribuíveis ao ZEUVORYX e os direitos decorrentes das licenças dos componentes integrados.
+9. Nesta revisão LAB, o catálogo apenas permite consultar fornecedores no navegador externo. A ativação e importação de bases complementares não estão disponíveis. Não modifique manualmente o diretório oficial de assinaturas. Não há compra, parceria comercial, transmissão de credenciais ou cobrança pelo ZEUVORYX nesta funcionalidade.

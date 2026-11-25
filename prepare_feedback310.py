@@ -8,7 +8,7 @@ s=once(s,'if !bind("getScanState",','''if !bind("z310Maintenance",func(kind stri
     operationGate.Lock();defer operationGate.Unlock()
     s.mu.Lock();running:=s.running;s.mu.Unlock()
     if kind!="startup"&&(running||native.status().Running){return false,fmt.Errorf("Stop or finish the scan before disk maintenance")}
-    return openMaintenance310(kind)
+    return false,fmt.Errorf("Operação externa removida; use as funções integradas")
     }){return}
     if !bind("z310Beep",z310Beep){return}
     if !bind("getScanState",''')
@@ -62,14 +62,14 @@ document.getElementById('z310Open').onclick=()=>document.querySelector('[data-pa
 ;(()=>{
  const z=id=>document.getElementById(id);
  const copy={
- 'pt-BR':['Central de otimização','Ferramentas nativas do Windows: o próprio Windows escolhe TRIM ou desfragmentação conforme o tipo de unidade. Confirme as ações na janela nativa. Não alteramos registro nem encerramos processos.','Otimizar SSD/HD','Limpeza de disco','Programas de inicialização','Ferramenta aberta; execute a ação no Windows.','Encerre a análise antes de manutenção de disco.'],
- 'en-US':['Optimization center','Windows native tools: Windows chooses TRIM or defragmentation for the drive. Confirm actions in the native window. No registry changes or process termination.','Optimize SSD/HDD','Disk cleanup','Startup programs','Tool opened; complete the action in Windows.','Stop scanning before disk maintenance.'],
- 'es-ES':['Centro de optimización','Herramientas nativas: Windows elige TRIM o desfragmentación. Confirme en la ventana nativa. Sin cambios de registro ni cierre de procesos.','Optimizar SSD/HDD','Limpieza de disco','Programas de inicio','Herramienta abierta; complete la acción en Windows.','Detenga el análisis antes del mantenimiento.']};
+ 'pt-BR':['Central de otimização','Operações integradas: o Windows escolhe TRIM ou desfragmentação conforme a unidade. A limpeza é selecionada e confirmada nesta tela.','Otimizar SSD/HD','Limpeza de disco','Programas de inicialização','Ferramenta aberta; execute a ação no Windows.','Encerre a análise antes de manutenção de disco.'],
+ 'en-US':['Optimization center','Integrated operations: Windows selects TRIM or defragmentation. Review and confirm cleanup here.','Optimize SSD/HDD','Disk cleanup','Startup programs','Tool opened; complete the action in Windows.','Stop scanning before disk maintenance.'],
+ 'es-ES':['Centro de optimización','Operaciones integradas: Windows elige TRIM o desfragmentación. Confirme la limpieza aquí.','Optimizar SSD/HDD','Limpieza de disco','Programas de inicio','Herramienta abierta; complete la acción en Windows.','Detenga el análisis antes del mantenimiento.']};
  const words=()=>copy[document.documentElement.lang]||copy['en-US'];
  function paint(){const w=words();['z310MaintTitle','z310MaintInfo','z310Drive','z310Clean','z310Startup'].forEach((id,i)=>z(id).textContent=w[i])}
  for(const [id,kind] of [['z310Drive','drive'],['z310Clean','cleanup'],['z310Startup','startup']]){
  z(id).onclick=async()=>{const w=words();if(kind!=='startup'&&z310Latest?.running){z('z310MaintStatus').textContent=w[6];return}
- z(id).disabled=true;try{await window.z310Maintenance(kind);z('z310MaintStatus').textContent=w[5]}catch(e){z('z310MaintStatus').textContent=String(e)}finally{z(id).disabled=false}};
+ if(kind==='cleanup'){z('z310Diagnose').click();return} z('z310MaintStatus').textContent='Gerenciamento de inicialização externo removido; nenhuma alteração aplicada.'};
  }
  paint();new MutationObserver(paint).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
 })();

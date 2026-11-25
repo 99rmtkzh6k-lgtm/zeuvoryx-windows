@@ -2580,7 +2580,77 @@ jobs:
           path: dist/
           if-no-files-found: error
           retention-days: 7
-      - name: Block installer and release until integrated physical validation
+      - name: Build isolated LAB installer with existing installation identity
         shell: pwsh
         run: |
-          Write-Host 'Portable LAB test only; no installer, signed update or public release.'
+          $ErrorActionPreference = 'Stop'
+          $iscc = Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6/ISCC.exe'
+          if (!(Test-Path $iscc)) { throw 'Inno Setup compiler unavailable' }
+          & $iscc setup309.iss
+          if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed' }
+          Get-FileHash installer/ZEUVORYX-LAB-Setup-3.0.9.exe -Algorithm SHA256
+      - name: Verify real 3.0.6 to 3.0.9 migration and duplicate instance protection
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $headers = @{ Authorization = "Bearer ${{ github.token }}"; Accept = 'application/vnd.github+json' }
+          Invoke-WebRequest -Uri 'https://api.github.com/repos/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/artifacts/14960924262/zip' -Headers $headers -OutFile previous306.zip
+          if ((Get-FileHash previous306.zip -Algorithm SHA256).Hash.ToLowerInvariant() -ne 'cb66cc62467c9ed45137657e506c796c3eb54ce14c88f0bdf1954b6f45850268') { throw 'Historical 3.0.6 fixture digest mismatch' }
+          Expand-Archive previous306.zip previous306 -Force
+          $old = (Resolve-Path previous306/installer/ZEUVORYX-LAB-Setup-3.0.6.exe).Path
+          $setup = (Resolve-Path installer/ZEUVORYX-LAB-Setup-3.0.9.exe).Path
+          $p = Start-Process -FilePath $old -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART' -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw 'Previous installer failed' }
+          $reg = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\ZEUVORYX.Desktop.Lab303_is1'
+          if ((Get-ItemProperty -LiteralPath $reg).DisplayVersion -ne '3.0.6') { throw 'Old install identity missing' }
+          $dir = Join-Path $env:LOCALAPPDATA 'Programs/ZEUVORYX-Lab303'
+          $exe = Join-Path $dir 'ZEUVORYX.exe'
+          $config = Join-Path $env:APPDATA 'ZEUVORYX/lab305-audit'
+          New-Item -ItemType Directory -Force $config | Out-Null
+          $marker = Join-Path $config 'upgrade-test-marker.txt'
+          Set-Content -LiteralPath $marker -Value 'preserve-test-only'
+          $portable = (Resolve-Path dist/ZEUVORYX.exe).Path
+          function Assert-Blocked([string]$candidate) {
+            $check=Start-Process -FilePath $candidate -ArgumentList '-instance-check' -Wait -PassThru
+            if ($check.ExitCode -ne 3) { throw 'Duplicate process not blocked' }
+          }
+          $legacy=Start-Process -FilePath $exe -WorkingDirectory $dir -PassThru
+          try {
+            Start-Sleep -Seconds 5
+            $legacy.Refresh()
+            if ($legacy.HasExited) { throw 'Old desktop not running' }
+            Assert-Blocked $portable
+          } finally {
+            if (!$legacy.HasExited) { [void]$legacy.CloseMainWindow(); if (!$legacy.WaitForExit(15000)) { throw 'Old desktop did not close gracefully' } }
+          }
+          for ($i=0; $i -lt 5; $i++) {
+            $p=Start-Process -FilePath $setup -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/CLOSEAPPLICATIONS' -Wait -PassThru
+            if ($p.ExitCode -ne 0) { throw "Install failed: $($p.ExitCode)" }
+            if ((Get-ItemProperty -LiteralPath $reg).DisplayVersion -ne '3.0.9') { throw 'Registry identity mismatch' }
+            if ((Get-FileHash $exe).Hash -ne (Get-FileHash $portable).Hash) { throw 'Installed binary mismatch' }
+            if ((Get-Content -LiteralPath $marker) -ne 'preserve-test-only') { throw 'User data lost' }
+            if (@(Get-ChildItem $dir -Filter 'unins*.exe').Count -ne 1) { throw 'Duplicate uninstallers' }
+          }
+          $p=Start-Process -FilePath $exe -ArgumentList '-version' -RedirectStandardOutput installed-version.txt -Wait -PassThru
+          if ($p.ExitCode -ne 0 -or (Get-Content -Raw installed-version.txt).Trim() -ne '3.0.9-lab') { throw 'Installed version mismatch' }
+          $new=Start-Process -FilePath $exe -WorkingDirectory $dir -PassThru
+          try {
+            Start-Sleep -Seconds 5
+            $new.Refresh()
+            if ($new.HasExited) { throw 'Installed desktop not running' }
+            Assert-Blocked $portable
+          } finally {
+            if (!$new.HasExited) { [void]$new.CloseMainWindow(); if (!$new.WaitForExit(15000)) { throw 'Desktop did not close gracefully' } }
+          }
+          Write-Host '3.0.6 migration, five installation cycles and duplicate guard passed'
+      - name: Upload installer for controlled LAB validation only
+        uses: actions/upload-artifact@v4
+        with:
+          name: ZEUVORYX-3.0.9-LAB-SETUP-TESTE-Windows-x64
+          path: installer/ZEUVORYX-LAB-Setup-3.0.9.exe
+          if-no-files-found: error
+          retention-days: 7
+      - name: Block public release until integrated physical validation
+        shell: pwsh
+        run: |
+          Write-Host 'Installer is a controlled LAB candidate; no public release or signed update.'

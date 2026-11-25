@@ -1,0 +1,15 @@
+name: ZEUVORYX 3.0.9 LAB - installer migration validation
+run-name: ZEUVORYX 3.0.9 LAB - installer and single instance validation
+on:
+  push:
+    branches: [windows-3.0.9-install-lab]
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  validate-install:
+    if: github.ref == 'refs/heads/windows-3.0.9-install-lab'
+    uses: ./.github/workflows/windows-build.yml

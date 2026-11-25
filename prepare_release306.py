@@ -7,12 +7,20 @@ def once(s,a,b):
 def edit(p,fn):
     f=Path(p); f.write_text(fn(f.read_text(encoding="utf-8-sig")),encoding="utf-8")
 def main(s):
+    s=once(s,'flag.Parse()','''instanceCheck:=flag.Bool("instance-check",false,"check whether desktop can start")
+    flag.Parse()
+    if *instanceCheck {release,e:=acquireDesktopInstance();if e!=nil{fmt.Fprintln(os.Stderr,e);os.Exit(3)};release();return}''')
     s=once(s,'flag.Parse()','''showVersion := flag.Bool("version",false,"show engine version")
     flag.Parse()
     if *showVersion { fmt.Println(engine.ScanEngineVersion); return }''')
     return s
 def desktop(s):
     s=s.replace("3.0.5","3.0.9")
+    s=once(s,'func runDesktop(s *State, _ bool) {','''func runDesktop(s *State, _ bool) {
+    release,err:=acquireDesktopInstance()
+    if err!=nil {log.Printf("stability instance_blocked: %v",err);desktopError(err.Error());return}
+    defer release()
+    ''')
     s=once(s,'w := webview.NewWithOptions(','''profileBase,profileErr:=os.UserConfigDir()
     if profileErr!=nil { log.Print("stability webview_profile_unavailable"); desktopError("Não foi possível localizar o perfil local do Windows."); return }
     profile:=filepath.Join(profileBase,"ZEUVORYX","webview-306")
@@ -22,7 +30,7 @@ def desktop(s):
     s=once(s,'webview.WebViewOptions{Debug:', 'webview.WebViewOptions{DataPath:profile, Debug:')
     s=once(s,'w.SetHtml(localized)', '''if !bind("zStartupReady",func()bool{log.Print("stability ui_ready version=3.0.9-lab");return true}){return}
     w.SetHtml(localized)''')
-    s=s.replace("windows-build-lab-305.yml","windows-build-lab-309.yml")
+    s=s.replace("windows-build-lab-305.yml","windows-build-lab-309-install.yml")
     return s
 def html(s):
     s=s.replace("3.0.5","3.0.9")

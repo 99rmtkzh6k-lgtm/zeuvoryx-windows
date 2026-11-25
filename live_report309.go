@@ -14,6 +14,7 @@ func(s *State) publishLive(src engine.Report) {
  src.ScanID=old.ScanID;src.ScanMode=old.ScanMode
  if src.Inventory314.State==""{src.Inventory314=old.Inventory314}
  if src.SignatureState==""{src.SignatureState=old.SignatureState;src.SignatureProblem=old.SignatureProblem;src.SignatureRoots=old.SignatureRoots;src.SignatureReports=old.SignatureReports}
+ if src.BehaviorLocal==nil{src.BehaviorLocal=old.BehaviorLocal;src.BehaviorProblem=old.BehaviorProblem}
  if src.WindowsLocal314==nil{src.WindowsLocal314=old.WindowsLocal314;src.WindowsProblem314=old.WindowsProblem314}
  if src.Started.IsZero(){src.Started=old.Started}
  src.Finished=time.Time{}
@@ -37,7 +38,7 @@ func(s *State) reportSnapshotLocked(view bool)(engine.Report,int){
  r.Findings=append([]engine.Finding(nil),r.Findings...)
  r.Errors=append([]string(nil),r.Errors...)
  r.ErrorCategories=cloneErrorCounts(r.ErrorCategories)
- if s.running{r.InProgress=true;r.Partial=true;r.Finished=time.Time{};r.SnapshotAt=time.Now()}
+ if s.running{r.SignatureRecent314=signatureRecentFindings314();r.SignatureRecentLimit314=100;r.InProgress=true;r.Partial=true;r.Finished=time.Time{};r.SnapshotAt=time.Now()}
  return r,total
 }
 func(s *State) snapshotForExport()(engine.Report,bool){

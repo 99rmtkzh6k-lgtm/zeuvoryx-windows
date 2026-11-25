@@ -47,14 +47,20 @@ func Scan(content []byte, name string) (Verdict, error) {
  init:=dll.NewProc("AmsiInitialize")
  scan:=dll.NewProc("AmsiScanBuffer")
  finish:=dll.NewProc("AmsiUninitialize")
- for _,p:=range []*syscall.LazyProc{init,scan,finish}{if err:=p.Find();err!=nil{return Verdict{},err}}
+ open:=dll.NewProc("AmsiOpenSession")
+ closeSession:=dll.NewProc("AmsiCloseSession")
+ for _,p:=range []*syscall.LazyProc{init,open,scan,closeSession,finish}{if err:=p.Find();err!=nil{return Verdict{},err}}
  var ctx uintptr
  hr,_,_:=init.Call(uintptr(unsafe.Pointer(app)),uintptr(unsafe.Pointer(&ctx)))
  runtime.KeepAlive(app)
- if int32(hr)<0||ctx==0{return Verdict{},fmt.Errorf("AMSI initialize HRESULT %#08x",uint32(hr))}
+ if uint32(hr)!=0||ctx==0{return Verdict{},fmt.Errorf("AMSI initialize HRESULT %#08x; result inconclusive",uint32(hr))}
  defer finish.Call(ctx)
+ var session uintptr
+ hr,_,_=open.Call(ctx,uintptr(unsafe.Pointer(&session)))
+ if uint32(hr)!=0||session==0{return Verdict{},fmt.Errorf("AMSI open session HRESULT %#08x; result inconclusive",uint32(hr))}
+ defer closeSession.Call(ctx,session)
  var raw uint32
- hr,_,_=scan.Call(ctx,uintptr(unsafe.Pointer(&content[0])),uintptr(len(content)),uintptr(unsafe.Pointer(source)),0,uintptr(unsafe.Pointer(&raw)))
+ hr,_,_=scan.Call(ctx,uintptr(unsafe.Pointer(&content[0])),uintptr(len(content)),uintptr(unsafe.Pointer(source)),session,uintptr(unsafe.Pointer(&raw)))
  runtime.KeepAlive(content);runtime.KeepAlive(source)
  return scanResult(hr,raw)
 }

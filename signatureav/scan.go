@@ -133,10 +133,22 @@ func parse(r *Report, raw string, code int, overflow bool) {
  if (code==0&&r.Infected!=0)||(code==1&&r.Infected<=0){r.Partial=true}
  if r.Partial{r.Status="inconclusive_or_partial"}else if code==1{r.Status="detections_reported"}else{r.Status="no_detection_reported"}
 }
-// ClamAV labels its binary megabyte summary as MB; preserve its reported precision.
+// Legacy ClamAV MB is a binary megabyte; explicit MiB/GiB/KiB/B are normalized to MiB.
+// Unknown units remain unavailable rather than being silently treated as zero.
 func summaryNumber(v,unit string)*float64{
- f:=strings.Fields(v);if len(f)<2||f[1]!=unit{return nil}
- n,e:=strconv.ParseFloat(f[0],64);if e!=nil||n<0||math.IsNaN(n)||math.IsInf(n,0){return nil};return &n
+ f:=strings.Fields(v);if len(f)<2{return nil}
+ n,e:=strconv.ParseFloat(f[0],64);if e!=nil||n<0||math.IsNaN(n)||math.IsInf(n,0){return nil}
+ if unit=="MB" {
+  switch f[1] {
+  case "MB","MiB":
+  case "GiB":n*=1024
+  case "KiB":n/=1024
+  case "B":n/=1048576
+  default:return nil
+  }
+ }else if f[1]!=unit{return nil}
+ if math.IsNaN(n)||math.IsInf(n,0){return nil}
+ return &n
 }
 // Scan uses a single ClamAV process for a local file or tree, never a shell, never --remove or --move.
 // Desktop callers supply their integrated database explicitly; generic callers may use ClamAV defaults.

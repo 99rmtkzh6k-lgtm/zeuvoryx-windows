@@ -1,3 +1,17 @@
+# ZEUVORYX Antivirus 3.0.15 LAB — Olympus | Referência vigente 25/11/2026
+
+**CI aprovada; candidato Windows x64 para teste físico controlado. Não é versão comercial.**
+
+- Código efetivamente compilado: [c8bf1fd](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/commit/c8bf1fd7614e44de297569663fc90fa5ab066a47), ramificação [Olympus P0](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/lab-olympus-p0-defender-20261125).
+- [CI integral](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45675394546): 48/48 etapas Windows concluídas com sucesso, cinco ciclos de regressão de módulos Windows e Linux, dez ciclos gerais e cinco testes do aplicativo instalado no CI. Migração 3.0.6 → 3.0.15 testada no CI.
+- [ZIP do instalador LAB](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45675394546/artifacts/15052358598): 192807638 bytes (192,81 MB decimais), abaixo do teto de 200 MB; SHA-256 do ZIP informado pelo GitHub: bd9bcd3461e7189944a9a295b5a5e4e1fff447652c798d87e00aa24b4ca56744. Não é o hash individual do EXE; não houve verificação independente dos bytes nesta consulta. O portátil (295087036 bytes) excede a meta de tamanho e não é a entrega recomendada.
+- Revisão incremental: três commits desde 935b906, três arquivos alterados; distinção entre comando Defender aceito e eventos de varredura observados (1000/1001/1002), teste de contrato, workflow isolado e auditoria. Vínculo exclusivo dos eventos, execução PowerShell real e exportação integrada da evidência ainda não comprovados.
+- Preservar interface, autoria Leonardo A. Botelho, identidade Olympus e requisitos REQ-001–043. Nenhuma promoção de código para main; main permanece referência histórica com documentação atualizada. Manter proteções Windows ativas.
+- P0 pendentes: teste físico rápido/completo, RAM 2/4/8/16 GiB, progresso/ETA, copiar JSON e recuperação, cobertura dos motores, Defender por sessão e eficácia independente. CI não comprova proteção integral. Sem publicação comercial, atualização automática de produção ou cobrança.
+- About público consultado: já informa 3.0.15 LAB e validação física em andamento; homepage correta; Topics vazio. O conector não expõe escrita administrativa desses campos. Sugestões de tópicos: antivirus, windows, golang, cybersecurity, endpoint-security, clamav, threat-detection.
+
+## Registros históricos — preservar para auditoria
+
 ## Olympus — P0 Defender, 25/11/2026
 Base preservada: 935b906ef5b6080b40313650ac8c815a0494cefe (lab-report-copy-20261125). Código candidato 278a2c30dfd8213ffb7565558bf93ea58e9f729d em lab-olympus-p0-defender-20261125. Falha confirmada por revisão de código: mensagem de conclusão fixa após Start-MpScan. Alteração no gerador windows-build.yml: solicitação aceita não equivale a conclusão; consulta limitada dos eventos 1000/1001/1002 após solicitação, IDs de sessão/registro e horário, distinção entre início/fim/cancelamento observado, ambiguidade, ausência/indisponibilidade/truncamento dos eventos, contagem de ameaças desconhecida. Não atribui exclusivamente os eventos à solicitação; ainda faltam confirmação do tipo e origem, teste PowerShell real, exportação integrada ao JSON de varredura e validação física. Teste de contrato Go adicionado, ainda sem resultado confirmado. Referência: https://learn.microsoft.com/en-us/defender-endpoint/troubleshoot-mdav-scan-issues. Nenhuma modificação na interface visual, no Defender ou em main. Prioridade P0 continua: estabilidade, RAM, varreduras, progresso e relatório. Não promover nem divulgar como produção.
 

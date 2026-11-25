@@ -1,5 +1,5 @@
-name: ZEUVORYX 3.0.14 LAB - Windows Build
-run-name: ZEUVORYX 3.0.14 LAB Olympus Titanium - Global Threat Defense Windows x64
+name: ZEUVORYX 3.0.15 LAB - Windows Build
+run-name: ZEUVORYX 3.0.15 LAB Olympus Titanium - Global Threat Defense Windows x64
 
 on:
   workflow_call:
@@ -2323,7 +2323,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Diagnostics integration failed' }
           gofmt -w diagnostics.go diagnostics_test.go desktop_windows.go
           if ($LASTEXITCODE -ne 0) { throw 'Diagnostics formatting failed' }
-      - name: Apply scanner hardening for ZEUVORYX 3.0.14 LAB
+      - name: Apply scanner hardening for ZEUVORYX 3.0.15 LAB
         shell: pwsh
         run: |
           python zeuvoryx_upgrade.py --apply
@@ -2343,7 +2343,7 @@ jobs:
           python prepare_app_update.py
           if ($LASTEXITCODE -ne 0) { throw 'Update check integration failed' }
           python prepare_audit305.py
-          if ($LASTEXITCODE -ne 0) { throw '3.0.14 audit integration failed' }
+          if ($LASTEXITCODE -ne 0) { throw '3.0.15 audit integration failed' }
           python prepare_globalintel.py
           if ($LASTEXITCODE -ne 0) { throw 'Global intelligence integration failed' }
           gofmt -w globalintel
@@ -2351,7 +2351,7 @@ jobs:
           python prepare_olympus_silver.py
           if ($LASTEXITCODE -ne 0) { throw 'Olympus silver interface integration failed' }
           python prepare_release306.py
-          if ($LASTEXITCODE -ne 0) { throw '3.0.14 final integration failed' }
+          if ($LASTEXITCODE -ne 0) { throw '3.0.15 final integration failed' }
           node help_search_test.js
           if ($LASTEXITCODE -ne 0) { throw 'Offline help search tests failed' }
           python prepare_help.py
@@ -2365,7 +2365,7 @@ jobs:
           gofmt -w scan_power_windows.go scan_power_windows_test.go main.go adaptive/activity.go adaptive/activity_test.go
           if ($LASTEXITCODE -ne 0) { throw 'Integration formatting failed' }
           python prepare_performance308.py
-          if ($LASTEXITCODE -ne 0) { throw '3.0.14 performance panel integration failed' }
+          if ($LASTEXITCODE -ne 0) { throw '3.0.15 performance panel integration failed' }
           gofmt -w performance308_windows.go performance308_windows_test.go desktop_windows.go
           if ($LASTEXITCODE -ne 0) { throw 'Performance panel formatting failed' }
           python prepare_live_report309.py
@@ -2392,6 +2392,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw '314 Titanium visual integration failed' }
           python prepare_games314.py
           if ($LASTEXITCODE -ne 0) { throw '314 games catalog integration failed' }
+          python prepare_version315.py
+          if ($LASTEXITCODE -ne 0) { throw '3.0.15 version integration failed' }
           gofmt -w games314_windows.go gamecatalog familygate
           go test -count=5 ./gamecatalog ./familygate
           if ($LASTEXITCODE -ne 0) { throw '314 game allowlist regression failed' }
@@ -2419,7 +2421,7 @@ jobs:
           gofmt -w live_report309.go live_report309_test.go engine/live_report309.go main.go engine/scanner.go desktop_windows.go
           if ($LASTEXITCODE -ne 0) { throw 'Live report formatting failed' }
           gofmt -w engine/scan308_test.go
-          if ($LASTEXITCODE -ne 0) { throw '3.0.14 test formatting failed' }
+          if ($LASTEXITCODE -ne 0) { throw '3.0.15 test formatting failed' }
           gofmt -w audit main.go engine/scanner.go engine/scan_upgrade.go desktop_windows.go stability_windows.go stability_windows_test.go scan306_windows_test.go
           if ($LASTEXITCODE -ne 0) { throw 'Audit formatting failed' }
           gofmt -w updater
@@ -2434,7 +2436,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Layered security color regression failed' }
           node --check desktop-syntax.js
           if ($LASTEXITCODE -ne 0) { throw 'Desktop JavaScript syntax failed' }
-      - name: Verify final ZEUVORYX 3.0.14 LAB identity
+      - name: Verify final ZEUVORYX 3.0.15 LAB identity
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -2442,12 +2444,12 @@ jobs:
           $html = Get-Content -Raw -LiteralPath 'desktop.html'
           $engine = Get-Content -Raw -LiteralPath 'engine/scan_upgrade.go'
           $updater = Get-Content -Raw -LiteralPath 'updater/check.go'
-          if (!$desktop.Contains('ZEUVORYX | 3.0.14 LAB')) { throw 'Incorrect application title' }
-          if (!$html.Contains('3.0.14 LAB BETA</div>')) { throw 'Incorrect desktop version' }
+          if (!$desktop.Contains('ZEUVORYX | 3.0.15 LAB')) { throw 'Incorrect application title' }
+          if (!$html.Contains('3.0.15 LAB BETA</div>')) { throw 'Incorrect desktop version' }
           if ($html.Contains('OLYMPUS 3.0.1 BETA</div>')) { throw 'Stale desktop version' }
           if ($engine -notmatch 'const\s+ScanEngineVersion\s*=\s*"3\.0\.14-lab"') { throw 'Incorrect scan engine version' }
           if ($updater -notmatch 'const\s+Current\s*=\s*"3\.0\.14"') { throw 'Incorrect updater version' }
-          if (!$desktop.Contains('ZEUVORYX | 3.0.14 LAB') -or !$html.Contains('id="zPerformancePanel"')) { throw 'Missing 3.0.14 performance interface' }
+          if (!$desktop.Contains('ZEUVORYX | 3.0.15 LAB') -or !$html.Contains('id="zPerformancePanel"')) { throw 'Missing 3.0.15 performance interface' }
           if (!$html.Contains('id="zStorageCard"') -or !$html.Contains('zHelpOpen') -or !$html.Contains('id="zAIActivity"') -or !$desktop.Contains('zAISelfCheck')) { throw 'Missing integrated UI' }
           if (!$html.Contains('zLayerStatus') -or !$html.Contains('id="zLayerLegend"') -or !$html.Contains('zLayer-green') -or $html.Contains('zCameraPanel')) { throw 'Layered security UI incorrect' }
           $audit = Get-Content -Raw -LiteralPath 'audit/audit.go'
@@ -2460,7 +2462,7 @@ jobs:
           if (!$html.Contains('background-size:contain,cover,cover') -or !$html.Contains('zArtRestore')) { throw 'Full-window wallpaper missing' }
           if (!$html.Contains('id="zTitaniumIdentity"') -or !$html.Contains('--z-titanium-art:') -or !$html.Contains('id="zp-cpu-needle"')) { throw 'Titanium visual identity missing' }
           if (!$html.Contains('id="z310Optimizer"') -or !$desktop.Contains('z310OptimizeApply') -or !$desktop.Contains('z310DriveOptimize')) { throw 'Integrated optimizer missing' }
-          Write-Host 'Verified final identity: ZEUVORYX 3.0.14 LAB'
+          Write-Host 'Verified final identity: ZEUVORYX 3.0.15 LAB'
       - name: Run adaptive model tests
         shell: pwsh
         run: |
@@ -2474,7 +2476,7 @@ jobs:
       - name: Upload adaptive training and validation evidence
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.14-Adaptive-Lab-50M
+          name: ZEUVORYX-3.0.15-Adaptive-Lab-50M
           path: lab-results/adaptive-report-50m.json
           if-no-files-found: error
       - name: Install and run static scanner safety regression tests
@@ -2491,14 +2493,14 @@ jobs:
         shell: pwsh
         run: |
           go test -v -count=30 -run '^Test308' ./engine
-          if ($LASTEXITCODE -ne 0) { throw '3.0.14 bounded read regression failed' }
+          if ($LASTEXITCODE -ne 0) { throw '3.0.15 bounded read regression failed' }
           go test -run '^$' -bench '^Benchmark308' -benchmem -benchtime=250ms -count=5 ./engine | Tee-Object -FilePath qa20-309-benchmark.log
-          if ($LASTEXITCODE -ne 0) { throw '3.0.14 benchmark failed' }
+          if ($LASTEXITCODE -ne 0) { throw '3.0.15 benchmark failed' }
       - name: Thirty bounded PE parser regression rounds
         shell: pwsh
         run: |
           go test -v -count=30 -run '^Test307BoundedImports$' ./engine
-          if ($LASTEXITCODE -ne 0) { throw '3.0.14 PE parser regression failed' }
+          if ($LASTEXITCODE -ne 0) { throw '3.0.15 PE parser regression failed' }
       - name: Link safety regression five rounds
         shell: pwsh
         run: |
@@ -2550,7 +2552,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.14-QA20-evidence
+          name: ZEUVORYX-3.0.15-QA20-evidence
           path: qa20-*.log
           if-no-files-found: ignore
       - name: Build Windows desktop EXE
@@ -2609,7 +2611,7 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $exe = (Resolve-Path dist/ZEUVORYX.exe).Path
           $v = Start-Process -FilePath $exe -ArgumentList '-version' -RedirectStandardOutput version.txt -RedirectStandardError version-error.txt -Wait -PassThru
-          if ($v.ExitCode -ne 0 -or (Get-Content -Raw version.txt).Trim() -ne '3.0.14-lab') { throw 'Portable executable version mismatch' }
+          if ($v.ExitCode -ne 0 -or (Get-Content -Raw version.txt).Trim() -ne '3.0.15-lab') { throw 'Portable executable version mismatch' }
           $logDir = Join-Path $env:APPDATA 'ZEUVORYX/stability-lab'
           $p = Start-Process -FilePath $exe -WorkingDirectory (Split-Path $exe) -PassThru
           try {
@@ -2619,14 +2621,14 @@ jobs:
               $p.Refresh()
               if ($p.HasExited) { throw "Desktop exited before ready: $($p.ExitCode)" }
               $logs = @(Get-ChildItem $logDir -Filter "session-*-$($p.Id).log" -ErrorAction SilentlyContinue)
-              if ($logs.Count -eq 1 -and (Select-String -LiteralPath $logs[0].FullName -Pattern 'stability ui_ready version=3.0.14-lab' -Quiet)) { $ready = $true; break }
+              if ($logs.Count -eq 1 -and (Select-String -LiteralPath $logs[0].FullName -Pattern 'stability ui_ready version=3.0.15-lab' -Quiet)) { $ready = $true; break }
               Start-Sleep -Seconds 1
             } while ((Get-Date) -lt $deadline)
             if (!$ready) { throw 'WebView2 UI handshake not observed' }
             Start-Sleep -Seconds 15
             $p.Refresh()
             if ($p.HasExited) { throw "Desktop exited during idle test: $($p.ExitCode)" }
-            if (!(Select-String -LiteralPath $logs[0].FullName -Pattern 'stability performance_ui_ready version=3.0.14-lab' -Quiet)) { throw 'Real CPU/RAM panel render not observed' }
+            if (!(Select-String -LiteralPath $logs[0].FullName -Pattern 'stability performance_ui_ready version=3.0.15-lab' -Quiet)) { throw 'Real CPU/RAM panel render not observed' }
           Write-Host 'Portable desktop and real CPU/RAM panel rendered; survived 15 seconds'
           } finally {
             if (!$p.HasExited) {
@@ -2642,7 +2644,7 @@ jobs:
           $hash = (Get-FileHash dist/ZEUVORYX.exe -Algorithm SHA256).Hash.ToLowerInvariant()
           Set-Content -Encoding ascii -Path dist/SHA256SUMS.txt -Value "$hash  ZEUVORYX.exe"
           @(
-            'ZEUVORYX 3.0.14 LAB - OLYMPUS TITANIUM GLOBAL THREAT DEFENSE - TESTE PORTATIL x64, NAO INSTALADOR'
+            'ZEUVORYX 3.0.15 LAB - OLYMPUS TITANIUM GLOBAL THREAT DEFENSE - TESTE PORTATIL x64, NAO INSTALADOR'
             "Commit: $env:GITHUB_SHA"
             "Execucao: $env:GITHUB_RUN_ID"
             'Extraia todo o ZIP para uma pasta separada. Feche outras versoes antes de testar.'
@@ -2656,13 +2658,13 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.14-desktop-smoke
+          name: ZEUVORYX-3.0.15-desktop-smoke
           path: desktop-smoke.log
           if-no-files-found: ignore
-      - name: Upload portable 3.0.14 LAB only for physical quick scan
+      - name: Upload portable 3.0.15 LAB only for physical quick scan
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.14-LAB-PORTATIL-TESTE-Windows-x64
+          name: ZEUVORYX-3.0.15-LAB-PORTATIL-TESTE-Windows-x64
           path: dist/
           if-no-files-found: error
           retention-days: 7
@@ -2674,8 +2676,8 @@ jobs:
           if (!(Test-Path $iscc)) { throw 'Inno Setup compiler unavailable' }
           & $iscc setup309.iss
           if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed' }
-          Get-FileHash installer/ZEUVORYX-LAB-Setup-3.0.14.exe -Algorithm SHA256
-      - name: Verify real 3.0.6 to 3.0.14 migration and duplicate instance protection
+          Get-FileHash installer/ZEUVORYX-LAB-Setup-3.0.15.exe -Algorithm SHA256
+      - name: Verify real 3.0.6 to 3.0.15 migration and duplicate instance protection
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -2684,7 +2686,7 @@ jobs:
           if ((Get-FileHash previous306.zip -Algorithm SHA256).Hash.ToLowerInvariant() -ne 'cb66cc62467c9ed45137657e506c796c3eb54ce14c88f0bdf1954b6f45850268') { throw 'Historical 3.0.6 fixture digest mismatch' }
           Expand-Archive previous306.zip previous306 -Force
           $old = (Resolve-Path previous306/installer/ZEUVORYX-LAB-Setup-3.0.6.exe).Path
-          $setup = (Resolve-Path installer/ZEUVORYX-LAB-Setup-3.0.14.exe).Path
+          $setup = (Resolve-Path installer/ZEUVORYX-LAB-Setup-3.0.15.exe).Path
           $p = Start-Process -FilePath $old -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART' -Wait -PassThru
           if ($p.ExitCode -ne 0) { throw 'Previous installer failed' }
           $reg = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\ZEUVORYX.Desktop.Lab303_is1'
@@ -2719,7 +2721,7 @@ jobs:
           for ($i=0; $i -lt 5; $i++) {
             $p=Start-Process -FilePath $setup -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/CLOSEAPPLICATIONS','/TASKS=desktopicon,autostart' -Wait -PassThru
             if ($p.ExitCode -ne 0) { throw "Install failed: $($p.ExitCode)" }
-            if ((Get-ItemProperty -LiteralPath $reg).DisplayVersion -ne '3.0.14') { throw 'Registry identity mismatch' }
+            if ((Get-ItemProperty -LiteralPath $reg).DisplayVersion -ne '3.0.15') { throw 'Registry identity mismatch' }
             if ((Get-FileHash $exe).Hash -ne (Get-FileHash $portable).Hash) { throw 'Installed binary mismatch' }
             if ((Get-Content -LiteralPath $marker) -ne 'preserve-test-only') { throw 'User data lost' }
             if (@(Get-ChildItem $dir -Filter 'unins*.exe').Count -ne 1) { throw 'Duplicate uninstallers' }
@@ -2734,7 +2736,7 @@ jobs:
           $p=Start-Process -FilePath $setup -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/TASKS=desktopicon,autostart' -Wait -PassThru
           if ($p.ExitCode -ne 0 -or !(Test-Path -LiteralPath $shortcut)) { throw 'Startup opt-in failed' }
           $p=Start-Process -FilePath $exe -ArgumentList '-version' -RedirectStandardOutput installed-version.txt -Wait -PassThru
-          if ($p.ExitCode -ne 0 -or (Get-Content -Raw installed-version.txt).Trim() -ne '3.0.14-lab') { throw 'Installed version mismatch' }
+          if ($p.ExitCode -ne 0 -or (Get-Content -Raw installed-version.txt).Trim() -ne '3.0.15-lab') { throw 'Installed version mismatch' }
           $new=Start-Process -FilePath $exe -WorkingDirectory $dir -PassThru
           try {
             Start-Sleep -Seconds 5
@@ -2786,14 +2788,14 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ZEUVORYX-3.0.14-bundled-installed-evidence
+          name: ZEUVORYX-3.0.15-bundled-installed-evidence
           path: bundle314-*.json
           if-no-files-found: ignore
       - name: Upload installer for controlled LAB validation only
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.14-LAB-SETUP-TESTE-Windows-x64
-          path: installer/ZEUVORYX-LAB-Setup-3.0.14.exe
+          name: ZEUVORYX-3.0.15-LAB-SETUP-TESTE-Windows-x64
+          path: installer/ZEUVORYX-LAB-Setup-3.0.15.exe
           if-no-files-found: error
           retention-days: 7
       - name: Block public release until integrated physical validation

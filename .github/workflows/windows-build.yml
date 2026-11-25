@@ -2402,6 +2402,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw '314 expanded integration failed' }
           python prepare_titanium314.py
           if ($LASTEXITCODE -ne 0) { throw '314 Titanium visual integration failed' }
+          node lab/test_classic315.js
+          if ($LASTEXITCODE -ne 0) { throw '3.0.15 classic game regressions failed' }
+          node lab/test_chess315.js
+          if ($LASTEXITCODE -ne 0) { throw '3.0.15 chess regressions failed' }
           node lab/test_games315.js
           if ($LASTEXITCODE -ne 0) { throw '3.0.15 local game regressions failed' }
           python prepare_games314.py
@@ -2604,6 +2608,7 @@ jobs:
           Invoke-WebRequest 'https://github.com/Cisco-Talos/clamav/releases/download/clamav-1.5.5/clamav-1.5.5.tar.gz' -OutFile $src
           if((Get-FileHash $src -Algorithm SHA256).Hash.ToLowerInvariant() -ne '90284644e5568732c15fc4f4312fd0f09ac14c14e5b29fba3909d4da4e281b1e'){throw 'ClamAV source digest mismatch'}
           Copy-Item CLAMAV_NOTICE_314.txt dist/third-party/
+          Copy-Item lab/CHESS315_LICENSE.txt dist/third-party/
           & dist/clamav/clamscan.exe --version
           if($LASTEXITCODE -ne 0){throw 'Bundled engine failed to launch'}
           $mediaZip=Join-Path $env:RUNNER_TEMP 'c2patool314.zip'

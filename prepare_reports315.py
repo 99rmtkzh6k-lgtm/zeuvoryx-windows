@@ -43,3 +43,21 @@ s,n=re.subn(r'if !bind\("exportReport",\s*func\(\)\s*\(string,\s*error\)\s*\{[\s
 if n!=1:raise RuntimeError("current export anchor "+str(n))
 s=once(s,'return exportDiag(diag.report())','r:=diag.report();if len(r.Samples)==0{return "",fmt.Errorf("Nenhuma amostra de diagnóstico")};return jsonReport315("zeuvoryx-diagnostico",r)')
 p.write_text(s,encoding="utf-8")
+
+# Multi-engine learning report (explicit opt-in, local aggregate evidence only).
+p=Path("desktop_windows.go");s=p.read_text(encoding="utf-8")
+s=once(s,'if !bind("copyReport315",','''if !bind("fieldStart",fieldStart){return}
+ if !bind("fieldActive",fieldActive){return}
+ if !bind("fieldCancel",fieldCancel){return}
+ if !bind("fieldExport",func()(string,error){return fieldExport(s)}){return}
+ if !bind("copyReport315",''')
+p.write_text(s,encoding="utf-8")
+p=Path("desktop.html");s=p.read_text(encoding="utf-8")
+s=once(s,'<option value="diag">Diagnóstico gravado</option>','<option value="diag">Diagnóstico gravado</option><option value="learning">Aprendizado dos motores</option>')
+s=once(s,'<p id="z315ReportPreview" role="status"></p>','<p id="z315ReportPreview" role="status"></p><div id="fieldPanel" hidden><p>Inicie a observação, execute as varreduras e gere o JSON. Somente eventos e contagens; nenhum envio automático.</p><button id="fieldStart">Iniciar observação</button><button id="fieldCancel">Cancelar observação</button><p id="fieldStatus" role="status"></p></div>')
+s=once(s,"try{if(kind==='history')","try{el('fieldPanel').hidden=kind!=='learning';if(kind==='learning'){const at=await window.fieldActive();preview.textContent=at?'Observando desde '+at:'Inicie a observação';btn.disabled=z315ReportBusy||!at;return}if(kind==='history')")
+s=once(s,"else if(kind==='diag')path=await window.diagExport();","else if(kind==='diag')path=await window.diagExport();else if(kind==='learning')path=await window.fieldExport();")
+s=once(s,'</script></body></html>',"""el('fieldStart').onclick=async()=>{try{el('fieldStatus').textContent='Iniciada: '+await window.fieldStart();await z315ReportPaint()}catch(e){el('fieldStatus').textContent=String(e)}};
+el('fieldCancel').onclick=async()=>{try{await window.fieldCancel();el('fieldStatus').textContent='Observação cancelada';await z315ReportPaint()}catch(e){el('fieldStatus').textContent=String(e)}};
+</script></body></html>""")
+p.write_text(s,encoding="utf-8")

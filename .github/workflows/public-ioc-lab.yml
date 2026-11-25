@@ -1,7 +1,7 @@
 name: ZEUVORYX LAB - Public threat indicator verification
 on:
   push:
-    branches: [lab-public-ioc-20261125]
+    branches: [lab-public-ioc-20261125, lab-protection-wave-20261125]
   workflow_dispatch:
 permissions:
   contents: read
@@ -48,3 +48,8 @@ jobs:
           Copy-Item lab/resident_integration_test.go.txt resident_integration_lab_test.go
           go test -v -count=5 scanner.go pe.go quarantine.go resident_integration_lab_test.go
           if ($LASTEXITCODE -ne 0) { throw 'Resident or quarantine integration failed' }
+      - name: Multi-engine observation privacy and schema
+        shell: pwsh
+        run: |
+          go test -v -count=5 ./fieldlearn
+          if ($LASTEXITCODE -ne 0) { throw 'Field learning evidence regression failed' }

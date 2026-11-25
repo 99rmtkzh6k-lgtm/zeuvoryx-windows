@@ -100,8 +100,9 @@ setInterval(showDiagnostics,5000);showDiagnostics();
 """
     s=s.replace("</script></body></html>",layout+"</script></body></html>",1)
     chk=Check();chk.feed(s)
-    for name in ("zUpdateCheck","zUpdateBuilds","start","quick","stop","export","auditLoad","auditSave","auditState","zLocalAuditState"):
+    for name in ("zUpdateCheck","zUpdateOpen","start","quick","stop","export","auditLoad","auditSave","auditState","zLocalAuditState"):
         if chk.ids.count(name)!=1: raise ValueError("Invalid control: "+name)
+    if chk.ids.count("zUpdateBuilds")!=0: raise ValueError("External build link must stay removed")
     if not any(x.get("alt")=="Zeus" and x.get("src","").startswith("data:image/jpeg;base64,") for x in chk.pictures): raise ValueError("Missing Zeus portrait")
     p.write_text(s,encoding="utf-8")
     face.save("ZEUVORYX.png")

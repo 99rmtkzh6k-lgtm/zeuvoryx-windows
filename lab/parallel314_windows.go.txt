@@ -1,0 +1,59 @@
+package main
+import("context";"crypto/sha256";"encoding/json";"fmt";"os";"path/filepath";"time";"github.com/zeuvoryx/zeuvoryx/engine";"github.com/zeuvoryx/zeuvoryx/signatureav")
+type parallelKey314 struct{}
+type sigResult314 struct{report engine.Report}
+type behaviorResult314 struct{data map[string]any; problem string}
+// One ClamAV process plus the bounded ZEUVORYX worker pool, no per-file process fanout.
+// Windows resident protection is not disabled or replaced. No parallel destructive operations.
+func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engine.Report,error))(engine.Report,error){
+ s.mu.Lock();if s.running{s.report.SignatureState="running"};s.mu.Unlock()
+ sig:=make(chan sigResult314,1);beh:=make(chan behaviorResult314,1)
+ go func(){r:=engine.Report{SignatureRoots:append([]string(nil),roots...)};s.signaturePhase312(ctx,&r,"",true);sig<-sigResult314{r}}()
+ go func(){v,e:=behavior313();b:=behaviorResult314{data:v};if e!=nil{b.problem=e.Error()};beh<-b}()
+ rep,e:=run()
+ r:=<-sig;b:=<-beh
+ rep.SignatureRoots=append([]string(nil),roots...)
+ rep.SignatureState=r.report.SignatureState;rep.SignatureProblem=r.report.SignatureProblem;rep.SignatureReports=r.report.SignatureReports
+ rep.BehaviorLocal=b.data;rep.BehaviorProblem=b.problem
+ rep.Finished=time.Now();rep.Cancelled=rep.Cancelled||ctx.Err()!=nil
+ return rep,e
+}
+func(s *State) parallelCustom314(ctx context.Context,path string,progress func(int,int64))(engine.Report,error){
+ return s.concurrent314(ctx,[]string{path},func()(engine.Report,error){return s.scanner.Scan(engine.WithLiveReport(ctx,s.publishLive),path,progress)})
+}
+type diagnostic314 struct{
+ Version string
+ LocalFile bool
+ ScannerFiles int
+ ScannerAlerts int
+ ClamState string
+ ClamProblem string
+ ClamVersion string
+ ClamSignatures int64
+ ClamFiles int64
+ Windows map[string]any
+ WindowsProblem string
+ Behavior map[string]any
+ BehaviorProblem string
+ At time.Time
+}
+func realDiagnostic314()(diagnostic314,error){
+ d:=diagnostic314{Version:engine.ScanEngineVersion,At:time.Now().UTC(),ClamState:"unavailable"}
+ dir,e:=os.MkdirTemp("","zeuvoryx-diagnostic-");if e!=nil{return d,e};defer os.RemoveAll(dir)
+ path:=filepath.Join(dir,"benign.txt");data:=[]byte("ZEUVORYX benign local diagnostic file")
+ if e=os.WriteFile(path,data,0600);e!=nil{return d,e};back,e:=os.ReadFile(path);if e!=nil{return d,e}
+ d.LocalFile=sha256.Sum256(data)==sha256.Sum256(back)
+ ctx,cancel:=context.WithTimeout(context.Background(),20*time.Minute);defer cancel()
+ st:=&State{scanner:engine.New()}
+ r,e:=st.parallelCustom314(ctx,path,nil);d.ScannerFiles=r.Files;d.ScannerAlerts=len(r.Findings)
+ d.ClamState=r.SignatureState;d.ClamProblem=r.SignatureProblem;d.Behavior=r.BehaviorLocal;d.BehaviorProblem=r.BehaviorProblem
+ if len(r.SignatureReports)==1{v:=r.SignatureReports[0];d.ClamVersion=v.Version;d.ClamSignatures=v.KnownSignatures;d.ClamFiles=v.Scanned;if v.Problem!=""{d.ClamProblem=v.Problem};if v.Infected!=0{d.ClamState="unexpected_detection"}}
+ if e!=nil{return d,e}
+ d.Windows,e=windowsSecurityAudit();if e!=nil{d.WindowsProblem=e.Error()}
+ return d,nil
+}
+func diagnosticCLI314()int{
+ d,e:=realDiagnostic314();if e!=nil{fmt.Fprintln(os.Stderr,e);return 2}
+ if e=json.NewEncoder(os.Stdout).Encode(d);e!=nil{return 2}
+ if !d.LocalFile||d.ScannerFiles!=1||d.ScannerAlerts!=0||d.ClamState!="finished"||d.ClamFiles!=1||d.ClamSignatures<=0{return 2};return 0
+}

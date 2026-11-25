@@ -1,3 +1,5 @@
+> **3.0.14 LAB revisão integrada:** motores próprios e ClamAV em paralelo, consulta Sysmon opcional, diagnóstico real separado do autoteste sintético. CI e teste físico pendentes. [Detalhes](BUNDLED_314_LAB.md).
+
 > **25/11/2026 — candidato 3.0.14 LAB:** correção da dependência externa do ClamAV evidenciada em teste físico 3.0.13. Motor oficial incluído no instalador, atualização automática da base e testes reais via aplicativo instalado; CI pendente. [Estado e limites](BUNDLED_314_LAB.md). Não é release de produção.
 
 > **25/11/2026 — 3.0.13 LAB candidato consolidado:** assinatura, varredura normal, atualização FreshClam sob demanda, quarentena revalidada e telemetria Sysmon opcional. CI e validação física pendentes. [Estado e limites](CONSOLIDATED_313_LAB.md). Não é release de produção.

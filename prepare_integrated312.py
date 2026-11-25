@@ -26,7 +26,7 @@ def main(s):
     s=s[:a]+x+s[b:]
     a=s.index("func (s *State) startScan(");b=s.index("func main(",a)
     x=s[a:b]
-    x=rx(x,r'(s\.mu\.Lock\(\)\s*defer s\.mu\.Unlock\(\)\s*rep\.ScanID\s*=)',lambda m:'s.signaturePhase312(ctx,&rep,path,automatic)\n'+m[1])
+    x=rx(x,r'(s\.mu\.Lock\(\)\s*defer s\.mu\.Unlock\(\)\s*rep\.ScanID\s*=)',lambda m:'rep.SnapshotAt=time.Now()\n'+m[1])
     return s[:a]+x+s[b:]
 def html(s):
     s=once(s,'<section id="overview">','''<section id="overview"><div class="card" id="z312Signature"><h2>Motor de assinaturas ClamAV</h2><p id="z312SigState" role="status">Aguardando varredura.</p><div id="z312SigDetails"></div><p class="sub">Contagem independente; não somar arquivos dos dois motores. Sem detecção não significa computador seguro.</p></div>''')

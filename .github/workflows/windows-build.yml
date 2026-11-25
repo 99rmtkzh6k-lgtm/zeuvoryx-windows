@@ -2384,6 +2384,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw '313 consolidated integration failed' }
           python prepare_bundle314.py
           if ($LASTEXITCODE -ne 0) { throw '314 bundled integration failed' }
+          python prepare_parallel314.py
+          if ($LASTEXITCODE -ne 0) { throw '314 parallel integration failed' }
+          gofmt -w parallel314_windows.go
+          if ($LASTEXITCODE -ne 0) { throw '314 parallel formatting failed' }
           gofmt -w bundle314_windows.go
           if ($LASTEXITCODE -ne 0) { throw '314 formatting failed' }
           gofmt -w engine/clam313.go engine/clam313_test.go behavior313_windows.go behaviorwatch desktop_windows.go
@@ -2739,7 +2743,9 @@ jobs:
             }
           }
           Remove-Item $test
-          Write-Host 'Five installed-app cycles passed using bundled ClamAV and automatic FreshClam'
+          $diag=Start-Process -FilePath $app -ArgumentList '-diagnostic-check314' -RedirectStandardOutput bundle314-diagnostic.json -RedirectStandardError bundle314-diagnostic.err -Wait -PassThru
+          if($diag.ExitCode -ne 0){Get-Content bundle314-diagnostic.err;throw 'Real local diagnostic failed'}
+          Write-Host 'Five installed-app cycles and real local diagnostic passed using bundled ClamAV and automatic FreshClam'
       - uses: actions/upload-artifact@v4
         if: always()
         with:

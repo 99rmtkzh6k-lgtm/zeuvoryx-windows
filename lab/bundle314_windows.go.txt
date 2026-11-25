@@ -1,5 +1,5 @@
 package main
-import("context";"encoding/json";"errors";"fmt";"os";"os/exec";"path/filepath";"strings";"sync";"syscall";"time";"github.com/zeuvoryx/zeuvoryx/signatureav")
+import("context";"encoding/json";"errors";"fmt";"os";"os/exec";"path/filepath";"strings";"sync";"syscall";"time";"github.com/zeuvoryx/zeuvoryx/signatureav";"github.com/zeuvoryx/zeuvoryx/engine")
 var bundled314Mu sync.Mutex
 // The app is installed per user without elevated privileges. Never search PATH or external installation.
 func bundled314()(string,error){
@@ -31,7 +31,6 @@ func ensureClam314(ctx context.Context, force bool)(string,error){
 func signatureCheck314(path string)int{
  ctx,cancel:=context.WithTimeout(context.Background(),20*time.Minute);defer cancel()
  if _,e:=ensureClam314(ctx,false);e!=nil{fmt.Fprintln(os.Stderr,e);return 2}
- exe,e:=bundled314();if e!=nil{fmt.Fprintln(os.Stderr,e);return 2}
- r,e:=signatureav.Scan(ctx,exe,path,"");if je:=json.NewEncoder(os.Stdout).Encode(r);je!=nil{return 2}
+ st:=&State{scanner:engine.New()};combined,e:=st.parallelCustom314(ctx,path,nil);if e!=nil||combined.Files!=1||len(combined.SignatureReports)!=1{return 2};r:=combined.SignatureReports[0];if je:=json.NewEncoder(os.Stdout).Encode(r);je!=nil{return 2}
  if e!=nil||r.Partial{return 2};return 0
 }

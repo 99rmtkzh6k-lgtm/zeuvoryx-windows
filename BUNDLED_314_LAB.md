@@ -18,3 +18,18 @@ Revisão 3.0.14: reaproveita a arte Zeus/Olimpo existente verificada e embutida,
 Revisão de arte em tela cheia solicitada pelo proprietário: a imagem exata confirmada por SHA-256 fica no fundo de toda a janela, sem corte ou distorção (contain), com segunda camada da mesma arte escurecida preenchendo os espaços da proporção; títulos e controles sobrepostos, cartões de baixa opacidade, texto claro com contorno/sombra e campos/dialogos com contraste maior. O cabeçalho é texto, não banner opaco. Botão opcional Ver arte inteira com retorno e Escape; controles e varredura não são interrompidos. Sem novos arquivos de arte, filtros pesados ou dependências. CI e teste visual físico pendentes.
 
 Correção CI 45610088956: ambos os motores independentes passaram; geração da interface falhou no hash. Comparação local da imagem aprovada (JPEG 7f5e51ee...) com a arte original extraída do executável 3.0.13 (JPEG 16fdc359..., ambas 1050x360) demonstrou mesma composição, diferença média absoluta RGB 0,462/255 atribuível à recodificação JPEG. A verificação agora aceita somente esses dois hashes conhecidos e registra o hash efetivo; qualquer outra imagem continua bloqueada. Nova validação do instalador e da aparência pendente.
+
+## Retro Game Arena (opcional, mesmo pacote)
+Catálogo local de dez jogos/coleções gratuitos para jogar, Atari 2600, Nintendo NES, PlayStation 1 e arcade, publicados em páginas oficiais ou de autores; exemplos e demos PS1 identificados. Abertura explícita no navegador por ID de lista fixa HTTPS, sem WebView externo, sem baixar ROMs, BIOS, executáveis ou scripts; sem modificar Defender ou proteção, sem rede em segundo plano para games. Jogo da velha local de dois jogadores sem internet, sem loop contínuo. Interface com filtro, busca, retorno e arte vetorial original de controle retrô, tema Titanium e fundo de Zeus preservados. Páginas externas podem mudar, exibir anúncios ou exigir mais recursos; não garantir gratuidade futura nem segurança absoluta. Testes de allowlist repetidos cinco vezes e verificação de IDs/sintaxe na CI; navegação/visual físico pendentes. Prioridade de proteção/desempenho preservada.
+
+Fontes revisadas 25/11/2026:
+- StarGiraf: https://drludos.itch.io/spacegiraf
+- Simple Game: https://marc-vittorini.itch.io/simple-game
+- Minekart Madness: https://mhughson.itch.io/minekart-madness
+- Retropia: https://wendelscardua.itch.io/retropia
+- Net Yaroze: https://yaroze.dev/examples/
+- PSoXide: https://bonnie-studios.itch.io/
+- Tetris: https://play.tetris.com/games/
+- PAC-MAN: https://doodles.google/doodle/30th-anniversary-of-pac-man/
+- Asteroids: https://games.aarp.org/games/atari-asteroids
+- Centipede: https://games.aarp.org/games/atari-centipede

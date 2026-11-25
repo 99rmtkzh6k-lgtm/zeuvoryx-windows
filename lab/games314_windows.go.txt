@@ -1,0 +1,10 @@
+package main
+import("fmt";"syscall";"unsafe";"github.com/zeuvoryx/zeuvoryx/gamecatalog")
+func openGame314(id string)(bool,error){
+ u,e:=gamecatalog.Resolve(id);if e!=nil{return false,e}
+ address,e:=syscall.UTF16PtrFromString(u);if e!=nil{return false,e}
+ verb,_:=syscall.UTF16PtrFromString("open")
+ r,_,err:=syscall.NewLazyDLL("shell32.dll").NewProc("ShellExecuteW").Call(0,uintptr(unsafe.Pointer(verb)),uintptr(unsafe.Pointer(address)),0,0,1)
+ if r<=32{return false,fmt.Errorf("Não foi possível abrir o navegador: %v",err)}
+ return true,nil
+}

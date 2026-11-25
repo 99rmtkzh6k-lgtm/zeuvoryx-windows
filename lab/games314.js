@@ -1,0 +1,17 @@
+;(()=>{
+const games=[["stargiraf","Atari 2600","StarGiraf","Ação espacial · Dr. Ludos"],["simplegame","Atari 2600","Simple Game","Desafio de precisão · Marc Vittorini"],["minekart","Nintendo NES","Minekart Madness","Arcade 8 bits · Matt Hughson"],["retropia","Nintendo NES","Retropia","Aventura 8 bits · Wendel Scardua"],["yaroze","PlayStation 1","Net Yaroze","Jogos e demos independentes · psxsdk"],["psoxide","PlayStation 1","PSoXide","Coleção de demonstrações · Bonnie Studios"],["tetris","Arcade","Tetris","Quebra-cabeça · página oficial"],["pacman","Arcade","PAC-MAN","Doodle interativo · Google"],["asteroids","Arcade","Asteroids","Clássico Atari · AARP"],["centipede","Arcade","Centipede","Clássico Atari · AARP"]];
+const z=id=>document.getElementById(id),panel=z('zGames314'),nav=z('zGamesNav314'),status=z('zGameStatus');
+let visible=false,board=Array(9).fill(''),player='X',ended=false;
+function close(){visible=false;panel.classList.add('hidden');nav.classList.remove('active');nav.setAttribute('aria-expanded','false')}
+nav.onclick=()=>{visible=true;for(const b of document.querySelectorAll('[data-page]')){b.classList.remove('active');const p=z(b.dataset.page);if(p)p.classList.add('hidden')}panel.classList.remove('hidden');nav.classList.add('active');nav.setAttribute('aria-expanded','true');render()};
+for(const b of document.querySelectorAll('[data-page]'))b.addEventListener('click',close);
+z('zGameBack').onclick=()=>{close();document.querySelector('[data-page="overview"]').click()};
+function render(){if(!visible)return;const f=z('zGameFilter').value,q=z('zGameSearch').value.trim().toLocaleLowerCase('pt-BR'),out=z('zGameCatalog');out.replaceChildren();let n=0;
+for(const [id,category,title,desc] of games){if((f&&f!==category)||(q&&!(title+' '+category+' '+desc).toLocaleLowerCase('pt-BR').includes(q)))continue;n++;
+const tile=document.createElement('article');tile.className='zGameTile';tile.append(node('small',category),node('strong',title),node('small',desc));const btn=node('button','Jogar online');btn.type='button';btn.onclick=async()=>{btn.disabled=true;try{const opened=await window.openGame314(id);status.textContent=opened?'Navegador aberto: '+title:'Abertura não confirmada.'}catch(e){status.textContent=String(e)}finally{btn.disabled=false}};tile.append(btn);out.append(tile)}
+z('zGameLocal').hidden=!( (!f||f==='Local')&&(!q||'três em linha jogo da velha offline local'.includes(q)));status.textContent=n+' jogos ou coleções online no filtro. '+(z('zGameLocal').hidden?'':'Jogo local disponível.')}
+z('zGameFilter').onchange=render;z('zGameSearch').oninput=render;
+const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+function draw(){const p=z('zGameBoard');p.replaceChildren();board.forEach((v,i)=>{const b=node('button',v||'·');b.type='button';b.dataset.mark=v;b.disabled=!!v||ended;b.setAttribute('aria-label','Casa '+(i+1)+': '+(v||'vazia'));b.onclick=()=>{if(ended||board[i])return;board[i]=player;if(wins.some(w=>w.every(k=>board[k]===player))){ended=true;z('zGameTurn').textContent='Vitória de '+player}else if(board.every(Boolean)){ended=true;z('zGameTurn').textContent='Empate'}else{player=player==='X'?'O':'X';z('zGameTurn').textContent='Vez de '+player}draw()};p.append(b)})}
+z('zGameReset').onclick=()=>{board=Array(9).fill('');player='X';ended=false;z('zGameTurn').textContent='Vez de X';draw()};z('zGameReset').click()
+})();

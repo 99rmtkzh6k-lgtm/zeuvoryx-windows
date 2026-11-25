@@ -1,0 +1,8 @@
+#zGames314{display:grid;gap:12px;padding:14px;background:#101b30bb}
+.zGameHero{display:flex;align-items:center;justify-content:space-between;gap:12px;background:radial-gradient(ellipse at right,#34486d88,#101a2ede 70%);border:1px solid #7191b7;border-radius:15px;padding:14px;min-height:130px}
+.zGameHero h2{font-size:clamp(19px,3vw,31px);letter-spacing:1px;color:#e9d4a0}
+.zGameHero svg{max-width:40%;width:240px;min-width:90px}.zGameKicker{font-size:11px;letter-spacing:1px;color:#91ddf8}.zGameBadge{font-size:11px;color:#b4e8dc}
+.zGameFilters{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.zGameFilters input,.zGameFilters select{padding:7px;min-width:0}
+.zGameGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px}.zGameTile{display:flex;flex-direction:column;gap:6px;padding:12px;border:1px solid #7390b3;border-radius:12px;background:linear-gradient(145deg,#233853dd,#132139dd)}.zGameTile strong{color:#f0d8a5}.zGameTile small{color:#c9d8ed}.zGameTile button{margin-top:auto}
+.zGameBoard{display:grid;grid-template-columns:repeat(3,48px);gap:6px;margin:8px 0}.zGameBoard button{min-width:48px;min-height:44px;padding:0;font-size:19px}.zGameBoard button:disabled{opacity:1}.zGameBoard button[data-mark="X"]{color:#67e2e4}.zGameBoard button[data-mark="O"]{color:#e9c77d}
+@media(max-width:720px){.zGameHero{min-height:90px;padding:9px}.zGameHero svg{max-width:34%}}

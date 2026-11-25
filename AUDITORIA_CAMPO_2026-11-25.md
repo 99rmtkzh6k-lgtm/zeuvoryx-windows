@@ -1,3 +1,10 @@
+## Revisão adicional 3.0.15 LAB — Windows e Olympus Arcade
+- A estimativa histórica 8/10 (80%) de integração não constitui taxa medida de proteção; retirar qualquer alegação de eficácia percentual sem corpus independente, denominador, configuração e resultado observável. Separar ensaios sintéticos, testes funcionais, proteção real por fonte, falsos positivos e impacto no desempenho. Meta de 100% das funções especificadas operacionais; não promessa de detectar todo malware.
+- Reaproveitar tecnologia comprovada via APIs, protocolos e código com licença compatível; custo zero. Não copiar motores proprietários ou alegar treinamento automático sem dados rotulados. Relatórios reais servem como evidência de engenharia, não como aprendizado de modelo por si mesmos.
+- Windows: histórico nativo Defender de 7 dias (até 100 registros com limite indicado), estado de ameaças ativas, data e origem. Consulta somente leitura durante a análise a cada minuto, cancelável, sem enviar arquivos ou mudar políticas. Exibição no painel de alertas e JSON; distinguir deteções Defender das de ClamAV e scanner próprio. Não equivale a monitor residente independente nem eficácia comprovada.
+- Olympus Arcade: manter arte, cores, botões e painel de proteção. Jogo da velha, memória e cartas maior/menor originais, offline, dentro da aplicação; sem apostas, dinheiro, downloads, anúncios, navegação externa ou bibliotecas adicionais. Catálogo de links externos não aparece mais na área gamer, preservado no histórico e backend; controle parental existente preservado. Nenhuma ROM externa. Jogos sem laço de animação; polling de proteção somente enquanto painel aberto.
+- Testes executados em Node local: cinco ciclos da lógica dos três jogos, todos aprovados, incluindo vitória/empate, pares e baralho de 52 cartas; hashes dos dois arquivos conferidos idênticos aos blobs do GitHub. Sintaxe do núcleo aprovada. Integração WebView Windows e CI do aplicativo ainda não executadas/verificadas. Não liberar como versão final. Manter Defender.
+
 # Auditoria de campo — 25/11/2026 — 3.0.14 LAB, revisão candidata
 
 ## Evidência

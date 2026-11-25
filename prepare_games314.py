@@ -10,7 +10,7 @@ def one(s,a,b):
     return s.replace(a,b,1)
 Path("games314_windows.go").write_text(Path("lab/games314_windows.go.txt").read_text(encoding="utf-8"),encoding="utf-8")
 p=Path("desktop_windows.go");s=p.read_text(encoding="utf-8")
-s=one(s,'if !bind("openYouTubeVerify314",openYouTubeVerify314){return}', 'if !bind("openYouTubeVerify314",openYouTubeVerify314){return}\nif !bind("allowLocalGame315",allowLocalGame315){return}')
+s=one(s,'if !bind("recentSignature314",recentSignature314){return}', 'if !bind("recentSignature314",recentSignature314){return}\nif !bind("allowLocalGame315",allowLocalGame315){return}')
 s=one(s,'import (','import (\n "github.com/zeuvoryx/zeuvoryx/familygate"')
 s=regex_one(s,r'\bdropCache\s*:=\s*globalintel\.OpenDaily\(dropPath\)',lambda m:m[0]+'''
 familyPath:="";if dropDirErr==nil{familyPath=filepath.Join(dropDir,"ZEUVORYX","family314.json")}
@@ -18,9 +18,8 @@ family314=familygate.Open(familyPath)
 if !bind("familyStatus314",family314.Status){return}
 if !bind("familySave314",func(p familygate.Policy,password string)(bool,error){e:=family314.Save(p,password);return e==nil,e}){return}
 if !bind("familyRate314",func(id string,r familygate.Rating,password string)(bool,error){if !localGame315(id){return false,fmt.Errorf("Jogo fora do catálogo local")};e:=family314.Rate(id,r,password);return e==nil,e}){return}
-if !bind("openFamilySafety314",openFamilySafety314){return}
 if !bind("familyDNSCheck314",func()familygate.DNSCheck{return familySystemDNS314(nativeCtx)}){return}
-if !bind("familyNetwork314",familyNetwork314){return}''')
+''')
 p.write_text(s,encoding="utf-8")
 p=Path("desktop.html");s=p.read_text(encoding="utf-8")
 s=one(s,'</nav>','<button id="zGamesNav314" type="button" aria-expanded="false">Games · Jogos</button><button id="zFamilyNav314" type="button">Controle parental</button></nav>')

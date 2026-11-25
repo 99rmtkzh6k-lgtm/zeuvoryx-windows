@@ -4,3 +4,5 @@ Parent 86698fd172009c207845e67443503e36148203e2. Isolated test branch; no releas
 - https://www.cisa.gov/sites/default/files/2024-09/aa23-061a-stopransomware-blacksuit-royal-ransomware_5.pdf
 
 Twelve distinct known indicators, lower/upper case and one altered digest per indicator, 100 generated benign files, actual full-file hash control using one harmless file. Five cycles on Linux/Windows, scanner.go and pe.go from repository baseline, not fully generated installer. Matches test lookup on supplied public identifiers, not detection of live malware. No malware sample, no attack URL, no execution, no production blocklist. No generalized false-positive or detection-rate claim. Results pending until CI evidence.
+
+Evidence requirement: the CI log must explicitly confirm all positive and negative checks. Missing execution is not a pass.

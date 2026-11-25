@@ -13,7 +13,6 @@ def edit(p,fn):
 def main(s):
     a=s.index('func (s *State) scanRoots(');b=s.index('func (s *State) quickScan(',a)
     x=s[a:b]
-    x=rx(x,r'(r\s*:=\s*engine\.Report\{[^\n]+\})',r'PLACEHOLDER') if False else x
     x=once(x,'var mu sync.Mutex','s.publishLive(r)\n    var mu sync.Mutex')
     x=rx(x,r'mu\.Lock\(\)\s*\n?\s*defer mu\.Unlock\(\)', 'mu.Lock()\n    defer mu.Unlock()\n    defer func(){s.publishLive(r)}()')
     # Publish skip events as they occur, including symlinks and nonregular files.
@@ -22,7 +21,6 @@ def main(s):
     x=rx(x,r'if progress != nil && time\.Since\(lastProgress\) >= 200\*time\.Millisecond \{','if len(hits)>0 || time.Since(lastProgress)>=200*time.Millisecond { s.publishLive(r) }\n    if progress != nil && time.Since(lastProgress) >= 200*time.Millisecond {')
     x=rx(x,r'if progress != nil \{\s*progress\(r\.Files,\s*r\.Bytes\)\s*\}', 's.publishLive(r)\n    if progress != nil {progress(r.Files,r.Bytes)}')
     s=s[:a]+x+s[b:]
-    s=rx(s,r'(if storeErr\s*==\s*nil\s*\{\s*_,\s*storeErr\s*=\s*store\.Add\(audit\.Event\{Kind:\s*"scan_started",\s*ScanID:\s*scanID,\s*Mode:\s*mode\}\)\s*\})','PLACEHOLDER') if False else s
     # Store scan identity before releasing the state lock.
     s=rx(s,r'(started\s*:=\s*time\.Now\(\))','started:=time.Now()\n    s.report=engine.Report{ScanID:scanID,ScanMode:mode,Started:started,InProgress:true,Partial:true,EngineVersion:engine.ScanEngineVersion,Root:path}\n    s.report.Summarize();s.report.Partial=true')
     s=rx(s,r's\.scanner\.Scan\(ctx,\s*path,\s*progress\)', 's.scanner.Scan(engine.WithLiveReport(ctx,s.publishLive),path,progress)')
@@ -31,7 +29,6 @@ def scanner(s):
     s=once(s,'type Report struct {','type Report struct {\n InProgress bool '+chr(96)+'json:"in_progress"'+chr(96)+'\n SnapshotAt time.Time '+chr(96)+'json:"snapshot_at"'+chr(96))
     a=s.index('func (s *Scanner) Scan(')
     x=s[a:]
-    x=rx(x,r'(report\s*=\s*Report\{[^\n]+\})','PLACEHOLDER') if False else x
     x=rx(x,r'defer func\(\) \{\s*report\.Summarize\(\)\s*\}\(\)', 'publishLiveReport(ctx,report)\n    defer func(){report.Summarize();publishLiveReport(ctx,report)}()')
     # In the generated Scan method each unlock occurs after a synchronized update.
     x,c=re.subn(r'(?<!defer )mu\.Unlock\(\)', 'publishLiveReport(ctx,report)\n    mu.Unlock()',x)
@@ -55,9 +52,13 @@ def html(s):
     s=once(s,"el('hits').textContent=s.done?fmt((r.findings||[]).length):'—';","el('hits').textContent=(s.running||s.done)?fmt(s.finding_total??(r.findings||[]).length):'—';")
     s=once(s,"el('export').disabled=running||!s.done;","el('export').disabled=!running&&!s.done;")
     s=once(s,"String((r.findings||[]).length)","String(s.finding_total??(r.findings||[]).length)")
-    s=once(s,"Aguardando o relatório final. A proteção residente depende do Windows.","Resultados parciais atualizados durante a análise. A proteção residente depende do Windows.")
-    s=once(s,"Os resultados completos aparecem no fim da varredura. Alertas heurísticos não confirmam infecção.","Alertas parciais durante a varredura; o relatório completo é consolidado no fim. Alertas heurísticos não confirmam infecção.")
-    s=once(s,"s.done?fmt(r.skipped)+' itens ignorados ou não examinados. '+(r.errors?.[0]||''):'A cobertura final será informada após a análise.'","(s.running||s.done)?fmt(r.skipped)+' itens ignorados ou não examinados.':'Aguardando início da análise.'")
+    s=s.replace("Aguardando o relatório final. A proteção residente depende do Windows.","Resultados parciais atualizados durante a análise. A proteção residente depende do Windows.")
+    s=s.replace("Waiting for the final report. Resident protection depends on Windows.","Partial results update during scanning. Resident protection depends on Windows.")
+    s=s.replace("Esperando el informe final. La protección residente depende de Windows.","Resultados parciales durante el análisis. La protección residente depende de Windows.")
+    s=s.replace("Os resultados completos aparecem no fim da varredura. Alertas heurísticos não confirmam infecção.","Alertas parciais durante a varredura; o relatório completo é consolidado no fim. Alertas heurísticos não confirmam infecção.")
+    s=s.replace("Complete results appear after the scan. Heuristic alerts do not confirm infection.","Partial alerts during scanning; final report after completion. Heuristic alerts do not confirm infection.")
+    s=s.replace("Los resultados completos aparecen al finalizar el análisis. Las alertas heurísticas no confirman una infección.","Alertas parciales durante el análisis; informe final al terminar. Las alertas heurísticas no confirman una infección.")
+    s=rx(s,r"el\('skipped'\)\.textContent=[^;]+;", "el('skipped').textContent=(s.running||s.done)?fmt(r.skipped)+' itens ignorados ou não examinados.':'Aguardando início da análise.';")
     s=once(s,"if(r.scan_id&&!s.running)","if(r.scan_id)")
     s=once(s,"if(!state.done||state.running){details.textContent='';return}","if(!state.done&&!state.running){details.textContent='';return}")
     s=once(s,"fmt(all.length)+' no relatório completo'","fmt(zState.finding_total??all.length)+' no relatório'+(zState.running?' parcial (exibição limitada aos últimos 500)':' completo')")

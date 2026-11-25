@@ -2,9 +2,6 @@ name: ZEUVORYX LAB - AMSI provider diagnostic
 on:
   push:
     branches: [windows-3.0.14-audit-fix]
-    paths:
-      - 'nativeamsi/**'
-      - '.github/workflows/amsi-provider-lab.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -73,7 +70,7 @@ jobs:
       - name: Compare Go native implementation
         shell: pwsh
         run: |
-          go test -v -count=5 ./nativeamsi
+          go test -tags=amsi_integration -v -count=5 ./nativeamsi
           if ($LASTEXITCODE -ne 0) { throw 'Go AMSI validation failed' }
       - name: Enforce independent reference validation
         if: always()

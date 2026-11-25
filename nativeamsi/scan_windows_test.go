@@ -11,11 +11,7 @@ func TestVerdicts(t *testing.T) {
 func TestBounds(t *testing.T) {
  for _,b:=range [][]byte{nil,make([]byte,MaxContent+1)}{if _,e:=Scan(b,"test");e==nil{t.Fatal("invalid size accepted")}}
 }
-func TestNativeBenign(t *testing.T) {
- v,e:=Scan([]byte("ZEUVORYX harmless plain text functional check."),"benign.txt")
- if e!=nil{t.Fatal(e)}
- if v.Status!="clean_by_provider"&&v.Status!="not_detected_by_provider"{t.Fatalf("unexpected benign verdict %+v",v)}
-}
+// Native provider acceptance is exercised by the explicit amsi_integration suite.
 
 func TestProviderFailureNeverClean(t *testing.T) {
  for _,hr:=range []uintptr{0x80070015,0x80004005,1}{

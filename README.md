@@ -1,3 +1,12 @@
+# Referência atual
+
+ZEUVORYX Windows — 3.0.15 LAB, revisão corretiva — 25/11/2026
+Código candidato: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/commit/ad42721210a22afda99796d54a91eeb540fe6aed
+Testes dos módulos aprovados: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45661075714
+CI integral em andamento na consulta: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45661075658 (40/47 etapas aprovadas). Sem novo instalador liberado nesta consulta. Teste físico ainda pendente. A revisão anterior apresentou interrupção de varredura no PC. Manter Defender ativo e não promover release pública. As fontes atuais estão na ramificação lab-fieldlearn-20261125; main é base histórica com documentação atual. Não misturar árvores nem alterar nomes de pastas. Datas antigas significam último commit, não necessariamente código desatualizado. About confirmado 3.0.15 LAB, Topics vazios na última consulta.
+
+--- Histórico anterior: não utilizar como instrução de instalação atual ---
+
 ## Atualização de campo — 25/11/2026 · 3.0.15 LAB
 A primeira compilação FieldLearn (523eaa3) foi aprovada no CI, mas o teste físico relatou interrupção da varredura rápida. A revisão corretiva [ad42721](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/commit/ad42721210a22afda99796d54a91eeb540fe6aed) inicia inventário e análise em paralelo e evita manter métricas antigas após falhas de medição. [Testes dos módulos aprovados](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45661075714); [compilação integral em andamento na última consulta](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45661075658), sem novo instalador liberado. A capacidade C: foi confirmada pelo Windows: 222,94 GiB, dos quais 63,37 ocupados e 159,57 livres; não confundir capacidade, espaço ocupado e escopo elegível. Causa do travamento ainda não comprovada. Sem produção, sem promoção pública e sem alterações no código de main. 
 

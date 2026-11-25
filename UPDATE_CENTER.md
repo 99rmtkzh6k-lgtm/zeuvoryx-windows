@@ -1,3 +1,12 @@
+# Referência atual
+
+ZEUVORYX Windows — 3.0.15 LAB, revisão corretiva — 25/11/2026
+Código candidato: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/commit/ad42721210a22afda99796d54a91eeb540fe6aed
+Testes dos módulos aprovados: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45661075714
+CI integral em andamento na consulta: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45661075658 (40/47 etapas aprovadas). Sem novo instalador liberado nesta consulta. Teste físico ainda pendente. A revisão anterior apresentou interrupção de varredura no PC. Manter Defender ativo e não promover release pública. As fontes atuais estão na ramificação lab-fieldlearn-20261125; main é base histórica com documentação atual. Não misturar árvores nem alterar nomes de pastas. Datas antigas significam último commit, não necessariamente código desatualizado. About confirmado 3.0.15 LAB, Topics vazios na última consulta.
+
+--- Histórico anterior: não utilizar como instrução de instalação atual ---
+
 > **25/11/2026 — ZEUVORYX 3.0.15 LAB (candidato em desenvolvimento):** interface e recursos atuais preservados; ClamAV em lote único, correções de cobertura/ETA, alertas e JSON com diagnóstico Windows/Sysmon. Identidade 3.0.15 preparada para compilação. CI, teste físico e eficácia independente pendentes; não é versão de produção nem contém SDKs comerciais. [Código candidato](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/windows-3.0.14-audit-fix) · [Memorando](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/windows-3.0.14-audit-fix/AUDITORIA_CAMPO_2026-11-25.md).
 
 > **25/11/2026 — 3.0.14 LAB, revisão de auditoria física (candidata):** correções de ETA global, inventário parcial, publicação incremental ClamAV, JSON e alertas por categoria. Novo teste de regressão; compilação e validação física pendentes. Proteção residente, navegação, memória, antirransomware e eficácia independente ainda não comprovados. Avaliar SDKs OEM oficiais sem contratar ou distribuir sem licença. [Auditoria e mini memorando](AUDITORIA_CAMPO_2026-11-25.md).

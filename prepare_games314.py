@@ -27,14 +27,14 @@ p=Path("desktop.html");s=p.read_text(encoding="utf-8")
 s=one(s,'</nav>','<button id="zGamesNav314" type="button" aria-expanded="false">Games · Jogos</button><button id="zFamilyNav314" type="button">Controle parental</button></nav>')
 s=one(s,'</main>',Path("lab/games314.html").read_text(encoding="utf-8")+Path("lab/family314.html").read_text(encoding="utf-8")+'</main>')
 s=one(s,'</style></head>',Path("lab/games314.css").read_text(encoding="utf-8")+'</style></head>')
-s=one(s,'</script></body></html>',Path("lab/games314.js").read_text(encoding="utf-8")+Path("lab/family314.js").read_text(encoding="utf-8")+'</script></body></html>')
+s=one(s,'</script></body></html>',Path("lab/games315_core.js").read_text(encoding="utf-8")+Path("lab/games314.js").read_text(encoding="utf-8")+Path("lab/family314.js").read_text(encoding="utf-8")+'</script></body></html>')
 class Check(HTMLParser):
     def __init__(self):super().__init__();self.ids=[]
     def handle_starttag(self,tag,attrs):
         a=dict(attrs)
         if 'id' in a:self.ids.append(a['id'])
 c=Check();c.feed(s)
-for k in ('zGames314','zGamesNav314','zGameCatalog','zGameBoard','zGameBack','zFamilyNav314','zFamily314','start','quick','zTitaniumIdentity'):
+for k in ('zGames314','zGamesNav314','zGameCatalog','zGameBoard','zGameBack','zGameClose315','zFamilyNav314','zFamily314','start','quick','zTitaniumIdentity'):
     if c.ids.count(k)!=1:raise RuntimeError("Games missing or duplicate "+k)
 if len(s.encode("utf-8"))>1500000:raise RuntimeError("Desktop budget exceeded")
 p.write_text(s,encoding="utf-8")

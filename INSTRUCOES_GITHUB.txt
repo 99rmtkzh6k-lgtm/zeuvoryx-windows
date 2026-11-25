@@ -1,3 +1,14 @@
+ZEUVORYX 3.0.15 LAB — revisão corretiva (25/11/2026)
+Repositório oficial: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows
+Fontes candidatas: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/lab-fieldlearn-20261125
+CI integral: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45661075658
+Testes de módulos: https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45661075714
+Estado: compilação em andamento; 40/47 etapas aprovadas na consulta.
+Aguardar CI aprovada antes de baixar nova revisão. O pacote anterior apresentou falha física relatada.
+Manter Defender e demais proteções ativos; não ignorar bloqueios. Para teste controlado, baixar artefato aprovado, extrair ZIP, executar instalador e validar em PC de teste. Não publicar versão de produção. Não editar nomes de pastas nem geradores manualmente. Mudanças documentais não exigem rebuild.
+
+--- HISTÓRICO ANTERIOR (não utilizar como instrução atual) ---
+
 ZEUVORYX — INSTRUÇÕES ATUAIS — 3.0.5 LAB R5
 24/11/2026
 

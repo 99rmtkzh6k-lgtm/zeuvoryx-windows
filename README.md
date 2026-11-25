@@ -1,3 +1,11 @@
+# ZEUVORYX Windows — referência atual (25/11/2026)
+
+Candidato: **3.0.15 LAB, revisão corretiva da varredura**. Código submetido a CI: [ad42721](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/commit/ad42721210a22afda99796d54a91eeb540fe6aed). [Testes de módulos aprovados](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45661075714). [CI do instalador](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45661075658): em andamento na consulta, 40/47 etapas bem-sucedidas. Nenhum novo instalador corretivo liberado nesta consulta. Teste físico da varredura rápida ainda pendente. A compilação anterior 523eaa3 passou 48/48 mas apresentou relato de interrupção no PC. Não vender ou promover release pública como validada. 
+
+A página principal (main) é base histórica com documentação atualizada, não o código integral FieldLearn. Para fontes atuais selecione [lab-fieldlearn-20261125](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/lab-fieldlearn-20261125). Datas de último commit por pasta não exigem alterações artificiais. Não misturar as árvores nem substituir main antes da aceitação física. O About administrativo já está em 3.0.15 LAB; Topics ainda vazios na consulta; homepage correta.
+
+## Histórico anterior (não usar como instrução de instalação atual)
+
 ## Atualização de campo — 25/11/2026 · 3.0.15 LAB
 A primeira compilação FieldLearn (523eaa3) foi aprovada no CI, mas o teste físico relatou interrupção da varredura rápida. A revisão corretiva [ad42721](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/commit/ad42721210a22afda99796d54a91eeb540fe6aed) inicia inventário e análise em paralelo e evita manter métricas antigas após falhas de medição. [Testes dos módulos aprovados](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45661075714); [compilação integral em andamento na última consulta](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45661075658), sem novo instalador liberado. A capacidade C: foi confirmada pelo Windows: 222,94 GiB, dos quais 63,37 ocupados e 159,57 livres; não confundir capacidade, espaço ocupado e escopo elegível. Causa do travamento ainda não comprovada. Sem produção, sem promoção pública e sem alterações no código de main. 
 

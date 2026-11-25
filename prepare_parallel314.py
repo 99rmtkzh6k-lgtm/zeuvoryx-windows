@@ -32,6 +32,9 @@ def report(s):
  WindowsProblem314 string `json:"windows_problem_314,omitempty"`
  SignatureRecent314 []signatureav.Finding `json:"signature_recent_314,omitempty"`
  SignatureRecentLimit314 int `json:"signature_recent_limit_314,omitempty"`
+ SignatureStartedMS315 int64 `json:"signature_started_unix_ms,omitempty"`
+ SignatureFinishedMS315 int64 `json:"signature_finished_unix_ms,omitempty"`
+ SignatureDurationMS315 int64 `json:"signature_duration_ms"`
 ''')
 def desktop(s):
     a=s.index('if !bind("behavior313"')

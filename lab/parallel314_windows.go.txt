@@ -48,22 +48,25 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
  runSignature:=func(){
   sigCtx:=ctx
   if mode=="quick"{var cancelSig context.CancelFunc;sigCtx,cancelSig=context.WithTimeout(ctx,5*time.Minute);defer cancelSig()}
-  r:=engine.Report{SignatureRoots:append([]string(nil),roots...)}
+  started:=time.Now()
+  r:=engine.Report{SignatureRoots:append([]string(nil),roots...),SignatureStartedMS315:started.UnixMilli()}
+  finish:=func(){r.SignatureFinishedMS315=time.Now().UnixMilli();r.SignatureDurationMS315=time.Since(started).Milliseconds();s.publishSignatureProgress314(&r);sig<-sigResult314{r}}
+  s.publishSignatureProgress314(&r)
   known,total,_:=scanplan.Memory()
-  if !scanplan.ClamCapacity(known,total){r.SignatureState="unavailable";r.SignatureProblem="RAM física abaixo da recomendação do ClamAV (3 GiB); scanner próprio executado, cobertura de assinaturas incompleta.";s.publishSignatureProgress314(&r);sig<-sigResult314{r};return}
+  if !scanplan.ClamCapacity(known,total){r.SignatureState="unavailable";r.SignatureProblem="RAM física abaixo da recomendação do ClamAV (3 GiB); scanner próprio executado, cobertura de assinaturas incompleta.";finish();return}
   s.signaturePhase312(sigCtx,&r,"",true)
   if sigCtx.Err()==context.DeadlineExceeded&&ctx.Err()==nil{r.SignatureState="partial";r.SignatureProblem="ClamAV: limite de 5 minutos da varredura rápida atingido; cobertura incompleta. Execute uma análise completa para continuar.";s.publishSignatureProgress314(&r)}
-  sig<-sigResult314{r}
+  finish()
  }
  if !serial{go runSignature()}
- go func(){v,e:=behavior313();b:=behaviorResult314{data:v};if e!=nil{b.problem=e.Error()};s.mu.Lock();if s.running{s.report.BehaviorLocal=b.data;s.report.BehaviorProblem=b.problem};s.mu.Unlock();beh<-b}()
+ go func(){v,e:=behavior313Context(ctx);b:=behaviorResult314{data:v};if e!=nil{b.problem=e.Error()};s.mu.Lock();if s.running{s.report.BehaviorLocal=b.data;s.report.BehaviorProblem=b.problem};s.mu.Unlock();beh<-b}()
  rep,e:=run()
  cancelInv()
  inv:=<-invCh
  inv.ScannerDone=true;publishScope(inv)
+ if serial{go runSignature()}
  b:=<-beh
  stopWatch();w:=<-win
- if serial{go runSignature()}
  r:=<-sig
  if ctx.Err()==nil&&w.data==nil{
   v,e:=windowsSecurityAuditContext(ctx);w=windowsResult314{data:v};if e!=nil{w.problem=e.Error()}
@@ -72,6 +75,7 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
  rep.WindowsLocal314=w.data;rep.WindowsProblem314=w.problem
  rep.SignatureRoots=append([]string(nil),roots...)
  rep.SignatureState=r.report.SignatureState;rep.SignatureProblem=r.report.SignatureProblem;rep.SignatureReports=r.report.SignatureReports
+ rep.SignatureStartedMS315=r.report.SignatureStartedMS315;rep.SignatureFinishedMS315=r.report.SignatureFinishedMS315;rep.SignatureDurationMS315=r.report.SignatureDurationMS315
  rep.SignatureRecent314=signatureRecentFindings314();rep.SignatureRecentLimit314=100
  rep.BehaviorLocal=b.data;rep.BehaviorProblem=b.problem
  rep.Inventory314=inv

@@ -14,6 +14,7 @@ func(s *State) publishLive(src engine.Report) {
  src.ScanID=old.ScanID;src.ScanMode=old.ScanMode
  if src.Inventory314.State==""{src.Inventory314=old.Inventory314}
  if src.SignatureState==""{src.SignatureState=old.SignatureState;src.SignatureProblem=old.SignatureProblem;src.SignatureRoots=old.SignatureRoots;src.SignatureReports=old.SignatureReports}
+ if src.SignatureStartedMS315==0{src.SignatureStartedMS315=old.SignatureStartedMS315;src.SignatureFinishedMS315=old.SignatureFinishedMS315;src.SignatureDurationMS315=old.SignatureDurationMS315}
  if src.BehaviorLocal==nil{src.BehaviorLocal=old.BehaviorLocal;src.BehaviorProblem=old.BehaviorProblem}
  if src.WindowsLocal314==nil{src.WindowsLocal314=old.WindowsLocal314;src.WindowsProblem314=old.WindowsProblem314}
  if src.Started.IsZero(){src.Started=old.Started}
@@ -40,6 +41,7 @@ func(s *State) reportSnapshotLocked(view bool)(engine.Report,int){
  r.Errors=append([]string(nil),r.Errors...)
  r.ErrorCategories=cloneErrorCounts(r.ErrorCategories)
  if s.running{r.SignatureRecent314=signatureRecentFindings314();r.SignatureRecentLimit314=100;r.InProgress=true;r.Partial=true;r.Finished=time.Time{};r.SnapshotAt=time.Now()}
+ if r.SignatureStartedMS315>0&&r.SignatureFinishedMS315==0{elapsed:=time.Now().UnixMilli()-r.SignatureStartedMS315;if elapsed>=0{r.SignatureDurationMS315=elapsed}}
  return r,total
 }
 func(s *State) snapshotForExport()(engine.Report,bool){

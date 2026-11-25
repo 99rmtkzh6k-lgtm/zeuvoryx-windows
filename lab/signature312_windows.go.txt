@@ -27,7 +27,10 @@ func (s *State) signaturePhase312(ctx context.Context, rep *engine.Report, custo
 // Publish the batch result; the live signal buffer separately supplies partial findings.
 func(s *State) publishSignatureProgress314(rep *engine.Report){
  s.mu.Lock();defer s.mu.Unlock();if !s.running{return}
- s.report.SignatureState=rep.SignatureState
+ if rep.SignatureState!=""{s.report.SignatureState=rep.SignatureState}
+ s.report.SignatureStartedMS315=rep.SignatureStartedMS315
+ s.report.SignatureFinishedMS315=rep.SignatureFinishedMS315
+ s.report.SignatureDurationMS315=rep.SignatureDurationMS315
  s.report.SignatureProblem=rep.SignatureProblem
  s.report.SignatureRoots=append([]string(nil),rep.SignatureRoots...)
  s.report.SignatureReports=append([]signatureav.Report(nil),rep.SignatureReports...)

@@ -1581,6 +1581,8 @@ jobs:
            if s.count(a)!=1:raise RuntimeError('Unexpected scanner structure: '+a)
            s=s.replace(a,b,1)
           one('func (s *Scanner) examine(path string, size int64)', 'func (s *Scanner) examine(ctx context.Context, path string, size int64)')
+          one('import (', 'import (\n "github.com/zeuvoryx/zeuvoryx/scanretry"')
+          one('f, e := os.Open(path)', 'f, e := scanretry.Open(ctx, path)')
           one('io.LimitReader(f, limit)', 'io.LimitReader(guardedReader{ctx, f}, limit)')
           one('io.Copy(h, f)', 'io.Copy(h, guardedReader{ctx, f})')
           one('io.LimitReader(r, entryMax+1)', 'io.LimitReader(guardedReader{ctx, r}, entryMax+1)')

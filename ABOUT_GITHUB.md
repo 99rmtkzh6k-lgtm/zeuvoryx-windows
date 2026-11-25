@@ -1,3 +1,5 @@
+> **3.0.14 LAB · Olympus Arcade:** Retro Game Arena com arte Zeus aprovada, colunas gregas, raios e cores fluorescentes, botões de relevo e identificação por plataforma. Sem nova dependência; funções e proteção preservadas. CI e teste visual pendentes.
+
 > **3.0.14 LAB · Retro Game Arena:** módulo opcional de jogos gratuitos em páginas autorizadas/de autores, filtro por plataforma, busca, jogo local e arte vetorial; sem ROMs comerciais nem dependências novas. CI e teste físico pendentes. [Detalhes](BUNDLED_314_LAB.md).
 
 > **Correção de validação da arte 3.0.14 LAB:** CI anterior bloqueado por diferença de codificação JPEG. Comparação local confirmou a mesma arte de Zeus; agora são aceitos apenas os dois hashes verificados (original incorporada e cópia aprovada). CI pendente. [Detalhes](BUNDLED_314_LAB.md).

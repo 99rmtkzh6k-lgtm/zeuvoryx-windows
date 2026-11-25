@@ -33,3 +33,5 @@ Fontes revisadas 25/11/2026:
 - PAC-MAN: https://doodles.google/doodle/30th-anniversary-of-pac-man/
 - Asteroids: https://games.aarp.org/games/atari-asteroids
 - Centipede: https://games.aarp.org/games/atari-centipede
+
+Identidade visual Retro Game Arena — Olympus Arcade: a pedido do proprietário, tema fluorescente verde-limão, laranja, amarelo e rosa, sem paleta roxa/azul predominante, arte original Zeus/Atenas no cabeçalho da área gamer, controle vetorial com colunas gregas e raio, cartões por plataforma e botões de relevo. Apenas CSS/SVG estático e identificação de plataforma; sem novo motor gráfico, animações contínuas, alterações de segurança ou downloads. Inspeção visual e CI pendentes.

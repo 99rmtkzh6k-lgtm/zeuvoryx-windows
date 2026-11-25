@@ -19,7 +19,7 @@ func (s *State) signaturePhase312(ctx context.Context, rep *engine.Report, custo
  if _,e:=ensureClam314(ctx,false);e!=nil{rep.SignatureState="unavailable";rep.SignatureProblem=e.Error();return}
  r,e:=signatureav.ScanRoots(signatureav.WithObserver(ctx,publishSignature314),tool,roots,"")
  rep.SignatureReports=append(rep.SignatureReports,r)
- if e!=nil||r.Partial{rep.SignatureState="partial"}else{rep.SignatureState="finished"}
+ if e!=nil||r.Partial{rep.SignatureState="partial";if e!=nil{rep.SignatureProblem=e.Error()}else{rep.SignatureProblem="ClamAV evidence incomplete"}}else{rep.SignatureState="finished"}
  s.publishSignatureProgress314(rep)
 }
 

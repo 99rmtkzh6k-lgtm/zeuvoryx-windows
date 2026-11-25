@@ -8,3 +8,29 @@ for p in paths:
     if n!=s:p.write_text(n,encoding="utf-8")
 for name in ("desktop.html","setup309.iss"):
     if "3.0.15" not in Path(name).read_text(encoding="utf-8"):raise RuntimeError("Version identity missing: "+name)
+
+
+# Integrate bounded Unicode script detection into the actual generated scanner.
+import re
+p=Path("engine/scanner.go")
+s=p.read_text(encoding="utf-8")
+anchor=r'if\s+textSample\(data\)\s*\{\s*lower\s*=\s*strings\.ToLower\(string\(data\)\)\s*\}'
+s,n=re.subn(anchor, 'if decoded, ok := scriptguard.DecodeBOM(data); ok { lower = strings.ToLower(decoded) } else if textSample(data) { lower = strings.ToLower(string(data)) }',s)
+if n!=1: raise RuntimeError("Unicode detector integration anchor: "+str(n))
+if s.count('import (')!=1: raise RuntimeError("Unicode import anchor")
+s=s.replace('import (','import (\n "github.com/zeuvoryx/zeuvoryx/scriptguard"',1)
+p.write_text(s,encoding="utf-8")
+Path("engine/unicode315_test.go").write_text(r'''package engine
+import("encoding/binary";"testing";"unicode/utf16")
+func TestUnicode315ScannerIntegration(t *testing.T){
+ for _,order:=range []binary.ByteOrder{binary.LittleEndian,binary.BigEndian}{
+  for _,text:=range []string{"Write-Output 'hello'","Documentation example: Invoke-Expression and FromBase64String("}{
+   b:=[]byte{0xff,0xfe};if order==binary.BigEndian{b=[]byte{0xfe,0xff}}
+   for _,v:=range utf16.Encode([]rune(text)){var a [2]byte;order.PutUint16(a[:],v);b=append(b,a[:]...)}
+   plain:=analyze("sample.ps1",[]byte(text),"",nil);wide:=analyze("sample.ps1",b,"",nil)
+   if (plain==nil)!=(wide==nil){t.Fatalf("different results for equivalent script: %v %v",plain,wide)}
+   if plain!=nil&&plain.Risk!=wide.Risk{t.Fatalf("different risk: %d %d",plain.Risk,wide.Risk)}
+  }
+ }
+}
+''',encoding="utf-8")

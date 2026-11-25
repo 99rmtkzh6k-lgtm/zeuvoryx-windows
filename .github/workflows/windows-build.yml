@@ -917,6 +917,15 @@ jobs:
            try {$b=Get-BitLockerVolume -MountPoint $env:SystemDrive -ErrorAction Stop;$hard.diskProtection=[string]$b.ProtectionStatus} catch {$r.errors+='BitLocker não verificado'}
            try {$v=Get-ItemProperty -LiteralPath 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server' -Name fDenyTSConnections -ErrorAction Stop;$hard.rdpAllowed=($v.fDenyTSConnections -eq 0)} catch {$r.errors+='Configuração RDP não verificada'}
            $r.systemHardening=$hard
+           $r.defenderHistory=[ordered]@{source='Microsoft Defender';state='unavailable';windowDays=7;limit=100;entries=@();activeThreats=$null;truncated=$null}
+           try {
+             $cutoff=(Get-Date).AddDays(-7)
+             $recent=@(Get-MpThreatDetection -ErrorAction Stop | Where-Object {$_.InitialDetectionTime -and $_.InitialDetectionTime -ge $cutoff} | Sort-Object InitialDetectionTime -Descending | Select-Object -First 101)
+             $r.defenderHistory.truncated=($recent.Count -gt 100)
+             $r.defenderHistory.entries=@($recent | Select-Object -First 100 | ForEach-Object {[ordered]@{id=[string]$_.ThreatID;detectionId=[string]$_.DetectionID;when=$_.InitialDetectionTime.ToString('o');actionSuccess=$_.ActionSuccess}})
+             $r.defenderHistory.state='available'
+           } catch {$r.errors+='Histórico Defender não verificado'}
+           try {$r.defenderHistory.activeThreats=@(Get-MpThreat -ErrorAction Stop | Where-Object {$_.IsActive -eq $true}).Count} catch {$r.errors+='Ameaças ativas Defender não verificadas'}
            $r|ConvertTo-Json -Depth 6 -Compress`
           	ctx, cancel := context.WithTimeout(context.Background(), 45*time.Second)
           	defer cancel()

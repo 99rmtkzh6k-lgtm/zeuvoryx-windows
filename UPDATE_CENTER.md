@@ -1,3 +1,5 @@
+> **3.0.14 LAB — pacote unificado:** Controle parental independente no menu lateral, filtro DNS configurável no Windows, revisão de jogos real e painel de progresso durante jogos; correção de integração DROP/Go formatado; cinco ciclos de regressão e validação de instalação exigidos. CI e teste físico pendentes. [Detalhes](BUNDLED_314_LAB.md).
+
 > **3.0.14 LAB · Central familiar do computador:** além do catálogo, integração de configuração voluntária de DNS familiar Windows, teste de bloqueio real IPv4, Microsoft Family Safety por conta e orientações de limitações. Sem alteração automática de rede nem garantia universal. CI e teste físico pendentes. [Detalhes](BUNDLED_314_LAB.md).
 
 > **3.0.14 LAB · Proteção familiar:** revisão real de amostra HTML dos jogos e filtro opcional de catálogo por idade e categorias, senha local, avaliação do responsável e integração de acesso ao Microsoft Family Safety. Bloqueio de arquivos pornográficos e filtro global ainda pendentes. CI e teste físico pendentes. [Detalhes](BUNDLED_314_LAB.md).

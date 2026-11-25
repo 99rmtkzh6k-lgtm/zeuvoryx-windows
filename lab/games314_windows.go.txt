@@ -1,43 +1,8 @@
 package main
-import("context";"fmt";"os";"path/filepath";"sync";"syscall";"time";"unsafe";"github.com/zeuvoryx/zeuvoryx/gamecatalog";"github.com/zeuvoryx/zeuvoryx/engine";"github.com/zeuvoryx/zeuvoryx/signatureav";"github.com/zeuvoryx/zeuvoryx/globalintel";"github.com/zeuvoryx/zeuvoryx/familygate")
+import("context";"fmt";"syscall";"time";"unsafe";"github.com/zeuvoryx/zeuvoryx/familygate")
 var family314 *familygate.Gate
-var reviewGamesMu314 sync.Mutex
-var reviewGames314=map[string]gamecatalog.Review{}
-func scanGameSample314(ctx context.Context,b []byte)(gamecatalog.ScanEvidence,error){
- var out gamecatalog.ScanEvidence
- dir,e:=os.MkdirTemp("","zeuvoryx-game-review-");if e!=nil{return out,e};defer os.RemoveAll(dir)
- p:=filepath.Join(dir,"page.html");if e=os.WriteFile(p,b,0600);e!=nil{return out,e}
- exe,e:=bundled314();if e!=nil{return out,e}
- if _,e=ensureClam314(ctx,false);e!=nil{return out,e}
- q,e:=signatureav.Scan(ctx,exe,p,"");out.ClamVersion=q.Version;out.Signatures=q.KnownSignatures;out.ClamFiles=q.Scanned;out.ClamHits=q.Infected;out.ClamPartial=q.Partial
- if e!=nil||q.Infected>0{return out,e}
- r,e:=engine.New().Scan(ctx,p,nil);out.LocalFiles=r.Files;out.LocalBytes=r.Bytes;out.LocalAlerts=len(r.Findings);out.LocalPartial=r.Cancelled||r.Skipped>0
- return out,e
-}
-func reviewGame314(ctx context.Context,id string,drop *globalintel.Daily)(gamecatalog.Review,error){
- if _,e:=gamecatalog.Resolve(id);e!=nil{return gamecatalog.Review{},e}
- if family314==nil{return gamecatalog.Review{},fmt.Errorf("Controle familiar indisponível")};if e:=family314.Allowed(id);e!=nil{return gamecatalog.Review{},e}
- if !reviewGamesMu314.TryLock(){return gamecatalog.Review{},fmt.Errorf("Outra revisão está em andamento")}
- defer reviewGamesMu314.Unlock()
- delete(reviewGames314,id)
- ctx,cancel:=context.WithTimeout(ctx,16*time.Minute);defer cancel()
- p,e:=gamecatalog.Fetch(ctx,id,func(ip string)(bool,error){return drop.Match(ip,time.Now())})
- if e!=nil{status:="inconclusive";if p.DROP=="match"{status="blocked"};r:=gamecatalog.Review{Status:status,CheckedAt:time.Now().UTC(),URL:p.URL,TLS:p.TLS,DROP:p.DROP,Problem:e.Error()};reviewGames314[id]=r;return r,nil}
- r:=gamecatalog.Analyze(ctx,p,scanGameSample314);reviewGames314[id]=r;return r,nil
-}
-func openGame314(id string)(bool,error){
- if family314==nil{return false,fmt.Errorf("Controle familiar indisponível")};if e:=family314.Allowed(id);e!=nil{return false,e}
- if !reviewGamesMu314.TryLock(){return false,fmt.Errorf("Revisão em andamento")}
- defer reviewGamesMu314.Unlock()
- r,ok:=reviewGames314[id];if !ok||!r.CanOpen(time.Now().UTC()){return false,fmt.Errorf("Revisão ausente, vencida ou inconclusiva. Revise antes de jogar.")}
- u,e:=gamecatalog.Resolve(id);if e!=nil{return false,e}
- address,e:=syscall.UTF16PtrFromString(u);if e!=nil{return false,e}
- verb,_:=syscall.UTF16PtrFromString("open")
- v,_,err:=syscall.NewLazyDLL("shell32.dll").NewProc("ShellExecuteW").Call(0,uintptr(unsafe.Pointer(verb)),uintptr(unsafe.Pointer(address)),0,0,1)
- if v<=32{return false,fmt.Errorf("Não foi possível abrir o navegador: %v",err)}
- return true,nil
-}
-
+func localGame315(id string)bool{switch id{case "tic","memory","cards","solitaire","domino","chess","blocks":return true};return false}
+func allowLocalGame315(id string)(bool,error){if !localGame315(id){return false,fmt.Errorf("Jogo fora do catálogo local")};if family314==nil{return false,fmt.Errorf("Controle familiar indisponível")};if e:=family314.Allowed(id);e!=nil{return false,e};return true,nil}
 func openFamilySafety314()(bool,error){address,_:=syscall.UTF16PtrFromString("https://family.microsoft.com/");verb,_:=syscall.UTF16PtrFromString("open");v,_,e:=syscall.NewLazyDLL("shell32.dll").NewProc("ShellExecuteW").Call(0,uintptr(unsafe.Pointer(verb)),uintptr(unsafe.Pointer(address)),0,0,1);if v<=32{return false,fmt.Errorf("Não foi possível abrir Family Safety: %v",e)};return true,nil}
 
 func familySystemDNS314(ctx context.Context)familygate.DNSCheck{ctx,cancel:=context.WithTimeout(ctx,18*time.Second);defer cancel();return familygate.CheckSystemDNS(ctx)}

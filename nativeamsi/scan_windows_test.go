@@ -16,3 +16,10 @@ func TestNativeBenign(t *testing.T) {
  if e!=nil{t.Fatal(e)}
  if v.Status!="clean_by_provider"&&v.Status!="not_detected_by_provider"{t.Fatalf("unexpected benign verdict %+v",v)}
 }
+
+func TestProviderFailureNeverClean(t *testing.T) {
+ for _,hr:=range []uintptr{0x80070015,0x80004005,1}{
+  v,e:=scanResult(hr,0);if e==nil||v.Status!=""{t.Fatalf("unexpected verdict for HRESULT %#x: %+v %v",hr,v,e)}
+ }
+ v,e:=scanResult(0,32768);if e!=nil||v.Status!="malware"{t.Fatalf("valid result lost: %+v %v",v,e)}
+}

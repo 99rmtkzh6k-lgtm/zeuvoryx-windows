@@ -56,6 +56,13 @@ func Scan(content []byte, name string) (Verdict, error) {
  var raw uint32
  hr,_,_=scan.Call(ctx,uintptr(unsafe.Pointer(&content[0])),uintptr(len(content)),uintptr(unsafe.Pointer(source)),0,uintptr(unsafe.Pointer(&raw)))
  runtime.KeepAlive(content);runtime.KeepAlive(source)
- if int32(hr)<0{return Verdict{},fmt.Errorf("AMSI scan HRESULT %#08x",uint32(hr))}
+ return scanResult(hr,raw)
+}
+
+// A provider that did not return S_OK has not supplied an authoritative verdict.
+// In particular ERROR_NOT_READY is a coverage failure, not a clean result.
+func scanResult(hr uintptr, raw uint32) (Verdict,error) {
+ if uint32(hr)==0x80070015 {return Verdict{},fmt.Errorf("AMSI provider not ready (HRESULT 0x80070015); result inconclusive")}
+ if uint32(hr)!=0 {return Verdict{},fmt.Errorf("AMSI scan HRESULT %#08x; result inconclusive",uint32(hr))}
  return Interpret(raw),nil
 }

@@ -1,4 +1,4 @@
-"""R3 native performance panel after all desktop generators."""
+"""R4 native performance panel after all desktop generators."""
 from pathlib import Path
 from html.parser import HTMLParser
 def once(s,a,b):
@@ -9,7 +9,7 @@ s=once(s,'if !bind("getScanState",','''var perf pSampler
     if !bind("zPerformance", perf.sample) { return }
     if !bind("zPerformanceRendered", perf.rendered) { return }
     if !bind("getScanState",''')
-s=s.replace('ZEUVORYX | 3.0.8 LAB','ZEUVORYX | 3.0.8 LAB R3')
+s=s.replace('ZEUVORYX | 3.0.8 LAB','ZEUVORYX | 3.0.8 LAB R4')
 p.write_text(s,encoding="utf-8")
 p=Path("desktop.html");s=p.read_text(encoding="utf-8-sig")
 css="""
@@ -33,7 +33,7 @@ s=once(s,'</style></head>',css+'</style></head>')
 s=once(s,'<section id="overview">','<section id="overview">'+panel)
 s=once(s,'<div class="metric" id="hits">—</div></div></div>','<div class="metric" id="hits">—</div></div><div class="card" id="zStorageCard"><div class="label" id="zsLabel">ARMAZENAMENTO E PROGRESSO</div><div class="metric" id="zsCapacity">—</div><p class="sub" id="zsSpace">—</p><p class="sub" id="zsProgress">—</p></div></div>')
 s=once(s,'</style></head>','#overview .grid{grid-template-columns:repeat(auto-fit,minmax(132px,1fr))}</style></head>')
-s=once(s,'3.0.8 LAB BETA</div>','3.0.8 LAB BETA</div><div class="sub" id="zpRevision">R3 · Performance</div>')
+s=once(s,'3.0.8 LAB BETA</div>','3.0.8 LAB BETA</div><div class="sub" id="zpRevision">R4 · Performance</div>')
 js="""
 ;(()=>{
 const z=id=>document.getElementById(id);
@@ -89,4 +89,4 @@ c=Check();c.feed(s)
 for k in ['zPerformancePanel','zpTitle','zpClock','zpRevision','zStorageCard','zsCapacity','zsProgress','start','quick','stop','export']+[f'zp-{k}-{x}' for k in ('cpu','ram','free','disk') for x in ('label','arc','value','detail')]:
     if c.ids.count(k)!=1:raise ValueError("Bad panel/control "+k)
 p.write_text(s,encoding="utf-8")
-print("R3 native performance panel and controls verified")
+print("R4 native performance panel and controls verified")

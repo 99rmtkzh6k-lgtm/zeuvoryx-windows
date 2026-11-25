@@ -881,3 +881,7 @@ Titular reiterou alertas ao vivo, cobertura dentro do quadro, falhas e históric
 
 ### Reteste 3.0.9 — relatório ao vivo
 CI 45517342088 falhou na integração: prepare_live_report309.py exigia uma ocorrência de mensagem presente três vezes (texto e catálogos de tradução). Corrigido tratamento PT/EN/ES e expressão localizada de itens ignorados no commit 01d5faee347323ef79b92a9c35fd0b9606345099; nova execução https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45518606533. Não aprovado; não distribuir pacote anterior. Testes e validação visual/física pendentes.
+
+
+## 3.0.9 LAB — recuperação do instalador e instância única (24/11/2026)
+Titular observou 3.0.6 e 3.0.8 simultâneas. Confirmado que pacote portátil não substitui instalação. Candidato windows-3.0.9-install-lab, commit 5115d20d53ab6fb7867f72d1b122e7a89a83391f: Inno Setup com AppId e pasta históricos, bloqueio por mutex de sessão e detecção de ZEUVORYX.exe legado na mesma sessão; não mata processos nem apaga cópias antigas. Teste real de migração com artefato 3.0.6 14960924262, hash fixado, cinco ciclos, registro, binário, desinstalador e dados locais. Versões legadas portáteis abertas posteriormente não obedecem ao novo mutex; encerrar manualmente. CI https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45519151028, estado in_progress. Sem distribuição ou atualização assinada antes de gates; testes físicos pendentes. Preserva relatório ao vivo e demais requisitos; metadados administrativos About/Topics indisponíveis.

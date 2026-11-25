@@ -2563,7 +2563,7 @@ jobs:
           New-Item -ItemType Directory -Force dist | Out-Null
           $key = $env:ZEUVORYX_OWNER_PUBLIC_KEY
           if ($key -and $key -notmatch '^[0-9a-fA-F]{64}$') { throw 'Invalid owner public key' }
-          $flags = '-H=windowsgui'
+          $flags = '-s -w -H=windowsgui'
           if ($key) { $flags += ' -X github.com/zeuvoryx/zeuvoryx/updater.OwnerPublicKeyHex=' + $key }
           go build -trimpath -ldflags $flags -o dist/ZEUVORYX.exe .
           if ($LASTEXITCODE -ne 0) { throw 'Windows build failed' }
@@ -2586,6 +2586,8 @@ jobs:
           if(!$exe){throw 'Missing ClamAV'}
           New-Item -ItemType Directory -Force dist/clamav,dist/third-party | Out-Null
           Copy-Item (Join-Path $exe.DirectoryName '*') dist/clamav -Recurse -Force
+          # Keep engine, updater, every runtime DLL and all licensing notices. Omit standalone unused diagnostic programs only.
+          foreach($unused in 'clamd.exe','clamdscan.exe','clamdtop.exe','clambc.exe','sigtool.exe','clamconf.exe'){ $p=Join-Path 'dist/clamav' $unused; if(Test-Path -LiteralPath $p -PathType Leaf){Remove-Item -LiteralPath $p} }
           foreach($name in 'clamscan.exe','freshclam.exe','libclamav.dll'){if(!(Test-Path (Join-Path 'dist/clamav' $name))){throw "Missing $name"}}
           $src='dist/third-party/clamav-1.5.5.tar.gz'
           Invoke-WebRequest 'https://github.com/Cisco-Talos/clamav/releases/download/clamav-1.5.5/clamav-1.5.5.tar.gz' -OutFile $src
@@ -2679,6 +2681,18 @@ jobs:
           & $iscc setup309.iss
           if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed' }
           Get-FileHash installer/ZEUVORYX-LAB-Setup-3.0.15.exe -Algorithm SHA256
+          $size=(Get-Item 'installer/ZEUVORYX-LAB-Setup-3.0.15.exe').Length
+          $parts=@(Get-ChildItem dist -Force | ForEach-Object { $n=if($_.PSIsContainer){[long](Get-ChildItem -LiteralPath $_.FullName -Recurse -File | Measure-Object Length -Sum).Sum}else{[long]$_.Length};[ordered]@{name=$_.Name;bytes=$n} })
+          [ordered]@{installer_bytes=$size;target_bytes=150000000;maximum_bytes=200000000;components=$parts;note='Installed signature DB and WebView runtime are separate measurements'} | ConvertTo-Json -Depth 5 | Set-Content -Encoding utf8 package-size315.json
+          Write-Host "Installer bytes: $size"
+          if($size -ge 200000000){throw 'Installer exceeds 200 MB ceiling; optimize and retest, do not publish'}
+      - name: Upload component size evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ZEUVORYX-3.0.15-package-size
+          path: package-size315.json
+          if-no-files-found: ignore
       - name: Verify real 3.0.6 to 3.0.15 migration and duplicate instance protection
         shell: pwsh
         run: |

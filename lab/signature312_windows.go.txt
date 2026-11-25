@@ -20,7 +20,7 @@ func (s *State) signaturePhase312(ctx context.Context, rep *engine.Report, custo
  rep.SignatureProblem="Base disponível; ClamAV examinando arquivos: "+baseInfo;s.publishSignatureProgress314(rep)
  r,e:=signatureav.ScanRoots(signatureav.WithObserver(ctx,publishSignature314),tool,roots,signatureav.BundledDatabase(tool))
  rep.SignatureReports=append(rep.SignatureReports,r)
- if e!=nil||r.Partial{rep.SignatureState="partial";if e!=nil{rep.SignatureProblem=e.Error()}else{rep.SignatureProblem="ClamAV evidence incomplete"}}else{rep.SignatureState="finished";rep.SignatureProblem=baseInfo}
+ if e!=nil||r.Partial{rep.SignatureState="partial";if e!=nil{rep.SignatureProblem=e.Error()+" | "+baseInfo}else{rep.SignatureProblem="ClamAV evidence incomplete | "+baseInfo}}else{rep.SignatureState="finished";rep.SignatureProblem=baseInfo}
  s.publishSignatureProgress314(rep)
 }
 

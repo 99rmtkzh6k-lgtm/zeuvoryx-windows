@@ -50,3 +50,13 @@ func TestExplicitDatabaseArguments(t *testing.T){
  if _,e=VersionAt(context.Background(),filepath.Join(t.TempDir(),"missing-exe"),"relative-db");e==nil||!strings.Contains(e.Error(),"absolute ClamAV DB"){t.Fatalf("wrong validation: %v",e)}
  if BundledDatabase(filepath.Join(filepath.Dir(db),"clamscan.exe"))!=filepath.Join(filepath.Dir(db),"database"){t.Fatal("wrong bundled path")}
 }
+
+func TestOfflineDatabaseStatus(t *testing.T){
+ now:=time.Date(2026,11,25,12,0,0,0,time.UTC)
+ for _,c:=range []struct{v,want string}{
+ {"ClamAV 1.5.4/28194/Wed Nov 25 06:26:59 2026","fresh"},
+ {"ClamAV 1.5.4/1/Wed Nov 11 06:26:59 2026","stale"},
+ {"ClamAV 1.5.4","unknown"},
+ {"ClamAV 1.5.4/1/Mon Dec  7 06:26:59 2026","unknown"},
+ }{if got:=DatabaseStatus(c.v,now);got!=c.want{t.Fatalf("%q: %s != %s",c.v,got,c.want)}}
+}

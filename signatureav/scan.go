@@ -24,6 +24,7 @@ type Finding struct {
 type Report struct {
  Engine string `json:"engine"`
  Version string `json:"engine_database_version,omitempty"`
+ DatabaseStatus string `json:"database_status,omitempty"`
  Root string `json:"root"`
  Roots []string `json:"roots,omitempty"`
  UnavailableRoots []string `json:"unavailable_roots,omitempty"`
@@ -80,14 +81,18 @@ func VersionAt(ctx context.Context, exe,db string)(string,error){
 // Version freshness is a conservative check, not proof of database authenticity.
 // DatabaseFresh validates a reported daily database version and date; not an authenticity proof.
 func DatabaseFresh(v string, now time.Time) bool {return recentDatabase(v,now)}
-func recentDatabase(v string, now time.Time) bool {
- parts:=strings.SplitN(v,"/",3);if len(parts)!=3{return false}
- if n,e:=strconv.Atoi(parts[1]);e!=nil||n<=0{return false}
- date,e:=time.Parse("Mon Jan 2 15:04:05 2006",strings.TrimSpace(parts[2]))
- if e!=nil{return false}
+// DatabaseStatus distinguishes a known older database from absent or implausible metadata.
+// A valid-looking header is not proof that every signature file can be loaded.
+func DatabaseStatus(v string,now time.Time)string{
+ parts:=strings.SplitN(v,"/",3);if len(parts)!=3||!strings.HasPrefix(parts[0],"ClamAV "){return "unknown"}
+ if n,e:=strconv.Atoi(parts[1]);e!=nil||n<=0{return "unknown"}
+ date,e:=time.Parse("Mon Jan 2 15:04:05 2006",strings.TrimSpace(parts[2]));if e!=nil{return "unknown"}
  age:=now.UTC().Sub(date)
- return age>=-24*time.Hour && age<=7*24*time.Hour
+ if age < -24*time.Hour{return "unknown"}
+ if age>7*24*time.Hour{return "stale"}
+ return "fresh"
 }
+func recentDatabase(v string,now time.Time)bool{return DatabaseStatus(v,now)=="fresh"}
 func parse(r *Report, raw string, code int, overflow bool) {
  r.Raw=raw; r.ExitCode=code; r.Scanned=-1; r.Infected=-1; r.KnownSignatures=-1; r.Errors=-1
  r.Partial=overflow
@@ -139,6 +144,7 @@ func ScanRoots(ctx context.Context, exe string, roots []string, db string) (r Re
  if len(r.Roots)==0{return r,errors.New("no accessible regular roots")}
  vc,cancel:=context.WithTimeout(ctx,15*time.Second);r.Version,err=VersionAt(vc,exe,db);cancel()
  if err!=nil{return r,fmt.Errorf("ClamAV version: %w",err)}
+ r.DatabaseStatus=DatabaseStatus(r.Version,time.Now())
  args:=[]string{"--stdout","--infected","--recursive","--alert-exceeds-max=yes","--follow-dir-symlinks=0","--follow-file-symlinks=0"}
  dbArgs,e:=databaseArgs(db);if e!=nil{return r,e};args=append(args,dbArgs...)
  args=append(args,"--");args=append(args,r.Roots...)
@@ -150,10 +156,10 @@ func ScanRoots(ctx context.Context, exe string, roots []string, db string) (r Re
  e=cmd.Run();code:=0
  if e!=nil{var ee *exec.ExitError;if errors.As(e,&ee){code=ee.ExitCode()}else{code=-1}}
  parse(&r,string(out.b),code,out.overflow)
- if !recentDatabase(r.Version,time.Now()){r.Partial=true;r.Status="inconclusive_or_partial";return r,errors.New("ClamAV daily database date unknown or older than 7 days") }
  if ctx.Err()!=nil{return r,ctx.Err()}
  if len(r.UnavailableRoots)>0{return r,errors.New("one or more requested roots inaccessible; batch coverage partial")}
  if e!=nil&&code!=1{return r,fmt.Errorf("ClamAV scan: %w",e)}
+ if r.DatabaseStatus!="fresh"{return r,fmt.Errorf("ClamAV: database freshness %s; scan results retained, coverage reduced",r.DatabaseStatus)}
  if r.Partial{return r,errors.New("ClamAV report partial or inconsistent; see engine output")}
  return r,nil
 }

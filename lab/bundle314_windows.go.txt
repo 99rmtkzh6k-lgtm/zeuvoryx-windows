@@ -19,26 +19,34 @@ func ensureClam314(ctx context.Context, force bool)(string,error){
  exe,e:=bundled314();if e!=nil{return "",e};dir:=filepath.Dir(exe);db:=signatureav.BundledDatabase(exe)
  if e=os.MkdirAll(db,0700);e!=nil{return "",e}
  marker:=filepath.Join(db,"zeuvoryx-refresh-ok")
- // A recent local database permits scanning even when the update service is temporarily offline.
- localVersion:=func()(string,bool){
+ attempt:=filepath.Join(db,"zeuvoryx-refresh-attempt")
+ localVersion:=func()(string,string){
   vc,stop:=context.WithTimeout(ctx,15*time.Second);defer stop()
-  v,e:=signatureav.VersionAt(vc,exe,db);return v,e==nil&&signatureav.DatabaseFresh(v,time.Now())
+  v,e:=signatureav.VersionAt(vc,exe,db);if e!=nil{return "","unknown"};return v,signatureav.DatabaseStatus(v,time.Now())
  }
- cached,cachedOK:=localVersion()
- if !force&&cachedOK{if st,e:=os.Stat(marker);e==nil&&time.Since(st.ModTime())>=0&&time.Since(st.ModTime())<24*time.Hour{return cached,nil}}
+ cached,status:=localVersion()
+ cachedOK:=status=="fresh"||status=="stale"
+ ageOK:=func(p string,d time.Duration)bool{st,e:=os.Stat(p);if e!=nil{return false};age:=time.Since(st.ModTime());return age>=0&&age<d}
+ describe:=func(v,state,why string)string{return v+" | "+why+" | estado da base: "+state}
+ if !force&&cachedOK{
+  if status=="fresh"&&ageOK(marker,24*time.Hour){return cached,nil}
+  if ageOK(attempt,time.Hour){return describe(cached,status,"Usando base local; atualização será tentada novamente após intervalo de 1 hora"),nil}
+ }
  fallback:=func(cause error)(string,error){
-  if !force&&ctx.Err()==nil{if v,ok:=localVersion();ok{return v+" | Atualização não confirmada; usando base local válida: "+cause.Error(),nil}}
+  if !force&&ctx.Err()==nil{if v,st:=localVersion();st=="fresh"||st=="stale"{return describe(v,st,"Atualização não confirmada; usando base local: "+cause.Error()),nil}}
   return "",cause
  }
  if strings.ContainsAny(db,"\"\r\n"){return "",errors.New("invalid database path")}
  conf:=filepath.Join(dir,"freshclam.conf")
  if e=os.WriteFile(conf,[]byte("DatabaseMirror database.clamav.net\nDatabaseDirectory \""+db+"\"\n"),0600);e!=nil{return fallback(e)}
- budget:=15*time.Minute;if !force&&cachedOK{budget=45*time.Second}
+ // Persist attempt before the network call so repeated scans do not hammer the CDN.
+ if e=os.WriteFile(attempt,[]byte(time.Now().UTC().Format(time.RFC3339)),0600);e!=nil{return fallback(e)}
+ budget:=15*time.Minute;if !force&&cachedOK{budget=20*time.Second}
  upctx,cancel:=context.WithTimeout(ctx,budget);defer cancel()
  cmd:=exec.CommandContext(upctx,filepath.Join(dir,"freshclam.exe"),"--config-file="+conf);cmd.WaitDelay=5*time.Second;cmd.Dir=dir;cmd.SysProcAttr=&syscall.SysProcAttr{HideWindow:true}
  var out limit313;cmd.Stdout=&out;cmd.Stderr=&out
  if e=cmd.Run();e!=nil||out.overflow{return fallback(fmt.Errorf("FreshClam não confirmou atualização: %v",e))}
- v,ok:=localVersion();if !ok{return fallback(fmt.Errorf("Base oficial atual não confirmada"))}
+ v,st:=localVersion();if st!="fresh"{return fallback(fmt.Errorf("Base oficial atual não confirmada: %s",st))}
  if e=os.WriteFile(marker,[]byte(v),0600);e!=nil{return fallback(e)};return v,nil
 }
 // Restricted read-only diagnostic used by CI, also available for local technical support.

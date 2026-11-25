@@ -9,7 +9,7 @@ Path("bundle314_windows_test.go").write_text(Path("lab/bundle314_windows_test.go
 def main(s):
     return once(s,'func main() {','func main() {\n if len(os.Args)==3 && os.Args[1]=="-signature-check314" {os.Exit(signatureCheck314(os.Args[2]))}\n')
 def html(s):
-    s=s.replace("Requer instalação oficial separada do ClamAV e assinaturas atualizadas pelo FreshClam.","ClamAV oficial incluído no instalador; atualização automática da base pelo FreshClam antes da análise. Internet necessária para a primeira atualização.")
+    s=s.replace("Requer instalação oficial separada do ClamAV e assinaturas atualizadas pelo FreshClam.","ClamAV oficial integrado; usa assinaturas locais sem internet, com aviso se antigas. Internet necessária para adquirir a primeira base quando ausente.")
     s=s.replace("quando ClamAV estiver instalado.","quando a base oficial estiver disponível.")
     s=s.replace("ClamAV indisponível","ClamAV ou base indisponível")
     return s

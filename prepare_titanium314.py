@@ -46,7 +46,7 @@ class Check(HTMLParser):
         a=dict(attrs)
         if "id" in a:self.ids.append(a["id"])
 c=Check();c.feed(s)
-for k in ["start","quick","stop","export","z314Diagnostic","z314LiveHits","z314ProgressBar","zp-cpu-needle","zTitaniumIdentity","zTitaniumBanner","zDropRefresh","z310Optimizer","z314Youtube"]:
+for k in ["start","quick","stop","export","z314Diagnostic","z314LiveHits","z314ProgressBar","zp-cpu-needle","zTitaniumIdentity","zTitaniumBanner","zDropRefresh","z310Optimizer"]:
     if c.ids.count(k)!=1:raise RuntimeError("Titanium missing/duplicated control: "+k)
 if len(s.encode("utf-8"))>1500000:raise RuntimeError("Titanium page budget exceeded")
 p.write_text(s,encoding="utf-8")

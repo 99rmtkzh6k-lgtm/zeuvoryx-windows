@@ -29,6 +29,8 @@ def report(s):
  BehaviorProblem string `json:"behavior_problem,omitempty"`
  WindowsLocal314 map[string]any `json:"windows_local_314,omitempty"`
  WindowsProblem314 string `json:"windows_problem_314,omitempty"`
+ SignatureRecent314 []signatureav.Finding `json:"signature_recent_314,omitempty"`
+ SignatureRecentLimit314 int `json:"signature_recent_limit_314,omitempty"`
 ''')
 def desktop(s):
     a=s.index('if !bind("behavior313"')

@@ -2374,7 +2374,9 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw '310 metrics regression failed' }
           python prepare_feedback310.py
           if ($LASTEXITCODE -ne 0) { throw '310 feedback integration failed' }
-          gofmt -w alert310_windows.go maintenance310_windows.go maintenance310_windows_test.go
+          python prepare_optimization310.py
+          if ($LASTEXITCODE -ne 0) { throw '310 integrated optimization failed' }
+          gofmt -w alert310_windows.go maintenance310_windows.go maintenance310_windows_test.go optimization310_windows.go optimization310_windows_test.go
           if ($LASTEXITCODE -ne 0) { throw '310 native formatting failed' }
           gofmt -w live_report309.go live_report309_test.go engine/live_report309.go main.go engine/scanner.go desktop_windows.go
           if ($LASTEXITCODE -ne 0) { throw 'Live report formatting failed' }
@@ -2417,6 +2419,7 @@ jobs:
           if (!$html.Contains('id="zLiveFailures"') -or !$html.Contains('id="zLiveCoverage"') -or !$desktop.Contains('snapshotForExport')) { throw 'Live reporting missing' }
           if (!$html.Contains('id="z310Speed"') -or !$html.Contains('id="z310Notice"') -or !$desktop.Contains('z310Beep')) { throw '310 feedback missing' }
           if (!$html.Contains('id="z310MaintenancePanel"') -or !$desktop.Contains('z310Maintenance')) { throw '310 maintenance panel missing' }
+          if (!$html.Contains('id="z310Optimizer"') -or !$desktop.Contains('z310OptimizeApply')) { throw 'Integrated optimizer missing' }
           Write-Host 'Verified final identity: ZEUVORYX 3.0.10 LAB'
       - name: Run adaptive model tests
         shell: pwsh

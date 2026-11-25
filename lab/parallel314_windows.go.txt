@@ -19,13 +19,14 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
  sig:=make(chan sigResult314,1);beh:=make(chan behaviorResult314,1);win:=make(chan windowsResult314,1)
  go func(){v,e:=windowsSecurityAudit();b:=windowsResult314{data:v};if e!=nil{b.problem=e.Error()};s.mu.Lock();if s.running{s.report.WindowsLocal314=b.data;s.report.WindowsProblem314=b.problem};s.mu.Unlock();win<-b}()
  go func(){r:=engine.Report{SignatureRoots:append([]string(nil),roots...)};s.signaturePhase312(ctx,&r,"",true);sig<-sigResult314{r}}()
- go func(){v,e:=behavior313();b:=behaviorResult314{data:v};if e!=nil{b.problem=e.Error()};beh<-b}()
+ go func(){v,e:=behavior313();b:=behaviorResult314{data:v};if e!=nil{b.problem=e.Error()};s.mu.Lock();if s.running{s.report.BehaviorLocal=b.data;s.report.BehaviorProblem=b.problem};s.mu.Unlock();beh<-b}()
  rep,e:=run()
  inv.ScannerDone=true;publishScope(inv)
  r:=<-sig;b:=<-beh;w:=<-win
  rep.WindowsLocal314=w.data;rep.WindowsProblem314=w.problem
  rep.SignatureRoots=append([]string(nil),roots...)
  rep.SignatureState=r.report.SignatureState;rep.SignatureProblem=r.report.SignatureProblem;rep.SignatureReports=r.report.SignatureReports
+ rep.SignatureRecent314=signatureRecentFindings314();rep.SignatureRecentLimit314=100
  rep.BehaviorLocal=b.data;rep.BehaviorProblem=b.problem
  rep.Inventory314=inv
  rep.Finished=time.Now();rep.Cancelled=rep.Cancelled||ctx.Err()!=nil

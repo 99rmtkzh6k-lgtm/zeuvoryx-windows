@@ -42,3 +42,11 @@ func TestRealClamAVBatch(t *testing.T){
  r,e=ScanRoots(ctx,exe,[]string{a,filepath.Join(t.TempDir(),"missing.txt")},os.Getenv("CLAMAV_REAL_DB"))
  if e==nil||!r.Partial||len(r.UnavailableRoots)!=1||r.Scanned!=1{t.Fatalf("missing root %+v %v",r,e)}
 }
+
+func TestExplicitDatabaseArguments(t *testing.T){
+ db:=filepath.Join(t.TempDir(),"database with spaces")
+ args,e:=databaseArgs(db);if e!=nil||len(args)!=1||args[0]!="--database="+db{t.Fatalf("args=%v error=%v",args,e)}
+ if _,e=databaseArgs("relative-db");e==nil{t.Fatal("relative path accepted")}
+ if _,e=VersionAt(context.Background(),filepath.Join(t.TempDir(),"missing-exe"),"relative-db");e==nil||!strings.Contains(e.Error(),"absolute ClamAV DB"){t.Fatalf("wrong validation: %v",e)}
+ if BundledDatabase(filepath.Join(filepath.Dir(db),"clamscan.exe"))!=filepath.Join(filepath.Dir(db),"database"){t.Fatal("wrong bundled path")}
+}

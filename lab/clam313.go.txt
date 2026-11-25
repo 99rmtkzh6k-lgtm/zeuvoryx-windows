@@ -29,7 +29,7 @@ func (q *Quarantine) AddClamRechecked(ctx context.Context,exe,path,label string)
  h:=sha256.New();n,e:=io.Copy(h,f);after,se:=f.Stat();ce:=f.Close()
  if e!=nil||se!=nil||ce!=nil||n!=before.Size()||!stableFile(abs,before,after){return QuarantineItem{},errors.New("file identity uncertain")}
  digest:=hex.EncodeToString(h.Sum(nil))
- r,e:=signatureav.Scan(ctx,exe,abs,"")
+ r,e:=signatureav.Scan(ctx,exe,abs,signatureav.BundledDatabase(exe))
  if e!=nil||r.Partial||r.Status!="detections_reported"||r.Infected!=1||len(r.Findings)!=1{return QuarantineItem{},errors.New("recheck did not confirm detection")}
  hit:=r.Findings[0]
  if !eligibleClam313(hit.Kind,hit.Signature)||hit.Signature!=label||!strings.EqualFold(filepath.Clean(hit.Path),abs){return QuarantineItem{},errors.New("signature or path changed")}

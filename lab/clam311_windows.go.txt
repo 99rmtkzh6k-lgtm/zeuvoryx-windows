@@ -16,7 +16,7 @@ func clamExecutable()(string,error){return bundled314()}
 func clamStatus311()string{
  tool,e:=clamExecutable();if e!=nil{return e.Error()}
  ctx,cancel:=context.WithTimeout(context.Background(),15*time.Second);defer cancel()
- v,e:=signatureav.Version(ctx,tool);if e!=nil{return "ClamAV indisponível: "+e.Error()}
+ v,e:=signatureav.VersionAt(ctx,tool,signatureav.BundledDatabase(tool));if e!=nil{return "ClamAV indisponível: "+e.Error()}
  return v+" — base e cobertura confirmadas somente após a varredura."
 }
 var clam311Mu sync.Mutex
@@ -36,7 +36,7 @@ func clamScanFile(path string)(map[string]any,error){
  ctx,cancel:=context.WithTimeout(context.Background(),6*time.Hour);clam311Cancel=cancel;clam311Mu.Unlock()
  defer func(){cancel();clam311Mu.Lock();clam311Cancel=nil;clam311Mu.Unlock()}()
  baseInfo,e:=ensureClam314(ctx,false);if e!=nil{return nil,e}
- rep,scanErr:=signatureav.Scan(ctx,tool,path,"")
+ rep,scanErr:=signatureav.Scan(ctx,tool,path,signatureav.BundledDatabase(tool))
  base,e:=os.UserConfigDir();if e!=nil{return nil,e};dir:=filepath.Join(base,"ZEUVORYX","signature-reports")
  if e=os.MkdirAll(dir,0700);e!=nil{return nil,e}
  f,e:=os.CreateTemp(dir,"clamav-*.json");if e!=nil{return nil,e}

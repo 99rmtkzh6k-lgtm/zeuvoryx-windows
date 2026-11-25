@@ -57,12 +57,21 @@ func command(ctx context.Context, exe string,args ...string)*exec.Cmd {
  configure(c)
  return c
 }
-func Version(ctx context.Context, exe string)(string,error){
+// BundledDatabase is the same directory written by the integrated FreshClam.
+func BundledDatabase(exe string) string {return filepath.Join(filepath.Dir(exe),"database")}
+func databaseArgs(db string)([]string,error){
+ if db==""{return nil,nil}
+ if !filepath.IsAbs(db){return nil,errors.New("absolute ClamAV DB required")}
+ return []string{"--database="+db},nil
+}
+func Version(ctx context.Context, exe string)(string,error){return VersionAt(ctx,exe,"")}
+func VersionAt(ctx context.Context, exe,db string)(string,error){
  if !filepath.IsAbs(exe){return "",errors.New("absolute ClamAV executable required")}
- c:=command(ctx,exe,"--version")
+ args,e:=databaseArgs(db);if e!=nil{return "",e}
+ c:=command(ctx,exe,append(args,"--version")...)
  var b bounded
  c.Stdout=&b;c.Stderr=&b
- e:=c.Run()
+ e=c.Run()
  v:=strings.TrimSpace(string(b.b))
  if e!=nil{return "",e}
  if b.overflow||!strings.HasPrefix(v,"ClamAV "){return "",errors.New("unexpected ClamAV version response")}
@@ -107,7 +116,7 @@ func parse(r *Report, raw string, code int, overflow bool) {
  if r.Partial{r.Status="inconclusive_or_partial"}else if code==1{r.Status="detections_reported"}else{r.Status="no_detection_reported"}
 }
 // Scan uses a single ClamAV process for a local file or tree, never a shell, never --remove or --move.
-// db is optional and only for explicitly selected laboratory databases; normal desktop use passes "".
+// Desktop callers supply their integrated database explicitly; generic callers may use ClamAV defaults.
 func Scan(ctx context.Context, exe, root, db string) (Report,error) {
  return ScanRoots(ctx,exe,[]string{root},db)
 }
@@ -128,17 +137,17 @@ func ScanRoots(ctx context.Context, exe string, roots []string, db string) (r Re
  }
  r.Root=strings.Join(r.Roots,"; ")
  if len(r.Roots)==0{return r,errors.New("no accessible regular roots")}
- vc,cancel:=context.WithTimeout(ctx,15*time.Second);r.Version,err=Version(vc,exe);cancel()
+ vc,cancel:=context.WithTimeout(ctx,15*time.Second);r.Version,err=VersionAt(vc,exe,db);cancel()
  if err!=nil{return r,fmt.Errorf("ClamAV version: %w",err)}
  args:=[]string{"--stdout","--infected","--recursive","--alert-exceeds-max=yes","--follow-dir-symlinks=0","--follow-file-symlinks=0"}
- if db!=""{if !filepath.IsAbs(db){return r,errors.New("absolute laboratory DB required")};args=append(args,"--database="+db)}
+ dbArgs,e:=databaseArgs(db);if e!=nil{return r,e};args=append(args,dbArgs...)
  args=append(args,"--");args=append(args,r.Roots...)
  cmd:=command(ctx,exe,args...)
  var out bounded
  if fn,ok:=ctx.Value(observerKey314{}).(func(Finding));ok{out.observer.fn=fn}
  // Both streams share one synchronized os/exec writer.
  cmd.Stdout=&out;cmd.Stderr=&out
- e:=cmd.Run();code:=0
+ e=cmd.Run();code:=0
  if e!=nil{var ee *exec.ExitError;if errors.As(e,&ee){code=ee.ExitCode()}else{code=-1}}
  parse(&r,string(out.b),code,out.overflow)
  if !recentDatabase(r.Version,time.Now()){r.Partial=true;r.Status="inconclusive_or_partial";return r,errors.New("ClamAV daily database date unknown or older than 7 days") }

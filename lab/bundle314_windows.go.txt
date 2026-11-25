@@ -16,13 +16,13 @@ func bundled314At(app string)(string,error){
 func ensureClam314(ctx context.Context, force bool)(string,error){
  select{case bundled314Gate<-struct{}{}:defer func(){<-bundled314Gate}();case <-ctx.Done():return "",ctx.Err()}
  if err:=ctx.Err();err!=nil{return "",err}
- exe,e:=bundled314();if e!=nil{return "",e};dir:=filepath.Dir(exe);db:=filepath.Join(dir,"database")
+ exe,e:=bundled314();if e!=nil{return "",e};dir:=filepath.Dir(exe);db:=signatureav.BundledDatabase(exe)
  if e=os.MkdirAll(db,0700);e!=nil{return "",e}
  marker:=filepath.Join(db,"zeuvoryx-refresh-ok")
  // A recent local database permits scanning even when the update service is temporarily offline.
  localVersion:=func()(string,bool){
   vc,stop:=context.WithTimeout(ctx,15*time.Second);defer stop()
-  v,e:=signatureav.Version(vc,exe);return v,e==nil&&signatureav.DatabaseFresh(v,time.Now())
+  v,e:=signatureav.VersionAt(vc,exe,db);return v,e==nil&&signatureav.DatabaseFresh(v,time.Now())
  }
  cached,cachedOK:=localVersion()
  if !force&&cachedOK{if st,e:=os.Stat(marker);e==nil&&time.Since(st.ModTime())>=0&&time.Since(st.ModTime())<24*time.Hour{return cached,nil}}

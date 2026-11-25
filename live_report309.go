@@ -14,6 +14,7 @@ func(s *State) publishLive(src engine.Report) {
  src.ScanID=old.ScanID;src.ScanMode=old.ScanMode
  if src.Inventory314.State==""{src.Inventory314=old.Inventory314}
  if src.SignatureState==""{src.SignatureState=old.SignatureState;src.SignatureProblem=old.SignatureProblem;src.SignatureRoots=old.SignatureRoots;src.SignatureReports=old.SignatureReports}
+ if src.WindowsLocal314==nil{src.WindowsLocal314=old.WindowsLocal314;src.WindowsProblem314=old.WindowsProblem314}
  if src.Started.IsZero(){src.Started=old.Started}
  src.Finished=time.Time{}
  src.InProgress=true;src.Partial=true;src.SnapshotAt=time.Now()

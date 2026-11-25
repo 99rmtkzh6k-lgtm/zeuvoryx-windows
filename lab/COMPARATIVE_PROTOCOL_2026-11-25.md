@@ -17,3 +17,6 @@ Existing exact-source parser test verified locally five times (Git blob identiti
 
 ## Build correction — run 45649565871
 Dual-platform run 45649565706 passed all jobs including FieldLearn, resident coordination and quarantine. Full installer failed patch_scan.py line 9 because lab scanner changed the exact legacy comment used as a source anchor. Restored compatible comment only; scanner logic unchanged. Existing generator already emits the same one-pass hashing approach. Retest full build; installer not approved. Native event collection on a physical PC still pending.
+
+## Build correction — run 45651697816
+Dual-platform tests passed again (45651697134). Installer reached hardening phase but zeuvoryx_upgrade.py expected original Finding literal, not extended lab evidence fields. Generator now accepts either exact source anchor, retaining lab evidence and existing quarantine gate. No gate disabled. New build required; physical acceptance remains pending.

@@ -619,8 +619,11 @@ def scanner(s):
     HeuristicAlerts int `json:"heuristic_alerts"`
     IOCMatches int `json:"ioc_matches"`
     EICARTests int `json:"eicar_tests"`''')
-    s=one(s,'return &Finding{Path: path, SHA256: fullHash, Risk: score, Level: tier(score), Reasons: reasons, Size: int64(len(data))}', '''kind,eligible:=evidenceFor(reasons)
-    return &Finding{Path: path, SHA256: fullHash, Risk: score, Level: tier(score), Reasons: reasons, Size: int64(len(data)), Evidence:kind,QuarantineEligible:eligible&&!strings.Contains(path," :: ")}''')
+    finding_anchor='return &Finding{Path: path, SHA256: fullHash, Risk: score, Level: tier(score), Reasons: reasons, Size: int64(len(data))}'
+    lab_anchor=finding_anchor[:-1]+', EvidenceKind:evidenceKind, AdvisoryOnly:true}'
+    has_lab_evidence=lab_anchor in s
+    s=one(s,lab_anchor if has_lab_evidence else finding_anchor, '''kind,eligible:=evidenceFor(reasons)
+    return &Finding{Path: path, SHA256: fullHash, Risk: score, Level: tier(score), Reasons: reasons, Size: int64(len(data)), Evidence:kind,QuarantineEligible:eligible&&!strings.Contains(path," :: ")'''+(', EvidenceKind:evidenceKind, AdvisoryOnly:true' if has_lab_evidence else '')+'}')
     # Existing workflow creates this one-pass implementation; replace it without touching its generation logic.
     a=s.index('\t// Capture the heuristic prefix and compute the whole-file hash in a single pass.')
     b=s.index('\tvar found []Finding',a)

@@ -1,7 +1,12 @@
-name: ZEUVORYX 3.0.5 security foundation lab
+name: ZEUVORYX - Security foundation regression
 on:
   push:
     branches: [main, security-3.0.5-lab]
+    paths-ignore:
+      - '**.md'
+      - 'LEIA-ME.txt'
+      - 'INSTRUCOES_GITHUB.txt'
+      - 'TERMOS_EXTENSOES_ZEUVORYX.txt'
   workflow_dispatch:
 permissions:
   contents: read

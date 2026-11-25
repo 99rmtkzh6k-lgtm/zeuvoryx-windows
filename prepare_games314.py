@@ -14,7 +14,9 @@ family314=familygate.Open(familyPath)
 if !bind("familyStatus314",family314.Status){return}
 if !bind("familySave314",func(p familygate.Policy,password string)(bool,error){e:=family314.Save(p,password);return e==nil,e}){return}
 if !bind("familyRate314",func(id string,r familygate.Rating,password string)(bool,error){if _,e:=gamecatalog.Resolve(id);e!=nil{return false,e};e:=family314.Rate(id,r,password);return e==nil,e}){return}
-if !bind("openFamilySafety314",openFamilySafety314){return}''')
+if !bind("openFamilySafety314",openFamilySafety314){return}
+if !bind("familyDNSCheck314",func()familygate.DNSCheck{return familySystemDNS314(nativeCtx)}){return}
+if !bind("familyNetwork314",familyNetwork314){return}''')
 p.write_text(s,encoding="utf-8")
 p=Path("desktop.html");s=p.read_text(encoding="utf-8")
 s=one(s,'</nav>','<button id="zGamesNav314" type="button" aria-expanded="false">Games · Jogos</button><button id="zFamilyNav314" type="button">Proteção familiar</button></nav>')

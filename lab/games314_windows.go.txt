@@ -39,3 +39,17 @@ func openGame314(id string)(bool,error){
 }
 
 func openFamilySafety314()(bool,error){address,_:=syscall.UTF16PtrFromString("https://family.microsoft.com/");verb,_:=syscall.UTF16PtrFromString("open");v,_,e:=syscall.NewLazyDLL("shell32.dll").NewProc("ShellExecuteW").Call(0,uintptr(unsafe.Pointer(verb)),uintptr(unsafe.Pointer(address)),0,0,1);if v<=32{return false,fmt.Errorf("Não foi possível abrir Family Safety: %v",e)};return true,nil}
+
+func familySystemDNS314(ctx context.Context)familygate.DNSCheck{ctx,cancel:=context.WithTimeout(ctx,18*time.Second);defer cancel();return familygate.CheckSystemDNS(ctx)}
+func familyNetwork314(action string)(bool,error){
+ var target string
+ switch action{
+ case "settings":target="ms-settings:network-status"
+ case "guide":target="https://developers.cloudflare.com/1.1.1.1/setup/windows/"
+ case "privacy":target="https://developers.cloudflare.com/1.1.1.1/privacy/public-dns-resolver/"
+ default:return false,fmt.Errorf("Ação de rede não permitida")
+ }
+ address,e:=syscall.UTF16PtrFromString(target);if e!=nil{return false,e}
+ verb,_:=syscall.UTF16PtrFromString("open");v,_,err:=syscall.NewLazyDLL("shell32.dll").NewProc("ShellExecuteW").Call(0,uintptr(unsafe.Pointer(verb)),uintptr(unsafe.Pointer(address)),0,0,1)
+ if v<=32{return false,fmt.Errorf("Não foi possível abrir configuração: %v",err)};return true,nil
+}

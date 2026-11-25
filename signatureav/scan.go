@@ -13,6 +13,7 @@ import (
  "strconv"
  "strings"
  "time"
+ "github.com/zeuvoryx/zeuvoryx/auditmetrics"
 )
 
 type Finding struct {
@@ -39,6 +40,7 @@ type Report struct {
  Raw string `json:"engine_output"`
  Problem string `json:"problem,omitempty"`
  Coverage string `json:"coverage_note"`
+ Evidence auditmetrics.SignatureEvidence `json:"evidence_315"`
 }
 type bounded struct { b []byte; overflow bool; observer lineObserver314 }
 func (w *bounded) Write(p []byte)(int,error) {
@@ -109,7 +111,7 @@ func Scan(ctx context.Context, exe, root, db string) (Report,error) {
 // ScanRoots loads the database once for all eligible roots. Counts belong to the batch, not each root.
 func ScanRoots(ctx context.Context, exe string, roots []string, db string) (r Report, err error) {
  r=Report{Engine:"ClamAV / independent signatures",Started:time.Now().UTC(),ExitCode:-1,Scanned:-1,Infected:-1,KnownSignatures:-1,Errors:-1,Findings:[]Finding{},Partial:true,Status:"inconclusive_or_partial",Coverage:"ClamAV has size, archive, format and access limits; no memory or resident protection. No detections is not a guarantee. No files are sent or removed."}
- defer func(){r.Finished=time.Now().UTC();if err!=nil{r.Problem=err.Error();r.Partial=true;r.Status="inconclusive_or_partial"}}()
+ defer func(){r.Finished=time.Now().UTC();if err!=nil{r.Problem=err.Error();r.Partial=true;r.Status="inconclusive_or_partial"};kinds:=make([]string,0,len(r.Findings));for _,f:=range r.Findings{kinds=append(kinds,f.Kind)};r.Evidence=auditmetrics.Signature(r.Scanned,r.Infected,r.KnownSignatures,r.Errors,kinds,r.Partial);if r.Evidence.Partial{r.Partial=true;r.Status="inconclusive_or_partial";if err==nil{err=errors.New("ClamAV evidence inconsistent or partial");r.Problem=err.Error()}}}()
  if !filepath.IsAbs(exe){return r,errors.New("absolute ClamAV executable required")}
  if len(roots)==0{return r,errors.New("no roots supplied")}
  seen:=make(map[string]bool)

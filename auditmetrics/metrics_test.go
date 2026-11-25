@@ -9,3 +9,8 @@ func TestSignatureEvidence(t *testing.T){
  e=Signature(10,2,100,0,[]string{"signature_detection","test_eicar"},false);if !e.SummaryUsable||e.SignatureRecords!=1||e.TestRecords!=1||e.ObservedRecords!=2{t.Fatal(e)}
  for _,v:=range []SignatureEvidence{Signature(10,2,100,0,[]string{"signature_detection"},false),Signature(0,0,100,0,nil,false),Signature(1,2,100,0,[]string{"signature_detection","signature_detection"},false),Signature(1,1,100,0,[]string{"unknown"},false),Signature(1,1,100,0,[]string{"heuristic_or_limit"},false),Signature(1,0,100,1,nil,false),Signature(1,0,0,0,nil,false)}{if !v.Partial||v.SummaryUsable{t.Fatal(v)}}
 }
+
+func TestErrorCountEvidence315(t *testing.T){
+ a:=Signature(10,0,100,-1,nil,false);b:=Signature(10,0,100,0,nil,false)
+ if a.ErrorCountKnown||a.EngineErrors!=nil||!b.ErrorCountKnown||b.EngineErrors==nil||*b.EngineErrors!=0{t.Fatal(a,b)}
+}

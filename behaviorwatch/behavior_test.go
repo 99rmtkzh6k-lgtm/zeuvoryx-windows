@@ -10,3 +10,11 @@ func TestCorrelation313(t *testing.T){
  es=append(es,Event{ID:13,GUID:"a",Target:"HKU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\name"})
  if len(Analyze(es))!=1{t.Fatal("correlation not found")}
 }
+
+func TestBoundedCorrelation315(t *testing.T){
+ if _,e:=Parse(strings.NewReader("<Events>"+strings.Repeat(" ",8<<20)+"</Events>"));e==nil{t.Fatal("oversized XML accepted")}
+ es:=[]Event{{ID:1,GUID:"ABC",Image:"C:\\Users\\lab\\Downloads\\sample.exe"}}
+ for _,p:=range []string{"a","b","c"}{es=append(es,Event{ID:11,GUID:"abc",Target:p})}
+ for i:=0;i<4;i++{es=append(es,Event{ID:13,GUID:"abc",Target:"HKU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\example"})}
+ got:=Analyze(es);if len(got)!=1||got[0].StartupWrites!=1{t.Fatalf("duplicate evidence %+v",got)}
+}

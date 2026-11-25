@@ -1,3 +1,5 @@
+> **3.0.15 LAB — aperfeiçoamento próprio:** ScriptGuard UTF-8/16/32 com BOM e limites; BehaviorWatch com limite XML e deduplicação de persistência; ChangeGuard com timestamps monotônicos; contabilidade explicita quando o número de erros é desconhecido. Testes acrescentados, validação CI pendente; não equivale a novos motores completos nem a eficácia comprovada.
+
 > **3.0.15 LAB — motores independentes:** teste operacional AMSI separado por tag `amsi_integration`, executado em workflow próprio a cada revisão candidata; falha de provedor permanece reprovação da validação AMSI, nunca sucesso. Compilação LAB do scanner próprio e ClamAV independente, sem aprovação pública ou física. [Mini memorando](AUDITORIA_CAMPO_2026-11-25.md).
 
 > **3.0.15 LAB — proteção nativa candidata:** cliente AMSI em Go e testes adicionados; compilação cruzada Windows x64 aprovada para o módulo isolado, não execução Windows. Integração com scanner, CI e teste físico pendentes. Sem promoção de versão pública. [Mini memorando](AUDITORIA_CAMPO_2026-11-25.md).

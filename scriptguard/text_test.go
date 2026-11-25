@@ -21,3 +21,16 @@ func TestBound(t *testing.T){
  b=encode(strings.Repeat("a",MaxDecodedBytes/2-1)+"🌞",binary.LittleEndian)
  got,ok=DecodeBOM(b);if !ok||len(got)!=MaxDecodedBytes/2-1{t.Fatalf("split pair %d valid %v",len(got),ok)}
 }
+
+func TestAdditionalUnicode315(t *testing.T){
+ s:="Texto 日本語 🌞"
+ for _,o:=range []binary.ByteOrder{binary.LittleEndian,binary.BigEndian}{
+  b:=make([]byte,4);o.PutUint32(b,0xfeff)
+  for _,r:=range s{var a [4]byte;o.PutUint32(a[:],uint32(r));b=append(b,a[:]...)}
+  if got,ok:=DecodeBOM(b);!ok||got!=s{t.Fatalf("UTF32 %q %v",got,ok)}
+ }
+ if got,ok:=DecodeBOM(append([]byte{0xef,0xbb,0xbf},[]byte(s)...));!ok||got!=s{t.Fatal(got,ok)}
+ for _,b:=range [][]byte{{0xef,0xbb,0xbf,0xff},{0xff,0xfe,0,0,0,0,0x11,0},{0,0,0xfe,0xff,0,0,0xd8,0},{0xef,0xbb,0xbf,0}}{if _,ok:=DecodeBOM(b);ok{t.Fatalf("invalid %x",b)}}
+ prefix:=strings.Repeat("a",MaxDecodedBytes-1)
+ if got,ok:=DecodeBOM(append([]byte{0xef,0xbb,0xbf},[]byte(prefix+"🌞")...));!ok||got!=prefix{t.Fatal("split UTF8 boundary")}
+}

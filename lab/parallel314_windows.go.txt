@@ -46,6 +46,7 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
  rep.SignatureRecent314=signatureRecentFindings314();rep.SignatureRecentLimit314=100
  rep.BehaviorLocal=b.data;rep.BehaviorProblem=b.problem
  rep.Inventory314=inv
+ rep.ChangeMonitor315=changeMonitor315Snapshot()
  rep.Finished=time.Now();rep.Cancelled=rep.Cancelled||ctx.Err()!=nil
  return rep,e
 }

@@ -1,3 +1,5 @@
+> **3.0.14 LAB · Correção do teste instalado:** CI 45614993623 aprovou motores independentes, compilação e cinco ciclos de instalação/migração; falhou ao localizar amostra benigna. Preparação literal e individual, verificação de existência/tamanho e diagnóstico adicional antes/depois FreshClam, preservando critérios e proteção Windows. Nova CI pendente, sem liberação. [Detalhes](BUNDLED_314_LAB.md).
+
 > **3.0.14 LAB — pacote unificado:** Controle parental independente no menu lateral, filtro DNS configurável no Windows, revisão de jogos real e painel de progresso durante jogos; correção de integração DROP/Go formatado; cinco ciclos de regressão e validação de instalação exigidos. CI e teste físico pendentes. [Detalhes](BUNDLED_314_LAB.md).
 
 > **3.0.14 LAB · Central familiar do computador:** além do catálogo, integração de configuração voluntária de DNS familiar Windows, teste de bloqueio real IPv4, Microsoft Family Safety por conta e orientações de limitações. Sem alteração automática de rede nem garantia universal. CI e teste físico pendentes. [Detalhes](BUNDLED_314_LAB.md).

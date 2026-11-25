@@ -2757,21 +2757,29 @@ jobs:
           New-Item -ItemType Directory -Force $fixture | Out-Null
           $clean=Join-Path $fixture 'clean.txt'
           $test=Join-Path $fixture 'eicar.txt'
-          Set-Content -Encoding ascii -NoNewline $clean 'Benign validation file for ZEUVORYX'
+          $benign='Benign validation file for ZEUVORYX'
           $eicar='X5O!P%@AP[4'+[char]92+'PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*'
-          [IO.File]::WriteAllText($test, [string]$eicar, [Text.Encoding]::ASCII)
+          # Prepare one fixture at a time, using literal native file I/O.
+          # Do not change Defender or introduce antivirus exclusions.
           for($i=1;$i -le 5;$i++){
-            foreach($f in @($clean,$test)){
-              $out="bundle314-$i-$([IO.Path]::GetFileNameWithoutExtension($f)).json"
-              $proc=Start-Process -FilePath $app -ArgumentList @('-signature-check314',('"' + $f + '"')) -RedirectStandardOutput $out -RedirectStandardError "$out.err" -Wait -PassThru
-              if($proc.ExitCode -ne 0){Get-Content "$out.err";if(Test-Path $out){Get-Content $out};throw 'Installed application failed bundled engine check'}
-              $r=Get-Content -Raw $out | ConvertFrom-Json
+            foreach($kind in @('clean','eicar')){
+              $f=if($kind -eq 'clean'){$clean}else{$test}
+              $payload=if($kind -eq 'clean'){$benign}else{$eicar}
+              [IO.File]::WriteAllText($f,[string]$payload,[Text.Encoding]::ASCII)
+              if(!(Test-Path -LiteralPath $f -PathType Leaf)){throw "Fixture unavailable before launch: $kind cycle $i; check Windows security events without disabling protection"}
+              $before=Get-Item -LiteralPath $f
+              if($before.Length -ne ([Text.Encoding]::ASCII.GetByteCount($payload))){throw "Unexpected fixture length: $kind cycle $i"}
+              Write-Host "Verified fixture before launch: $kind cycle $i, bytes=$($before.Length), path=$f"
+              $out="bundle314-$i-$kind.json"
+              $proc=Start-Process -FilePath $app -WorkingDirectory $base -ArgumentList @('-signature-check314',('"' + $f + '"')) -RedirectStandardOutput $out -RedirectStandardError "$out.err" -Wait -PassThru
+              if($proc.ExitCode -ne 0){Get-Content "$out.err";if(Test-Path -LiteralPath $out){Get-Content -LiteralPath $out};Write-Host "Fixture exists after scan: $(Test-Path -LiteralPath $f -PathType Leaf)";throw "Installed application failed bundled engine check: $kind cycle $i"}
+              $r=Get-Content -Raw -LiteralPath $out | ConvertFrom-Json
               if($r.partial -or $r.known_signatures -le 0){throw 'Incomplete signature test'}
-              if($f -eq $test){if(@($r.findings|Where-Object kind -eq 'test_eicar').Count -ne 1){throw 'EICAR detection missing'}}
+              if($kind -eq 'eicar'){if(@($r.findings|Where-Object kind -eq 'test_eicar').Count -ne 1){throw 'EICAR detection missing'}}
               else{if($r.engine_reported_infected_files -ne 0){throw 'False detection of benign fixture'}}
+              if(Test-Path -LiteralPath $f){Remove-Item -LiteralPath $f}
             }
           }
-          Remove-Item $test
           $diag=Start-Process -FilePath $app -ArgumentList '-diagnostic-check314' -RedirectStandardOutput bundle314-diagnostic.json -RedirectStandardError bundle314-diagnostic.err -Wait -PassThru
           if($diag.ExitCode -ne 0){Get-Content bundle314-diagnostic.err; if(Test-Path bundle314-diagnostic.json){Get-Content bundle314-diagnostic.json};throw 'Real local diagnostic failed'}
           Write-Host 'Five installed-app cycles and real local diagnostic passed using bundled ClamAV and automatic FreshClam'

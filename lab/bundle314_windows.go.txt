@@ -30,7 +30,10 @@ func ensureClam314(ctx context.Context, force bool)(string,error){
 // Restricted read-only diagnostic used by CI, also available for local technical support.
 func signatureCheck314(path string)int{
  ctx,cancel:=context.WithTimeout(context.Background(),20*time.Minute);defer cancel()
+ path,e:=filepath.Abs(path);if e!=nil{fmt.Fprintln(os.Stderr,e);return 2}
+ before,e:=os.Stat(path);if e!=nil||!before.Mode().IsRegular(){fmt.Fprintf(os.Stderr,"Fixture unavailable before FreshClam: %q: %v\n",path,e);return 2}
  if _,e:=ensureClam314(ctx,false);e!=nil{fmt.Fprintln(os.Stderr,e);return 2}
- st:=&State{scanner:engine.New()};combined,e:=st.parallelCustom314(ctx,path,nil);if e!=nil||combined.Files!=1||len(combined.SignatureReports)!=1{fmt.Fprintf(os.Stderr,"Integrated check: files=%d, signature_state=%s, problem=%s, reports=%d, err=%v\n",combined.Files,combined.SignatureState,combined.SignatureProblem,len(combined.SignatureReports),e);return 2};r:=combined.SignatureReports[0];if je:=json.NewEncoder(os.Stdout).Encode(r);je!=nil{return 2}
+ after,e:=os.Stat(path);if e!=nil||!after.Mode().IsRegular()||!os.SameFile(before,after)||before.Size()!=after.Size()||!before.ModTime().Equal(after.ModTime()){fmt.Fprintf(os.Stderr,"Fixture unavailable or changed after FreshClam: %q: %v\n",path,e);return 2}
+ st:=&State{scanner:engine.New()};combined,e:=st.parallelCustom314(ctx,path,nil);if e!=nil||combined.Files!=1||len(combined.SignatureReports)!=1{fmt.Fprintf(os.Stderr,"Integrated check: files=%d, signature_state=%s, problem=%s, reports=%d, err=%v\n",combined.Files,combined.SignatureState,combined.SignatureProblem,len(combined.SignatureReports),e);if len(combined.SignatureReports)==1{_ = json.NewEncoder(os.Stdout).Encode(combined.SignatureReports[0])};return 2};r:=combined.SignatureReports[0];if je:=json.NewEncoder(os.Stdout).Encode(r);je!=nil{return 2}
  if e!=nil||r.Partial{return 2};return 0
 }

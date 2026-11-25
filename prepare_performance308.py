@@ -60,19 +60,20 @@ async function refresh(){
   const disk=valid(d.disk_percent)&&d.disk_total>0&&d.disk_free<=d.disk_total;
   gauge('disk',disk?d.disk_percent:null,disk?d.disk_root+' · '+gib(d.disk_total-d.disk_free)+' '+t[6]+' / '+gib(d.disk_total):t[11]);
   const st={
-   'pt-BR':['ARMAZENAMENTO E PROGRESSO','ocupado','livre','volumes acessíveis','omitidos','Analisado','Total elegível/restante: indeterminado'],
-   'en-US':['STORAGE AND PROGRESS','used','free','accessible volumes','omitted','Scanned','Eligible total/remaining: unknown'],
-   'es-ES':['ALMACENAMIENTO Y PROGRESO','ocupado','libre','volúmenes accesibles','omitidos','Analizado','Total elegible/restante: indeterminado']
+   'pt-BR':['CAPACIDADE DOS VOLUMES E PROGRESSO','ocupado para o usuário','disponível ao usuário','volumes acessíveis','omitidos','Analisado','Total elegível/restante: indeterminado'],
+   'en-US':['VOLUME CAPACITY AND PROGRESS','used for caller','available to caller','accessible volumes','omitted','Scanned','Eligible total/remaining: unknown'],
+   'es-ES':['CAPACIDAD DE VOLÚMENES Y PROGRESO','ocupado para el usuario','disponible al usuario','volúmenes accesibles','omitidos','Analizado','Total elegible/restante: indeterminado']
   }[lang]||['ARMAZENAMENTO E PROGRESSO','ocupado','livre','volumes acessíveis','omitidos','Analisado','Total elegível/restante: indeterminado'];
   z('zsLabel').textContent=st[0];
   const local=d.local_count>0&&d.local_total>0&&d.local_free<=d.local_total;
   z('zsCapacity').textContent=local?gib(d.local_total):'—';
+  z('zsCapacity').title=local?String(d.local_total)+' bytes · GetDiskFreeSpaceExW · '+String(d.local_count)+' fixed lettered volumes':'';
   z('zsSpace').textContent=local?gib(d.local_total-d.local_free)+' '+st[1]+' / '+gib(d.local_free)+' '+st[2]+' · '+d.local_count+' '+st[3]+' · '+d.local_omitted+' '+st[4]:t[11];
   z('zsProgress').textContent=st[5]+': '+z('bytes').textContent;
   if(window.z310Storage)window.z310Storage(local?d.local_total-d.local_free:null);
   z('zpStatus').textContent=ram&&valid(d.cpu)?t[9]+' · '+new Date(d.at).toLocaleTimeString(lang):t[10];
   if(!confirmed&&ram&&valid(d.cpu)&&z('zp-cpu-value').textContent.endsWith('%')&&z('zp-ram-value').textContent.endsWith('%')&&z('zsCapacity').textContent!=='—'&&document.getElementById('zHelpOpen')&&document.getElementById('zAIActivity')) confirmed=await window.zPerformanceRendered();
- }catch(_){['cpu','ram','free','disk'].forEach(k=>gauge(k,null,t[11]));z('zpStatus').textContent=t[11];z('zpClock').textContent='—';}
+ }catch(_){['cpu','ram','free','disk'].forEach(k=>gauge(k,null,t[11]));z('zpStatus').textContent=t[11];z('zpClock').textContent='—';z('zsCapacity').textContent='—';z('zsCapacity').title='';z('zsSpace').textContent=t[11];if(window.z310Storage)window.z310Storage(null);}
  finally{busy=false}
 }
 const overview=z('overview'),hero=Array.from(overview.children).find(n=>n.classList.contains('hero'));

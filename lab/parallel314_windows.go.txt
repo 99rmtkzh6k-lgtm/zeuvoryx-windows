@@ -11,10 +11,17 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
  publishScope:=func(v scopeprogress.Inventory){s.mu.Lock();defer s.mu.Unlock();if s.running{s.report.Inventory314=v}}
  publishScope(scopeprogress.Inventory{State:"counting"})
  self,_:=os.Executable()
- inv:=scopeprogress.Enumerate(ctx,roots,func(path string)bool{
-  if s.quarantine!=nil&&s.quarantine.IsQuarantined(path){return true}
-  return self!=""&&samePath(path,self)
- },publishScope)
+ // Inventory must not delay the start of the actual scanner or signature engine.
+ // Cancel its independent context when scanning ends; never claim full coverage from a partial inventory.
+ invCtx,cancelInv:=context.WithCancel(ctx);defer cancelInv()
+ invCh:=make(chan scopeprogress.Inventory,1)
+ go func(){
+  v:=scopeprogress.Enumerate(invCtx,roots,func(path string)bool{
+   if s.quarantine!=nil&&s.quarantine.IsQuarantined(path){return true}
+   return self!=""&&samePath(path,self)
+  },publishScope)
+  invCh<-v
+ }()
  s.mu.Lock();if s.running{s.report.SignatureState="running"};s.mu.Unlock()
  sig:=make(chan sigResult314,1);beh:=make(chan behaviorResult314,1);win:=make(chan windowsResult314,1)
  watchCtx,stopWatch:=context.WithCancel(ctx);defer stopWatch()
@@ -34,6 +41,8 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
  go func(){r:=engine.Report{SignatureRoots:append([]string(nil),roots...)};s.signaturePhase312(ctx,&r,"",true);sig<-sigResult314{r}}()
  go func(){v,e:=behavior313();b:=behaviorResult314{data:v};if e!=nil{b.problem=e.Error()};s.mu.Lock();if s.running{s.report.BehaviorLocal=b.data;s.report.BehaviorProblem=b.problem};s.mu.Unlock();beh<-b}()
  rep,e:=run()
+ cancelInv()
+ inv:=<-invCh
  inv.ScannerDone=true;publishScope(inv)
  r:=<-sig;b:=<-beh;stopWatch();w:=<-win
  if ctx.Err()==nil&&w.data==nil{

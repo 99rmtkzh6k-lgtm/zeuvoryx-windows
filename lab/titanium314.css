@@ -1,0 +1,30 @@
+
+/* Olympus Titanium — existing local Zeus artwork, no remote downloads or animation loops. */
+:root{color-scheme:dark;--bg:#0b1424;--panel:#172334;--line:#8895a9;--muted:#d0dce8;--cyan:#7de7db;--blue:#a5c9ff;--titanium-gold:#e7c784}
+html,body{background:#0b1424;color:#f4f7fb}
+body{background-image:linear-gradient(105deg,rgba(5,13,26,.46),rgba(11,20,36,.32)),var(--z-titanium-art);background-size:cover;background-position:center;background-repeat:no-repeat;background-attachment:fixed}
+.shell,main{background:transparent;color:#f4f7fb}
+aside{background:rgba(10,19,33,.70);color:#f4f7fb;border-color:#77879b}
+.brand,.tag,.note,.sub,.label,.muted,.speed,.hero p,.entry p,footer{color:#e0e8f4}
+header{min-height:76px;background:linear-gradient(100deg,#142136b8,#15233880);border-color:#9b895c}
+header>div:first-child,header .actions{background:rgba(12,22,37,.62);color:#f4f7fb}
+header h1{color:#fff}
+#zTitaniumIdentity{font-size:11px;line-height:1.4;letter-spacing:1px;color:#f2d18b;font-weight:700}
+.card,.entry,.zp-item{background:linear-gradient(145deg,rgba(21,34,53,.82),rgba(13,23,38,.64));color:#f4f7fb;border-color:#78869b;box-shadow:inset 0 1px 0 #ffffff19,0 4px 10px #0003}
+section.card{background:rgba(10,20,35,.44)}
+.hero{background:linear-gradient(100deg,rgba(14,25,42,.83),rgba(15,26,43,.57));color:#fff;border-color:#ac925e}
+.pill,.media-field,.media-report,input,select,textarea,dialog{background:#152339;color:#f5f7fa;border-color:#8294ab}
+.chart text{fill:#d5e2ed}.chart svg path{stroke:#8da1b5}.ring svg .arc,#curve{stroke:#7de7db}
+.risk,#msg{color:#ffd29f}.z-authorship strong{color:#f0d18c;border-color:#c7ab74}
+button{min-height:38px;padding:8px 15px;border-radius:10px;color:#f4f7fc;border:1px solid #95a5b9;background:linear-gradient(180deg,#64758b 0%,#3e5067 24%,#283a51 56%,#18273c 100%);box-shadow:inset 0 2px 1px #ffffff65,inset 0 -3px 4px #0007,0 4px 0 #0a1423,0 6px 8px #0005;transition:transform .12s ease,box-shadow .12s ease,filter .12s ease;text-shadow:0 1px 2px #0008}
+button.primary,#start,#quick{color:#0b1421;border-color:#e4d0a3;background:linear-gradient(180deg,#fbebc8,#e2c58a 25%,#b69b64 58%,#8d754b 100%);text-shadow:none;box-shadow:inset 0 2px 0 #fff9,inset 0 -3px 4px #60491e55,0 4px 0 #514025,0 6px 10px #0007;font-weight:750}
+.nav button{background:linear-gradient(180deg,#2f4157d9,#17273cda);color:#edf3fa;border-color:#7588a1;box-shadow:inset 0 1px 0 #ffffff28,0 2px 0 #0a1423,0 3px 5px #0004}
+.nav button.active{background:linear-gradient(180deg,#5b7189,#26384e);color:#fff;border-color:#e7c784}
+button:hover:not(:disabled){filter:brightness(1.14)}
+button:active:not(:disabled){transform:translateY(3px);box-shadow:inset 0 3px 6px #0007,0 1px 0 #0a1423}
+button:disabled{opacity:.55;box-shadow:none;transform:none}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #f4d18a;outline-offset:3px}
+.actions,.nav{gap:9px}
+.zp-value{fill:#f4f7fb}.zp-label{color:#edf3fa}.zp-detail{color:#d4e1ed}
+@media(prefers-reduced-motion:reduce){button{transition:none}}
+@media(forced-colors:active){body,.shell,main,aside,header,.card,.entry,.hero,.zp-item{background:Canvas!important;color:CanvasText!important}button{background:ButtonFace!important;color:ButtonText!important;box-shadow:none;text-shadow:none;transform:none}}

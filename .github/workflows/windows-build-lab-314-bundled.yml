@@ -1,4 +1,5 @@
-name: ZEUVORYX 3.0.14 LAB - independent signatures
+name: ZEUVORYX 3.0.14 LAB - Olympus Titanium
+run-name: ZEUVORYX 3.0.14 LAB - Olympus Titanium Global Threat Defense
 on:
   push:
     branches: [windows-3.0.14-bundled-lab]

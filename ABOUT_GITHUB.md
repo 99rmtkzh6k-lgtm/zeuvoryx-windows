@@ -1,3 +1,5 @@
+> **3.0.14 LAB — Olympus Titanium · Global Threat Defense:** arte Zeus existente como fundo global, painéis translúcidos e botões de relevo profundo, velocímetros e integração funcional preservados. Corrigido teste EICAR do instalador; nova validação pendente. [Detalhes](BUNDLED_314_LAB.md).
+
 > **3.0.14 LAB revisão painel automotivo:** indicadores com ponteiros, inventário lógico do escopo, saldo estimado e ETA do scanner próprio, sem confundir armazenamento físico com cobertura. CI pendente. [Detalhes](BUNDLED_314_LAB.md).
 
 > **3.0.14 LAB revisão ampliada:** pacote único ClamAV/FreshClam/C2PA, motores em conjunto, IA consultiva com revisão por indícios correlacionados, alerta de saída ClamAV, DROP persistente diário e melhoria de manutenção. CI e validação física pendentes; aprendizado real e proteção residente ainda não comprovados. [Detalhes](BUNDLED_314_LAB.md).

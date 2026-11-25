@@ -1,5 +1,5 @@
 name: ZEUVORYX 3.0.14 LAB - Windows Build
-run-name: ZEUVORYX 3.0.14 LAB Olympus Silver QA20 Windows x64
+run-name: ZEUVORYX 3.0.14 LAB Olympus Titanium - Global Threat Defense Windows x64
 
 on:
   workflow_call:
@@ -2388,6 +2388,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw '314 parallel integration failed' }
           python prepare_expanded314.py
           if ($LASTEXITCODE -ne 0) { throw '314 expanded integration failed' }
+          python prepare_titanium314.py
+          if ($LASTEXITCODE -ne 0) { throw '314 Titanium visual integration failed' }
           gofmt -w globalintel adaptive signatureav
           go test -count=5 ./globalintel ./adaptive ./signatureav ./scopeprogress
           if ($LASTEXITCODE -ne 0) { throw '314 added module regressions failed' }
@@ -2450,6 +2452,7 @@ jobs:
           if (!$html.Contains('id="zLiveFailures"') -or !$html.Contains('id="zLiveCoverage"') -or !$desktop.Contains('snapshotForExport')) { throw 'Live reporting missing' }
           if (!$html.Contains('id="z310Speed"') -or !$html.Contains('id="z310Notice"') -or !$desktop.Contains('z310Beep')) { throw '310 feedback missing' }
           if (!$html.Contains('id="z310MaintenancePanel"') -or !$desktop.Contains('z310Maintenance')) { throw '310 maintenance panel missing' }
+          if (!$html.Contains('id="zTitaniumIdentity"') -or !$html.Contains('--z-titanium-art:') -or !$html.Contains('id="zp-cpu-needle"')) { throw 'Titanium visual identity missing' }
           if (!$html.Contains('id="z310Optimizer"') -or !$desktop.Contains('z310OptimizeApply') -or !$desktop.Contains('z310DriveOptimize')) { throw 'Integrated optimizer missing' }
           Write-Host 'Verified final identity: ZEUVORYX 3.0.14 LAB'
       - name: Run adaptive model tests
@@ -2633,7 +2636,7 @@ jobs:
           $hash = (Get-FileHash dist/ZEUVORYX.exe -Algorithm SHA256).Hash.ToLowerInvariant()
           Set-Content -Encoding ascii -Path dist/SHA256SUMS.txt -Value "$hash  ZEUVORYX.exe"
           @(
-            'ZEUVORYX 3.0.14 LAB - TESTE PORTATIL x64, NAO INSTALADOR'
+            'ZEUVORYX 3.0.14 LAB - OLYMPUS TITANIUM GLOBAL THREAT DEFENSE - TESTE PORTATIL x64, NAO INSTALADOR'
             "Commit: $env:GITHUB_SHA"
             "Execucao: $env:GITHUB_RUN_ID"
             'Extraia todo o ZIP para uma pasta separada. Feche outras versoes antes de testar.'
@@ -2750,12 +2753,12 @@ jobs:
           $test=Join-Path $fixture 'eicar.txt'
           Set-Content -Encoding ascii -NoNewline $clean 'Benign validation file for ZEUVORYX'
           $eicar='X5O!P%@AP[4'+[char]92+'PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*'
-          Set-Content -Encoding ascii -NoNewline $test $eicar
+          [IO.File]::WriteAllText($test, [string]$eicar, [Text.Encoding]::ASCII)
           for($i=1;$i -le 5;$i++){
             foreach($f in @($clean,$test)){
               $out="bundle314-$i-$([IO.Path]::GetFileNameWithoutExtension($f)).json"
               $proc=Start-Process -FilePath $app -ArgumentList @('-signature-check314',('"' + $f + '"')) -RedirectStandardOutput $out -RedirectStandardError "$out.err" -Wait -PassThru
-              if($proc.ExitCode -ne 0){Get-Content "$out.err";throw 'Installed application failed bundled engine check'}
+              if($proc.ExitCode -ne 0){Get-Content "$out.err";if(Test-Path $out){Get-Content $out};throw 'Installed application failed bundled engine check'}
               $r=Get-Content -Raw $out | ConvertFrom-Json
               if($r.partial -or $r.known_signatures -le 0){throw 'Incomplete signature test'}
               if($f -eq $test){if(@($r.findings|Where-Object kind -eq 'test_eicar').Count -ne 1){throw 'EICAR detection missing'}}
@@ -2764,7 +2767,7 @@ jobs:
           }
           Remove-Item $test
           $diag=Start-Process -FilePath $app -ArgumentList '-diagnostic-check314' -RedirectStandardOutput bundle314-diagnostic.json -RedirectStandardError bundle314-diagnostic.err -Wait -PassThru
-          if($diag.ExitCode -ne 0){Get-Content bundle314-diagnostic.err;throw 'Real local diagnostic failed'}
+          if($diag.ExitCode -ne 0){Get-Content bundle314-diagnostic.err; if(Test-Path bundle314-diagnostic.json){Get-Content bundle314-diagnostic.json};throw 'Real local diagnostic failed'}
           Write-Host 'Five installed-app cycles and real local diagnostic passed using bundled ClamAV and automatic FreshClam'
       - uses: actions/upload-artifact@v4
         if: always()

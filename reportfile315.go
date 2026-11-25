@@ -13,13 +13,17 @@ import (
 // Save to a unique real file. No partial file survives a failed write.
 func writeReport315(dir, prefix string, write func(io.Writer) error) (string,error) {
  if e:=os.MkdirAll(dir,0700);e!=nil{return "",e}
- f,e:=os.CreateTemp(dir,prefix+"-*.json");if e!=nil{return "",e}
- name:=f.Name();ok:=false
- defer func(){if !ok{_ = f.Close();_ = os.Remove(name)}}()
+ f,e:=os.CreateTemp(dir,prefix+"-*.json.tmp");if e!=nil{return "",e}
+ temp:=f.Name();name:=temp[:len(temp)-len(".tmp")];ok:=false
+ defer func(){if !ok{_ = f.Close();_ = os.Remove(temp)}}()
  if e=write(f);e!=nil{return "",e}
  if e=f.Sync();e!=nil{return "",e}
  if e=f.Close();e!=nil{return "",e}
- st,e:=os.Stat(name);if e!=nil{return "",e};if !st.Mode().IsRegular()||st.Size()==0{return "",fmt.Errorf("Relatório vazio ou inválido")}
+ st,e:=os.Stat(temp);if e!=nil{return "",e};if !st.Mode().IsRegular()||st.Size()==0{return "",fmt.Errorf("Relatório vazio ou inválido")}
+ // Publish only after the full write is closed and synced; interrupted writes
+ // leave a .tmp, never a misleading completed .json. Same-directory rename.
+ if _,e=os.Lstat(name);!os.IsNotExist(e){return "",fmt.Errorf("Destino de relatório já existe ou não pôde ser verificado")}
+ if e=os.Rename(temp,name);e!=nil{return "",e}
  ok=true
  return name,nil
 }

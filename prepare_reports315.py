@@ -117,24 +117,26 @@ p.write_text(s,encoding="utf-8")
 p=Path("desktop.html");s=p.read_text(encoding="utf-8")
 s=once(s,'<button id="z315ReportSave" class="primary">Gerar relatório JSON</button>','''<button id="z315ShowText" class="primary">Exibir relatório JSON para copiar</button><button id="z315ReportSave">Salvar arquivo JSON</button><div id="z315TextPanel" hidden><label for="z315Text">Relatório JSON — revise antes de compartilhar</label><textarea id="z315Text" rows="12" readonly spellcheck="false" aria-label="Relatório JSON selecionável" style="width:100%;box-sizing:border-box;resize:vertical;font-family:monospace"></textarea><button id="z315SelectText">Selecionar tudo</button><button id="z315CopyText">Copiar texto JSON</button><p id="z315TextStatus" role="status"></p></div>''')
 s=once(s,'</script></body></html>',r'''
+/* Z315_REPORT_COPY_BEGIN */
 ;(()=>{
  const source=el('z315ReportSource'),panel=el('z315TextPanel'),area=el('z315Text'),status=el('z315TextStatus'),show=el('z315ShowText');
  let busy=false;
  function clear(){area.value='';panel.hidden=true;status.textContent=''}
  source.addEventListener('change',clear);el('z315ReportHistory').addEventListener('change',clear);
- show.onclick=async()=>{if(busy||z315ReportBusy)return;busy=true;show.disabled=true;clear();panel.hidden=false;status.textContent='Obtendo dados reais do relatório...';
+ show.onclick=async()=>{if(busy||z315ReportBusy)return;busy=true;z315ReportBusy=true;show.disabled=true;el('z315ReportSave').disabled=true;clear();panel.hidden=false;status.textContent='Obtendo dados reais do relatório...';
  const kind=source.value,id=el('z315ReportHistory').value;
  try{let v;if(kind==='learning'){await window.fieldExport();v=await window.savedReportText315()}else{v=await window.reportText315(kind,id)}
  if(source.value!==kind||(kind==='history'&&id!==el('z315ReportHistory').value)){clear();return}
  if(typeof v!=='string'||!v.trim())throw Error('Relatório vazio');JSON.parse(v);area.value=v;
  status.textContent='Relatório disponível. Clique em Copiar texto JSON ou use Ctrl+A e Ctrl+C.';area.focus();area.select();
- }catch(e){status.textContent=String(e);area.value=''}finally{busy=false;show.disabled=false}};
+ }catch(e){status.textContent=String(e);area.value=''}finally{busy=false;z315ReportBusy=false;show.disabled=false;await z315ReportPaint()}};
  el('z315SelectText').onclick=()=>{area.focus();area.select()};
  el('z315CopyText').onclick=async()=>{if(!area.value)return;area.focus();area.select();try{
  if(navigator.clipboard&&navigator.clipboard.writeText){try{await navigator.clipboard.writeText(area.value);status.textContent='Texto JSON copiado.';return}catch(_){}}
  if(document.execCommand('copy'))status.textContent='Texto JSON copiado.';else status.textContent='Texto selecionado. Pressione Ctrl+C para copiar.';
  }catch(_){status.textContent='Texto selecionado. Pressione Ctrl+C para copiar.'}};
 })();
+/* Z315_REPORT_COPY_END */
 </script></body></html>''')
 # Keep a direct shortcut on the main screen; no additional page registry.
 s=once(s,'<section id="overview">','<section id="overview"><div class="card"><button id="z315ReportShortcut">Gerar relatório para copiar</button></div>')

@@ -29,3 +29,15 @@ func TestReport315DurableFileCopyText(t *testing.T){
  if _,e=formatRawReportText315([]byte("{"));e==nil{t.Fatal("accepted invalid JSON")}
  if _,e=formatRawReportText315(make([]byte,maxReportText315+1));e==nil{t.Fatal("accepted oversized report")}
 }
+
+func TestReport315DurableFilePublishAfterWrite(t *testing.T){
+ dir:=t.TempDir()
+ name,e:=writeReport315(dir,"atomic",func(w io.Writer)error{
+  if _,e:=io.WriteString(w,"{");e!=nil{return e}
+  paths,e:=filepath.Glob(filepath.Join(dir,"*.json"));if e!=nil||len(paths)!=0{t.Fatalf("unfinished JSON exposed: %v %v",paths,e)}
+  _,e=io.WriteString(w,"\"partial\":true}");return e
+ })
+ if e!=nil{t.Fatal(e)}
+ b,e:=os.ReadFile(name);if e!=nil||!json.Valid(b){t.Fatal("invalid published JSON",e)}
+ tmp,e:=filepath.Glob(filepath.Join(dir,"*.tmp"));if e!=nil||len(tmp)!=0{t.Fatal("temporary residue",tmp,e)}
+}

@@ -40,3 +40,11 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Evidence or complete hash regression failed' }
           go test -v -count=5 ./remediation
           if ($LASTEXITCODE -ne 0) { throw 'Remediation safety regression failed' }
+      - name: Resident scan coordination, network advisory and reversible quarantine
+        shell: pwsh
+        run: |
+          go test -v -count=5 ./changeguard ./behaviorwatch ./globalintel ./remediation
+          if ($LASTEXITCODE -ne 0) { throw 'Protection module regression failed' }
+          Copy-Item lab/resident_integration_test.go.txt resident_integration_lab_test.go
+          go test -v -count=5 scanner.go pe.go quarantine.go resident_integration_lab_test.go
+          if ($LASTEXITCODE -ne 0) { throw 'Resident or quarantine integration failed' }

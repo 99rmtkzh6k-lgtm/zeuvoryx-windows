@@ -1,0 +1,25 @@
+package engine
+import("context";"crypto/sha256";"encoding/hex";"os";"path/filepath";"testing";"time";"github.com/zeuvoryx/zeuvoryx/changeguard")
+func TestResidentScannerLab(t *testing.T){
+ root:=t.TempDir();tr:=changeguard.New([]string{root});s:=New();data:=[]byte("Harmless resident scan control")
+ sum:=sha256.Sum256(data);s.IOC[hex.EncodeToString(sum[:])]="LAB control"
+ ctx,cancel:=context.WithTimeout(context.Background(),4*time.Second);defer cancel()
+ scans:=0;matched:=false
+ err:=changeguard.RunScans(ctx,tr,10*time.Millisecond,time.Second,func(ctx context.Context)error{
+  r,e:=s.Scan(ctx,root,nil);if e!=nil{return e};scans++
+  if scans==1{if e:=os.WriteFile(filepath.Join(root,"new.txt"),data,0600);e!=nil{return e};tr.Signal(time.Now())}
+  if len(r.Findings)==1{matched=true;cancel()};return nil
+ },func(c changeguard.ScanCycle){if c.Error!=""{t.Error(c.Error)}})
+ if !matched||scans!=2||err!=context.Canceled{t.Fatal(matched,scans,err)}
+}
+func TestQuarantineRestoreLab(t *testing.T){
+ root:=t.TempDir();q:=&Quarantine{Dir:filepath.Join(root,"vault")};path:=filepath.Join(root,"harmless.txt");data:=[]byte("Harmless quarantine round trip")
+ if e:=os.WriteFile(path,data,0600);e!=nil{t.Fatal(e)}
+ item,e:=q.Add(path);if e!=nil{t.Fatal(e)}
+ if _,e=os.Stat(path);!os.IsNotExist(e){t.Fatal("original remained",e)}
+ if e=os.WriteFile(path,[]byte("new file"),0600);e!=nil{t.Fatal(e)}
+ if e=q.Restore(item.ID);e==nil{t.Fatal("restore overwrote existing file")}
+ if e=os.Remove(path);e!=nil{t.Fatal(e)}
+ if e=q.Restore(item.ID);e!=nil{t.Fatal(e)}
+ got,e:=os.ReadFile(path);if e!=nil||string(got)!=string(data){t.Fatal("restore mismatch",e)}
+}

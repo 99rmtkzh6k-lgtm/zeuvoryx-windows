@@ -1,7 +1,7 @@
 // Read-only correlation of recorded Sysmon events. Not a malware verdict.
 package behaviorwatch
 import("encoding/xml";"fmt";"io";"strings";"sort")
-type Event struct{ID int; GUID,Image,Target string}
+type Event struct{ID int; GUID,Image,Target,DestinationIP string}
 type Signal struct{GUID string;Image string;FileCreates int;StartupWrites int;Reason string}
 type xmlEvent struct{ID int `xml:"System>EventID"`;Data []struct{Name string `xml:"Name,attr"`;Value string `xml:",chardata"`} `xml:"EventData>Data"`}
 func Parse(r io.Reader)([]Event,error){
@@ -9,7 +9,7 @@ func Parse(r io.Reader)([]Event,error){
  const maxEvents=20000
  bounded:=&io.LimitedReader{R:r,N:maxXML+1}
  dec:=xml.NewDecoder(bounded);out:=[]Event{};seen:=0
- for{tok,e:=dec.Token();if bounded.N<=0{return nil,fmt.Errorf("Sysmon XML exceeds %d bytes",maxXML)};if e==io.EOF{return out,nil};if e!=nil{return nil,e};st,ok:=tok.(xml.StartElement);if !ok||st.Name.Local!="Event"{continue};seen++;if seen>maxEvents{return nil,fmt.Errorf("Sysmon event count exceeds %d",maxEvents)};var x xmlEvent;if e=dec.DecodeElement(&x,&st);e!=nil{return nil,e};if bounded.N<=0{return nil,fmt.Errorf("Sysmon XML exceeds %d bytes",maxXML)};v:=Event{ID:x.ID};for _,d:=range x.Data{switch d.Name{case "ProcessGuid":v.GUID=d.Value;case "Image":v.Image=d.Value;case "TargetFilename","TargetObject":v.Target=d.Value}};if v.GUID!=""{out=append(out,v)}}
+ for{tok,e:=dec.Token();if bounded.N<=0{return nil,fmt.Errorf("Sysmon XML exceeds %d bytes",maxXML)};if e==io.EOF{return out,nil};if e!=nil{return nil,e};st,ok:=tok.(xml.StartElement);if !ok||st.Name.Local!="Event"{continue};seen++;if seen>maxEvents{return nil,fmt.Errorf("Sysmon event count exceeds %d",maxEvents)};var x xmlEvent;if e=dec.DecodeElement(&x,&st);e!=nil{return nil,e};if bounded.N<=0{return nil,fmt.Errorf("Sysmon XML exceeds %d bytes",maxXML)};v:=Event{ID:x.ID};for _,d:=range x.Data{switch d.Name{case "ProcessGuid":v.GUID=d.Value;case "Image":v.Image=d.Value;case "DestinationIp":v.DestinationIP=d.Value;case "TargetFilename","TargetObject":v.Target=d.Value}};if v.GUID!=""{out=append(out,v)}}
 }
 func Analyze(events []Event)[]Signal{
  type state struct{image string;creates map[string]bool;writes map[string]bool;start bool}

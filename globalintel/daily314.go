@@ -6,7 +6,7 @@ func OpenDaily(path string)*Daily{
  d:=&Daily{path:path,data:Bundled(time.Now())}
  st,e:=os.Stat(path);if e!=nil||st.Size()>24<<20{return d}
  b,e:=os.ReadFile(path);if e!=nil||json.Unmarshal(b,&d.state)!=nil{return d}
- now:=time.Now();a,e:=parseDrop(d.state.V4,false,now);if e!=nil{return d};v,e:=parseDrop(d.state.V6,true,now);if e!=nil{return d}
+ now:=time.Now();if d.state.Attempt.After(now.Add(10*time.Minute)){d.state.Attempt=time.Time{}};a,e:=parseDrop(d.state.V4,false,now);if e!=nil{return d};v,e:=parseDrop(d.state.V6,true,now);if e!=nil{return d}
  d.data=Drop{V4:a,V6:v};return d
 }
 func(d *Daily) Status()Status{
@@ -23,7 +23,7 @@ func(d *Daily) persist()error{
 }
 func(d *Daily) Refresh(ctx context.Context)(status Status,err error){
  d.mu.Lock();now:=time.Now()
- if d.busy||(!d.state.Attempt.IsZero()&&now.Sub(d.state.Attempt)<24*time.Hour){d.mu.Unlock();return d.Status(),errors.New("Limite de uma tentativa por 24 horas; confira a data da base")}
+ if d.busy||(!d.state.Attempt.IsZero()&&!d.state.Attempt.After(now.Add(10*time.Minute))&&now.Sub(d.state.Attempt)<24*time.Hour){d.mu.Unlock();return d.Status(),errors.New("Limite de uma tentativa por 24 horas; confira a data da base")}
  d.busy=true;d.state.Attempt=now
  if e:=d.persist();e!=nil{d.busy=false;d.problem=e.Error();d.mu.Unlock();return d.Status(),e}
  d.mu.Unlock()

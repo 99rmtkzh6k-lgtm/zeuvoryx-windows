@@ -1,3 +1,7 @@
+## Identidade visual — assinatura do criador (pendente de implementação)
+
+Determinação do titular em 25/11/2026: substituir a exibição do nome completo “Leonardo Botelho”/“Leonardo A Botelho” na assinatura visual do aplicativo pela forma abreviada **L A Botelho**, acompanhada da bandeira do Brasil **🇧🇷**. Manter a linha de crédito do criador/engenheiro já existente (por exemplo, “Created & Engineered by L A Botelho 🇧🇷”, respeitando o texto real da interface após inspeção). Não alterar atribuição jurídica ou autoria de arquivos existentes automaticamente; esta é uma preferência de apresentação. Aplicar de maneira consistente na tela, instalador e metadados visuais pertinentes quando autorizada a próxima implantação. **Status: somente memorando; não implementar nem compilar agora.**
+
 ## P0 — DIAGNÓSTICO TÉCNICO COPIÁVEL COM ALTERNATIVAS (25/11/2026)
 
 **Correção explícita de interpretação:** este recurso **não** é “ajuda inteligente ao usuário”; é **ajuda inteligente à IA responsável por desenvolver o ZEUVORYX**. Inserir no fluxo já existente de geração de relatórios, preferencialmente na seção **Histórico de Avaliação e Diagnóstico Técnico** / **Diagnóstico de Testes**, preservando os demais campos e o layout. Incluir a subseção **Causas possíveis e soluções técnicas** e o comando **Copiar diagnóstico completo para IA** (e exportação JSON). A localização exata no código da UI deve ser confirmada antes de implementar; não inventar nomes de componentes.

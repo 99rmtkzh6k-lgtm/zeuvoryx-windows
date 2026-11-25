@@ -1,0 +1,15 @@
+name: ZEUVORYX 3.0.9 LAB - live report validation
+run-name: ZEUVORYX 3.0.9 LAB - live reporting integrated validation
+on:
+  push:
+    branches: [windows-3.0.9-live-lab]
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  validate-live:
+    if: github.ref == 'refs/heads/windows-3.0.9-live-lab'
+    uses: ./.github/workflows/windows-build.yml

@@ -2368,6 +2368,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw '3.0.9 performance panel integration failed' }
           gofmt -w performance308_windows.go performance308_windows_test.go desktop_windows.go
           if ($LASTEXITCODE -ne 0) { throw 'Performance panel formatting failed' }
+          python prepare_live_report309.py
+          if ($LASTEXITCODE -ne 0) { throw 'Live report integration failed' }
+          gofmt -w live_report309.go live_report309_test.go engine/live_report309.go main.go engine/scanner.go desktop_windows.go
+          if ($LASTEXITCODE -ne 0) { throw 'Live report formatting failed' }
           gofmt -w engine/scan308_test.go
           if ($LASTEXITCODE -ne 0) { throw '3.0.9 test formatting failed' }
           gofmt -w audit main.go engine/scanner.go engine/scan_upgrade.go desktop_windows.go stability_windows.go stability_windows_test.go scan306_windows_test.go
@@ -2404,6 +2408,7 @@ jobs:
           if ($audit -notmatch 'const\s+Version\s*=\s*"3\.0\.9"') { throw 'Incorrect audit identity' }
           if ($desktop.Contains('3.0.8 LAB') -or $html.Contains('3.0.8 LAB BETA')) { throw 'Stale 3.0.8 identity' }
           if (!$html.Contains('id="zAIRobot"') -or !$html.Contains('id="zAIOverviewRobot"')) { throw 'Missing live AI robot' }
+          if (!$html.Contains('id="zLiveFailures"') -or !$html.Contains('id="zLiveCoverage"') -or !$desktop.Contains('snapshotForExport')) { throw 'Live reporting missing' }
           Write-Host 'Verified final identity: ZEUVORYX 3.0.9 LAB'
       - name: Run adaptive model tests
         shell: pwsh
@@ -2458,6 +2463,8 @@ jobs:
       - name: Run tests ten times
         shell: pwsh
         run: |
+          go test -v -count=5 -run '^Test309' .
+          if ($LASTEXITCODE -ne 0) { throw 'Live report regression failed' }
           go test -v -count=10 ./...
           if ($LASTEXITCODE -ne 0) { throw 'Go tests failed' }
       - name: Fifty controlled full-root scan regressions

@@ -1,0 +1,13 @@
+name: ZEUVORYX 3.0.14 LAB - Physical Audit Gate
+on:
+  push:
+    branches:
+      - windows-3.0.14-audit-fix
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit-candidate:
+    if: github.ref == 'refs/heads/windows-3.0.14-audit-fix'
+    uses: ./.github/workflows/windows-build.yml

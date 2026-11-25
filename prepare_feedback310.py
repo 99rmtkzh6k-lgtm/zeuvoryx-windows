@@ -44,6 +44,7 @@ function z310Paint(s){
  const prior=z310Previous;
  z310Previous=d.state;z310Latest=s;z310Balance();
  const win=z('z315WindowsSummary'),native=s.report?.windows_local_314,history=native?.defenderHistory;
+ const mon=z('z315ChangeStatus'),m=s.report?.change_monitor_315;if(mon&&m)mon.textContent=(m.enabled?'Monitor de alterações ativo':'Monitor de alterações desativado')+' · '+fmt((m.active_roots||[]).length)+' pastas ativas de '+fmt((m.roots||[]).length)+' · '+fmt(m.change_signals)+' sinais de alteração (não são vírus) · '+fmt(Object.keys(m.problems||{}).length)+' falhas de cobertura.';
  if(win){
    const active=history?.activeThreats;
    const message=history?.state==='available'?'Microsoft Defender: '+fmt((history.entries||[]).length)+' registros nos últimos 7 dias'+(history.truncated?' (limite de 100)':'')+' · '+(typeof active==='number'?fmt(active)+' ameaças ativas':'ameaças ativas não verificadas')+' · '+(native.observedAt?new Date(native.observedAt).toLocaleTimeString():'horário indisponível'):'Microsoft Defender: histórico não verificado'+(s.report?.windows_problem_314?' · '+s.report.windows_problem_314:'');

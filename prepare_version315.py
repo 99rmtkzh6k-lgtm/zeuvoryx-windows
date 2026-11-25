@@ -47,3 +47,13 @@ func TestUnicode315ScannerIntegration(t *testing.T){
  }
 }
 ''',encoding="utf-8")
+
+# Bind the same measured resource policy to both actual generated file scanners.
+for name,pattern in (("main.go",r"stabilityWorkers\(runtime\.NumCPU\(\)\)"),("engine/scanner.go",r"(?<=:=)\s*runtime\.NumCPU\(\)")):
+    p=Path(name);s=p.read_text(encoding="utf-8")
+    replacement=" scanplan.CurrentWorkers(runtime.NumCPU())" if name=="engine/scanner.go" else "scanplan.CurrentWorkers(runtime.NumCPU())"
+    s,n=re.subn(pattern,lambda m:replacement,s)
+    if n!=1:raise RuntimeError("adaptive worker anchor "+name+": "+str(n))
+    if s.count("import (")!=1:raise RuntimeError("adaptive worker import "+name)
+    s=s.replace("import (",'import (\n "github.com/zeuvoryx/zeuvoryx/scanplan"',1)
+    p.write_text(s,encoding="utf-8")

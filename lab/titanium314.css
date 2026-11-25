@@ -35,3 +35,25 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .zTitaniumBrand strong{font-size:clamp(17px,2.6vw,30px);letter-spacing:2px}.zTitaniumBrand span{font-size:clamp(12px,1.8vw,19px);font-weight:750;color:#f2d18b}.zTitaniumBrand small{font-size:clamp(9px,1vw,12px);letter-spacing:.5px}
 @media(max-height:650px){#zTitaniumBanner{max-height:145px}}
 @media(forced-colors:active){#zTitaniumBanner,.zTitaniumBrand{background:Canvas!important;color:CanvasText!important}.zTitaniumBrand span{color:CanvasText!important}}
+
+/* Full-window wallpaper, not a separate banner. Preserve the entire approved wide art.
+   Secondary dark cover fills the remaining viewport without stretching the original. */
+body{background-image:var(--z-titanium-art),linear-gradient(rgba(4,12,24,.72),rgba(4,12,24,.72)),var(--z-titanium-art);background-size:contain,cover,cover;background-position:center,center,center;background-repeat:no-repeat;background-attachment:fixed}
+.shell,main,section:not(.hidden){background-color:transparent}
+aside{background:rgba(6,16,29,.32)}
+header{min-height:70px;background:rgba(8,18,31,.20);border-color:rgba(222,195,133,.48)}
+header>div:first-child,header .actions{background:transparent}
+.card,.entry,.zp-item{background:rgba(9,20,35,.30);border-color:rgba(206,224,242,.40);box-shadow:inset 0 1px 0 #ffffff20,0 3px 8px #0002}
+section.card{background:rgba(8,17,30,.12)}
+.hero{background:rgba(8,18,31,.30)}
+.brand,.tag,.note,.sub,.label,.muted,.speed,.hero p,.entry p,footer,.metric,h1,h2,.zp-label,.zp-detail{color:#f7faff;text-shadow:0 1px 2px #000,0 0 5px #000d,0 0 9px #0008}
+#zTitaniumBanner{position:static;display:flex;align-items:center;width:auto;height:auto;min-height:0;max-height:none;aspect-ratio:auto;margin:0 0 8px;padding:0;border:0;border-radius:0;background:none;overflow:visible}
+.zTitaniumBrand{position:static;max-width:none;display:flex;flex-direction:column;gap:2px;background:none;padding:2px 8px;border-left:2px solid #e7c784;text-shadow:0 1px 3px #000,0 0 7px #000}
+.zTitaniumBrand strong{font-size:clamp(17px,2.6vw,28px)}
+.zTitaniumBrand span{font-size:clamp(11px,1.8vw,18px)}
+.zTitaniumBrand small{font-size:11px}
+.zp-value,.zp-number,.chart text{paint-order:stroke;stroke:#091425;stroke-width:1.2px;stroke-linejoin:round}
+.media-report,dialog,input,select,textarea{background:rgba(12,23,40,.93);color:#fff}
+body[data-z-art-focus="1"] .shell{visibility:hidden}
+#zArtRestore{position:fixed;bottom:12px;right:12px;z-index:1000}
+@media(forced-colors:active){body,.shell,main,aside,header,.card,.entry,.hero,.zp-item,section.card{background:Canvas!important;color:CanvasText!important;text-shadow:none!important}#zTitaniumBanner,.zTitaniumBrand{background:Canvas!important;color:CanvasText!important;text-shadow:none!important}}

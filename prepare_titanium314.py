@@ -20,7 +20,19 @@ if s.count("3.0.14 LAB BETA</div>")!=1:raise RuntimeError("Titanium version anch
 s=s.replace("3.0.14 LAB BETA</div>","3.0.14 LAB BETA</div><div id=\"zTitaniumIdentity\">OLYMPUS TITANIUM · GLOBAL THREAT DEFENSE</div>",1)
 s=s.replace("3.0.14 · Performance","3.0.14 · Olympus Titanium")
 if s.count("<header>")!=1:raise RuntimeError("Titanium header anchor")
-s=s.replace("<header>",'<div id="zTitaniumBanner" role="img" aria-label="Zeus, templo grego e raios azuis — arte aprovada"><div class="zTitaniumBrand"><strong>ZEUVORYX</strong><span>OLYMPUS TITANIUM</span><small>GLOBAL THREAT DEFENSE · 3.0.14 LAB</small></div></div><header>',1)
+s=s.replace("<header>",'<div id="zTitaniumBanner" aria-label="Identidade Olympus Titanium sobre a arte oficial de Zeus"><div class="zTitaniumBrand"><strong>ZEUVORYX</strong><span>OLYMPUS TITANIUM</span><small>GLOBAL THREAT DEFENSE · 3.0.14 LAB</small></div></div><header>',1)
+# Keep wallpaper visible while using the interface. Optional distraction-free art view.
+if s.count("</script></body></html>")!=1:raise RuntimeError("Titanium script anchor")
+s=s.replace("</script></body></html>", """
+;(()=>{const brand=document.querySelector('.zTitaniumBrand');
+const open=document.createElement('button');open.type='button';open.textContent='Ver arte inteira';open.id='zArtOpen';brand.appendChild(open);
+const back=document.createElement('button');back.type='button';back.id='zArtRestore';back.textContent='Voltar aos controles';back.hidden=true;document.body.appendChild(back);
+function setView(active){document.body.dataset.zArtFocus=active?'1':'0';back.hidden=!active;if(active)back.focus();else open.focus();}
+open.onclick=()=>setView(true);back.onclick=()=>setView(false);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.dataset.zArtFocus==='1')setView(false)});
+})();
+</script></body></html>""",1)
+if "background-size:contain,cover,cover" not in s:raise RuntimeError("Titanium full-window wallpaper missing")
 class Check(HTMLParser):
     def __init__(self):super().__init__();self.ids=[]
     def handle_starttag(self,tag,attrs):

@@ -2452,6 +2452,7 @@ jobs:
           if (!$html.Contains('id="zLiveFailures"') -or !$html.Contains('id="zLiveCoverage"') -or !$desktop.Contains('snapshotForExport')) { throw 'Live reporting missing' }
           if (!$html.Contains('id="z310Speed"') -or !$html.Contains('id="z310Notice"') -or !$desktop.Contains('z310Beep')) { throw '310 feedback missing' }
           if (!$html.Contains('id="z310MaintenancePanel"') -or !$desktop.Contains('z310Maintenance')) { throw '310 maintenance panel missing' }
+          if (!$html.Contains('background-size:contain,cover,cover') -or !$html.Contains('zArtRestore')) { throw 'Full-window wallpaper missing' }
           if (!$html.Contains('id="zTitaniumIdentity"') -or !$html.Contains('--z-titanium-art:') -or !$html.Contains('id="zp-cpu-needle"')) { throw 'Titanium visual identity missing' }
           if (!$html.Contains('id="z310Optimizer"') -or !$desktop.Contains('z310OptimizeApply') -or !$desktop.Contains('z310DriveOptimize')) { throw 'Integrated optimizer missing' }
           Write-Host 'Verified final identity: ZEUVORYX 3.0.14 LAB'

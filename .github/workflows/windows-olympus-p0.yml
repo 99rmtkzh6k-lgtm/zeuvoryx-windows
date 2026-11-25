@@ -1,7 +1,7 @@
 name: ZEUVORYX 3.0.15 LAB - Olympus P0
 on:
   push:
-    branches: [lab-olympus-coverage-p0-20261125]
+    branches: [lab-olympus-report-metrics-20261125]
     paths-ignore: ['**.md']
   workflow_dispatch:
 permissions:

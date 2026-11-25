@@ -24,6 +24,8 @@ type Report struct {
  Engine string `json:"engine"`
  Version string `json:"engine_database_version,omitempty"`
  Root string `json:"root"`
+ Roots []string `json:"roots,omitempty"`
+ UnavailableRoots []string `json:"unavailable_roots,omitempty"`
  Started time.Time `json:"started"`
  Finished time.Time `json:"finished"`
  ExitCode int `json:"exit_code"`
@@ -101,19 +103,31 @@ func parse(r *Report, raw string, code int, overflow bool) {
 }
 // Scan uses a single ClamAV process for a local file or tree, never a shell, never --remove or --move.
 // db is optional and only for explicitly selected laboratory databases; normal desktop use passes "".
-func Scan(ctx context.Context, exe, root, db string) (r Report, err error) {
+func Scan(ctx context.Context, exe, root, db string) (Report,error) {
+ return ScanRoots(ctx,exe,[]string{root},db)
+}
+// ScanRoots loads the database once for all eligible roots. Counts belong to the batch, not each root.
+func ScanRoots(ctx context.Context, exe string, roots []string, db string) (r Report, err error) {
  r=Report{Engine:"ClamAV / independent signatures",Started:time.Now().UTC(),ExitCode:-1,Scanned:-1,Infected:-1,KnownSignatures:-1,Errors:-1,Findings:[]Finding{},Partial:true,Status:"inconclusive_or_partial",Coverage:"ClamAV has size, archive, format and access limits; no memory or resident protection. No detections is not a guarantee. No files are sent or removed."}
  defer func(){r.Finished=time.Now().UTC();if err!=nil{r.Problem=err.Error();r.Partial=true;r.Status="inconclusive_or_partial"}}()
  if !filepath.IsAbs(exe){return r,errors.New("absolute ClamAV executable required")}
- root,err=filepath.Abs(root);if err!=nil{return r,err};r.Root=root
- if strings.HasPrefix(root,`\\`){return r,errors.New("network paths not supported")}
- st,err:=os.Lstat(root);if err!=nil{return r,err}
- if !st.Mode().IsRegular()&&!st.IsDir(){return r,errors.New("regular file or directory required")}
+ if len(roots)==0{return r,errors.New("no roots supplied")}
+ seen:=make(map[string]bool)
+ for _,input:=range roots{
+  root,e:=filepath.Abs(input)
+  if e!=nil||strings.HasPrefix(root,`\\`){r.UnavailableRoots=append(r.UnavailableRoots,input);continue}
+  if seen[root]{continue};seen[root]=true
+  st,e:=os.Lstat(root)
+  if e!=nil||(!st.Mode().IsRegular()&&!st.IsDir()){r.UnavailableRoots=append(r.UnavailableRoots,input);continue}
+  r.Roots=append(r.Roots,root)
+ }
+ r.Root=strings.Join(r.Roots,"; ")
+ if len(r.Roots)==0{return r,errors.New("no accessible regular roots")}
  vc,cancel:=context.WithTimeout(ctx,15*time.Second);r.Version,err=Version(vc,exe);cancel()
  if err!=nil{return r,fmt.Errorf("ClamAV version: %w",err)}
  args:=[]string{"--stdout","--infected","--recursive","--alert-exceeds-max=yes","--follow-dir-symlinks=0","--follow-file-symlinks=0"}
  if db!=""{if !filepath.IsAbs(db){return r,errors.New("absolute laboratory DB required")};args=append(args,"--database="+db)}
- args=append(args,"--",root)
+ args=append(args,"--");args=append(args,r.Roots...)
  cmd:=command(ctx,exe,args...)
  var out bounded
  if fn,ok:=ctx.Value(observerKey314{}).(func(Finding));ok{out.observer.fn=fn}
@@ -124,6 +138,7 @@ func Scan(ctx context.Context, exe, root, db string) (r Report, err error) {
  parse(&r,string(out.b),code,out.overflow)
  if !recentDatabase(r.Version,time.Now()){r.Partial=true;r.Status="inconclusive_or_partial";return r,errors.New("ClamAV daily database date unknown or older than 7 days") }
  if ctx.Err()!=nil{return r,ctx.Err()}
+ if len(r.UnavailableRoots)>0{return r,errors.New("one or more requested roots inaccessible; batch coverage partial")}
  if e!=nil&&code!=1{return r,fmt.Errorf("ClamAV scan: %w",e)}
  if r.Partial{return r,errors.New("ClamAV report partial or inconsistent; see engine output")}
  return r,nil

@@ -1,20 +1,29 @@
 package main
-import("context";"crypto/sha256";"encoding/json";"fmt";"os";"path/filepath";"time";"github.com/zeuvoryx/zeuvoryx/engine";"github.com/zeuvoryx/zeuvoryx/signatureav")
+import("context";"crypto/sha256";"encoding/json";"fmt";"os";"path/filepath";"time";"github.com/zeuvoryx/zeuvoryx/engine";"github.com/zeuvoryx/zeuvoryx/scopeprogress")
 type parallelKey314 struct{}
 type sigResult314 struct{report engine.Report}
 type behaviorResult314 struct{data map[string]any; problem string}
 // One ClamAV process plus the bounded ZEUVORYX worker pool, no per-file process fanout.
 // Windows resident protection is not disabled or replaced. No parallel destructive operations.
 func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engine.Report,error))(engine.Report,error){
+ publishScope:=func(v scopeprogress.Inventory){s.mu.Lock();defer s.mu.Unlock();if s.running{s.report.Inventory314=v}}
+ publishScope(scopeprogress.Inventory{State:"counting"})
+ self,_:=os.Executable()
+ inv:=scopeprogress.Enumerate(ctx,roots,func(path string)bool{
+  if s.quarantine!=nil&&s.quarantine.IsQuarantined(path){return true}
+  return self!=""&&samePath(path,self)
+ },publishScope)
  s.mu.Lock();if s.running{s.report.SignatureState="running"};s.mu.Unlock()
  sig:=make(chan sigResult314,1);beh:=make(chan behaviorResult314,1)
  go func(){r:=engine.Report{SignatureRoots:append([]string(nil),roots...)};s.signaturePhase312(ctx,&r,"",true);sig<-sigResult314{r}}()
  go func(){v,e:=behavior313();b:=behaviorResult314{data:v};if e!=nil{b.problem=e.Error()};beh<-b}()
  rep,e:=run()
+ inv.ScannerDone=true;publishScope(inv)
  r:=<-sig;b:=<-beh
  rep.SignatureRoots=append([]string(nil),roots...)
  rep.SignatureState=r.report.SignatureState;rep.SignatureProblem=r.report.SignatureProblem;rep.SignatureReports=r.report.SignatureReports
  rep.BehaviorLocal=b.data;rep.BehaviorProblem=b.problem
+ rep.Inventory314=inv
  rep.Finished=time.Now();rep.Cancelled=rep.Cancelled||ctx.Err()!=nil
  return rep,e
 }

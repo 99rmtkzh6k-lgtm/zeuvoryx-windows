@@ -26,8 +26,19 @@ function z310Words(){return ({
 'es-ES':['Velocidad de análisis','archivos/s','Midiendo','Detenido','Saldo estimado del espacio ocupado','No es el total real restante','Estimación no disponible para este ámbito','Nuevas alertas','Ver alertas','Revise los hallazgos; el aislamiento requiere confirmación después de detener o finalizar.']
 })[document.documentElement.lang]||['Scan rate','files/s','Measuring','Stopped','Estimated used-space balance','Not the actual remaining scope','Estimate unavailable for this scope','New report alerts','View alerts','Review findings after stopping or completing the scan.']}
 function z310Balance(){
- const s=z310Latest||{},w=z310Words(),v=z310Remaining(z310Used,Number(s.bytes),s.report?.scan_mode);
- document.getElementById('z310Balance').textContent=v===null?w[6]:w[4]+': '+(v/1073741824).toLocaleString(document.documentElement.lang,{maximumFractionDigits:2})+' GiB · '+w[5];
+ const s=z310Latest||{},r=s.report||{},i=r.inventory_314||{},bar=document.getElementById('z314ProgressBar'),out=document.getElementById('z310Balance'),eta=document.getElementById('z314Eta'),note=document.getElementById('z314ScopeNote');
+ bar.hidden=true;eta.textContent='Previsão: indisponível';note.textContent='';
+ if(i.state==='counting'){out.textContent='Contando arquivos reais: '+fmt(i.files)+' · '+volume(i.bytes);return}
+ if(!['ready','partial'].includes(i.state)){out.textContent='Escopo de análise ainda não medido';return}
+ const bytes=Number(s.bytes)||0,files=Number(s.files)||0,total=Number(i.bytes),count=Number(i.files);
+ const remainder=Math.max(0,total-bytes),left=Math.max(0,count-files);
+ out.textContent='Escopo inventariado: '+volume(total)+' · '+fmt(count)+' arquivos | Restam estimados: '+volume(remainder)+' · '+fmt(left)+' arquivos';
+ if(total>0&&bytes<=total){bar.hidden=false;bar.value=Math.min(100,100*bytes/total)}
+ note.textContent='Inventário lógico de arquivos, não espaço físico ocupado. '+fmt(i.errors)+' falhas de inventário · '+fmt(i.excluded)+' itens excluídos. Arquivos podem mudar; omissões não são examinadas.';
+ if(i.scanner_done&&s.running){eta.textContent='Scanner próprio terminou; aguardando ClamAV e consolidação. Tempo total indeterminado.';return}
+ const elapsed=(Date.now()-Date.parse(i.ready_at))/1000;
+ if(s.running&&elapsed>=15&&bytes>0&&remainder>0){const secs=Math.ceil(remainder/(bytes/elapsed));if(Number.isFinite(secs)){eta.textContent='Tempo aproximado do scanner próprio: '+Math.floor(secs/3600)+'h '+Math.ceil((secs%3600)/60)+'min (ClamAV pode terminar depois).'}}
+ if(!s.running&&s.done){eta.textContent=r.cancelled?'Varredura cancelada':r.partial?'Varredura encerrada com cobertura parcial':'Varredura encerrada';}
 }
 window.z310Storage=n=>{z310Used=n;z310Balance()};
 function z310Paint(s){

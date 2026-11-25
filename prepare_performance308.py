@@ -17,7 +17,7 @@ css="""
 .zp-head{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap}
 .zp-head h2{font-size:15px}.zp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:6px;margin-top:6px}
 .zp-item{text-align:center;border:1px solid var(--line);border-radius:9px;padding:5px 3px;background:var(--panel)}
-.zp-item svg{display:block;width:100%;height:58px;max-width:110px;margin:auto}
+.zp-item svg{display:block;width:100%;height:108px;max-width:176px;margin:auto}.zp-needle{stroke:#ffb760;stroke-width:2.8;stroke-linecap:round;transition:transform .35s ease}.zp-tick{stroke:#91a5b8;stroke-width:1}.zp-number{fill:#a9bed1;font-size:8px}.zp-hub{fill:#ffb760;stroke:#17263b;stroke-width:1.5}.zp-track{opacity:.6}
 .zp-track{fill:none;stroke:#a6adb5;stroke-width:9;stroke-linecap:round}
 .zp-arc{fill:none;stroke:#237f85;stroke-width:9;stroke-linecap:round;stroke-dasharray:0 100}
 .zp-value{font-size:19px;font-weight:700;fill:currentColor}
@@ -27,11 +27,11 @@ css="""
 """
 panel='<div id="zPerformancePanel" class="card"><div class="zp-head"><h2 id="zpTitle">Desempenho do computador</h2><span id="zpClock">—</span></div><div class="zp-grid">'
 for k,label in [('cpu','Processador'),('ram','Memória RAM'),('free','RAM disponível'),('disk','Disco do Windows')]:
-    panel+=f'<div class="zp-item"><div class="zp-label" id="zp-{k}-label">{label}</div><svg viewBox="0 0 120 72" aria-hidden="true"><path class="zp-track" d="M12 60 A48 48 0 0 1 108 60"/><path id="zp-{k}-arc" class="zp-arc" pathLength="100" d="M12 60 A48 48 0 0 1 108 60"/><text class="zp-value" id="zp-{k}-value" x="60" y="56" text-anchor="middle">—</text></svg><div id="zp-{k}-detail" class="zp-detail">—</div></div>'
+    panel+=f'<div class="zp-item"><div class="zp-label" id="zp-{k}-label">{label}</div><svg viewBox="0 0 120 90" aria-hidden="true"><path class="zp-track" d="M12 60 A48 48 0 0 1 108 60"/><path id="zp-{k}-arc" class="zp-arc" pathLength="100" d="M12 60 A48 48 0 0 1 108 60"/><g class="zp-tick"><path d="M12 60h7 M26 26l5 5 M60 12v7 M94 26l-5 5 M108 60h-7"/></g><g class="zp-number" text-anchor="middle"><text x="12" y="70">0</text><text x="60" y="10">50</text><text x="108" y="70">100</text></g><line class="zp-needle" id="zp-{k}-needle" x1="60" y1="60" x2="23" y2="60"/><circle class="zp-hub" cx="60" cy="60" r="4"/><text class="zp-value" id="zp-{k}-value" x="60" y="84" text-anchor="middle">—</text></svg><div id="zp-{k}-detail" class="zp-detail">—</div></div>'
 panel+='</div><p id="zpStatus" class="sub" role="status">Aguardando dados do Windows</p></div>'
 s=once(s,'</style></head>',css+'</style></head>')
 s=once(s,'<section id="overview">','<section id="overview">'+panel)
-s=once(s,'<div class="metric" id="hits">—</div></div></div>','<div class="metric" id="hits">—</div></div><div class="card" id="zStorageCard"><div class="label" id="zsLabel">ARMAZENAMENTO E PROGRESSO</div><div class="metric" id="zsCapacity">—</div><p class="sub" id="zsSpace">—</p><p class="sub" id="zsProgress">—</p><p class="sub" id="z310Balance">—</p><p class="sub" id="z310Speed" role="status">—</p></div></div>')
+s=once(s,'<div class="metric" id="hits">—</div></div></div>','<div class="metric" id="hits">—</div></div><div class="card" id="zStorageCard"><div class="label" id="zsLabel">ARMAZENAMENTO E PROGRESSO</div><div class="metric" id="zsCapacity">—</div><p class="sub" id="zsSpace">—</p><p class="sub" id="zsProgress">—</p><p class="sub" id="z310Balance">—</p><progress id="z314ProgressBar" max="100" value="0" style="width:100%;height:12px;accent-color:#62dfd1" hidden></progress><p class="sub" id="z314Eta">—</p><p class="sub" id="z314ScopeNote"></p><p class="sub" id="z310Speed" role="status">—</p></div></div>')
 s=once(s,'</style></head>','#overview .grid{grid-template-columns:repeat(auto-fit,minmax(132px,1fr))}</style></head>')
 s=once(s,'3.0.10 LAB BETA</div>','3.0.10 LAB BETA</div><div class="sub" id="zpRevision">3.0.10 · Performance</div>')
 js="""
@@ -43,7 +43,7 @@ const dict={
 'es-ES':['Rendimiento del equipo','Procesador','Memoria RAM','RAM disponible','Disco de Windows','procesadores lógicos','en uso','libres','de','Datos locales de Windows','Esperando datos de Windows','Medición no disponible','GiB']};
 let busy=false,confirmed=false;
 const valid=n=>typeof n==='number'&&Number.isFinite(n)&&n>=0&&n<=100;
-function gauge(k,n,detail){const v=valid(n);z('zp-'+k+'-arc').setAttribute('stroke-dasharray',v?n+' 100':'0 100');z('zp-'+k+'-value').textContent=v?Math.round(n)+'%':'—';z('zp-'+k+'-detail').textContent=detail;}
+function gauge(k,n,detail){const v=valid(n);const needle=z('zp-'+k+'-needle');needle.setAttribute('transform','rotate('+(v?n*1.8:0)+' 60 60)');needle.style.visibility=v?'visible':'hidden';z('zp-'+k+'-arc').setAttribute('stroke-dasharray',v?n+' 100':'0 100');z('zp-'+k+'-value').textContent=v?Math.round(n)+'%':'—';z('zp-'+k+'-detail').textContent=detail;}
 async function refresh(){
  if(busy||document.hidden||z('overview').classList.contains('hidden'))return;
  busy=true;
@@ -68,7 +68,7 @@ async function refresh(){
   const local=d.local_count>0&&d.local_total>0&&d.local_free<=d.local_total;
   z('zsCapacity').textContent=local?gib(d.local_total):'—';
   z('zsSpace').textContent=local?gib(d.local_total-d.local_free)+' '+st[1]+' / '+gib(d.local_free)+' '+st[2]+' · '+d.local_count+' '+st[3]+' · '+d.local_omitted+' '+st[4]:t[11];
-  z('zsProgress').textContent=st[5]+': '+z('bytes').textContent+' · '+st[6];
+  z('zsProgress').textContent=st[5]+': '+z('bytes').textContent;
   if(window.z310Storage)window.z310Storage(local?d.local_total-d.local_free:null);
   z('zpStatus').textContent=ram&&valid(d.cpu)?t[9]+' · '+new Date(d.at).toLocaleTimeString(lang):t[10];
   if(!confirmed&&ram&&valid(d.cpu)&&z('zp-cpu-value').textContent.endsWith('%')&&z('zp-ram-value').textContent.endsWith('%')&&z('zsCapacity').textContent!=='—'&&document.getElementById('zHelpOpen')&&document.getElementById('zAIActivity')) confirmed=await window.zPerformanceRendered();

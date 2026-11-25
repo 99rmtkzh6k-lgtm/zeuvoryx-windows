@@ -22,7 +22,9 @@ def main(s):
     x=once(x,'s.scanner.Scan(engine.WithLiveReport(ctx,s.publishLive),path,progress)','s.parallelCustom314(ctx,path,progress)')
     return s[:a]+x+s[b:]
 def report(s):
+    s=once(s,'import (','import (\n "github.com/zeuvoryx/zeuvoryx/scopeprogress"')
     return once(s,'type Report struct {','''type Report struct {
+ Inventory314 scopeprogress.Inventory `json:"inventory_314"`
  BehaviorLocal map[string]any `json:"behavior_local,omitempty"`
  BehaviorProblem string `json:"behavior_problem,omitempty"`
 ''')

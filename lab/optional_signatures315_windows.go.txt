@@ -1,0 +1,24 @@
+package main
+
+import (
+ "fmt"
+ "syscall"
+ "unsafe"
+)
+
+// Only fixed public provider information pages may be opened. No credentials or payment data cross the bridge.
+func optionalSignatureProvider315(id string)(string,bool){
+ switch id{
+ case "securiteinfo":return "https://www.securiteinfo.com/clamav-antivirus/improve-detection-rate-of-zero-day-malwares-for-clamav-pt.shtml",true
+ case "malwarepatrol":return "https://www.malwarepatrol.net/clamav-configuration-guide/",true
+ }
+ return "",false
+}
+func openOptionalSignature315(id string)(bool,error){
+ target,ok:=optionalSignatureProvider315(id);if !ok{return false,fmt.Errorf("Fornecedor fora do catálogo")}
+ verb,e:=syscall.UTF16PtrFromString("open");if e!=nil{return false,e}
+ url,e:=syscall.UTF16PtrFromString(target);if e!=nil{return false,e}
+ result,_,_:=syscall.NewLazyDLL("shell32.dll").NewProc("ShellExecuteW").Call(0,uintptr(unsafe.Pointer(verb)),uintptr(unsafe.Pointer(url)),0,0,1)
+ if result<=32{return false,fmt.Errorf("Não foi possível abrir o navegador (código %d)",result)}
+ return true,nil
+}

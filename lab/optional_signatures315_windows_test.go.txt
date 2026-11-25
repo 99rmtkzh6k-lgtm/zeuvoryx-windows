@@ -1,0 +1,6 @@
+package main
+import("strings";"testing")
+func TestOptionalSignatureProvider315(t *testing.T){
+ for _,id:=range []string{"securiteinfo","malwarepatrol"}{v,ok:=optionalSignatureProvider315(id);if !ok||!strings.HasPrefix(v,"https://"){t.Fatalf("invalid provider %q",id)}}
+ for _,id:=range []string{"","https://example.org","file:///C:/","securiteinfo\n","malwarepatrol?key=x"}{if _,ok:=optionalSignatureProvider315(id);ok{t.Fatalf("unexpected provider %q",id)}}
+}

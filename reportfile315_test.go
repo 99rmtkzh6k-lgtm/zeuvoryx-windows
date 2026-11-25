@@ -1,0 +1,13 @@
+package main
+import("encoding/json";"errors";"io";"os";"path/filepath";"testing")
+func TestReport315DurableFile(t *testing.T){
+ dir:=filepath.Join(t.TempDir(),"ZEUVORYX-Relatórios")
+ for _,partial:=range []bool{true,false}{
+  name,e:=writeReport315(dir,"varredura",func(w io.Writer)error{return json.NewEncoder(w).Encode(map[string]any{"partial":partial,"files":42,"windows_local_314":map[string]any{"source":"Defender"}})})
+  if e!=nil{t.Fatal(e)};b,e:=os.ReadFile(name);if e!=nil{t.Fatal(e)}
+  var v struct{Partial bool;Files int};if e=json.Unmarshal(b,&v);e!=nil||v.Partial!=partial||v.Files!=42{t.Fatalf("JSON inválido %s %v",b,e)}
+ }
+ if _,e:=writeReport315(dir,"fail",func(w io.Writer)error{_,_=io.WriteString(w,"partial");return errors.New("write failure")});e==nil{t.Fatal("false success")}
+ if _,e:=writeReport315(dir,"empty",func(w io.Writer)error{return nil});e==nil{t.Fatal("empty success")}
+ files,e:=os.ReadDir(dir);if e!=nil||len(files)!=2{t.Fatalf("residue %v %v",files,e)}
+}

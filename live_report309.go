@@ -33,6 +33,7 @@ func cloneErrorCounts(m map[string]int)map[string]int{
 // Caller holds State.mu. Copy the mutable slices before returning to WebView/JSON.
 func(s *State) reportSnapshotLocked(view bool)(engine.Report,int){
  r:=s.report;total:=len(r.Findings)
+ r.ChangeMonitor315=changeMonitor315Snapshot()
  if view&&s.running&&len(r.Findings)>liveFindingLimit{r.Findings=r.Findings[len(r.Findings)-liveFindingLimit:]}
  if view&&len(r.Errors)>liveErrorLimit{r.Errors=r.Errors[len(r.Errors)-liveErrorLimit:]}
  r.Findings=append([]engine.Finding(nil),r.Findings...)

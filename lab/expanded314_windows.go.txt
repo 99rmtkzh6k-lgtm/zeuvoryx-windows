@@ -17,3 +17,6 @@ func openYouTubeVerify314()(bool,error){
  r,_,e:=syscall.NewLazyDLL("shell32.dll").NewProc("ShellExecuteW").Call(0,uintptr(unsafe.Pointer(verb)),uintptr(unsafe.Pointer(url)),0,0,1)
  if r<=32{return false,fmt.Errorf("Não foi possível abrir o verificador oficial: %v",e)};return true,nil
 }
+
+// Called only at the start of the serialized scan, before the signature worker launches.
+func resetSignature314(){signal314.Lock();defer signal314.Unlock();signal314.recent=nil}

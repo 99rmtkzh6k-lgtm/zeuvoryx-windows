@@ -31,3 +31,14 @@ func TestDatabaseAge(t *testing.T){
  if !recentDatabase("ClamAV 1.5.4/28194/Wed Nov 25 06:26:59 2026",now){t.Fatal("fresh database rejected")}
  for _,v:=range []string{"ClamAV 1.5.4","ClamAV 1.5.4/0/Wed Nov 25 06:26:59 2026","ClamAV 1.5.4/1/Wed Nov 11 06:26:59 2026","ClamAV 1.5.4/1/Mon Dec  7 06:26:59 2026"}{if recentDatabase(v,now){t.Fatal("invalid date accepted",v)}}
 }
+
+func TestRealClamAVBatch(t *testing.T){
+ exe:=os.Getenv("CLAMAV_REAL_EXECUTABLE");if exe==""{t.Skip("real ClamAV executable not configured")}
+ ctx,cancel:=context.WithTimeout(context.Background(),3*time.Minute);defer cancel()
+ a,b:=filepath.Join(t.TempDir(),"a.txt"),filepath.Join(t.TempDir(),"b.txt")
+ for _,p:=range []string{a,b}{if e:=os.WriteFile(p,[]byte("ordinary harmless content"),0600);e!=nil{t.Fatal(e)}}
+ r,e:=ScanRoots(ctx,exe,[]string{a,b,a},os.Getenv("CLAMAV_REAL_DB"))
+ if e!=nil||r.Partial||r.Scanned!=2||len(r.Roots)!=2{t.Fatalf("batch %+v %v",r,e)}
+ r,e=ScanRoots(ctx,exe,[]string{a,filepath.Join(t.TempDir(),"missing.txt")},os.Getenv("CLAMAV_REAL_DB"))
+ if e==nil||!r.Partial||len(r.UnavailableRoots)!=1||r.Scanned!=1{t.Fatalf("missing root %+v %v",r,e)}
+}

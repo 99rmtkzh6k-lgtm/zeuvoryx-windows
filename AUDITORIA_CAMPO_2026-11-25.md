@@ -1,3 +1,9 @@
+## Teste físico da varredura rápida — 25/11/2026 às 18h26 (Brasília)
+
+O relatório fornecido pelo titular identifica Windows 10 Pro (build 19045) e ZEUVORYX 3.0.15 LAB, commit `9d8b2c82`. A varredura rápida terminou em 96,147 s, com relatório final e sem cancelamento. O scanner próprio processou 207 dos 216 arquivos inventariados, com nove arquivos temporários ocupados. O ClamAV examinou 146 arquivos, reportou zero infecções, 12 erros e oito avisos de limite de tamanho em ZIPs; cobertura parcial (exit 2). O log bruto mostra 132,20 MiB examinados, 1,47 GiB lidos e 72,981 s. Os campos estruturados de volume faltaram neste binário. A correção de unidades MiB/GiB já consta no código posterior `ee906dc`; ainda precisa de validação em um instalador que a inclua.
+
+O Defender e os três perfis do firewall estavam ativos; Sysmon indisponível e monitor próprio desativado. A varredura completa, a estabilidade em campo e a validação do candidato posterior permanecem pendentes. Registro agregado sem caminhos locais nem identificadores da máquina.
+
 ## Continuidade do Windows 3.0.15 LAB — 25/11/2026
 
 A [CI 45696640691](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45696640691) do commit de código `9d8b2c82eefa8d1c99275cb708429a30ae566a63` aprovou os três jobs (regressão Ubuntu, regressão Windows e compilação/validação Windows). Este candidato acrescenta métricas nativas do ClamAV ao relatório, incluindo bytes lidos e examinados, duração, limites e truncamento. A [CI anterior de cobertura 45691904568](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45691904568), do commit `a48e7eb`, também terminou com sucesso.

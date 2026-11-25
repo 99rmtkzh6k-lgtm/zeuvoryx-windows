@@ -15,12 +15,10 @@ s = one(s, 'type Finding struct {', '''type Finding struct {
     AdaptiveScore *float64 `json:"adaptive_score,omitempty"`
     AdaptiveModel string `json:"adaptive_model,omitempty"`
 ''')
-old = 'return &Finding{Path: path, SHA256: fullHash, Risk: score, Level: tier(score), Reasons: reasons, Size: int64(len(data)), Evidence:kind,QuarantineEligible:eligible&&!strings.Contains(path," :: ")}'
-# gofmt may already have normalized spacing in the generated source.
+# Preserve the constructor produced by hardening, including optional lab evidence.
 import re
-matches = re.findall(r'return &Finding\{Path: path, SHA256: fullHash, Risk: score, Level: tier\(score\), Reasons: reasons, Size: int64\(len\(data\)\), Evidence:\s*kind,\s*QuarantineEligible:\s*eligible\s*&&\s*!strings\.Contains\(path, " :: "\)\}', s)
-if old in s:
-    matches = [old]
+pattern = r'return &Finding\{Path:\s*path,\s*SHA256:\s*fullHash,\s*Risk:\s*score,\s*Level:\s*tier\(score\),\s*Reasons:\s*reasons,\s*Size:\s*int64\(len\(data\)\),\s*Evidence:\s*kind,\s*QuarantineEligible:\s*eligible\s*&&\s*!strings\.Contains\(path,\s*" :: "\)(?:,\s*EvidenceKind:\s*evidenceKind,\s*AdvisoryOnly:\s*true)?\s*\}'
+matches = re.findall(pattern, s)
 if len(matches) != 1:
     raise RuntimeError("Expected exactly one final Finding constructor")
 # Run the actual advisory model before the alert threshold, even for clean files.
@@ -31,7 +29,7 @@ s = one(s, gates[0], '''features := adaptive.FromReasons(reasons)
     prediction, adaptiveErr := adaptive.Observe(features)
     if score < 30 && score >= 15 && adaptiveErr == nil && adaptive.ReviewAlert(features,prediction) { score = 30; reasons = append(reasons,"IA: indicadores estáticos correlacionados; revisão necessária") }
     ''' + gates[0])
-s = one(s, matches[0], '''hit := &Finding{Path: path, SHA256: fullHash, Risk: score, Level: tier(score), Reasons: reasons, Size: int64(len(data)), Evidence:kind,QuarantineEligible:eligible&&!strings.Contains(path," :: ")}
+s = one(s, matches[0], matches[0].replace("return &Finding", "hit := &Finding", 1) + '''
     if kind == "heuristic" && adaptiveErr == nil {
         value := prediction * 100
         hit.AdaptiveScore = &value

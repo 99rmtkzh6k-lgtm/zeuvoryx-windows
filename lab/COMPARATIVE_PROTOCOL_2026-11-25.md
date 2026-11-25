@@ -23,3 +23,6 @@ Dual-platform tests passed again (45651697134). Installer reached hardening phas
 
 ## Build correction — 45653618067
 Third full build failed at same Finding anchor after gofmt normalized spaces before hardening. Replaced exact lab-only matching with bounded whitespace-tolerant match, rejecting ambiguity and preserving fields. Dual platform test 45653617885 passed. Full build pending, not authorized for installation.
+
+## Build correction — 45653910793
+Scanner hardening now passed; adaptive integration then failed on its constructor anchor. Adaptive generator now preserves either original or extended exact-structure constructor with whitespace normalization, including quarantine gate. No change to model threshold. Module run 45653910645 passed. Installer still pending.

@@ -7,6 +7,7 @@ import (
  "errors"
  "fmt"
  "io"
+ "math"
  "os"
  "os/exec"
  "path/filepath"
@@ -41,6 +42,11 @@ type Report struct {
  Raw string `json:"engine_output"`
  Problem string `json:"problem,omitempty"`
  Coverage string `json:"coverage_note"`
+ DataScannedMiB *float64 `json:"engine_data_scanned_mib,omitempty"`
+ DataReadMiB *float64 `json:"engine_data_read_mib,omitempty"`
+ NativeDurationSeconds *float64 `json:"engine_duration_seconds,omitempty"`
+ OutputTruncated bool `json:"engine_output_truncated"`
+ LimitNotices int `json:"engine_limit_notices"`
  Evidence auditmetrics.SignatureEvidence `json:"evidence_315"`
 }
 type bounded struct { b []byte; overflow bool; observer lineObserver314 }
@@ -96,7 +102,7 @@ func DatabaseStatus(v string,now time.Time)string{
 func recentDatabase(v string,now time.Time)bool{return DatabaseStatus(v,now)=="fresh"}
 func parse(r *Report, raw string, code int, overflow bool) {
  r.Raw=raw; r.ExitCode=code; r.Scanned=-1; r.Infected=-1; r.KnownSignatures=-1; r.Errors=-1
- r.Partial=overflow
+ r.Partial=overflow; r.OutputTruncated=overflow; r.DataScannedMiB=nil; r.DataReadMiB=nil; r.NativeDurationSeconds=nil; r.LimitNotices=0
  s:=bufio.NewScanner(strings.NewReader(raw));s.Buffer(make([]byte,4096),1<<20)
  summary:=false
  for s.Scan(){
@@ -107,11 +113,17 @@ func parse(r *Report, raw string, code int, overflow bool) {
    if i<=0||i+2>=len(v){r.Partial=true;continue}
    label:=v[i+2:]; lower:=strings.ToLower(label); kind:="signature_detection"
    if strings.Contains(lower,"eicar"){kind="test_eicar"}else if strings.Contains(lower,"heuristics.")||strings.Contains(lower,"encrypted"){kind="heuristic_or_limit";r.Partial=true}
+   if strings.HasPrefix(lower,"heuristics.limits.exceeded"){r.LimitNotices++}
    r.Findings=append(r.Findings,Finding{Path:v[:i],Signature:label,Kind:kind})
   }
   if strings.HasSuffix(line," ERROR")||strings.HasPrefix(line,"ERROR:")||strings.HasPrefix(line,"WARNING:"){r.Partial=true}
   if !summary{continue}
   k,v,ok:=strings.Cut(line,":");if !ok{continue}
+  switch k {
+  case "Data scanned":r.DataScannedMiB=summaryNumber(v,"MB")
+  case "Data read":r.DataReadMiB=summaryNumber(v,"MB")
+  case "Time":r.NativeDurationSeconds=summaryNumber(v,"sec")
+  }
   n,e:=strconv.ParseInt(strings.TrimSpace(v),10,64);if e!=nil||n<0{continue}
   switch k{case "Scanned files":r.Scanned=n;case "Infected files":r.Infected=n;case "Known viruses":r.KnownSignatures=n;case "Total errors":r.Errors=n}
  }
@@ -120,6 +132,11 @@ func parse(r *Report, raw string, code int, overflow bool) {
  if code!=0&&code!=1{r.Partial=true}
  if (code==0&&r.Infected!=0)||(code==1&&r.Infected<=0){r.Partial=true}
  if r.Partial{r.Status="inconclusive_or_partial"}else if code==1{r.Status="detections_reported"}else{r.Status="no_detection_reported"}
+}
+// ClamAV labels its binary megabyte summary as MB; preserve its reported precision.
+func summaryNumber(v,unit string)*float64{
+ f:=strings.Fields(v);if len(f)<2||f[1]!=unit{return nil}
+ n,e:=strconv.ParseFloat(f[0],64);if e!=nil||n<0||math.IsNaN(n)||math.IsInf(n,0){return nil};return &n
 }
 // Scan uses a single ClamAV process for a local file or tree, never a shell, never --remove or --move.
 // Desktop callers supply their integrated database explicitly; generic callers may use ClamAV defaults.

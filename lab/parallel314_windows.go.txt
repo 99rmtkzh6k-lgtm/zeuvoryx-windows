@@ -1,5 +1,5 @@
 package main
-import("context";"crypto/sha256";"encoding/json";"fmt";"os";"path/filepath";"time";"unsafe";"github.com/zeuvoryx/zeuvoryx/scanplan";"github.com/zeuvoryx/zeuvoryx/engine";"github.com/zeuvoryx/zeuvoryx/scopeprogress")
+import("context";"crypto/sha256";"encoding/json";"fmt";"os";"path/filepath";"time";"unsafe";"sync";"log";"github.com/zeuvoryx/zeuvoryx/scanplan";"github.com/zeuvoryx/zeuvoryx/engine";"github.com/zeuvoryx/zeuvoryx/scopeprogress")
 type parallelKey314 struct{}
 func constrainedScan315()bool{
  m:=pMemory{Length:uint32(unsafe.Sizeof(pMemory{}))}
@@ -20,11 +20,14 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
  // Cancel its independent context when scanning ends; never claim full coverage from a partial inventory.
  invCtx,cancelInv:=context.WithCancel(ctx);defer cancelInv()
  invCh:=make(chan scopeprogress.Inventory,1)
+ var invMu sync.Mutex
+ invLast:=scopeprogress.Inventory{State:"counting"};invOpen:=true
+ invUpdate:=func(v scopeprogress.Inventory){invMu.Lock();defer invMu.Unlock();if !invOpen{return};invLast=v;publishScope(v)}
  go func(){
   v:=scopeprogress.Enumerate(invCtx,roots,func(path string)bool{
    if s.quarantine!=nil&&s.quarantine.IsQuarantined(path){return true}
    return self!=""&&samePath(path,self)
-  },publishScope)
+  },invUpdate)
   invCh<-v
  }()
  s.mu.Lock();mode:=s.report.ScanMode;if s.running{s.report.SignatureState="pending"};s.mu.Unlock()
@@ -49,17 +52,21 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
   sigCtx:=ctx
   if mode=="quick"{var cancelSig context.CancelFunc;sigCtx,cancelSig=context.WithTimeout(ctx,5*time.Minute);defer cancelSig()}
   r:=engine.Report{SignatureRoots:append([]string(nil),roots...)}
-  known,total,_:=scanplan.Memory()
-  if !scanplan.ClamCapacity(known,total){r.SignatureState="unavailable";r.SignatureProblem="RAM física abaixo da recomendação do ClamAV (3 GiB); scanner próprio executado, cobertura de assinaturas incompleta.";s.publishSignatureProgress314(&r);sig<-sigResult314{r};return}
+  known,total,available:=scanplan.Memory()
+  if !scanplan.ClamReady(known,total,available){r.SignatureState="unavailable";r.SignatureProblem="ClamAV adiado: RAM física ou disponível insuficiente, ou medição inválida. Scanner próprio preservado; cobertura de assinaturas incompleta. Libere memória e tente novamente.";log.Printf("signature deferred ram_known=%t total=%d available=%d",known,total,available);s.publishSignatureProgress314(&r);sig<-sigResult314{r};return}
+  log.Printf("signature phase started mode=%s ram_available=%d",mode,available)
   s.signaturePhase312(sigCtx,&r,"",true)
   if sigCtx.Err()==context.DeadlineExceeded&&ctx.Err()==nil{r.SignatureState="partial";r.SignatureProblem="ClamAV: limite de 5 minutos da varredura rápida atingido; cobertura incompleta. Execute uma análise completa para continuar.";s.publishSignatureProgress314(&r)}
+  log.Printf("signature phase ended state=%s",r.SignatureState)
   sig<-sigResult314{r}
  }
  if !serial{go runSignature()}
- go func(){v,e:=behavior313();b:=behaviorResult314{data:v};if e!=nil{b.problem=e.Error()};s.mu.Lock();if s.running{s.report.BehaviorLocal=b.data;s.report.BehaviorProblem=b.problem};s.mu.Unlock();beh<-b}()
+ go func(){v,e:=behavior313Context(ctx);b:=behaviorResult314{data:v};if e!=nil{b.problem=e.Error()};s.mu.Lock();if s.running{s.report.BehaviorLocal=b.data;s.report.BehaviorProblem=b.problem};s.mu.Unlock();beh<-b}()
  rep,e:=run()
  cancelInv()
- inv:=<-invCh
+ inv,ok:=scanplan.Await(invCh,5*time.Second)
+ invMu.Lock();invOpen=false
+ if !ok{inv=invLast;inv.State="partial";inv.Errors++;log.Print("inventory join timeout; coverage partial")};invMu.Unlock()
  inv.ScannerDone=true;publishScope(inv)
  b:=<-beh
  stopWatch();w:=<-win

@@ -1,0 +1,3 @@
+package main
+import("testing";"strings";"github.com/zeuvoryx/zeuvoryx/signatureav")
+func TestSignatureView315PreservesExport(t *testing.T){raw:=strings.Repeat("x",8<<20);src:=[]signatureav.Report{{Raw:raw,Findings:make([]signatureav.Finding,150),Scanned:12345,Infected:150}};view:=signatureView315(src);if len(view)!=1||view[0].Raw!=""||len(view[0].Findings)!=100||view[0].Scanned!=12345||view[0].Infected!=150{t.Fatal("incorrect view")};if len(src[0].Raw)!=len(raw)||len(src[0].Findings)!=150{t.Fatal("original evidence changed")}}

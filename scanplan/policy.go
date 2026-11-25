@@ -24,3 +24,6 @@ func Workers(cpus int, known bool,total,available uint64)int{
 // Below this physical capacity, keep the own scanner usable and report the
 // optional signature stage as unavailable instead of falsely claiming coverage.
 func ClamCapacity(known bool,total uint64)bool{return !known||total>=3*GiB}
+
+// ClamReady guards initial resource pressure, not a process RAM cap.
+func ClamReady(known bool,total,available uint64)bool{return known&&total>=3*GiB&&available<=total&&available>=GiB}

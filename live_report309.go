@@ -2,6 +2,7 @@ package main
 import (
  "time"
  "github.com/zeuvoryx/zeuvoryx/engine"
+ "github.com/zeuvoryx/zeuvoryx/signatureav"
 )
 const liveFindingLimit=500
 const liveErrorLimit=20
@@ -39,6 +40,7 @@ func(s *State) reportSnapshotLocked(view bool)(engine.Report,int){
  r.Findings=append([]engine.Finding(nil),r.Findings...)
  r.Errors=append([]string(nil),r.Errors...)
  r.ErrorCategories=cloneErrorCounts(r.ErrorCategories)
+ if view{r.SignatureReports=signatureView315(r.SignatureReports)}
  if s.running{r.SignatureRecent314=signatureRecentFindings314();r.SignatureRecentLimit314=100;r.InProgress=true;r.Partial=true;r.Finished=time.Time{};r.SnapshotAt=time.Now()}
  return r,total
 }
@@ -47,3 +49,6 @@ func(s *State) snapshotForExport()(engine.Report,bool){
  if ok&&r.InProgress{r.Finished=r.SnapshotAt;r.Summarize();r.Finished=time.Time{};r.Partial=true}
  return r,ok
 }
+
+// UI polling omits raw engine output; full JSON export preserves original evidence.
+func signatureView315(src []signatureav.Report)[]signatureav.Report{if len(src)==0{return nil};dst:=append([]signatureav.Report(nil),src...);for i:=range dst{dst[i].Raw="";if len(dst[i].Findings)>100{dst[i].Findings=dst[i].Findings[:100]}};return dst}

@@ -15,3 +15,5 @@ func TestWorkers(t *testing.T){
  }{if got:=Workers(v.cpu,v.known,v.total,v.available);got!=v.want{t.Fatalf("%+v got %d",v,got)}}
  if ClamCapacity(true,2*GiB)||!ClamCapacity(true,4*GiB)||!ClamCapacity(false,0){t.Fatal("incorrect signature capacity policy")}
 }
+
+func TestClamReady(t *testing.T){for _,v:=range []struct{known bool;total,available uint64;want bool}{{false,8*GiB,4*GiB,false},{true,2*GiB,2*GiB,false},{true,4*GiB,GiB/2,false},{true,4*GiB,GiB,true},{true,8*GiB,3*GiB,true},{true,4*GiB,5*GiB,false}}{if got:=ClamReady(v.known,v.total,v.available);got!=v.want{t.Fatalf("%+v got %t",v,got)}}}

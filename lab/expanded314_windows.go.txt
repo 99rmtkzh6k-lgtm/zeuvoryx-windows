@@ -1,5 +1,5 @@
 package main
-import("fmt";"sync";"syscall";"time";"unsafe";"github.com/zeuvoryx/zeuvoryx/signatureav")
+import("sync";"time";"github.com/zeuvoryx/zeuvoryx/signatureav")
 type liveSignal314 struct{Sequence uint64;Finding signatureav.Finding;At time.Time}
 var signal314 struct{sync.Mutex;seq uint64;last time.Time;recent []liveSignal314}
 func publishSignature314(f signatureav.Finding){
@@ -11,13 +11,6 @@ func publishSignature314(f signatureav.Finding){
  signal314.Unlock();if beep{z310Beep()}
 }
 func recentSignature314()[]liveSignal314{signal314.Lock();defer signal314.Unlock();return append([]liveSignal314(nil),signal314.recent...)}
-func openYouTubeVerify314()(bool,error){
- url,_:=syscall.UTF16PtrFromString("https://www.youtube.com/verify-ai")
- verb,_:=syscall.UTF16PtrFromString("open")
- r,_,e:=syscall.NewLazyDLL("shell32.dll").NewProc("ShellExecuteW").Call(0,uintptr(unsafe.Pointer(verb)),uintptr(unsafe.Pointer(url)),0,0,1)
- if r<=32{return false,fmt.Errorf("Não foi possível abrir o verificador oficial: %v",e)};return true,nil
-}
-
 // Called only at the start of the serialized scan, before the signature worker launches.
 func resetSignature314(){signal314.Lock();defer signal314.Unlock();signal314.recent=nil}
 

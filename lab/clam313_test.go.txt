@@ -1,0 +1,7 @@
+package engine
+import "testing"
+func TestClam313Eligibility(t *testing.T){
+ for _,c:=range []struct{k,l string;want bool}{
+ {"signature_detection","Win.Example.Detection",true},{"test_eicar","Eicar-Test-Signature",false},{"signature_detection","PUA.Win.Tool",false},{"signature_detection","Heuristics.Limits.Exceeded",false},{"heuristic_or_limit","Win.Example.Detection",false},{"signature_detection","",false},
+ }{if eligibleClam313(c.k,c.l)!=c.want{t.Fatalf("bad policy %+v",c)}}
+}

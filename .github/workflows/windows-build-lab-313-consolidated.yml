@@ -1,0 +1,77 @@
+name: ZEUVORYX 3.0.13 LAB - independent signatures
+on:
+  push:
+    branches: [windows-3.0.13-remediation-lab]
+    paths-ignore: ['**.md']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  actual-clamav:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+          cache: false
+      - name: Install distribution ClamAV and refresh official signatures
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clamav clamav-freshclam
+          sudo systemctl stop clamav-freshclam.service || true
+          sudo freshclam
+          clamscan --version
+      - name: Five real engine runs with clean and EICAR fixtures
+        run: |
+          set -o pipefail
+          CLAMAV_REAL_EXECUTABLE="$(command -v clamscan)" go test -v -count=5 ./signatureav | tee signature-engine.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ZEUVORYX-3.0.13-signature-engine-evidence
+          path: signature-engine.log
+  actual-clamav-windows:
+    runs-on: windows-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+          cache: false
+      - name: Verify official ClamAV Windows package and load daily signatures
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $zip=Join-Path $env:RUNNER_TEMP 'clamav-1.5.5.zip'
+          Invoke-WebRequest 'https://github.com/Cisco-Talos/clamav/releases/download/clamav-1.5.5/clamav-1.5.5.win.x64.zip' -OutFile $zip
+          if((Get-FileHash $zip -Algorithm SHA256).Hash.ToLowerInvariant() -ne '90169f5e551010bfbd0208b50d9b2fa8988ef396cccbd46b0cc8cae03e22a4a4'){throw 'Official ClamAV asset digest mismatch'}
+          $dir=Join-Path $env:RUNNER_TEMP 'clamav'
+          Expand-Archive $zip $dir
+          $exe=Get-ChildItem $dir -Recurse -File -Filter clamscan.exe | Select-Object -First 1
+          if(!$exe){throw 'clamscan missing'}
+          $db=Join-Path $exe.DirectoryName 'database'
+          New-Item -ItemType Directory -Path $db -Force | Out-Null
+          $conf=Join-Path $exe.DirectoryName 'freshclam.conf'
+          @('DatabaseMirror database.clamav.net',('DatabaseDirectory "'+$db+'"')) | Set-Content -Encoding ascii $conf
+          & (Join-Path $exe.DirectoryName 'freshclam.exe') "--config-file=$conf"
+          if($LASTEXITCODE -ne 0){throw 'FreshClam Windows failed'}
+          "CLAMAV_REAL_EXECUTABLE=$($exe.FullName)" >> $env:GITHUB_ENV
+          "CLAMAV_REAL_DB=$db" >> $env:GITHUB_ENV
+      - name: Five Windows real engine checks
+        shell: pwsh
+        run: |
+          go test -v -count=5 ./signatureav | Tee-Object -FilePath signature-windows.log
+          if($LASTEXITCODE -ne 0){throw 'Windows actual engine check failed'}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ZEUVORYX-3.0.13-Windows-signature-evidence
+          path: signature-windows.log
+  validate-windows:
+    needs: [actual-clamav, actual-clamav-windows]
+    if: github.ref == 'refs/heads/windows-3.0.13-remediation-lab'
+    uses: ./.github/workflows/windows-build.yml

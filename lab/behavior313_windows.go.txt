@@ -1,0 +1,23 @@
+package main
+import("bytes";"context";"fmt";"os";"os/exec";"path/filepath";"strings";"syscall";"time";"github.com/zeuvoryx/zeuvoryx/behaviorwatch";"github.com/zeuvoryx/zeuvoryx/signatureav")
+type limit313 struct{b bytes.Buffer;overflow bool}
+func(w *limit313)Write(p []byte)(int,error){n:=(4<<20)-w.b.Len();if n<len(p){w.overflow=true;if n>0{_,_=w.b.Write(p[:n])}}else{_,_=w.b.Write(p)};return len(p),nil}
+func behavior313()(map[string]any,error){
+ root:=os.Getenv("SystemRoot");if !filepath.IsAbs(root){return nil,fmt.Errorf("SystemRoot unavailable")}
+ ctx,cancel:=context.WithTimeout(context.Background(),20*time.Second);defer cancel()
+ cmd:=exec.CommandContext(ctx,filepath.Join(root,"System32","wevtutil.exe"),"qe","Microsoft-Windows-Sysmon/Operational","/q:*[System[(EventID=1 or EventID=11 or EventID=13) and TimeCreated[timediff(@SystemTime) <= 600000]]]","/f:xml","/c:500","/rd:true","/e:Events")
+ cmd.SysProcAttr=&syscall.SysProcAttr{HideWindow:true};var out limit313;cmd.Stdout=&out;cmd.Stderr=&out
+ if e:=cmd.Run();e!=nil||out.overflow{return nil,fmt.Errorf("Sysmon indisponível, acesso negado ou limite atingido; análise inconclusiva")}
+ es,e:=behaviorwatch.Parse(strings.NewReader(out.b.String()));if e!=nil{return nil,e}
+ return map[string]any{"events":len(es),"signals":behaviorwatch.Analyze(es),"coverage":"Até 500 eventos registrados em 10 minutos. Não é monitor residente nem prova de malware."},nil
+}
+func refreshClam313()(string,error){
+ tool,e:=clamExecutable();if e!=nil{return "",e};dir:=filepath.Dir(tool)
+ updater:=filepath.Join(dir,"freshclam.exe");conf:=filepath.Join(dir,"freshclam.conf")
+ for _,p:=range []string{updater,conf}{st,e:=os.Lstat(p);if e!=nil||!st.Mode().IsRegular(){return "",fmt.Errorf("FreshClam oficial e configuração precisam estar instalados")}}
+ ctx,cancel:=context.WithTimeout(context.Background(),10*time.Minute);defer cancel()
+ cmd:=exec.CommandContext(ctx,updater,"--config-file="+conf);cmd.Dir=dir;cmd.SysProcAttr=&syscall.SysProcAttr{HideWindow:true}
+ var out limit313;cmd.Stdout=&out;cmd.Stderr=&out
+ if e=cmd.Run();e!=nil||out.overflow{return "",fmt.Errorf("Atualização não confirmada: %v; %s",e,out.b.String())}
+ return signatureav.Version(ctx,tool)
+}

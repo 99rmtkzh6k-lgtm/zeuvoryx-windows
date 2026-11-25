@@ -1,0 +1,39 @@
+package engine
+import(
+ "context"
+ "crypto/sha256"
+ "encoding/hex"
+ "errors"
+ "io"
+ "os"
+ "path/filepath"
+ "strings"
+ "github.com/zeuvoryx/zeuvoryx/signatureav"
+)
+func eligibleClam313(kind,label string)bool{
+ label=strings.ToLower(strings.TrimSpace(label))
+ if kind!="signature_detection"||label==""{return false}
+ for _,v:=range []string{"eicar","heuristic","encrypted","pua.","potentially","test-signature"}{if strings.Contains(label,v){return false}}
+ return true
+}
+// Only after explicit UI consent, recheck current bytes using the independent engine.
+func (q *Quarantine) AddClamRechecked(ctx context.Context,exe,path,label string)(QuarantineItem,error){
+ if !eligibleClam313("signature_detection",label){return QuarantineItem{},errors.New("signature not eligible")}
+ abs,e:=filepath.Abs(path);if e!=nil{return QuarantineItem{},e}
+ roots,e:=protectedRoots();if e!=nil{return QuarantineItem{},e};if e=checkProtected(abs,roots);e!=nil{return QuarantineItem{},e}
+ if q.IsQuarantined(abs){return QuarantineItem{},errors.New("already isolated")}
+ st,e:=os.Lstat(abs);if e!=nil||!st.Mode().IsRegular(){return QuarantineItem{},errors.New("regular file required")}
+ f,e:=os.Open(abs);if e!=nil{return QuarantineItem{},e}
+ before,e:=f.Stat();if e!=nil{f.Close();return QuarantineItem{},e}
+ if !os.SameFile(st,before){f.Close();return QuarantineItem{},errors.New("file changed")}
+ h:=sha256.New();n,e:=io.Copy(h,f);after,se:=f.Stat();ce:=f.Close()
+ if e!=nil||se!=nil||ce!=nil||n!=before.Size()||!stableFile(abs,before,after){return QuarantineItem{},errors.New("file identity uncertain")}
+ digest:=hex.EncodeToString(h.Sum(nil))
+ r,e:=signatureav.Scan(ctx,exe,abs,"")
+ if e!=nil||r.Partial||r.Status!="detections_reported"||r.Infected!=1||len(r.Findings)!=1{return QuarantineItem{},errors.New("recheck did not confirm detection")}
+ hit:=r.Findings[0]
+ if !eligibleClam313(hit.Kind,hit.Signature)||hit.Signature!=label||!strings.EqualFold(filepath.Clean(hit.Path),abs){return QuarantineItem{},errors.New("signature or path changed")}
+ if e=quarantineHash(abs,digest);e!=nil{return QuarantineItem{},e}
+ if e=ctx.Err();e!=nil{return QuarantineItem{},e}
+ return q.addWithHash(abs,digest)
+}

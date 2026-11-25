@@ -15,11 +15,12 @@ func (s *State) signaturePhase312(ctx context.Context, rep *engine.Report, custo
  roots:=rep.SignatureRoots
  if !automatic{roots=[]string{customPath}}
  if len(roots)==0{rep.SignatureState="unavailable";rep.SignatureProblem="No verified roots for signature scan";return}
- rep.SignatureState="running"
+ rep.SignatureState="running";rep.SignatureProblem="Preparando ou atualizando base de assinaturas ClamAV";s.publishSignatureProgress314(rep)
  if _,e:=ensureClam314(ctx,false);e!=nil{rep.SignatureState="unavailable";rep.SignatureProblem=e.Error();return}
+ rep.SignatureProblem="Base disponível; ClamAV examinando arquivos";s.publishSignatureProgress314(rep)
  r,e:=signatureav.ScanRoots(signatureav.WithObserver(ctx,publishSignature314),tool,roots,"")
  rep.SignatureReports=append(rep.SignatureReports,r)
- if e!=nil||r.Partial{rep.SignatureState="partial";if e!=nil{rep.SignatureProblem=e.Error()}else{rep.SignatureProblem="ClamAV evidence incomplete"}}else{rep.SignatureState="finished"}
+ if e!=nil||r.Partial{rep.SignatureState="partial";if e!=nil{rep.SignatureProblem=e.Error()}else{rep.SignatureProblem="ClamAV evidence incomplete"}}else{rep.SignatureState="finished";rep.SignatureProblem=""}
  s.publishSignatureProgress314(rep)
 }
 

@@ -21,7 +21,7 @@ func ensureClam314(ctx context.Context, force bool)(string,error){
  conf:=filepath.Join(dir,"freshclam.conf")
  if e=os.WriteFile(conf,[]byte("DatabaseMirror database.clamav.net\nDatabaseDirectory \""+db+"\"\n"),0600);e!=nil{return "",e}
  upctx,cancel:=context.WithTimeout(ctx,15*time.Minute);defer cancel()
- cmd:=exec.CommandContext(upctx,filepath.Join(dir,"freshclam.exe"),"--config-file="+conf);cmd.Dir=dir;cmd.SysProcAttr=&syscall.SysProcAttr{HideWindow:true}
+ cmd:=exec.CommandContext(upctx,filepath.Join(dir,"freshclam.exe"),"--config-file="+conf);cmd.WaitDelay=5*time.Second;cmd.Dir=dir;cmd.SysProcAttr=&syscall.SysProcAttr{HideWindow:true}
  var out limit313;cmd.Stdout=&out;cmd.Stderr=&out
  if e=cmd.Run();e!=nil||out.overflow{return "",fmt.Errorf("FreshClam não confirmou atualização: %v; %s",e,out.b.String())}
  v,e:=signatureav.Version(upctx,exe);if e!=nil||strings.Count(v,"/")<2{return "",fmt.Errorf("Base oficial não confirmada: %s %v",v,e)}

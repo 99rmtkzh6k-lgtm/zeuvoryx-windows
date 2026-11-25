@@ -75,3 +75,22 @@ s=once(s,'</script></body></html>',"""el('fieldStart').onclick=async()=>{try{el(
 el('fieldCancel').onclick=async()=>{try{await window.fieldCancel();el('fieldStatus').textContent='Observação cancelada';await z315ReportPaint()}catch(e){el('fieldStatus').textContent=String(e)}};
 </script></body></html>""")
 p.write_text(s,encoding="utf-8")
+
+# Recover local scan reports independently of WebView and manual export.
+Path("autoreport315_windows.go").write_text(Path("lab/autoreport315_windows.go.txt").read_text(encoding="utf-8"),encoding="utf-8")
+p=Path("main.go");s=p.read_text(encoding="utf-8")
+a=s.index("func (s *State) startScan(");b=s.index("func main(",a)
+x=s[a:b];x=once(x,"var rep engine.Report","var rep engine.Report\n stopAuto315:=s.startAutoReport315(scanID)\n defer func(){stopAuto315(rep)}()")
+s=s[:a]+x+s[b:];p.write_text(s,encoding="utf-8")
+p=Path("desktop_windows.go");s=p.read_text(encoding="utf-8")
+s=once(s,'if !bind("copyReport315",','''if !bind("openReports315",openReports315){return}
+ if !bind("autoReportStatus315",autoReportStatus315){return}
+ if !bind("copyReport315",''')
+p.write_text(s,encoding="utf-8")
+p=Path("desktop.html");s=p.read_text(encoding="utf-8")
+s=once(s,'<button id="z315ReportSave" class="primary">Gerar relatório JSON</button>','<button id="z315ReportSave" class="primary">Gerar relatório JSON</button><button id="z315OpenFolder">Abrir pasta dos relatórios</button><p id="z315AutoStatus" role="status">Salvamento automático local a cada 30 segundos e ao encerrar.</p>')
+s=once(s,'</script></body></html>',r'''
+el('z315OpenFolder').onclick=async()=>{try{await window.openReports315()}catch(e){el('z315AutoStatus').textContent='Falha ao abrir pasta: '+String(e)}};
+setInterval(async()=>{try{if(!el('reports315').classList.contains('hidden')){const v=await window.autoReportStatus315();if(v)el('z315AutoStatus').textContent=v}}catch(e){el('z315AutoStatus').textContent=String(e)}},2000);
+</script></body></html>''')
+p.write_text(s,encoding="utf-8")

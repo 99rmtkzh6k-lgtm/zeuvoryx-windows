@@ -11,3 +11,13 @@ func TestReport315DurableFile(t *testing.T){
  if _,e:=writeReport315(dir,"empty",func(w io.Writer)error{return nil});e==nil{t.Fatal("empty success")}
  files,e:=os.ReadDir(dir);if e!=nil||len(files)!=2{t.Fatalf("residue %v %v",files,e)}
 }
+
+func TestReport315DurableFileAutomatic(t *testing.T){
+ dir:=t.TempDir()
+ first,e:=writeAutoReport315(dir,"zeuvoryx-auto-parcial",map[string]any{"partial":true,"files":3});if e!=nil{t.Fatal(e)}
+ final,e:=writeAutoReport315(dir,"zeuvoryx-auto-final",map[string]any{"partial":false,"files":4});if e!=nil{t.Fatal(e)}
+ if first==final{t.Fatal("overwrote recovery file")}
+ for _,p:=range []string{first,final}{b,e:=os.ReadFile(p);if e!=nil||!json.Valid(b){t.Fatalf("invalid JSON: %s %v",p,e)}}
+ if _,e=writeAutoReport315(dir,"fail",make(chan int));e==nil{t.Fatal("encoding failure reported as success")}
+ files,e:=os.ReadDir(dir);if e!=nil||len(files)!=2{t.Fatalf("unexpected residue: %v %v",files,e)}
+}

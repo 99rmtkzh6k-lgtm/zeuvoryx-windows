@@ -38,3 +38,8 @@ func lastReport315()(string,error){
  if !st.Mode().IsRegular()||!os.SameFile(st,transfer315.info)||st.Size()!=transfer315.info.Size()||!st.ModTime().Equal(transfer315.info.ModTime()){return "",fmt.Errorf("O arquivo foi alterado; salve novamente")}
  return transfer315.path,nil
 }
+
+// Automatic recovery uses separate files; it never changes the manual transfer selection.
+func writeAutoReport315(dir,prefix string,v any)(string,error){
+ return writeReport315(dir,prefix,func(w io.Writer)error{return json.NewEncoder(w).Encode(v)})
+}

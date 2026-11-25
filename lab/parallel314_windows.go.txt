@@ -22,7 +22,9 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
   },publishScope)
   invCh<-v
  }()
- s.mu.Lock();if s.running{s.report.SignatureState="running"};s.mu.Unlock()
+ s.mu.Lock();mode:=s.report.ScanMode;if s.running{s.report.SignatureState="pending"};s.mu.Unlock()
+ sigCtx:=ctx
+ if mode=="quick"{var cancelSig context.CancelFunc;sigCtx,cancelSig=context.WithTimeout(ctx,5*time.Minute);defer cancelSig()}
  sig:=make(chan sigResult314,1);beh:=make(chan behaviorResult314,1);win:=make(chan windowsResult314,1)
  watchCtx,stopWatch:=context.WithCancel(ctx);defer stopWatch()
  go func(){
@@ -38,7 +40,7 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
   tick:=time.NewTicker(time.Minute);defer tick.Stop()
   for{select{case <-watchCtx.Done():win<-latest;return;case <-tick.C:refresh()}}
  }()
- go func(){r:=engine.Report{SignatureRoots:append([]string(nil),roots...)};s.signaturePhase312(ctx,&r,"",true);sig<-sigResult314{r}}()
+ go func(){r:=engine.Report{SignatureRoots:append([]string(nil),roots...)};s.signaturePhase312(sigCtx,&r,"",true);if sigCtx.Err()==context.DeadlineExceeded&&ctx.Err()==nil{r.SignatureState="partial";r.SignatureProblem="ClamAV: limite de 5 minutos da varredura rápida atingido; cobertura incompleta. Execute uma análise completa para continuar."};sig<-sigResult314{r}}()
  go func(){v,e:=behavior313();b:=behaviorResult314{data:v};if e!=nil{b.problem=e.Error()};s.mu.Lock();if s.running{s.report.BehaviorLocal=b.data;s.report.BehaviorProblem=b.problem};s.mu.Unlock();beh<-b}()
  rep,e:=run()
  cancelInv()

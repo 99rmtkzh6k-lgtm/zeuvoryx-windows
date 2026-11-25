@@ -1,0 +1,65 @@
+//go:build windows
+
+package main
+
+import (
+ "fmt"
+ "log"
+ "os"
+ "os/exec"
+ "path/filepath"
+ "sync"
+ "time"
+ "github.com/zeuvoryx/zeuvoryx/engine"
+)
+var autoStatus315 struct{sync.Mutex; text string}
+func autoReportStatus315() string {
+ autoStatus315.Lock();defer autoStatus315.Unlock();return autoStatus315.text
+}
+func setAutoStatus315(text string){
+ autoStatus315.Lock();autoStatus315.text=text;autoStatus315.Unlock()
+ log.Print("report recovery: ",text)
+}
+func reportDirectory315()(string,error){
+ home,e:=os.UserHomeDir();if e!=nil{return "",e}
+ return filepath.Join(home,"ZEUVORYX-Relatorios"),nil
+}
+func openReports315()(bool,error){
+ dir,e:=reportDirectory315();if e!=nil{return false,e}
+ if e=os.MkdirAll(dir,0700);e!=nil{return false,e}
+ root:=os.Getenv("SystemRoot");if !filepath.IsAbs(root){return false,fmt.Errorf("Windows directory unavailable")}
+ cmd:=exec.Command(filepath.Join(root,"explorer.exe"),dir)
+ if e=cmd.Start();e!=nil{return false,e};_ = cmd.Process.Release();return true,nil
+}
+func(s *State) startAutoReport315(id string)func(engine.Report){
+ stop,done:=make(chan struct{}),make(chan struct{})
+ var last string
+ save:=func(r engine.Report,prefix string)bool{
+  dir,e:=reportDirectory315()
+  if e==nil{var p string;p,e=writeAutoReport315(dir,prefix,r);if e==nil{
+   old:=last;last=p
+   if old!=""{if er:=os.Remove(old);er!=nil{log.Printf("report recovery cleanup: %v",er)}}
+   setAutoStatus315("Relatório automático salvo: "+p)
+   return true
+  }}
+  setAutoStatus315("Falha ao salvar relatório automático: "+e.Error());return false
+ }
+ go func(){
+  defer close(done)
+  checkpoint:=func(){
+   if id==""{return}
+   r,ok:=s.snapshotForExport()
+   if !ok||r.ScanID!=id||!r.InProgress{return}
+   save(r,"zeuvoryx-auto-parcial")
+  }
+  checkpoint()
+  ticker:=time.NewTicker(30*time.Second);defer ticker.Stop()
+  for{select{case <-stop:return;case <-ticker.C:checkpoint()}}
+ }()
+ return func(r engine.Report){
+  close(stop);<-done
+  if r.Started.IsZero(){return}
+  r.InProgress=false
+  save(r,"zeuvoryx-auto-final")
+ }
+}

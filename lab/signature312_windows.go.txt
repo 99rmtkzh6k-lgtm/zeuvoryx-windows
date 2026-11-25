@@ -8,7 +8,7 @@ import (
 // Called once per normal desktop scan, outside the State mutex, before persisting the final report.
 func (s *State) signaturePhase312(ctx context.Context, rep *engine.Report, customPath string, automatic bool) {
  rep.SignatureState="pending"
- defer func(){rep.Finished=time.Now();if ctx.Err()!=nil{rep.Cancelled=true;rep.SignatureState="partial"}}()
+ defer func(){rep.Finished=time.Now();if ctx.Err()!=nil{rep.Cancelled=true;rep.SignatureState="partial"};s.publishSignatureProgress314(rep)}()
  if ctx.Err()!=nil{rep.SignatureState="partial";return}
  tool,e:=clamExecutable()
  if e!=nil{rep.SignatureState="unavailable";rep.SignatureProblem=e.Error();return}
@@ -23,5 +23,15 @@ func (s *State) signaturePhase312(ctx context.Context, rep *engine.Report, custo
   r,e:=signatureav.Scan(signatureav.WithObserver(ctx,publishSignature314),tool,root,"")
   rep.SignatureReports=append(rep.SignatureReports,r)
   if e!=nil||r.Partial{rep.SignatureState="partial"}
+  s.publishSignatureProgress314(rep)
  }
+}
+
+// Publish completed roots during scanning; individual reports are immutable after append.
+func(s *State) publishSignatureProgress314(rep *engine.Report){
+ s.mu.Lock();defer s.mu.Unlock();if !s.running{return}
+ s.report.SignatureState=rep.SignatureState
+ s.report.SignatureProblem=rep.SignatureProblem
+ s.report.SignatureRoots=append([]string(nil),rep.SignatureRoots...)
+ s.report.SignatureReports=append([]signatureav.Report(nil),rep.SignatureReports...)
 }

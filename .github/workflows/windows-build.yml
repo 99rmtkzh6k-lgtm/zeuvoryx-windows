@@ -926,6 +926,17 @@ jobs:
              $r.defenderHistory.state='available'
            } catch {$r.errors+='Histórico Defender não verificado'}
            try {$r.defenderHistory.activeThreats=@(Get-MpThreat -ErrorAction Stop | Where-Object {$_.IsActive -eq $true}).Count} catch {$r.errors+='Ameaças ativas Defender não verificadas'}
+           $r.defenderEvents=[ordered]@{source='Microsoft-Windows-Windows Defender/Operational';state='unavailable';windowDays=7;limit=100;truncated=$null;entries=@()}
+           try {
+             $log=Get-WinEvent -ListLog 'Microsoft-Windows-Windows Defender/Operational' -ErrorAction Stop
+             if(!$log.IsEnabled){throw 'Defender log disabled'}
+             $events=@()
+             try {$events=@(Get-WinEvent -FilterHashtable @{LogName='Microsoft-Windows-Windows Defender/Operational';Id=@(1116,1117,1118,1119);StartTime=(Get-Date).AddDays(-7)} -MaxEvents 101 -ErrorAction Stop)}
+             catch {if($_.FullyQualifiedErrorId -notlike 'NoMatchingEventsFound,*'){throw}}
+             $r.defenderEvents.truncated=($events.Count -gt 100)
+             $r.defenderEvents.entries=@($events|Select-Object -First 100|ForEach-Object{[ordered]@{eventId=$_.Id;recordId=[string]$_.RecordId;when=$_.TimeCreated.ToUniversalTime().ToString('o')}})
+             $r.defenderEvents.state='available'
+           } catch {$r.errors+='Eventos de detecção e ação Defender não verificados'}
            $r|ConvertTo-Json -Depth 6 -Compress`
           	ctx, cancel := context.WithTimeout(parent, 45*time.Second)
           	defer cancel()
@@ -2798,7 +2809,9 @@ jobs:
               $proc=Start-Process -FilePath $app -WorkingDirectory $base -ArgumentList @('-signature-check314',('"' + $f + '"')) -RedirectStandardOutput $out -RedirectStandardError "$out.err" -Wait -PassThru
               if($proc.ExitCode -ne 0){Get-Content "$out.err";if(Test-Path -LiteralPath $out){Get-Content -LiteralPath $out};Write-Host "Fixture exists after scan: $(Test-Path -LiteralPath $f -PathType Leaf)";throw "Installed application failed bundled engine check: $kind cycle $i"}
               $r=Get-Content -Raw -LiteralPath $out | ConvertFrom-Json
-              if($r.partial -or $r.known_signatures -le 0){throw 'Incomplete signature test'}
+              if($r.partial -or $r.known_signatures -le 0 -or !$r.evidence_315.summary_usable){throw 'Incomplete signature test or audit evidence'}
+              if($kind -eq 'eicar' -and ($r.evidence_315.test_records -ne 1 -or $r.evidence_315.signature_records -ne 0)){throw 'EICAR incorrectly accounted'}
+              if($kind -eq 'clean' -and $r.evidence_315.observed_records -ne 0){throw 'Unexpected records for benign file'}
               if($kind -eq 'eicar'){if(@($r.findings|Where-Object kind -eq 'test_eicar').Count -ne 1){throw 'EICAR detection missing'}}
               else{if($r.engine_reported_infected_files -ne 0){throw 'False detection of benign fixture'}}
               if(Test-Path -LiteralPath $f){Remove-Item -LiteralPath $f}

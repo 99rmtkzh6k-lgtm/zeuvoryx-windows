@@ -1,3 +1,5 @@
+> **25/11/2026 — 3.0.11 LAB, candidato não aprovado:** integração de análise independente por ClamAV externo, relatório JSON separado, CI e teste físico pendentes. Não é proteção residente. [Evidência e limites](SIGNATURE_311_LAB.md). Preservar Defender e main.
+
 # ZEUVORYX Update Center — ZVX-EVO-012
 
 

@@ -1,0 +1,39 @@
+name: ZEUVORYX 3.0.11 LAB - independent signatures
+on:
+  push:
+    branches: [windows-3.0.11-signature-lab]
+    paths-ignore: ['**.md']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  actual-clamav:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+          cache: false
+      - name: Install distribution ClamAV and refresh official signatures
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clamav clamav-freshclam
+          sudo systemctl stop clamav-freshclam.service || true
+          sudo freshclam
+          clamscan --version
+      - name: Five real engine runs with clean and EICAR fixtures
+        run: |
+          set -o pipefail
+          CLAMAV_REAL_EXECUTABLE="$(command -v clamscan)" go test -v -count=5 ./signatureav | tee signature-engine.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ZEUVORYX-3.0.11-signature-engine-evidence
+          path: signature-engine.log
+  validate-windows:
+    needs: actual-clamav
+    if: github.ref == 'refs/heads/windows-3.0.11-signature-lab'
+    uses: ./.github/workflows/windows-build.yml

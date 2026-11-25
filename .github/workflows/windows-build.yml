@@ -2351,6 +2351,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Olympus silver interface integration failed' }
           python prepare_release306.py
           if ($LASTEXITCODE -ne 0) { throw '3.0.8 final integration failed' }
+          python prepare_performance308.py
+          if ($LASTEXITCODE -ne 0) { throw 'R2 performance panel integration failed' }
+          gofmt -w performance308_windows.go performance308_windows_test.go desktop_windows.go
+          if ($LASTEXITCODE -ne 0) { throw 'Performance panel formatting failed' }
           gofmt -w engine/scan308_test.go
           if ($LASTEXITCODE -ne 0) { throw '3.0.8 test formatting failed' }
           gofmt -w audit main.go engine/scanner.go engine/scan_upgrade.go desktop_windows.go stability_windows.go stability_windows_test.go scan306_windows_test.go
@@ -2378,7 +2382,8 @@ jobs:
           if ($html.Contains('OLYMPUS 3.0.1 BETA</div>')) { throw 'Stale desktop version' }
           if ($engine -notmatch 'const\s+ScanEngineVersion\s*=\s*"3\.0\.8-lab"') { throw 'Incorrect scan engine version' }
           if ($updater -notmatch 'const\s+Current\s*=\s*"3\.0\.8"') { throw 'Incorrect updater version' }
-          Write-Host 'Verified final identity: ZEUVORYX 3.0.8 LAB R1'
+          if (!$desktop.Contains('ZEUVORYX | 3.0.8 LAB R2') -or !$html.Contains('id="zPerformancePanel"')) { throw 'Missing R2 performance interface' }
+          Write-Host 'Verified final identity: ZEUVORYX 3.0.8 LAB R2'
       - name: Run adaptive model tests
         shell: pwsh
         run: |
@@ -2507,7 +2512,8 @@ jobs:
             Start-Sleep -Seconds 15
             $p.Refresh()
             if ($p.HasExited) { throw "Desktop exited during idle test: $($p.ExitCode)" }
-            Write-Host 'Portable desktop rendered and stayed alive for 15 seconds after handshake'
+            if (!(Select-String -LiteralPath $logs[0].FullName -Pattern 'stability performance_ui_ready revision=R2' -Quiet)) { throw 'Real CPU/RAM panel render not observed' }
+          Write-Host 'Portable desktop and real CPU/RAM panel rendered; survived 15 seconds'
           } finally {
             if (!$p.HasExited) {
               [void]$p.CloseMainWindow()
@@ -2522,7 +2528,7 @@ jobs:
           $hash = (Get-FileHash dist/ZEUVORYX.exe -Algorithm SHA256).Hash.ToLowerInvariant()
           Set-Content -Encoding ascii -Path dist/SHA256SUMS.txt -Value "$hash  ZEUVORYX.exe"
           @(
-            'ZEUVORYX 3.0.8 LAB - TESTE PORTATIL x64, NAO INSTALADOR'
+            'ZEUVORYX 3.0.8 LAB R2 - TESTE PORTATIL x64, NAO INSTALADOR'
             "Commit: $env:GITHUB_SHA"
             "Execucao: $env:GITHUB_RUN_ID"
             'Extraia todo o ZIP para uma pasta separada. Feche outras versoes antes de testar.'
@@ -2542,7 +2548,7 @@ jobs:
       - name: Upload portable 3.0.8 LAB only for physical quick scan
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.8-LAB-PORTATIL-TESTE-Windows-x64
+          name: ZEUVORYX-3.0.8-R2-LAB-PORTATIL-TESTE-Windows-x64
           path: dist/
           if-no-files-found: error
           retention-days: 7

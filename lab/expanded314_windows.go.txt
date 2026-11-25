@@ -20,3 +20,8 @@ func openYouTubeVerify314()(bool,error){
 
 // Called only at the start of the serialized scan, before the signature worker launches.
 func resetSignature314(){signal314.Lock();defer signal314.Unlock();signal314.recent=nil}
+
+func signatureRecentFindings314()[]signatureav.Finding{
+ signal314.Lock();defer signal314.Unlock()
+ result:=make([]signatureav.Finding,0,len(signal314.recent));for _,v:=range signal314.recent{result=append(result,v.Finding)};return result
+}

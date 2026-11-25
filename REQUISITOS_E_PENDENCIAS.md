@@ -1,3 +1,5 @@
+> **Arte oficial Olympus Titanium 3.0.14 LAB:** imagem de Zeus/Atenas confirmada pelo proprietário; fundo e banner com nome temático; verificação SHA-256 da imagem original obrigatória. CI e inspeção física pendentes. [Detalhes](BUNDLED_314_LAB.md).
+
 > **3.0.14 LAB — Olympus Titanium · Global Threat Defense:** arte Zeus existente como fundo global, painéis translúcidos e botões de relevo profundo, velocímetros e integração funcional preservados. Corrigido teste EICAR do instalador; nova validação pendente. [Detalhes](BUNDLED_314_LAB.md).
 
 > **3.0.14 LAB revisão painel automotivo:** indicadores com ponteiros, inventário lógico do escopo, saldo estimado e ETA do scanner próprio, sem confundir armazenamento físico com cobertura. CI pendente. [Detalhes](BUNDLED_314_LAB.md).

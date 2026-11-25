@@ -28,3 +28,10 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .zp-value{fill:#f4f7fb}.zp-label{color:#edf3fa}.zp-detail{color:#d4e1ed}
 @media(prefers-reduced-motion:reduce){button{transition:none}}
 @media(forced-colors:active){body,.shell,main,aside,header,.card,.entry,.hero,.zp-item{background:Canvas!important;color:CanvasText!important}button{background:ButtonFace!important;color:ButtonText!important;box-shadow:none;text-shadow:none;transform:none}}
+
+/* Exact approved Athens art: visible without cropping in the signature banner. */
+#zTitaniumBanner{position:relative;aspect-ratio:1050/360;width:100%;min-height:112px;max-height:240px;background-image:var(--z-titanium-art);background-size:contain;background-position:center;background-repeat:no-repeat;background-color:#0b1424;border:1px solid #ad976b;border-radius:14px;margin:0 0 12px;overflow:hidden}
+.zTitaniumBrand{position:absolute;left:3%;bottom:8%;max-width:58%;display:flex;flex-direction:column;gap:3px;padding:8px 12px;background:linear-gradient(90deg,#06101ee0,#06101e55);border-left:2px solid #e7c784;color:#fff;text-shadow:0 1px 3px #000}
+.zTitaniumBrand strong{font-size:clamp(17px,2.6vw,30px);letter-spacing:2px}.zTitaniumBrand span{font-size:clamp(12px,1.8vw,19px);font-weight:750;color:#f2d18b}.zTitaniumBrand small{font-size:clamp(9px,1vw,12px);letter-spacing:.5px}
+@media(max-height:650px){#zTitaniumBanner{max-height:145px}}
+@media(forced-colors:active){#zTitaniumBanner,.zTitaniumBrand{background:Canvas!important;color:CanvasText!important}.zTitaniumBrand span{color:CanvasText!important}}

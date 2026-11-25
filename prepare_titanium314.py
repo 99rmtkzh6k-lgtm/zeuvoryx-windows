@@ -1,12 +1,16 @@
 """Final visual overlay, preserving offline approved artwork and functional controls."""
 from pathlib import Path
 from html.parser import HTMLParser
-import re
+import re, base64, hashlib
 p=Path("desktop.html")
 s=p.read_text(encoding="utf-8-sig")
 m=re.search(r"header\{min-height:150px;[^}]*?background:(url\('data:image/jpeg;base64,[A-Za-z0-9+/=]+'\))",s)
 if not m:raise RuntimeError("Titanium: existing Olympus artwork not found")
 art=m.group(1)
+approved_sha256="7f5e51ee96b08e133e12b799206b5688661c7864a193ee595d66ae16cfb3155c"
+raw=base64.b64decode(art.split("base64,",1)[1][:-2],validate=True)
+if hashlib.sha256(raw).hexdigest()!=approved_sha256:raise RuntimeError("Titanium: artwork differs from exact user-approved Zeus Athens image")
+Path("approved-titanium-art.sha256").write_text(approved_sha256+"\n",encoding="ascii")
 # Store the same artwork only once in CSS, reducing the embedded document size.
 s=s.replace(art,"var(--z-titanium-art)")
 css=Path("lab/titanium314.css").read_text(encoding="utf-8")
@@ -15,13 +19,15 @@ s=s.replace("</style></head>",":root{--z-titanium-art:"+art+"}\n"+css+"</style><
 if s.count("3.0.14 LAB BETA</div>")!=1:raise RuntimeError("Titanium version anchor")
 s=s.replace("3.0.14 LAB BETA</div>","3.0.14 LAB BETA</div><div id=\"zTitaniumIdentity\">OLYMPUS TITANIUM · GLOBAL THREAT DEFENSE</div>",1)
 s=s.replace("3.0.14 · Performance","3.0.14 · Olympus Titanium")
+if s.count("<header>")!=1:raise RuntimeError("Titanium header anchor")
+s=s.replace("<header>",'<div id="zTitaniumBanner" role="img" aria-label="Zeus, templo grego e raios azuis — arte aprovada"><div class="zTitaniumBrand"><strong>ZEUVORYX</strong><span>OLYMPUS TITANIUM</span><small>GLOBAL THREAT DEFENSE · 3.0.14 LAB</small></div></div><header>',1)
 class Check(HTMLParser):
     def __init__(self):super().__init__();self.ids=[]
     def handle_starttag(self,tag,attrs):
         a=dict(attrs)
         if "id" in a:self.ids.append(a["id"])
 c=Check();c.feed(s)
-for k in ["start","quick","stop","export","z314Diagnostic","z314LiveHits","z314ProgressBar","zp-cpu-needle","zTitaniumIdentity","zDropRefresh","z310Optimizer","z314Youtube"]:
+for k in ["start","quick","stop","export","z314Diagnostic","z314LiveHits","z314ProgressBar","zp-cpu-needle","zTitaniumIdentity","zTitaniumBanner","zDropRefresh","z310Optimizer","z314Youtube"]:
     if c.ids.count(k)!=1:raise RuntimeError("Titanium missing/duplicated control: "+k)
 if len(s.encode("utf-8"))>1500000:raise RuntimeError("Titanium page budget exceeded")
 p.write_text(s,encoding="utf-8")

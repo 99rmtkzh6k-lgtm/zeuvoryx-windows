@@ -20,9 +20,9 @@ js="""
 ;(()=>{
 const z=id=>document.getElementById(id), panel=z('zAIActivity');
 const t={
-'pt-BR':['Inteligência artificial — atividade real','Avaliações do modelo','Concluídas','Falhas','Processando','Em espera por arquivos','Modelo','Última inferência','Índice auxiliar','Aprendizado contínuo ainda não implantado; modelo consultivo, não altera a decisão do scanner.','Testar IA agora','Autoteste sintético aprovado','Autoteste falhou','Ainda não testado','Testes sintéticos','Indisponível'],
-'en-US':['Artificial intelligence — live activity','Model evaluations','Completed','Errors','Processing','Waiting for files','Model','Last inference','Advisory score','Continuous learning not implemented; advisory model, scanner verdict unchanged.','Test AI now','Synthetic self-check passed','Self-check failed','Not tested','Synthetic checks','Unavailable'],
-'es-ES':['Inteligencia artificial — actividad real','Evaluaciones del modelo','Completadas','Errores','Procesando','Esperando archivos','Modelo','Última inferencia','Índice auxiliar','Aprendizaje continuo no implantado; modelo consultivo, no altera la decisión.','Probar IA','Autoprueba sintética aprobada','Autoprueba fallida','Sin prueba','Pruebas sintéticas','No disponible']
+'pt-BR':['Inteligência artificial — atividade real','Avaliações do modelo','Concluídas','Falhas','Processando','Em espera por arquivos','Modelo','Última inferência','Índice auxiliar','Modelo consultivo: sinaliza indícios correlacionados para revisão; aprendizado validado pendente.','Testar IA agora','Autoteste sintético aprovado','Autoteste falhou','Ainda não testado','Testes sintéticos','Indisponível'],
+'en-US':['Artificial intelligence — live activity','Model evaluations','Completed','Errors','Processing','Waiting for files','Model','Last inference','Advisory score','Advisory model flags correlated indicators; validated learning pending.','Test AI now','Synthetic self-check passed','Self-check failed','Not tested','Synthetic checks','Unavailable'],
+'es-ES':['Inteligencia artificial — actividad real','Evaluaciones del modelo','Completadas','Errores','Procesando','Esperando archivos','Modelo','Última inferencia','Índice auxiliar','Modelo consultivo: indicadores correlacionados para revisión; aprendizaje validado pendiente.','Probar IA','Autoprueba sintética aprobada','Autoprueba fallida','Sin prueba','Pruebas sintéticas','No disponible']
 };
 let last=null,lastErrors=null,busy=false;
 const copy=()=>t[document.documentElement.lang]||t['pt-BR'];

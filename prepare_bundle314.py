@@ -13,7 +13,7 @@ def html(s):
     s=s.replace("ClamAV indisponível","ClamAV ou base indisponível")
     return s
 def installer(s):
-    return once(s,'[Files]','[Files]\nSource: "dist\\clamav\\*"; DestDir: "{app}\\clamav"; Flags: ignoreversion recursesubdirs createallsubdirs\nSource: "dist\\third-party\\*"; DestDir: "{app}\\third-party"; Flags: ignoreversion recursesubdirs createallsubdirs')
+    return once(s,'[Files]','[Files]\nSource: "dist\\clamav\\*"; DestDir: "{app}\\clamav"; Flags: ignoreversion recursesubdirs createallsubdirs\nSource: "dist\\third-party\\*"; DestDir: "{app}\\third-party"; Flags: ignoreversion recursesubdirs createallsubdirs\nSource: "dist\\media-verifier\\*"; DestDir: "{app}\\media-verifier"; Flags: ignoreversion recursesubdirs createallsubdirs')
 edit("main.go",main);edit("desktop.html",html);edit("setup309.iss",installer)
 for p in list(Path(".").rglob("*.go"))+[Path("desktop.html"),Path("setup309.iss")]:
     if ".git" in p.parts:continue

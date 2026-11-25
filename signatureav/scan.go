@@ -38,8 +38,9 @@ type Report struct {
  Problem string `json:"problem,omitempty"`
  Coverage string `json:"coverage_note"`
 }
-type bounded struct { b []byte; overflow bool }
+type bounded struct { b []byte; overflow bool; observer lineObserver314 }
 func (w *bounded) Write(p []byte)(int,error) {
+ w.observer.feed(p)
  const max = 8<<20
  n:=max-len(w.b)
  if n<len(p) { w.overflow=true; if n>0 {w.b=append(w.b,p[:n]...)} } else {w.b=append(w.b,p...)}
@@ -115,6 +116,7 @@ func Scan(ctx context.Context, exe, root, db string) (r Report, err error) {
  args=append(args,"--",root)
  cmd:=command(ctx,exe,args...)
  var out bounded
+ if fn,ok:=ctx.Value(observerKey314{}).(func(Finding));ok{out.observer.fn=fn}
  // Both streams share one synchronized os/exec writer.
  cmd.Stdout=&out;cmd.Stderr=&out
  e:=cmd.Run();code:=0

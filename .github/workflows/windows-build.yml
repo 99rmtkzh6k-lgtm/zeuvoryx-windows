@@ -2386,6 +2386,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw '314 bundled integration failed' }
           python prepare_parallel314.py
           if ($LASTEXITCODE -ne 0) { throw '314 parallel integration failed' }
+          python prepare_expanded314.py
+          if ($LASTEXITCODE -ne 0) { throw '314 expanded integration failed' }
+          gofmt -w expanded314_windows.go
+          if ($LASTEXITCODE -ne 0) { throw '314 alert formatting failed' }
           gofmt -w parallel314_windows.go
           if ($LASTEXITCODE -ne 0) { throw '314 parallel formatting failed' }
           gofmt -w bundle314_windows.go
@@ -2574,6 +2578,19 @@ jobs:
           Copy-Item CLAMAV_NOTICE_314.txt dist/third-party/
           & dist/clamav/clamscan.exe --version
           if($LASTEXITCODE -ne 0){throw 'Bundled engine failed to launch'}
+          $mediaZip=Join-Path $env:RUNNER_TEMP 'c2patool314.zip'
+          Invoke-WebRequest 'https://github.com/contentauth/c2patool/releases/download/v0.29.0/v0.29.0-x86_64-pc-windows-msvc.zip' -OutFile $mediaZip
+          if((Get-FileHash $mediaZip -Algorithm SHA256).Hash.ToLowerInvariant() -ne 'cc36c274a9a2cfc20f356d5d5c7f8b2c01e906e6550a45018d7fca0158cf5b8a'){throw 'C2PA package digest mismatch'}
+          $mediaDir=Join-Path $env:RUNNER_TEMP 'c2pa314'
+          Expand-Archive $mediaZip $mediaDir
+          $mediaExe=Get-ChildItem $mediaDir -Recurse -File -Filter c2patool.exe|Select-Object -First 1
+          if(!$mediaExe){throw 'C2PA executable missing'}
+          New-Item -ItemType Directory -Force dist/media-verifier|Out-Null
+          Copy-Item (Join-Path $mediaExe.DirectoryName '*') dist/media-verifier -Recurse -Force
+          Invoke-WebRequest 'https://raw.githubusercontent.com/contentauth/c2patool/v0.29.0/LICENSE-APACHE' -OutFile dist/media-verifier/LICENSE-APACHE
+          Invoke-WebRequest 'https://raw.githubusercontent.com/contentauth/c2patool/v0.29.0/LICENSE-MIT' -OutFile dist/media-verifier/LICENSE-MIT
+          & dist/media-verifier/c2patool.exe --version
+          if($LASTEXITCODE -ne 0){throw 'C2PA binary failed'}
       - name: Verify portable LAB version and desktop startup
         shell: pwsh
         run: |
@@ -2619,7 +2636,7 @@ jobs:
             'Extraia todo o ZIP para uma pasta separada. Feche outras versoes antes de testar.'
             'Mantenha a protecao do Windows ativa. Use somente em ambiente de teste autorizado.'
             'Abra ZEUVORYX.exe e execute apenas a varredura rapida para este teste.'
-            'O pacote nao inclui o verificador de video C2PA nem instalador/atualizacao assinada.'
+            'O pacote inclui C2PA; instalador/atualizacao assinada ainda pendente.'
             'Nao substitui o Microsoft Defender. Validacao fisica e desempenho ainda pendentes.'
             'Nao instale, nao promova para release, nao desative SmartScreen ou outros controles.'
           ) | Set-Content -Encoding utf8 -Path dist/LEIA-ME-LAB.txt

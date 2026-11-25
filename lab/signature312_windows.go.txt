@@ -20,7 +20,7 @@ func (s *State) signaturePhase312(ctx context.Context, rep *engine.Report, custo
  rep.SignatureState="finished"
  for _,root:=range roots{
   if ctx.Err()!=nil{rep.SignatureState="partial";break}
-  r,e:=signatureav.Scan(ctx,tool,root,"")
+  r,e:=signatureav.Scan(signatureav.WithObserver(ctx,publishSignature314),tool,root,"")
   rep.SignatureReports=append(rep.SignatureReports,r)
   if e!=nil||r.Partial{rep.SignatureState="partial"}
  }

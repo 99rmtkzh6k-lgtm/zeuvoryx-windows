@@ -1,3 +1,5 @@
+> **Correção de validação da arte 3.0.14 LAB:** CI anterior bloqueado por diferença de codificação JPEG. Comparação local confirmou a mesma arte de Zeus; agora são aceitos apenas os dois hashes verificados (original incorporada e cópia aprovada). CI pendente. [Detalhes](BUNDLED_314_LAB.md).
+
 > **3.0.14 LAB Olympus Titanium — arte em tela inteira:** imagem original Zeus/Atenas preservada sem cortes, fundo fixo com preenchimento secundário, cartões translúcidos e texto sobreposto, opção de contemplação sem controles. CI e teste visual físico pendentes. [Detalhes](BUNDLED_314_LAB.md).
 
 > **Arte oficial Olympus Titanium 3.0.14 LAB:** imagem de Zeus/Atenas confirmada pelo proprietário; fundo e banner com nome temático; verificação SHA-256 da imagem original obrigatória. CI e inspeção física pendentes. [Detalhes](BUNDLED_314_LAB.md).

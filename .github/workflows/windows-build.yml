@@ -2388,6 +2388,9 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw '314 parallel integration failed' }
           python prepare_expanded314.py
           if ($LASTEXITCODE -ne 0) { throw '314 expanded integration failed' }
+          gofmt -w globalintel adaptive signatureav
+          go test -count=5 ./globalintel ./adaptive ./signatureav
+          if ($LASTEXITCODE -ne 0) { throw '314 added module regressions failed' }
           gofmt -w expanded314_windows.go
           if ($LASTEXITCODE -ne 0) { throw '314 alert formatting failed' }
           gofmt -w parallel314_windows.go

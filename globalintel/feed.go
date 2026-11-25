@@ -28,6 +28,8 @@ type NetworkList struct {
 }
 type Drop struct { V4,V6 NetworkList }
 type Status struct {
+ Stale bool `json:"stale"`
+ Problem string `json:"problem,omitempty"`
  IPv4 int `json:"ipv4"`
  IPv6 int `json:"ipv6"`
  Updated string `json:"updated"`
@@ -40,7 +42,7 @@ func client()*http.Client{return &http.Client{Timeout:25*time.Second,CheckRedire
 func fetch(ctx context.Context,c *http.Client,endpoint string)([]byte,error){
  req,e:=http.NewRequestWithContext(ctx,http.MethodGet,endpoint,nil);if e!=nil{return nil,e}
  req.Header.Set("Accept","application/json, text/json, application/x-ndjson")
- req.Header.Set("User-Agent","ZEUVORYX-LAB/3.0.5")
+ req.Header.Set("User-Agent","ZEUVORYX-LAB/3.0.14")
  r,e:=c.Do(req);if e!=nil{return nil,e};defer r.Body.Close()
  if r.StatusCode!=200{return nil,fmt.Errorf("Spamhaus HTTP %d",r.StatusCode)}
  b,e:=io.ReadAll(io.LimitReader(r.Body,maxBytes+1));if e!=nil{return nil,e};if len(b)>maxBytes{return nil,errors.New("feed exceeds limit")};return b,nil

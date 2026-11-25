@@ -65,7 +65,7 @@ js=r"""
     const vals=[first.cpu,second.cpu,first.ram_percent,second.ram_percent],known=vals.every(valid);
     const high=known&&((first.cpu>=80&&second.cpu>=80)||(first.ram_percent>=85&&second.ram_percent>=85));
     z('z310Diagnosis').textContent=a[2]+': '+a[3]+' '+percent(first.cpu)+' / '+percent(second.cpu)+' · '+a[4]+' '+percent(first.ram_percent)+' / '+percent(second.ram_percent)+' · '+a[known?(high?5:6):7];
-    plan=await window.z310OptimizePreview();
+    plan=await window.z310OptimizePreview();if(!plan||!Array.isArray(plan.items)){if(plan&&plan.items==null)plan.items=[];else throw Error('Resultado de manutenção inválido')}
     z('z310PlanSummary').textContent=a[8]+': '+plan.items.length+' · '+volume(plan.bytes)+(plan.truncated?' · '+a[9]:'')+' · '+a[17];
     for(const v of plan.items){const label=document.createElement('label'),c=document.createElement('input');c.type='checkbox';c.value=String(v.id);c.onchange=sync;label.append(c,document.createTextNode(' '+v.name+' · '+volume(v.bytes)+' · '+new Date(v.modified).toLocaleString(document.documentElement.lang)));z('z310FileList').append(label)}
   }catch(e){z('z310Result').textContent=String(e);clear()}finally{busy=false;z('z310Diagnose').disabled=false;sync()}

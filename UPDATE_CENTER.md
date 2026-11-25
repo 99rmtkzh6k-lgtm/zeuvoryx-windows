@@ -1,3 +1,5 @@
+> **3.0.14 LAB revisão ampliada:** pacote único ClamAV/FreshClam/C2PA, motores em conjunto, IA consultiva com revisão por indícios correlacionados, alerta de saída ClamAV, DROP persistente diário e melhoria de manutenção. CI e validação física pendentes; aprendizado real e proteção residente ainda não comprovados. [Detalhes](BUNDLED_314_LAB.md).
+
 > **3.0.14 LAB revisão integrada:** motores próprios e ClamAV em paralelo, consulta Sysmon opcional, diagnóstico real separado do autoteste sintético. CI e teste físico pendentes. [Detalhes](BUNDLED_314_LAB.md).
 
 > **25/11/2026 — candidato 3.0.14 LAB:** correção da dependência externa do ClamAV evidenciada em teste físico 3.0.13. Motor oficial incluído no instalador, atualização automática da base e testes reais via aplicativo instalado; CI pendente. [Estado e limites](BUNDLED_314_LAB.md). Não é release de produção.

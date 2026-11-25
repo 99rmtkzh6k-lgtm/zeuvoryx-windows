@@ -1,3 +1,5 @@
+> **3.0.15 LAB — interface interna e leve:** atalhos externos retirados do código candidato; meta abaixo de 150 MB, CI bloqueia instalador a partir de 200 MB. Tamanho real e Windows pendentes. [Memorando](MEMORANDO_DESENVOLVIMENTO.md).
+
 > **3.0.15 LAB — Olympus Arcade:** sete jogos clássicos offline dentro da aplicação; links externos removidos, controle familiar preservado. Cinco ciclos de lógica de dominó, paciência e blocos aprovados; CI/Windows pendentes. [Memorando](MEMORANDO_DESENVOLVIMENTO.md).
 
 > **25/11/2026 — ZEUVORYX 3.0.15 LAB (candidato em desenvolvimento):** interface e recursos atuais preservados; ClamAV em lote único, correções de cobertura/ETA, alertas e JSON com diagnóstico Windows/Sysmon. Identidade 3.0.15 preparada para compilação. CI, teste físico e eficácia independente pendentes; não é versão de produção nem contém SDKs comerciais. [Código candidato](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/tree/windows-3.0.14-audit-fix) · [Memorando](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/windows-3.0.14-audit-fix/AUDITORIA_CAMPO_2026-11-25.md).

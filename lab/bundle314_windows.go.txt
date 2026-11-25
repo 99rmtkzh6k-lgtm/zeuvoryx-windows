@@ -1,6 +1,6 @@
 package main
-import("context";"encoding/json";"errors";"fmt";"os";"os/exec";"path/filepath";"strings";"sync";"syscall";"time";"github.com/zeuvoryx/zeuvoryx/signatureav";"github.com/zeuvoryx/zeuvoryx/engine")
-var bundled314Mu sync.Mutex
+import("context";"encoding/json";"errors";"fmt";"os";"os/exec";"path/filepath";"strings";"syscall";"time";"github.com/zeuvoryx/zeuvoryx/signatureav";"github.com/zeuvoryx/zeuvoryx/engine")
+var bundled314Gate=make(chan struct{},1)
 // The app is installed per user without elevated privileges. Never search PATH or external installation.
 func bundled314()(string,error){
  app,e:=os.Executable();if e!=nil{return "",e};dir:=filepath.Join(filepath.Dir(app),"clamav")
@@ -10,7 +10,8 @@ func bundled314()(string,error){
  return filepath.Join(dir,"clamscan.exe"),nil
 }
 func ensureClam314(ctx context.Context, force bool)(string,error){
- bundled314Mu.Lock();defer bundled314Mu.Unlock()
+ select{case bundled314Gate<-struct{}{}:defer func(){<-bundled314Gate}();case <-ctx.Done():return "",ctx.Err()}
+ if err:=ctx.Err();err!=nil{return "",err}
  exe,e:=bundled314();if e!=nil{return "",e};dir:=filepath.Dir(exe);db:=filepath.Join(dir,"database")
  if e=os.MkdirAll(db,0700);e!=nil{return "",e}
  marker:=filepath.Join(db,"zeuvoryx-refresh-ok")

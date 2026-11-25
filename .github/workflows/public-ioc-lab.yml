@@ -1,7 +1,7 @@
 name: ZEUVORYX LAB - Public threat indicator verification
 on:
   push:
-    branches: [lab-public-ioc-20261125, lab-protection-wave-20261125, lab-fieldlearn-20261125]
+    branches: [lab-public-ioc-20261125, lab-protection-wave-20261125, lab-fieldlearn-20261125, lab-regression-recovery-20261125]
   workflow_dispatch:
 permissions:
   contents: read
@@ -19,6 +19,11 @@ jobs:
         with:
           go-version: '1.23.x'
           cache: false
+      - name: Resource scheduling policy regression
+        shell: pwsh
+        run: |
+          go test -v -count=5 ./scanplan
+          if ($LASTEXITCODE -ne 0) { throw 'Resource scheduling regression failed' }
       - name: Test actual repository scanner against public metadata
         shell: pwsh
         run: |

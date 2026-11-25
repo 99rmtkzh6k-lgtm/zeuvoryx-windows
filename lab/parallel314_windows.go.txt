@@ -1,6 +1,11 @@
 package main
-import("context";"crypto/sha256";"encoding/json";"fmt";"os";"path/filepath";"time";"github.com/zeuvoryx/zeuvoryx/engine";"github.com/zeuvoryx/zeuvoryx/scopeprogress")
+import("context";"crypto/sha256";"encoding/json";"fmt";"os";"path/filepath";"time";"unsafe";"github.com/zeuvoryx/zeuvoryx/scanplan";"github.com/zeuvoryx/zeuvoryx/engine";"github.com/zeuvoryx/zeuvoryx/scopeprogress")
 type parallelKey314 struct{}
+func constrainedScan315()bool{
+ m:=pMemory{Length:uint32(unsafe.Sizeof(pMemory{}))}
+ ok,_,_:=pMem.Call(uintptr(unsafe.Pointer(&m)))
+ return scanplan.Serial(ok!=0,m.Total,m.Available)
+}
 type sigResult314 struct{report engine.Report}
 type behaviorResult314 struct{data map[string]any; problem string}
 type windowsResult314 struct{data map[string]any; problem string}
@@ -23,8 +28,8 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
   invCh<-v
  }()
  s.mu.Lock();mode:=s.report.ScanMode;if s.running{s.report.SignatureState="pending"};s.mu.Unlock()
- sigCtx:=ctx
- if mode=="quick"{var cancelSig context.CancelFunc;sigCtx,cancelSig=context.WithTimeout(ctx,5*time.Minute);defer cancelSig()}
+ serial:=constrainedScan315()
+ if serial{s.mu.Lock();if s.running{s.report.SignatureProblem="Modo de recursos limitados: ClamAV aguardará o scanner próprio"};s.mu.Unlock()}
  sig:=make(chan sigResult314,1);beh:=make(chan behaviorResult314,1);win:=make(chan windowsResult314,1)
  watchCtx,stopWatch:=context.WithCancel(ctx);defer stopWatch()
  go func(){
@@ -40,13 +45,24 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
   tick:=time.NewTicker(time.Minute);defer tick.Stop()
   for{select{case <-watchCtx.Done():win<-latest;return;case <-tick.C:refresh()}}
  }()
- go func(){r:=engine.Report{SignatureRoots:append([]string(nil),roots...)};s.signaturePhase312(sigCtx,&r,"",true);if sigCtx.Err()==context.DeadlineExceeded&&ctx.Err()==nil{r.SignatureState="partial";r.SignatureProblem="ClamAV: limite de 5 minutos da varredura rápida atingido; cobertura incompleta. Execute uma análise completa para continuar."};sig<-sigResult314{r}}()
+ runSignature:=func(){
+  sigCtx:=ctx
+  if mode=="quick"{var cancelSig context.CancelFunc;sigCtx,cancelSig=context.WithTimeout(ctx,5*time.Minute);defer cancelSig()}
+  r:=engine.Report{SignatureRoots:append([]string(nil),roots...)}
+  s.signaturePhase312(sigCtx,&r,"",true)
+  if sigCtx.Err()==context.DeadlineExceeded&&ctx.Err()==nil{r.SignatureState="partial";r.SignatureProblem="ClamAV: limite de 5 minutos da varredura rápida atingido; cobertura incompleta. Execute uma análise completa para continuar.";s.publishSignatureProgress314(&r)}
+  sig<-sigResult314{r}
+ }
+ if !serial{go runSignature()}
  go func(){v,e:=behavior313();b:=behaviorResult314{data:v};if e!=nil{b.problem=e.Error()};s.mu.Lock();if s.running{s.report.BehaviorLocal=b.data;s.report.BehaviorProblem=b.problem};s.mu.Unlock();beh<-b}()
  rep,e:=run()
  cancelInv()
  inv:=<-invCh
  inv.ScannerDone=true;publishScope(inv)
- r:=<-sig;b:=<-beh;stopWatch();w:=<-win
+ b:=<-beh
+ stopWatch();w:=<-win
+ if serial{go runSignature()}
+ r:=<-sig
  if ctx.Err()==nil&&w.data==nil{
   v,e:=windowsSecurityAuditContext(ctx);w=windowsResult314{data:v};if e!=nil{w.problem=e.Error()}
   if w.data!=nil{w.data["observedAt"]=time.Now().UTC().Format(time.RFC3339)}

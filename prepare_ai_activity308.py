@@ -29,26 +29,26 @@ const copy=()=>t[document.documentElement.lang]||t['pt-BR'];
 function paint(d){const a=copy();
  ['zAITitle','zAICountLabel','zAISuccessLabel','zAIErrorLabel'].forEach((k,i)=>z(k).textContent=a[i]);
  z('zAITest').textContent=a[10];z('zAILimit').textContent=a[9];
- const active=d.running>0||(last!==null&&d.observations>last);
+ const active=d.running>0||(last!==null&&d.successful>last);
  if(active){panel.classList.remove('zai-active');void panel.offsetWidth;panel.classList.add('zai-active')}else panel.classList.remove('zai-active');
  const lang=document.documentElement.lang||'pt-BR';
  const words={
- 'pt-BR':['Modelo pronto — descansando; sem novas avaliações','Trabalhando — avaliações reais do modelo','Falha na IA — verificar diagnóstico','Inicializando modelo'],
- 'en-US':['Model ready — resting; no new evaluations','Working — real model evaluations','AI error — review diagnostics','Initializing model'],
- 'es-ES':['Modelo listo — descansando; sin nuevas evaluaciones','Trabajando — evaluaciones reales','Fallo de IA — revisar diagnóstico','Inicializando modelo']
+ 'pt-BR':['Modelo pronto — descansando; sem novas avaliações','Trabalhando — avaliação consultiva de arquivos','Falha na IA — verificar diagnóstico','Inicializando modelo'],
+ 'en-US':['Model ready — resting; no new evaluations','Working — advisory file evaluations','AI error — review diagnostics','Initializing model'],
+ 'es-ES':['Modelo listo — descansando; sin nuevas evaluaciones','Trabajando — evaluaciones consultivas de archivos','Fallo de IA — revisar diagnóstico','Inicializando modelo']
  }[lang]||['Modelo pronto — descansando','Trabalhando — avaliações reais','Falha na IA','Inicializando modelo'];
  const failed=(d.self_tests&&!d.self_test_ok)||(lastErrors!==null&&d.errors>lastErrors);
  const mode=failed?'error':active?'working':'idle';
  const message=failed?words[2]:active?words[1]:d.self_test_ok?words[0]:words[3];
  for(const id of ['zAIRobot','zAIOverviewRobot']){const robot=z(id);robot.dataset.mode=mode;if(mode==='working'){const lift=robot.querySelector('.zRobotLift');lift.style.animation='none';void lift.getBoundingClientRect();lift.style.animation='';}}
  z('zRobotText').textContent=message;z('zAIOverview').textContent=message+' · '+a[1]+': '+d.observations;
- last=d.observations;lastErrors=d.errors;z('zAIState').textContent=message;
+ last=d.successful;lastErrors=d.errors;z('zAIState').textContent=message;
  z('zAICount').textContent=d.observations;z('zAISuccess').textContent=d.successful;z('zAIErrors').textContent=d.errors;
  z('zAIDetails').textContent=a[6]+': '+d.version+' · '+a[7]+': '+(d.last?new Date(d.last).toLocaleTimeString(document.documentElement.lang):'—')+' · '+a[8]+': '+(typeof d.last_score==='number'?Math.round(d.last_score*100)+'/100':'—');
  z('zAITestResult').textContent=(d.self_tests?(d.self_test_ok?a[11]:a[12]):a[13])+' · '+a[14]+': '+d.self_tests;
 }
 async function refresh(){if(busy||document.hidden||(z('engine').classList.contains('hidden')&&z('overview').classList.contains('hidden')))return;busy=true;try{paint(await window.zAIStatus())}catch(_){z('zAIState').textContent=copy()[15];z('zRobotText').textContent=copy()[15];z('zAIOverview').textContent=copy()[15];for(const id of ['zAIRobot','zAIOverviewRobot'])z(id).dataset.mode='error'}finally{busy=false}}
-z('zAITest').onclick=async()=>{z('zAITest').disabled=true;try{paint(await window.zAISelfCheck())}catch(_){z('zAITestResult').textContent=copy()[15]}finally{z('zAITest').disabled=false}};
+z('zAITest').onclick=async()=>{z('zAITest').disabled=true;z('zAITestResult').textContent=({'pt-BR':'Autoteste sintético em andamento','en-US':'Synthetic self-check running','es-ES':'Autoprueba sintética en curso'})[document.documentElement.lang]||'Synthetic self-check running';try{paint(await window.zAISelfCheck())}catch(_){z('zAITestResult').textContent=copy()[15]}finally{z('zAITest').disabled=false}};
 setInterval(refresh,2000);refresh();
 })();
 """

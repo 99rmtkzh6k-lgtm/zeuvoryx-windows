@@ -1,0 +1,15 @@
+name: ZEUVORYX 3.0.10 LAB - physical feedback and startup
+run-name: ZEUVORYX 3.0.10 LAB - measured rates, alert sound and startup
+on:
+  push:
+    branches: [windows-3.0.10-lab]
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  validate:
+    if: github.ref == 'refs/heads/windows-3.0.10-lab'
+    uses: ./.github/workflows/windows-build.yml

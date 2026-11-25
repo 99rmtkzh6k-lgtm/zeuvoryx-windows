@@ -1,4 +1,4 @@
-"""3.0.9 native performance panel after all desktop generators."""
+"""3.0.10 native performance panel after all desktop generators."""
 from pathlib import Path
 from html.parser import HTMLParser
 def once(s,a,b):
@@ -9,7 +9,7 @@ s=once(s,'if !bind("getScanState",','''var perf pSampler
     if !bind("zPerformance", perf.sample) { return }
     if !bind("zPerformanceRendered", perf.rendered) { return }
     if !bind("getScanState",''')
-if 'ZEUVORYX | 3.0.9 LAB' not in s: raise ValueError('Missing 3.0.9 identity')
+if 'ZEUVORYX | 3.0.10 LAB' not in s: raise ValueError('Missing 3.0.10 identity')
 p.write_text(s,encoding="utf-8")
 p=Path("desktop.html");s=p.read_text(encoding="utf-8-sig")
 css="""
@@ -31,9 +31,9 @@ for k,label in [('cpu','Processador'),('ram','Memória RAM'),('free','RAM dispon
 panel+='</div><p id="zpStatus" class="sub" role="status">Aguardando dados do Windows</p></div>'
 s=once(s,'</style></head>',css+'</style></head>')
 s=once(s,'<section id="overview">','<section id="overview">'+panel)
-s=once(s,'<div class="metric" id="hits">—</div></div></div>','<div class="metric" id="hits">—</div></div><div class="card" id="zStorageCard"><div class="label" id="zsLabel">ARMAZENAMENTO E PROGRESSO</div><div class="metric" id="zsCapacity">—</div><p class="sub" id="zsSpace">—</p><p class="sub" id="zsProgress">—</p></div></div>')
+s=once(s,'<div class="metric" id="hits">—</div></div></div>','<div class="metric" id="hits">—</div></div><div class="card" id="zStorageCard"><div class="label" id="zsLabel">ARMAZENAMENTO E PROGRESSO</div><div class="metric" id="zsCapacity">—</div><p class="sub" id="zsSpace">—</p><p class="sub" id="zsProgress">—</p><p class="sub" id="z310Balance">—</p><p class="sub" id="z310Speed" role="status">—</p></div></div>')
 s=once(s,'</style></head>','#overview .grid{grid-template-columns:repeat(auto-fit,minmax(132px,1fr))}</style></head>')
-s=once(s,'3.0.9 LAB BETA</div>','3.0.9 LAB BETA</div><div class="sub" id="zpRevision">3.0.9 · Performance</div>')
+s=once(s,'3.0.10 LAB BETA</div>','3.0.10 LAB BETA</div><div class="sub" id="zpRevision">3.0.10 · Performance</div>')
 js="""
 ;(()=>{
 const z=id=>document.getElementById(id);
@@ -69,6 +69,7 @@ async function refresh(){
   z('zsCapacity').textContent=local?gib(d.local_total):'—';
   z('zsSpace').textContent=local?gib(d.local_total-d.local_free)+' '+st[1]+' / '+gib(d.local_free)+' '+st[2]+' · '+d.local_count+' '+st[3]+' · '+d.local_omitted+' '+st[4]:t[11];
   z('zsProgress').textContent=st[5]+': '+z('bytes').textContent+' · '+st[6];
+  if(window.z310Storage)window.z310Storage(local?d.local_total-d.local_free:null);
   z('zpStatus').textContent=ram&&valid(d.cpu)?t[9]+' · '+new Date(d.at).toLocaleTimeString(lang):t[10];
   if(!confirmed&&ram&&valid(d.cpu)&&z('zp-cpu-value').textContent.endsWith('%')&&z('zp-ram-value').textContent.endsWith('%')&&z('zsCapacity').textContent!=='—'&&document.getElementById('zHelpOpen')&&document.getElementById('zAIActivity')) confirmed=await window.zPerformanceRendered();
  }catch(_){['cpu','ram','free','disk'].forEach(k=>gauge(k,null,t[11]));z('zpStatus').textContent=t[11];z('zpClock').textContent='—';}
@@ -89,4 +90,4 @@ c=Check();c.feed(s)
 for k in ['zPerformancePanel','zpTitle','zpClock','zpRevision','zStorageCard','zsCapacity','zsProgress','start','quick','stop','export']+[f'zp-{k}-{x}' for k in ('cpu','ram','free','disk') for x in ('label','arc','value','detail')]:
     if c.ids.count(k)!=1:raise ValueError("Bad panel/control "+k)
 p.write_text(s,encoding="utf-8")
-print("3.0.9 native performance panel and controls verified")
+print("3.0.10 native performance panel and controls verified")

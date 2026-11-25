@@ -7,6 +7,7 @@ type Activity struct {
  Observations uint64 `json:"observations"`
  Successful uint64 `json:"successful"`
  Errors uint64 `json:"errors"`
+ SelfChecking bool `json:"self_checking"`
  SelfTests uint64 `json:"self_tests"`
  SelfTestOK bool `json:"self_test_ok"`
  Last string `json:"last"`
@@ -26,9 +27,9 @@ var checkMu sync.Mutex
 // Explicit synthetic self-check only; never counts as scanned file or training.
 func SelfCheck()Activity{
  checkMu.Lock();defer checkMu.Unlock()
- activityMu.Lock();activity.Running++;activityMu.Unlock()
+ activityMu.Lock();activity.SelfChecking=true;activityMu.Unlock()
  m,e:=Baseline();ok:=false
  if e==nil{a,e1:=m.Score(Vector{});b,e2:=m.Score(Vector{1,1,1,1,1});ok=e1==nil&&e2==nil&&b>a&&a>=0&&b<=1}
- activityMu.Lock();activity.Running--;activity.SelfTests++;activity.SelfTestOK=ok;activityMu.Unlock()
+ activityMu.Lock();activity.SelfChecking=false;activity.SelfTests++;activity.SelfTestOK=ok;activityMu.Unlock()
  return Status()
 }

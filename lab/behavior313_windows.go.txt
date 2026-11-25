@@ -11,7 +11,7 @@ func behavior313Context(parent context.Context)(map[string]any,error){
  e:=cmd.Run()
  if ctx.Err()!=nil{return nil,fmt.Errorf("Consulta Sysmon interrompida: %w",ctx.Err())}
  if out.overflow{return nil,fmt.Errorf("Consulta Sysmon excedeu limite de 4 MiB; análise inconclusiva")}
- if e!=nil{return nil,fmt.Errorf("Consulta Sysmon falhou (%v); canal/acesso não confirmados",e)}
+ if e!=nil{if x,ok:=e.(*exec.ExitError);ok&&x.ExitCode()==15007{return nil,fmt.Errorf("Sysmon opcional: canal de eventos não encontrado (15007); cobertura Sysmon indisponível")};return nil,fmt.Errorf("Consulta Sysmon falhou (%v); canal/acesso não confirmados",e)}
  es,e:=behaviorwatch.Parse(strings.NewReader(out.b.String()));if e!=nil{return nil,e}
  return map[string]any{"events":len(es),"signals":behaviorwatch.Analyze(es),"coverage":"Até 500 eventos registrados em 10 minutos. Não é monitor residente nem prova de malware."},nil
 }

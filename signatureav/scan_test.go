@@ -66,3 +66,8 @@ func TestOfficialBundleOnly(t *testing.T){
  if !officialBundleOnly(exe,BundledDatabase(exe)){t.Fatal("official isolation not selected")}
  if officialBundleOnly(exe,"")||officialBundleOnly(exe,filepath.Join(filepath.Dir(exe),"optional")){t.Fatal("wrong isolation")}
 }
+
+func TestCoverageDetail(t *testing.T){
+ r:=Report{Scanned:146,Errors:8,Findings:[]Finding{{Signature:"Heuristics.Limits.Exceeded.MaxFileSize"},{Signature:"Other.Signature"}}}
+ s:=coverageDetail(r);for _,want:=range []string{"146","limite=1","motor=8","não confirmam malware"}{if !strings.Contains(s,want){t.Fatal(s)}}
+}

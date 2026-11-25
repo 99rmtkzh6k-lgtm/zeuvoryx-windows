@@ -160,9 +160,16 @@ func ScanRoots(ctx context.Context, exe string, roots []string, db string) (r Re
  parse(&r,string(out.b),code,out.overflow)
  if ctx.Err()!=nil{return r,ctx.Err()}
  if len(r.UnavailableRoots)>0{return r,errors.New("one or more requested roots inaccessible; batch coverage partial")}
- if e!=nil&&code!=1{return r,fmt.Errorf("ClamAV scan: %w",e)}
+ if e!=nil&&code!=1{return r,fmt.Errorf("ClamAV scan: %w; %s",e,coverageDetail(r))}
  if r.DatabaseStatus!="fresh"{return r,fmt.Errorf("ClamAV: database freshness %s; scan results retained, coverage reduced",r.DatabaseStatus)}
  if r.Partial{return r,errors.New("ClamAV report partial or inconsistent; see engine output")}
  return r,nil
 }
 var _ io.Writer=(*bounded)(nil)
+
+// Report resource-limit notices separately from confirmed detections and process errors.
+func coverageDetail(r Report)string{
+ limits:=0
+ for _,f:=range r.Findings{if strings.HasPrefix(strings.ToLower(f.Signature),"heuristics.limits.exceeded."){limits++}}
+ return fmt.Sprintf("arquivos examinados=%d; avisos de limite=%d; erros informados pelo motor=%d (-1: desconhecido); consulte engine_output; avisos de limite não confirmam malware",r.Scanned,limits,r.Errors)
+}

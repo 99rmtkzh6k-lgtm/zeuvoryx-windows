@@ -9,9 +9,9 @@ const panel=document.getElementById('overview');if(!panel)return;
 const out=document.createElement('p');out.className='sub';out.setAttribute('role','status');
 panel.append(out);
 const copy={
-'pt-BR':['Assinaturas SHA-256 ativas: ',' | Base histórica/limitada; zero alertas não comprova segurança.','Base vazia ou indisponível: cobertura por assinaturas ausente. Mantenha o Defender ativo.'],
-'en-US':['Active SHA-256 indicators: ',' | Historical/limited base; zero alerts does not prove safety.','Empty or unavailable base: no signature coverage. Keep Defender enabled.'],
-'es-ES':['Indicadores SHA-256 activos: ',' | Base histórica/limitada; cero alertas no demuestra seguridad.','Base vacía o no disponible: sin cobertura de firmas. Mantenga Defender activo.']};
+'pt-BR':['Indicadores SHA-256 próprios do ZEUVORYX: ',' | Base histórica/limitada; zero alertas não comprova segurança.','Base própria de indicadores SHA-256 vazia ou indisponível. Este aviso não descreve a base ClamAV; consulte o painel do motor. Mantenha o Defender ativo.'],
+'en-US':['Active SHA-256 indicators: ',' | Historical/limited base; zero alerts does not prove safety.','ZEUVORYX SHA-256 indicator list empty or unavailable. This is separate from the ClamAV database; see its engine panel. Keep Defender enabled.'],
+'es-ES':['Indicadores SHA-256 activos: ',' | Base histórica/limitada; cero alertas no demuestra seguridad.','Lista propia de indicadores SHA-256 vacía o no disponible. No describe la base ClamAV; consulte su panel. Mantenga Defender activo.']};
 let count=null;
 function paint(){const t=copy[document.documentElement.lang]||copy['en-US'];out.textContent=count>0?t[0]+count+t[1]:t[2]}
 async function refresh(){try{const r=await window.intelStatus();count=Number(r.total)||0}catch(_){count=null}paint()}

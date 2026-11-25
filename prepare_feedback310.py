@@ -43,6 +43,12 @@ function z310Paint(s){
  const now=performance.now(),d=z310Delta(z310Previous,s,now),w=z310Words(),z=id=>document.getElementById(id);
  const prior=z310Previous;
  z310Previous=d.state;z310Latest=s;z310Balance();
+ const win=z('z315WindowsSummary'),native=s.report?.windows_local_314,history=native?.defenderHistory;
+ if(win){
+   const active=history?.activeThreats;
+   const message=history?.state==='available'?'Microsoft Defender: '+fmt((history.entries||[]).length)+' registros nos últimos 7 dias'+(history.truncated?' (limite de 100)':'')+' · '+(typeof active==='number'?fmt(active)+' ameaças ativas':'ameaças ativas não verificadas')+' · '+(native.observedAt?new Date(native.observedAt).toLocaleTimeString():'horário indisponível'):'Microsoft Defender: histórico não verificado'+(s.report?.windows_problem_314?' · '+s.report.windows_problem_314:'');
+   win.textContent=message+' | Resultados nativos, separados dos motores ZEUVORYX.';
+ }
  z('z310Speed').textContent=w[0]+': '+(!s.running?w[3]:d.bytesRate===null?w[2]:volume(d.bytesRate)+'/s · '+Math.round(d.filesRate)+' '+w[1]);
  if(!d.state||!prior||prior.id!==d.state.id)z('z310Notice').classList.add('hidden');
  if(d.alerts>0){

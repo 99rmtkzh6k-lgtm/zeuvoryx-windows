@@ -23,7 +23,7 @@ func (s *State) signaturePhase312(ctx context.Context, rep *engine.Report, custo
  s.publishSignatureProgress314(rep)
 }
 
-// Publish completed roots during scanning; individual reports are immutable after append.
+// Publish the batch result; the live signal buffer separately supplies partial findings.
 func(s *State) publishSignatureProgress314(rep *engine.Report){
  s.mu.Lock();defer s.mu.Unlock();if !s.running{return}
  s.report.SignatureState=rep.SignatureState

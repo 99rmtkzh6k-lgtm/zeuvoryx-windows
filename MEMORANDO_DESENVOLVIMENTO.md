@@ -1,3 +1,5 @@
+> **3.0.14 LAB · Revisão real dos jogos:** busca HTTPS restrita, amostra HTML analisada por ClamAV e scanner local, consulta DROP disponível, resultado/hora/hash, abertura condicionada à revisão de cinco minutos. Sem garantia de conteúdo externo futuro. Validação CI e física pendentes. [Detalhes](BUNDLED_314_LAB.md).
+
 > **3.0.14 LAB · Olympus Arcade:** Retro Game Arena com arte Zeus aprovada, colunas gregas, raios e cores fluorescentes, botões de relevo e identificação por plataforma. Sem nova dependência; funções e proteção preservadas. CI e teste visual pendentes.
 
 > **3.0.14 LAB · Retro Game Arena:** módulo opcional de jogos gratuitos em páginas autorizadas/de autores, filtro por plataforma, busca, jogo local e arte vetorial; sem ROMs comerciais nem dependências novas. CI e teste físico pendentes. [Detalhes](BUNDLED_314_LAB.md).

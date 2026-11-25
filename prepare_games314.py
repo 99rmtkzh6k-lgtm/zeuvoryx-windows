@@ -6,6 +6,8 @@ def one(s,a,b):
 Path("games314_windows.go").write_text(Path("lab/games314_windows.go.txt").read_text(encoding="utf-8"),encoding="utf-8")
 p=Path("desktop_windows.go");s=p.read_text(encoding="utf-8")
 s=one(s,'if !bind("openYouTubeVerify314",openYouTubeVerify314){return}', 'if !bind("openYouTubeVerify314",openYouTubeVerify314){return}\nif !bind("openGame314",openGame314){return}')
+s=one(s,'if !bind("zDropStatus",dropCache.Status){return}', 'if !bind("zDropStatus",dropCache.Status){return}\nif !bind("reviewGame314",func(id string)(gamecatalog.Review,error){return reviewGame314(nativeCtx,id,dropCache)}){return}')
+s=one(s,'import (','import (\n "github.com/zeuvoryx/zeuvoryx/gamecatalog"')
 p.write_text(s,encoding="utf-8")
 p=Path("desktop.html");s=p.read_text(encoding="utf-8")
 s=one(s,'</nav>','<button id="zGamesNav314" type="button" aria-expanded="false">Games · Jogos</button></nav>')

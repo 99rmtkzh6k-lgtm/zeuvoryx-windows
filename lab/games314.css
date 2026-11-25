@@ -34,3 +34,5 @@
 #zGames314 .zGameBoard button[data-mark="O"]{color:var(--ga-orange)}
 @media(max-width:720px){#zGames314 .zGameHero{min-height:130px;padding:10px}#zGames314 .zGameHero svg{max-width:31%}}
 @media(forced-colors:active){#zGames314,#zGames314 .zGameHero,#zGames314 .zGameTile,#zGames314 button,#zGames314 #zGameLocal{background:Canvas!important;color:CanvasText!important;box-shadow:none!important;text-shadow:none!important}}
+
+#zGames314 .zGameReview{font-size:12px;line-height:1.4;overflow-wrap:anywhere;color:#e5eace}#zGames314 .zGameReview[data-result="no_detection_sample"]{color:#d9ff84}#zGames314 .zGameReview[data-result="blocked"]{color:#ff9f92}#zGames314 button:disabled{opacity:.55;box-shadow:none}

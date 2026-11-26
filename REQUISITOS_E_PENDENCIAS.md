@@ -1,3 +1,7 @@
+## Próxima evolução Windows — execução unificada (26/11/2026)
+
+Pendências cumulativas preservadas. O [memorando de unificação](MEMORANDO_DESENVOLVIMENTO.md#unificação-das-conversas-e-preparação-da-próxima-evolução-windows-26112026) vincula os registros do iPhone e do computador aos REQ/EVO e reúne a ordem de trabalho, evidências, critérios e condições de entrega. Prioridades: finalização e cobertura (REQ-003/004/025/027/041), gráfico e relatórios (REQ-012/013/032), IA e falsos positivos (REQ-005/008/029), proteção residente/ClamAV/web (REQ-007/009/010/031/033), Arcade, identidade e distribuição (REQ-014/018/019/026/028/036/042). Base 3.0.15 LAB b90fa60. Próxima numeração candidata 3.0.16, sujeita à nova checagem de reserva. Aguardando ordem expressa de execução.
+
 ## P0 — pendências consolidadas do teste físico Windows 3.0.15 LAB (26/11/2026)
 
 REQ-003/004/005/008/025 permanecem abertos. Próxima atualização deve corrigir a indicação fixa de paralelismo do ClamAV, a mensagem duplicada de atividade da IA e as inconsistências nos estados e contadores por motor. Validar finalização, timeout, exportação, arquivos bloqueados e compactados, além da triagem e agrupamento dos alertas heurísticos. A completa anterior foi cancelada e o relatório da completa atual ainda é parcial. [Evidência e critérios de aceite](MEMORANDO_DESENVOLVIMENTO.md#p0--consolidação-dos-relatórios-e-painel-de-campo-3015-lab-26112026).

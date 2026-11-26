@@ -1,3 +1,7 @@
+## 3.0.17 LAB — integração complementar verificada (26/11/2026)
+
+A [auditoria complementar](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/lab-integracao-p0-20261126/AUDITORIA_MOTORES_2026-11-26.md) registra a Issue #5, a revisão dos 20 itens ClamAV e a vinculação à matriz mestre. REQ-003/004/007/025/027/031/041 continuam abertos para validação de campo, proteção residente e cobertura. REQ-018/026/028 com artefato LAB verificável.
+
 ## Integração 3.0.16 LAB — 26/11/2026
 
 A ordem de execução de 26/11 autorizou a evolução experimental. [Matriz mestre, critérios e resultados](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/lab-integracao-p0-20261126/MATRIZ_MESTRE_2026-11-26.md). REQ-003/004/025/027/041 abertos para o gate físico. REQ-026 documentado com novo número, CI e hashes. REQ-018/028 com instalador validado em CI e ZIP temporário para piloto. Requisitos anteriores permanecem rastreados. A determinação vigente limita o Arcade a até 100 jogos gratuitos e define a assinatura artística L A Botelho, sem bandeira.

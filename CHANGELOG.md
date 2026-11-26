@@ -1,3 +1,7 @@
+## 3.0.17 LAB — integração complementar verificada (26/11/2026)
+
+Consulta Windows mantida durante a finalização dos motores. O diagnóstico ClamAV separa mensagens, motivos de limite e contagens nativas. FreshClam explicita a validação de carga da base. O ZIP inclui manifesto do build. [CI validado](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45850320492).
+
 ## 3.0.16 LAB — validação da integração P0
 
 CI aprovou a nova espera limitada após cancelamento da etapa ClamAV no candidato Windows, com teste de instalação e migração. [Detalhes do candidato](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45846486811). Validação física pendente.

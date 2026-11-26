@@ -198,3 +198,12 @@ func TestQuarantineRejectsTamperedCopy(t *testing.T) {
  if err := os.WriteFile(stored, data, 0600); err != nil { t.Fatal(err) }
  if err := q.Restore(item.ID); err != nil { t.Fatal(err) }
 }
+
+func TestIOC323AtomicImport(t *testing.T){
+ p:=filepath.Join(t.TempDir(),"candidate.txt"); s:=New();old:=strings.Repeat("a",64);next:=strings.Repeat("b",64);s.IOC[old]="existing"
+ if e:=os.WriteFile(p,[]byte(next+" valid first line\ninvalid\n"),0600);e!=nil{t.Fatal(e)}
+ if e:=s.LoadIOC(p);e==nil{t.Fatal("invalid candidate accepted")};if len(s.IOC)!=1||s.IOC[old]!="existing"{t.Fatal("base changed on failure",s.IOC)}
+ if e:=os.WriteFile(p,[]byte(next+" new indicator\n"),0600);e!=nil{t.Fatal(e)}
+ if e:=s.LoadIOC(p);e!=nil{t.Fatal(e)};if len(s.IOC)!=2||s.IOC[next]!="new indicator"{t.Fatal("valid candidate missing",s.IOC)}
+ if e:=os.WriteFile(p,[]byte(strings.Repeat("x",5000)),0600);e!=nil{t.Fatal(e)};if e:=s.LoadIOC(p);e==nil||len(s.IOC)!=2{t.Fatal("oversized line changed base",e)}
+}

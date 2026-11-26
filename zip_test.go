@@ -68,3 +68,12 @@ func TestDeepZIPEntriesPreserveEICARCoverage(t *testing.T) {
 		}
 	}
 }
+
+func TestZIP323RenamedContainer(t *testing.T){
+ p:=filepath.Join(t.TempDir(),"archive.bin");f,e:=os.Create(p);if e!=nil{t.Fatal(e)}
+ w:=zip.NewWriter(f);z,e:=w.Create("document.pdf.ps1");if e!=nil{t.Fatal(e)}
+ if _,e=z.Write([]byte("Documentation example: Invoke-Expression foo -EncodedCommand xyz"));e!=nil{t.Fatal(e)}
+ if e=w.Close();e!=nil{t.Fatal(e)};if e=f.Close();e!=nil{t.Fatal(e)}
+ r,e:=New().Scan(context.Background(),p,nil);if e!=nil{t.Fatal(e)}
+ for _,hit:=range r.Findings{if hit.Path==p+" :: document.pdf.ps1"{return}};t.Fatal("renamed ZIP entry not examined",r)
+}

@@ -27,7 +27,7 @@ old="const b=node('button','Exportar relatório salvo');b.onclick=()=>action(asy
 s=once(s,old,"")
 s=once(s,'</script></body></html>',r'''
 let z315Rows=[],z315ReportBusy=false;
-function z315ReportHistory(rows){z315Rows=rows.filter(v=>v.Kind==='scan_finished'&&v.ScanID);z315FilterReports()}
+function z315ReportHistory(rows){z315Rows=rows.filter(v=>v.Kind==='scan_finished'&&v.ScanID&&new Date(v.At).getTime()>=Date.now()-30*86400000);z315FilterReports()}
 function z315FilterReports(){const sel=el('z315ReportHistory'),prev=sel.value,q=el('z315ReportSearch').value.trim().toLowerCase();sel.replaceChildren(new Option('Selecione uma varredura',''));for(const v of z315Rows){const label=new Date(v.At).toLocaleString()+' · '+(v.Mode||'')+' · '+(v.Cancelled?'Cancelada':v.Partial?'Parcial':'Encerrada')+' · '+v.ScanID;if(!q||label.toLowerCase().includes(q))sel.add(new Option(label,v.ScanID))}if(Array.from(sel.options).some(x=>x.value===prev))sel.value=prev}
 async function z315ReportPaint(){const kind=el('z315ReportSource').value,preview=el('z315ReportPreview'),btn=el('z315ReportSave');try{if(kind==='history'){const v=z315Rows.find(x=>x.ScanID===el('z315ReportHistory').value);preview.textContent=v?'Arquivos: '+fmt(v.Files)+' · Alertas: '+fmt(v.Alerts)+' · Falhas: '+fmt(v.ErrorCount):'Selecione uma varredura salva.';btn.disabled=z315ReportBusy||!v;return}if(kind==='diag'){const d=await window.diagReport();if(el('z315ReportSource').value!==kind)return;const n=(d.samples||[]).length;preview.textContent='Amostras de diagnóstico: '+fmt(n);btn.disabled=z315ReportBusy||!n;return}const v=await window.getScanState(),r=v.report||{};if(el('z315ReportSource').value!==kind)return;preview.textContent=(v.running?'Relatório parcial':v.done?(r.cancelled?'Varredura cancelada':'Última varredura'):'Nenhuma varredura iniciada')+' · Arquivos: '+fmt(r.files??v.files)+' · Volume: '+volume(r.bytes??v.bytes??0)+' · Alertas do scanner: '+fmt(v.finding_total??0);btn.disabled=z315ReportBusy||!(v.running||v.done)}catch(e){preview.textContent=String(e);btn.disabled=true}}
 ;(()=>{const source=el('z315ReportSource'),status=el('z315ReportStatus'),save=el('z315ReportSave'),section=el('reports315');const legacy=el('export');legacy.hidden=true;section.append(legacy);const transfer=el('z315Transfer'),file=el('z315ReportFile'),copy=el('z315CopyFile');let transferring=false;async function handoff(drag){if(transferring||transfer.hidden)return;transferring=true;copy.disabled=true;try{const ok=drag?await window.dragReport315():await window.copyReport315();status.textContent=ok?(drag?'Arquivo entregue ao destino pelo Windows. Confirme o envio no aplicativo de destino.':'Arquivo copiado para a área de transferência. Cole no destino compatível.'):'Transferência cancelada ou não aceita; tente Copiar arquivo.'}catch(e){status.textContent='Transferência indisponível: '+String(e)}finally{transferring=false;copy.disabled=false}}file.onpointerdown=e=>{if(e.button===0){e.preventDefault();handoff(true)}};file.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();handoff(false)}};copy.onclick=()=>handoff(false);const audit=el('auditTitle').closest('.card');el('z315ReportAudit').append(audit);const failures=el('zLiveFailures');if(failures)el('z315ReportAudit').prepend(failures);const diag=el('diagnostics');if(diag){diag.classList.remove('hidden');diag.removeAttribute('id');el('z315ReportDiag').append(diag);const old=el('diagSave');old.hidden=true;const nav=document.querySelector('[data-page="diagnostics"]');if(nav){nav.hidden=true;nav.style.display='none'}/* Preserve legacy polling ID on the nested section. */diag.id='diagnostics';}
@@ -202,4 +202,25 @@ s=once(s,'</script></body></html>',Path("lab/test_diagnosis.js").read_text(encod
  };
 })();
 </script></body></html>''')
+p.write_text(s,encoding="utf-8")
+
+
+# Optional HTML export from the same local, authenticated snapshot. JSON transfer is unchanged.
+p=Path("desktop_windows.go");s=p.read_text(encoding="utf-8")
+s=once(s,'if !bind("savedReportText315",readLastReportText315){return}', '''if !bind("savedReportText315",readLastReportText315){return}
+ if !bind("exportHTML315",func(kind,id string)(string,error){
+  switch kind{
+  case "current":
+   r,ok:=s.snapshotForExport();if !ok{return "",fmt.Errorf("Nenhuma varredura iniciada")};return htmlReport315("zeuvoryx-report",r)
+  case "history":
+   a,e:=audit.Default();if e!=nil{return "",e};data,e:=a.ReadReport(id);if e!=nil{return "",e};return htmlReport315("zeuvoryx-history",json.RawMessage(data))
+  case "diag":
+   r:=diag.report();if len(r.Samples)==0{return "",fmt.Errorf("Nenhuma amostra de diagnóstico")};return htmlReport315("zeuvoryx-diagnostico",r)
+  default:return "",fmt.Errorf("Tipo de relatório inválido")
+  }
+ }){return}''')
+p.write_text(s,encoding="utf-8")
+p=Path("desktop.html");s=p.read_text(encoding="utf-8")
+s=once(s,'<button id="z315ReportSave">Salvar arquivo JSON</button>','<button id="z315ReportSave">Salvar arquivo JSON</button><button id="z315ReportHTML">Salvar HTML</button><small>Histórico: últimos 30 dias entre os 100 eventos recentes disponíveis.</small>')
+s=once(s,'</script></body></html>',r''';(()=>{const b=el('z315ReportHTML');b.onclick=async()=>{if(z315ReportBusy)return;z315ReportBusy=true;b.disabled=true;try{const kind=el('z315ReportSource').value,id=el('z315ReportHistory').value;if(!['current','history','diag'].includes(kind))throw Error('Selecione uma varredura ou diagnóstico');el('z315ReportStatus').textContent='HTML salvo: '+await window.exportHTML315(kind,id)}catch(e){el('z315ReportStatus').textContent='Falha no HTML: '+String(e)}finally{b.disabled=false;z315ReportBusy=false;await z315ReportPaint()}}})();</script></body></html>''')
 p.write_text(s,encoding="utf-8")

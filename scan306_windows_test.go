@@ -1,7 +1,7 @@
 //go:build windows
 
 package main
-import("archive/zip";"context";"crypto/sha256";"encoding/hex";"os";"path/filepath";"testing";"syscall";"time";"encoding/json";"github.com/zeuvoryx/zeuvoryx/audit";"github.com/zeuvoryx/zeuvoryx/engine")
+import("archive/zip";"context";"crypto/sha256";"encoding/hex";"os";"path/filepath";"testing";"syscall";"time";"encoding/json";"github.com/zeuvoryx/zeuvoryx/familygate";"github.com/zeuvoryx/zeuvoryx/audit";"github.com/zeuvoryx/zeuvoryx/engine")
 func Test306ControlledRoots(t *testing.T){
  root:=t.TempDir();q:=filepath.Join(root,"quarantine");if e:=os.Mkdir(q,0700);e!=nil{t.Fatal(e)}
  payload:=make([]byte,2<<20);for i:=range payload{payload[i]=byte(i%251)}
@@ -39,4 +39,19 @@ func TestP0WindowsLockedFileContinuesAndPersists(t *testing.T){
  st:=&State{scanner:sc,quarantine:&engine.Quarantine{Dir:q}}
  r:=st.scanRoots(ctx,[]string{root},"",nil);r.Summarize()
  if r.Cancelled||r.Files!=1||r.Skipped!=1||r.ErrorCount!=1||len(r.SkippedDetails)!=1||r.SkippedDetails[0].CodigoWindows!=32{t.Fatalf("root scan coverage: %+v",r)}
+}
+
+func TestP0GameRecordsPersistAcrossReads(t *testing.T){
+ t.Setenv("APPDATA",t.TempDir())
+ previous:=family314;family314=familygate.Open(filepath.Join(t.TempDir(),"family.json"));defer func(){family314=previous}()
+ for _,id:=range []string{"zvx-tetris","zvx-poker","zvx-mines","zvx-memory"}{
+  ok,e:=saveGameRecord315(id,42);if e!=nil||!ok{t.Fatal(id,e)}
+  ok,e=saveGameRecord315(id,12);if e!=nil||!ok{t.Fatal(id,e)}
+  v,e:=getGameRecord315(id);if e!=nil||v!=42{t.Fatal(id,v,e)}
+ }
+ path,e:=records315Path();if e!=nil{t.Fatal(e)}
+ b,e:=os.ReadFile(path);if e!=nil{t.Fatal(e)};var records map[string]int
+ if e=json.Unmarshal(b,&records);e!=nil||len(records)!=4{t.Fatal(string(b),e)}
+ if ok,e:=saveGameRecord315("../invalid",99);e==nil||ok{t.Fatal("invalid game accepted")}
+ t.Logf("persisted game records: %s",b)
 }

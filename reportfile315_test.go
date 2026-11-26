@@ -1,5 +1,5 @@
 package main
-import("encoding/json";"errors";"io";"os";"path/filepath";"testing")
+import("encoding/json";"errors";"io";"os";"path/filepath";"testing";"strings")
 func TestReport315DurableFile(t *testing.T){
  dir:=filepath.Join(t.TempDir(),"ZEUVORYX-Relatórios")
  for _,partial:=range []bool{true,false}{
@@ -40,4 +40,13 @@ func TestReport315DurableFilePublishAfterWrite(t *testing.T){
  if e!=nil{t.Fatal(e)}
  b,e:=os.ReadFile(name);if e!=nil||!json.Valid(b){t.Fatal("invalid published JSON",e)}
  tmp,e:=filepath.Glob(filepath.Join(dir,"*.tmp"));if e!=nil||len(tmp)!=0{t.Fatal("temporary residue",tmp,e)}
+}
+
+func TestReport315DurableFileHTML(t *testing.T){
+ dir:=t.TempDir()
+ p,e:=writeHTMLReport315(dir,"test",map[string]any{"partial":true,"files":1,"skipped":1,"error_count":1,"skipped_details":[]map[string]any{{"path":"<script>alert(1)</script>","codigo_windows":32}}})
+ if e!=nil{t.Fatal(e)};if filepath.Ext(p)!=".html"{t.Fatal(p)}
+ b,e:=os.ReadFile(p);if e!=nil{t.Fatal(e)};s:=string(b)
+ if strings.Contains(s,"<script>alert(1)</script>")||!strings.Contains(s,"&lt;script&gt;")||!strings.Contains(s,"skipped_details")||!strings.Contains(s,"codigo_windows"){t.Fatal(s)}
+ if _,e=writeHTMLReport315(dir,"invalid",make(chan int));e==nil{t.Fatal("invalid report accepted")}
 }

@@ -74,8 +74,8 @@ func readLastReportText315()(string,error){
 
 var htmlReportTemplate315=template.Must(template.New("report").Parse(`<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ZEUVORYX LAB — Relatório</title><style>body{font:16px system-ui;margin:2rem auto;max-width:1000px;padding:0 1rem;color:#182438}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:1rem;border-radius:8px}dl{display:grid;grid-template-columns:max-content 1fr;gap:8px}dt{font-weight:bold}</style><h1>ZEUVORYX LAB — Relatório local</h1><p>Scanner sob demanda. Sem bloqueio preventivo. Resultados parciais não comprovam ausência de ameaças.</p><h2>Resumo</h2><dl>{{range .Summary}}<dt>{{.Name}}</dt><dd>{{.Value}}</dd>{{end}}</dl><h2>Dados completos (findings, skipped_details e demais evidências)</h2><pre>{{.JSON}}</pre></html>`))
 func writeHTMLReport315(dir,prefix string,v any)(string,error){
- raw,e:=json.MarshalIndent(v,"","  ");if e!=nil{return "",e}
- var fields map[string]any;if e=json.Unmarshal(raw,&fields);e!=nil{return "",e}
+ var buf bytes.Buffer;enc:=json.NewEncoder(&buf);enc.SetEscapeHTML(false);enc.SetIndent("","  ");if e:=enc.Encode(v);e!=nil{return "",e};raw:=buf.Bytes()
+ var fields map[string]any;if e:=json.Unmarshal(raw,&fields);e!=nil{return "",e}
  type pair struct{Name,Value string}
  data:=struct{Summary []pair;JSON string}{JSON:string(raw)}
  for _,k:=range []string{"scan_id","started","finished","partial","files","skipped","error_count"}{if value,ok:=fields[k];ok{data.Summary=append(data.Summary,pair{k,fmt.Sprint(value)})}}

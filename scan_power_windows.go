@@ -67,5 +67,6 @@ func beginScanPowerRequest(onAC func()bool, set func(uintptr)bool) func() {
 }
 
 func beginFullScanPower() func() {
- return beginScanPowerRequest(scanOnAC,setScanPowerState)
+ // Honor the user's normal Windows sleep policy; do not force the PC awake.
+ return func(){}
 }

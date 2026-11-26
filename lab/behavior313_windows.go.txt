@@ -7,7 +7,7 @@ func behavior313Context(parent context.Context)(map[string]any,error){
  root:=os.Getenv("SystemRoot");if !filepath.IsAbs(root){return nil,fmt.Errorf("SystemRoot unavailable")}
  ctx,cancel:=context.WithTimeout(parent,20*time.Second);defer cancel()
  cmd:=exec.CommandContext(ctx,filepath.Join(root,"System32","wevtutil.exe"),"qe","Microsoft-Windows-Sysmon/Operational","/q:*[System[(EventID=1 or EventID=11 or EventID=13) and TimeCreated[timediff(@SystemTime) <= 600000]]]","/f:xml","/c:500","/rd:true","/e:Events")
- cmd.SysProcAttr=&syscall.SysProcAttr{HideWindow:true};var out limit313;cmd.Stdout=&out;cmd.Stderr=&out
+ cmd.WaitDelay=5*time.Second;cmd.SysProcAttr=&syscall.SysProcAttr{HideWindow:true};var out limit313;cmd.Stdout=&out;cmd.Stderr=&out
  e:=cmd.Run()
  if ctx.Err()!=nil{return nil,fmt.Errorf("Consulta Sysmon interrompida: %w",ctx.Err())}
  if out.overflow{return nil,fmt.Errorf("Consulta Sysmon excedeu limite de 4 MiB; análise inconclusiva")}

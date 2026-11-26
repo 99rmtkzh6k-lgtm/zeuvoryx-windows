@@ -24,3 +24,20 @@ func TestRetryCancellation(t *testing.T){
 }
 
 func TestWindowsRetryClassification(t *testing.T){for _,n:=range []syscall.Errno{32,33,5,2}{e:=&os.PathError{Op:"open",Path:"test",Err:n};if transientWindows(e)!=(n==32||n==33){t.Fatalf("classification %d",n)}}}
+
+func TestP0OneRetryAndStructuredError(t *testing.T){
+ for _,code:=range []syscall.Errno{5,32,33}{
+  n:=0;start:=time.Now()
+  f,err:=openScan(context.Background(),"locked.tmp",func(path string)(*os.File,error){
+   n++;return nil,&os.PathError{Op:"open",Path:path,Err:code}
+  },true)
+  var skipped *SkippedError
+  if f!=nil||n!=2||time.Since(start)<500*time.Millisecond||!errors.As(err,&skipped)||!errors.Is(err,code){t.Fatalf("attempts=%d err=%v",n,err)}
+  if skipped.Path!="locked.tmp"||skipped.CodigoWindows!=uint32(code)||skipped.Hora.IsZero()||skipped.Motivo==""{t.Fatal(skipped)}
+ }
+}
+func TestP0CancelledDuringRetry(t *testing.T){
+ ctx,cancel:=context.WithCancel(context.Background());defer cancel()
+ n:=0;_,err:=openScan(ctx,"locked.tmp",func(string)(*os.File,error){n++;cancel();return nil,syscall.Errno(32)},true)
+ if n!=1||!errors.Is(err,context.Canceled){t.Fatal(n,err)}
+}

@@ -12,10 +12,15 @@ def rx(s,a,b,expected=1):
 def edit(name,fn):
     p=Path(name);p.write_text(fn(p.read_text(encoding="utf-8-sig")),encoding="utf-8")
 def scanner(s):
-    fields=[("ErrorCategories","map[string]int","error_categories,omitempty"),("BuildCommit","string","build_commit,omitempty"),("ScanID","string","scan_id"),("ScanMode","string","scan_mode"),("ErrorCount","int","error_count"),("OmittedErrorDetails","int","omitted_error_details"),("ScanError","string","scan_error,omitempty"),("AuditError","string","audit_error,omitempty")]
+    fields=[("SkippedDetails","[]scanretry.SkippedError","skipped_details,omitempty"),("ErrorCategories","map[string]int","error_categories,omitempty"),("BuildCommit","string","build_commit,omitempty"),("ScanID","string","scan_id"),("ScanMode","string","scan_mode"),("ErrorCount","int","error_count"),("OmittedErrorDetails","int","omitted_error_details"),("ScanError","string","scan_error,omitempty"),("AuditError","string","audit_error,omitempty")]
     s=one(s,'type Report struct {','type Report struct {\n'+''.join('    '+a+' '+b+' '+chr(96)+'json:"'+c+'"'+chr(96)+'\n' for a,b,c in fields))
     s=rx(s,r'func\s+\(s\s+\*Scanner\)\s+examine\(ctx\s+context\.Context,\s*path\s+string,\s*size\s+int64\)\s*\(\[\]Finding,\s*error\)\s*\{','func (s *Scanner) examineUnchecked(ctx context.Context, path string, size int64) ([]Finding, error) {')
-    return rx(s,r'if len\(report\.Errors\) < 30 \{','report.ErrorCount++\nif len(report.Errors) < 10000 {',2)
+    s=rx(s,r'if len\(report\.Errors\) < 30 \{','report.ErrorCount++\nRecordSkipped(&report,path,e)\nif len(report.Errors) < 10000 {',2)
+    s=rx(s,r'report\.Skipped\s*=\s*1;report\.Errors=append\(report\.Errors,abs\+": "\+e\.Error\(\)\);report\.Finished=time\.Now\(\);return report,e','''report.Skipped=1;report.ErrorCount++;RecordSkipped(&report,abs,e);report.Errors=append(report.Errors,abs+": "+e.Error());report.Finished=time.Now();report.Summarize();if scanretry.WindowsSkipped(abs,e)!=nil{return report,nil};return report,e''')
+    return rx(s,r'(if e != nil \|\| !st\.Mode\(\)\.IsRegular\(\) \{\s*mu\.Lock\(\)\s*report\.Skipped\+\+)','''if e != nil || !st.Mode().IsRegular() {
+                    mu.Lock()
+                    report.Skipped++
+                    if e!=nil {report.ErrorCount++;RecordSkipped(&report,path,e);if len(report.Errors)<10000 {report.Errors=append(report.Errors,path+": "+e.Error())}}''')
 def summary(s):
     s=rx(s,r'const ScanEngineVersion = "[^"]+"','const ScanEngineVersion = "3.0.5-lab"')
     commit=os.environ.get("GITHUB_SHA","")
@@ -27,7 +32,7 @@ def summary(s):
     r.Partial = r.Cancelled || r.Skipped > 0 || r.ErrorCount > 0 || r.ScanError != "" || (r.Inventory314.ScannerDone && (r.Partial || r.Inventory314.Incomplete()))''')
 def main(s):
     s=one(s,'import (','import (\n "github.com/zeuvoryx/zeuvoryx/audit"')
-    s=rx(s,r'if len\(r\.Errors\) < 30 \{','r.ErrorCount++\nengine.CountScanError(&r,err)\nif len(r.Errors) < 10000 {')
+    s=rx(s,r'if len\(r\.Errors\) < 30 \{','r.ErrorCount++\nengine.CountScanError(&r,err)\nengine.RecordSkipped(&r,path,err)\nif len(r.Errors) < 10000 {')
     s=one(s,'s.report = engine.Report{}','''s.report = engine.Report{}
     scanID,idErr:=audit.NewID()
     mode:="custom"; if automatic { mode="full"; if path==":quick:" {mode="quick"} }
@@ -83,6 +88,7 @@ import (
  "runtime"
  "syscall"
  "time"
+ "github.com/zeuvoryx/zeuvoryx/scanretry"
 )
 
 // Contain recoverable Go panics in the current file only. Never treat it as clean.
@@ -116,6 +122,13 @@ func ScanErrorCategory(err error) string {
  return "other"
 }
 
+// Caller owns the report lock. A repeated record for the same path and code is not duplicated.
+func RecordSkipped(r *Report,path string,err error){
+ skipped:=scanretry.WindowsSkipped(path,err);if skipped==nil{return}
+ for _,old:=range r.SkippedDetails{if old.Path==skipped.Path&&old.CodigoWindows==skipped.CodigoWindows{return}}
+ r.SkippedDetails=append(r.SkippedDetails,*skipped)
+}
+
 // Caller owns the report lock. Counts final errors; retries are not counted as new files.
 func CountScanError(r *Report,err error) {
  if err==nil{return}
@@ -129,6 +142,8 @@ func retryScanRead(ctx context.Context,read func()([]Finding,error))([]Finding,e
  // A live Windows desktop can hold temporary files longer than 25 ms.
  // At most two delayed retries, only for native sharing/lock conflicts.
  for _,delay:=range []time.Duration{50*time.Millisecond,150*time.Millisecond}{
+  var skipped *scanretry.SkippedError
+  if errors.As(err,&skipped){return hits,err}
   category:=ScanErrorCategory(err)
   if category!="sharing_violation"&&category!="lock_violation"{return hits,err}
   timer:=time.NewTimer(delay)
@@ -149,6 +164,11 @@ import (
  "runtime"
  "syscall"
  "testing"
+ "encoding/json"
+ "path/filepath"
+ "time"
+ "github.com/zeuvoryx/zeuvoryx/scanretry"
+ "github.com/zeuvoryx/zeuvoryx/audit"
 )
 
 func TestScanRecoverablePanic(t *testing.T){
@@ -198,6 +218,24 @@ func TestScanRetryBounded(t *testing.T){
   cancel()
   if n!=1||!errors.Is(err,context.Canceled){t.Fatal(n,err)}
  }
+}
+
+func TestP0SkippedJSONPersistence(t *testing.T){
+ dir:=t.TempDir()
+ path:=filepath.Join(dir,"locked.tmp")
+ skipped:=&scanretry.SkippedError{Path:path,Motivo:"synthetic access denial",Hora:time.Now().UTC(),CodigoWindows:5}
+ var report Report
+ RecordSkipped(&report,path,skipped);RecordSkipped(&report,path,skipped)
+ report.Skipped=1;report.ErrorCount=1;report.Summarize()
+ store,err:=audit.Open(t.TempDir());if err!=nil{t.Fatal(err)}
+ id,err:=audit.NewID();if err!=nil{t.Fatal(err)}
+ if err=store.Finish(id,"custom",report,audit.Event{Skipped:1,ErrorCount:1,Partial:true});err!=nil{t.Fatal(err)}
+ raw,err:=store.ReadReport(id);if err!=nil{t.Fatal(err)}
+ var out Report;if err=json.Unmarshal(raw,&out);err!=nil{t.Fatal(err)}
+ if len(out.SkippedDetails)!=1||out.SkippedDetails[0].Path!=path||out.SkippedDetails[0].CodigoWindows!=5||!out.Partial{t.Fatal(string(raw))}
+ n:=0;_,err=retryScanRead(context.Background(),func()([]Finding,error){n++;return nil,skipped})
+ if n!=1||err!=skipped{t.Fatal(n,err)}
+ data,_:=json.Marshal(out.SkippedDetails);t.Logf("persisted skipped_details=%s",data)
 }
 ''',encoding="utf-8")
 

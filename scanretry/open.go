@@ -3,20 +3,55 @@ package scanretry
 import (
  "context"
  "errors"
+ "fmt"
  "os"
  "runtime"
  "syscall"
  "time"
 )
 
-// Open retries only Windows sharing and lock violations. Never force access or change file permissions.
-func Open(ctx context.Context, path string) (*os.File,error) {
- return openWithRetry(ctx,path,os.Open,func(err error)bool{
-  return runtime.GOOS=="windows" && transientWindows(err)
- },[]time.Duration{40*time.Millisecond,120*time.Millisecond})
+// SkippedError is a final access failure, not evidence of a clean file.
+type SkippedError struct {
+ Path string `json:"path"`
+ Motivo string `json:"motivo"`
+ Hora time.Time `json:"hora"`
+ CodigoWindows uint32 `json:"codigo_windows"`
+ cause error
+}
+func(e *SkippedError) Error() string {return fmt.Sprintf("SKIPPED: %q | %s | %s | Windows %d",e.Path,e.Hora.Format(time.RFC3339Nano),e.Motivo,e.CodigoWindows)}
+func(e *SkippedError) Unwrap() error {return e.cause}
+
+func windowsAccessCode(err error)(syscall.Errno,bool){
+ var code syscall.Errno
+ if !errors.As(err,&code){return 0,false}
+ return code,code==5||code==32||code==33
 }
 
-func transientWindows(err error) bool { return errors.Is(err,syscall.Errno(32)) || errors.Is(err,syscall.Errno(33)) }
+// WindowsSkipped preserves an existing timestamp; it does not override ACLs.
+func WindowsSkipped(path string,err error)*SkippedError {
+ var skipped *SkippedError
+ if errors.As(err,&skipped){return skipped}
+ if runtime.GOOS!="windows"{return nil}
+ code,ok:=windowsAccessCode(err);if !ok{return nil}
+ return &SkippedError{Path:path,Motivo:err.Error(),Hora:time.Now().UTC(),CodigoWindows:uint32(code),cause:err}
+}
+
+// os.Open on Windows requests read access with FILE_SHARE_READ|FILE_SHARE_WRITE.
+// Exclusive handles and access controls remain enforced by the OS.
+func Open(ctx context.Context,path string)(*os.File,error){
+ return openScan(ctx,path,os.Open,runtime.GOOS=="windows")
+}
+
+func openScan(ctx context.Context,path string,open func(string)(*os.File,error),windows bool)(*os.File,error){
+ f,err:=openWithRetry(ctx,path,open,func(err error)bool{
+  _,ok:=windowsAccessCode(err);return windows&&ok
+ },[]time.Duration{500*time.Millisecond})
+ if err==nil||!windows{return f,err}
+ code,ok:=windowsAccessCode(err);if !ok{return f,err}
+ return nil,&SkippedError{Path:path,Motivo:err.Error(),Hora:time.Now().UTC(),CodigoWindows:uint32(code),cause:err}
+}
+
+func transientWindows(err error) bool {return errors.Is(err,syscall.Errno(32))||errors.Is(err,syscall.Errno(33))}
 
 func openWithRetry(ctx context.Context,path string,open func(string)(*os.File,error),busy func(error)bool,delays []time.Duration)(*os.File,error){
  for i:=0;;i++{

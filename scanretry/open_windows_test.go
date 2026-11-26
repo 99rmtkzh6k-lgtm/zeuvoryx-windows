@@ -11,5 +11,7 @@ func TestWindowsExclusiveHandleRemainsProtected(t *testing.T){
  f,e:=Open(context.Background(),p)
  if f!=nil{f.Close()};syscall.CloseHandle(h)
  if !errors.Is(e,syscall.Errno(32)){t.Fatalf("expected sharing violation, got %v",e)}
+ var skipped *SkippedError
+ if !errors.As(e,&skipped)||skipped.Path!=p||skipped.CodigoWindows!=32||skipped.Hora.IsZero(){t.Fatalf("missing structured skip: %v",e)}
  f,e=Open(context.Background(),p);if e!=nil{t.Fatal(e)};f.Close()
 }

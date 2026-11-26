@@ -57,3 +57,13 @@ for name,pattern in (("main.go",r"stabilityWorkers\(runtime\.NumCPU\(\)\)"),("en
     if s.count("import (")!=1:raise RuntimeError("adaptive worker import "+name)
     s=s.replace("import (",'import (\n "github.com/zeuvoryx/zeuvoryx/scanplan"',1)
     p.write_text(s,encoding="utf-8")
+
+# Explicit LAB limitations and third-party attribution in the actual generated desktop.
+p=Path("desktop.html")
+s=p.read_text(encoding="utf-8")
+if s.count("</header>")!=1:raise RuntimeError("LAB notice header anchor")
+s=s.replace("</header>",'''</header><div class="card" id="zLabNotice" role="status"><strong>MODO LAB - SEM BLOQUEIO PREVENTIVO</strong><p>O monitor apenas solicita varreduras. Não bloqueia a execução de arquivos. Mantenha o Microsoft Defender ativo.</p><details><summary>Sobre os motores e licenças</summary><p>Motores de análise de arquivos: SHA-256/heurísticas do ZEUVORYX e ClamAV. Microsoft Defender e AMSI são integrações independentes do Windows. Não há YARA operacional anunciado.</p><p>Usa ClamAV 1.5.5 GPL v2 — código-fonte: https://github.com/Cisco-Talos/clamav/releases/tag/clamav-1.5.5 . Licença e fonte correspondente também acompanham o pacote LAB. Não é produto homologado.</p></details><p id="zLabScanTotals">Total escaneado: — · Infectados: não confirmados · Pulados: — · Erros: —</p></div>''',1)
+s=s.replace("GLOBAL THREAT DEFENSE · 3.0.23 LAB","SCANNER EXPERIMENTAL · 3.0.23 LAB")
+if s.count("</script></body></html>")!=1:raise RuntimeError("LAB totals script anchor")
+s=s.replace("</script></body></html>",''' ;(()=>{async function totals(){try{const v=await window.getScanState(),r=v.report||{};let detections=0;for(const x of r.signature_reports||[])detections+=Number(x.evidence_315?.signature_records)||0;document.getElementById("zLabScanTotals").textContent="Total escaneado (motor próprio): "+(r.files??0)+" · Infectados: não confirmados ("+detections+" registros por assinatura ClamAV) · Pulados: "+(r.skipped??0)+" · Erros: "+(r.error_count??0)}catch(e){document.getElementById("zLabScanTotals").textContent="Contadores indisponíveis: "+String(e)}}setInterval(totals,2000);totals()})();</script></body></html>''',1)
+p.write_text(s,encoding="utf-8")

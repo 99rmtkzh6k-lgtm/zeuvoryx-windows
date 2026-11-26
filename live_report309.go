@@ -1,6 +1,7 @@
 package main
 import (
  "time"
+ "slices"
  "github.com/zeuvoryx/zeuvoryx/engine"
 )
 const liveFindingLimit=500
@@ -27,6 +28,7 @@ func(s *State) publishLive(src engine.Report) {
  src.ErrorCategories=cloneErrorCounts(src.ErrorCategories)
  if src.ErrorCount<len(src.Errors){src.ErrorCount=len(src.Errors)}
  src.OmittedErrorDetails=src.ErrorCount-len(src.Errors)
+ src.SkippedDetails=slices.Clone(src.SkippedDetails)
  s.report=src;s.files=src.Files;s.bytes=src.Bytes
 }
 func cloneErrorCounts(m map[string]int)map[string]int{
@@ -40,6 +42,7 @@ func(s *State) reportSnapshotLocked(view bool)(engine.Report,int){
  if view&&len(r.Errors)>liveErrorLimit{r.Errors=r.Errors[len(r.Errors)-liveErrorLimit:]}
  r.Findings=append([]engine.Finding(nil),r.Findings...)
  r.Errors=append([]string(nil),r.Errors...)
+ r.SkippedDetails=slices.Clone(r.SkippedDetails)
  r.ErrorCategories=cloneErrorCounts(r.ErrorCategories)
  if s.running{r.SignatureRecent314=signatureRecentFindings314();r.SignatureRecentLimit314=100;r.InProgress=true;r.Partial=true;r.Finished=time.Time{};r.SnapshotAt=time.Now()}
  if r.SignatureStartedMS315>0&&r.SignatureFinishedMS315==0{elapsed:=time.Now().UnixMilli()-r.SignatureStartedMS315;if elapsed>=0{r.SignatureDurationMS315=elapsed}}

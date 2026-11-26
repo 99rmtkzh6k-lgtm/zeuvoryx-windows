@@ -671,21 +671,18 @@ def pe(s):
     return s
 
 def quarantine(s):
-    s=one(s,'type QuarantineItem struct {','type QuarantineItem struct {\n SHA256 string `json:"sha256,omitempty"`')
     s=one(s,'func (q *Quarantine) Add(path string) (QuarantineItem, error) {','''func (q *Quarantine) Add(path string) (QuarantineItem,error){return q.addWithHash(path,"")}
 func (q *Quarantine) addWithHash(path,expected string) (QuarantineItem, error) {''')
     s=one(s,'\tif q.IsQuarantined(abs) {','''    roots,e:=protectedRoots();if e!=nil{return QuarantineItem{},e};if e=checkProtected(abs,roots);e!=nil{return QuarantineItem{},e}
     if expected!=""{if e=quarantineHash(abs,expected);e!=nil{return QuarantineItem{},e}}
 \tif q.IsQuarantined(abs) {''')
-    s=one(s,'Size:     st.Size(),','Size:     st.Size(),\n SHA256:expected,')
-    s=one(s,'\tif e = os.WriteFile(metaPath, meta, 0600); e != nil {','''    if expected!=""{if e=quarantineHash(bin,expected);e!=nil{return QuarantineItem{},errors.Join(e,os.Remove(bin))}}
-\tif e = os.WriteFile(metaPath, meta, 0600); e != nil {''')
+    s=one(s,'copyClosed(abs, bin, "", st.Size())','copyClosed(abs, bin, expected, st.Size())')
     s=one(s,'\tif e = os.Remove(abs); e != nil {','''    current,e:=os.Lstat(abs)
     if e!=nil||!stableFile(abs,st,current){return QuarantineItem{},errors.Join(errors.New("arquivo original mudou"),os.Remove(bin),os.Remove(metaPath))}
     if expected!=""{if e=quarantineHash(abs,expected);e!=nil{return QuarantineItem{},errors.Join(e,os.Remove(bin),os.Remove(metaPath))}}
 \tif e = os.Remove(abs); e != nil {''')
-    s=one(s,'\tif e = copyClosed(bin, item.Original); e != nil {','''    if item.SHA256!=""{if e=quarantineHash(bin,item.SHA256);e!=nil{return e}}
-\tif e = copyClosed(bin, item.Original); e != nil {''')
+    s=one(s,'\tif _, e = copyClosed(bin, item.Original, item.SHA256, item.Size); e != nil {','''    if item.SHA256!=""{if e=quarantineHash(bin,item.SHA256);e!=nil{return e}}
+\tif _, e = copyClosed(bin, item.Original, item.SHA256, item.Size); e != nil {''')
     return s
 
 def main(s):

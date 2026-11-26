@@ -28,6 +28,7 @@ Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortugue
 Name: "desktopicon"; Description: "Criar atalho na área de trabalho"
 Name: "autostart"; Description: "Abrir ZEUVORYX ao entrar no Windows (sem varredura automática)"
 [Files]
+Source: "ops\Observe-Zeuvoryx.ps1"; DestDir: "{app}\ops"; Flags: ignoreversion
 Source: "dist\ZEUVORYX.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "dist\signatures.sha256"; DestDir: "{app}"; Flags: ignoreversion
 Source: "dist\ZEUVORYX.ico"; DestDir: "{app}"; Flags: ignoreversion

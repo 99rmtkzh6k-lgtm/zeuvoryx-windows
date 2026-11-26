@@ -17,7 +17,11 @@ func signaturePhase312(ctx context.Context, rep *engine.Report, publish func(*en
  rep.SignatureState="running";rep.SignatureProblem="Preparando ou atualizando base de assinaturas ClamAV";publish(rep)
  baseInfo,e:=ensureClam314(ctx,false);if e!=nil{rep.SignatureState="unavailable";rep.SignatureProblem=e.Error();return}
  rep.SignatureProblem="Base disponível; ClamAV examinando arquivos: "+baseInfo;publish(rep)
- r,e:=signatureav.ScanRoots(signatureav.WithObserver(ctx,observe),tool,roots,signatureav.BundledDatabase(tool))
+ observed := signatureav.WithActivityObserver(signatureav.WithObserver(ctx,observe), func(a signatureav.Activity) {
+  rep.SignatureActivity = &a
+  publish(rep)
+ })
+ r,e:=signatureav.ScanRoots(observed,tool,roots,signatureav.BundledDatabase(tool))
  rep.SignatureReports=append(rep.SignatureReports,r)
  if e!=nil||r.Partial{rep.SignatureState="partial";if e!=nil{rep.SignatureProblem=e.Error()+" | "+baseInfo}else{rep.SignatureProblem="ClamAV evidence incomplete | "+baseInfo}}else{rep.SignatureState="finished";rep.SignatureProblem=baseInfo}
  publish(rep)
@@ -31,6 +35,7 @@ func(s *State) publishSignatureProgress314(rep *engine.Report){
  s.report.SignatureFinishedMS315=rep.SignatureFinishedMS315
  s.report.SignatureDurationMS315=rep.SignatureDurationMS315
  s.report.SignatureProblem=rep.SignatureProblem
+ s.report.SignatureActivity=rep.SignatureActivity
  s.report.SignatureRoots=append([]string(nil),rep.SignatureRoots...)
  s.report.SignatureReports=append([]signatureav.Report(nil),rep.SignatureReports...)
 }

@@ -34,6 +34,7 @@ type Report struct {
  ExitCode int `json:"exit_code"`
  Termination string `json:"termination,omitempty"`
  NativeSummaryPresent bool `json:"native_summary_present"`
+ Activity *Activity `json:"process_activity,omitempty"`
  Scanned int64 `json:"scanned_files"`
  Infected int64 `json:"engine_reported_infected_files"`
  KnownSignatures int64 `json:"known_signatures"`
@@ -233,7 +234,7 @@ func ScanRoots(ctx context.Context, exe string, roots []string, db string) (r Re
  if fn,ok:=ctx.Value(observerKey314{}).(func(Finding));ok{out.observer.fn=fn}
  // Both streams share one synchronized os/exec writer.
  cmd.Stdout=&out;cmd.Stderr=&out
- e=cmd.Run();code:=0
+ r.Activity,e=runWithActivity(ctx,cmd);code:=0
  if e!=nil{var ee *exec.ExitError;if errors.As(e,&ee){code=ee.ExitCode()}else{code=-1}}
  parse(&r,string(out.b),code,out.overflow)
  switch {

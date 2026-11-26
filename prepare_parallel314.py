@@ -35,6 +35,7 @@ def report(s):
  SignatureStartedMS315 int64 `json:"signature_started_unix_ms,omitempty"`
  SignatureFinishedMS315 int64 `json:"signature_finished_unix_ms,omitempty"`
  SignatureDurationMS315 int64 `json:"signature_duration_ms"`
+ SignatureActivity *signatureav.Activity `json:"signature_activity,omitempty"`
 ''')
 def desktop(s):
     a=s.index('if !bind("behavior313"')

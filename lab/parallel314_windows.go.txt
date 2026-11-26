@@ -38,10 +38,11 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
  var signatureStarted time.Time
  var signatureMu sync.Mutex
  signatureOpen := true
+ var lastSignatureActivity *signatureav.Activity
  publishSignature := func(r *engine.Report) {
   signatureMu.Lock()
   defer signatureMu.Unlock()
-  if signatureOpen { s.publishSignatureProgress314(r) }
+  if signatureOpen { lastSignatureActivity = r.SignatureActivity; s.publishSignatureProgress314(r) }
  }
  observeSignature := func(f signatureav.Finding) {
   signatureMu.Lock()
@@ -126,6 +127,7 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
  s.mu.Lock();auxOpen=false;s.mu.Unlock()
  signatureMu.Lock()
  signatureOpen = false
+ if !signatureOK { r.SignatureActivity = lastSignatureActivity }
  signatureMu.Unlock()
  if !signatureOK {
   r.SignatureState = "partial"
@@ -136,6 +138,7 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
  if !invOK || !bOK || !wOK || r.SignatureState != "finished" { rep.Partial = true }
  rep.WindowsLocal314=w.data;rep.WindowsProblem314=w.problem
  rep.SignatureRoots=append([]string(nil),roots...)
+ rep.SignatureActivity=r.SignatureActivity
  rep.SignatureState=r.SignatureState;rep.SignatureProblem=r.SignatureProblem;rep.SignatureReports=r.SignatureReports
  rep.SignatureStartedMS315=r.SignatureStartedMS315;rep.SignatureFinishedMS315=r.SignatureFinishedMS315;rep.SignatureDurationMS315=r.SignatureDurationMS315
  rep.SignatureRecent314=signatureRecentFindings314();rep.SignatureRecentLimit314=100

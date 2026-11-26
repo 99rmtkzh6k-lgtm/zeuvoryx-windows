@@ -29,11 +29,18 @@ def main(s):
     x=rx(x,r'(s\.mu\.Lock\(\)\s*defer s\.mu\.Unlock\(\)\s*rep\.ScanID\s*=)',lambda m:'rep.SnapshotAt=time.Now()\n'+m[1])
     return s[:a]+x+s[b:]
 def html(s):
-    s=once(s,'<section id="overview">','''<section id="overview"><div class="card" id="z312Signature"><h2>Motor de assinaturas ClamAV</h2><p id="z312SigState" role="status">Aguardando varredura.</p><div id="z312SigDetails"></div><p class="sub">Contagem independente; não somar arquivos dos dois motores. Sem detecção não significa computador seguro.</p></div>''')
+    s=once(s,'<section id="overview">','''<section id="overview"><div class="card" id="z312Signature"><h2>Motor de assinaturas ClamAV</h2><p id="z312SigState" role="status">Aguardando varredura.</p><p id="z320SigActivity" class="sub"></p><div id="z312SigDetails"></div><p class="sub">Contagem independente; não somar arquivos dos dois motores. Sem detecção não significa computador seguro.</p></div>''')
     s=s.replace("os botões de varredura ZEUVORYX continuam heurísticos.","as varreduras normais agora incluem uma segunda etapa independente, quando ClamAV estiver instalado.")
     js=r"""
 ;(()=>{let last='';async function draw(){try{
 const v=await window.getScanState(),r=v.report||{},p=document.getElementById('z312SigState'),d=document.getElementById('z312SigDetails');
+const activity=r.signature_activity,activityView=document.getElementById('z320SigActivity');
+activityView.textContent=activity?[
+ 'CPU acumulada: '+(activity.cpu_100ns/10000000).toFixed(2)+' s',
+ 'I/O de leitura do processo: '+fmt(activity.read_bytes)+' bytes',
+ activity.peak_working_set_bytes!=null?'Pico de memória residente: '+fmt(activity.peak_working_set_bytes)+' bytes':null,
+ activity.idle_advisory?'Sem avanço observado nos contadores por '+fmt(activity.idle_seconds)+' s':null
+].filter(Boolean).join(' · '):'Atividade do processo ainda não medida.';
 const state=r.signature_state||'',rr=r.signature_reports||[],key=JSON.stringify([state,r.signature_problem,rr,v.running]);if(key===last)return;last=key;
 p.textContent=({running:'ClamAV: análise em andamento',finished:'ClamAV: etapa finalizada',partial:'ClamAV: cobertura parcial',unavailable:'ClamAV indisponível',pending:'ClamAV aguardando'})[state]||(v.running?'Primeira etapa: scanner ZEUVORYX':'Aguardando varredura.');
 d.replaceChildren();if(r.signature_problem)d.append(node('p',r.signature_problem));

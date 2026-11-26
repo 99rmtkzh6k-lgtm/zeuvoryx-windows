@@ -1,3 +1,7 @@
+## P0 — pendências consolidadas do teste físico Windows 3.0.15 LAB (26/11/2026)
+
+REQ-003/004/005/008/025 permanecem abertos. Próxima atualização deve corrigir a indicação fixa de paralelismo do ClamAV, a mensagem duplicada de atividade da IA e as inconsistências nos estados e contadores por motor. Validar finalização, timeout, exportação, arquivos bloqueados e compactados, além da triagem e agrupamento dos alertas heurísticos. A completa anterior foi cancelada e o relatório da completa atual ainda é parcial. [Evidência e critérios de aceite](MEMORANDO_DESENVOLVIMENTO.md#p0--consolidação-dos-relatórios-e-painel-de-campo-3015-lab-26112026).
+
 ## P0 — ruído heurístico na completa Windows 3.0.15 LAB (26/11/2026)
 
 REQ-003/004/005/008 permanecem abertos. O recorte físico contém 24 alertas consultivos (16 PE, um PowerShell e sete JavaScript), sem detecção confirmada no material recebido. Priorizar correlação de evidências antes de elevar severidade ou habilitar remediação, teste de regressão com corpus legítimo verificado e casos controlados, e conciliação do JSON final com agrupamento por SHA-256 quando disponível. [Evidência e critérios de aceite](MEMORANDO_DESENVOLVIMENTO.md#p0--triagem-de-alertas-heurísticos-na-varredura-completa-windows-lab-26112026).

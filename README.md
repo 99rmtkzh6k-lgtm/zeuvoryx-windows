@@ -1,3 +1,7 @@
+## 3.0.18 LAB — Central de Segurança do Windows
+
+[Instalador Windows x64 para piloto](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45853385995/artifacts/15136380778). [Central, evidências e limites](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/lab-integracao-p0-20261126/CENTRAL_SEGURANCA_318.md). CI aprovado, com validação física das alterações de políticas pendente.
+
 ## 3.0.17 LAB — integração complementar verificada (26/11/2026)
 
 **[Baixar o instalador Windows x64 para piloto](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45850320492/artifacts/15133868370)**. Build 19, CI Windows e Ubuntu aprovado. [Auditoria complementar](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/lab-integracao-p0-20261126/AUDITORIA_MOTORES_2026-11-26.md). Validação física da completa pendente.

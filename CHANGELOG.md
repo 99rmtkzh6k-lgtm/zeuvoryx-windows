@@ -1,3 +1,7 @@
+## 3.0.18 LAB — Central de Segurança do Windows
+
+Ações diretas do Defender com confirmação, reconsulta, auditoria seletiva e diagnóstico de serviços, coexistência e políticas. Indicadores corrigidos. [Testes](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45853385995/artifacts/15133844653).
+
 ## 3.0.17 LAB — integração complementar verificada (26/11/2026)
 
 Consulta Windows mantida durante a finalização dos motores. O diagnóstico ClamAV separa mensagens, motivos de limite e contagens nativas. FreshClam explicita a validação de carga da base. O ZIP inclui manifesto do build. [CI validado](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45850320492).

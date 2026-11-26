@@ -13,7 +13,7 @@ def one(s,a,b):
     return s.replace(a,b,1)
 Path("games314_windows.go").write_text(Path("lab/games314_windows.go.txt").read_text(encoding="utf-8"),encoding="utf-8")
 p=Path("desktop_windows.go");s=p.read_text(encoding="utf-8")
-s=one(s,'if !bind("recentSignature314",recentSignature314){return}', 'if !bind("recentSignature314",recentSignature314){return}\nif !bind("allowLocalGame315",allowLocalGame315){return}')
+s=one(s,'if !bind("recentSignature314",recentSignature314){return}', 'if !bind("recentSignature314",recentSignature314){return}\nif !bind("allowLocalGame315",allowLocalGame315){return}\nif !bind("getGameRecord315",getGameRecord315){return}\nif !bind("saveGameRecord315",saveGameRecord315){return}')
 s=one(s,'import (','import (\n "github.com/zeuvoryx/zeuvoryx/familygate"')
 s=regex_one(s,r'\bdropCache\s*:=\s*globalintel\.OpenDaily\(dropPath\)',lambda m:m[0]+'''
 familyPath:="";if dropDirErr==nil{familyPath=filepath.Join(dropDir,"ZEUVORYX","family314.json")}
@@ -29,7 +29,7 @@ s=one(s,'</nav>','<button id="zGamesNav314" type="button" aria-expanded="false">
 retro, retro_docs = load_retro()
 games_html=Path("lab/games314.html").read_text(encoding="utf-8")
 family_html=Path("lab/family314.html").read_text(encoding="utf-8")
-options='<option value="2048">2048</option>'+''.join('<option value="'+escape(g["id"],quote=True)+'">'+escape(g["title"])+'</option>' for g in retro)
+options='<option value="zvx-tetris">Tetris — blocos</option><option value="zvx-poker">Poker (fichas fictícias)</option><option value="zvx-mines">Campo minado</option><option value="zvx-memory">Memória</option><option value="2048">2048</option>'+''.join('<option value="'+escape(g["id"],quote=True)+'">'+escape(g["title"])+'</option>' for g in retro)
 family_html=regex_one(family_html,r'(?s)(<select id="zFamilyGame">).*?(</select>)',lambda m:m[1]+options+m[2])
 cats=''.join('<option>'+escape(c)+'</option>' for c in sorted({g["category"] for g in retro}))
 games_html=one(games_html,'<option>Quebra-cabeça</option>','<option>Quebra-cabeça</option>'+cats)

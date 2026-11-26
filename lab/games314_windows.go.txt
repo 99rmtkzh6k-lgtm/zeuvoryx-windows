@@ -1,6 +1,27 @@
 package main
-import("context";"fmt";"time";"github.com/zeuvoryx/zeuvoryx/familygate")
+import("context";"fmt";"time";"encoding/json";"os";"path/filepath";"sync";"github.com/zeuvoryx/zeuvoryx/familygate")
 var family314 *familygate.Gate
-func localGame315(id string)bool{return id=="2048"||id=="retro-racer"||id=="cartridge-dash"||id=="jump-quest"||id=="laser-defender"||id=="digital-maze"||id=="meteor-strike"||id=="ping-pong-2p"||id=="breakout"||id=="snake"||id=="asteroids"}
+func localGame315(id string)bool{return classicGame315(id)||id=="2048"||id=="retro-racer"||id=="cartridge-dash"||id=="jump-quest"||id=="laser-defender"||id=="digital-maze"||id=="meteor-strike"||id=="ping-pong-2p"||id=="breakout"||id=="snake"||id=="asteroids"}
 func allowLocalGame315(id string)(bool,error){if !localGame315(id){return false,fmt.Errorf("Jogo fora do catálogo local")};if family314==nil{return false,fmt.Errorf("Controle familiar indisponível")};if e:=family314.Allowed(id);e!=nil{return false,e};return true,nil}
 func familySystemDNS314(ctx context.Context)familygate.DNSCheck{ctx,cancel:=context.WithTimeout(ctx,18*time.Second);defer cancel();return familygate.CheckSystemDNS(ctx)}
+
+func classicGame315(id string)bool{return id=="zvx-tetris"||id=="zvx-poker"||id=="zvx-mines"||id=="zvx-memory"}
+var records315Mu sync.Mutex
+func records315Path()(string,error){p,e:=os.UserConfigDir();if e!=nil{return "",e};return filepath.Join(p,"ZEUVORYX","Games","records.json"),nil}
+func readRecords315(p string)(map[string]int,error){
+ m:=map[string]int{};b,e:=os.ReadFile(p);if os.IsNotExist(e){return m,nil};if e!=nil{return nil,e};if len(b)>4096{return nil,fmt.Errorf("Records oversized")}
+ if e=json.Unmarshal(b,&m);e!=nil{return nil,e};if m==nil{return nil,fmt.Errorf("Invalid records")}
+ return m,nil
+}
+func getGameRecord315(id string)(int,error){
+ if !classicGame315(id){return 0,fmt.Errorf("Invalid game")}
+ records315Mu.Lock();defer records315Mu.Unlock();p,e:=records315Path();if e!=nil{return 0,e};m,e:=readRecords315(p);if e!=nil{return 0,e};return m[id],nil
+}
+func saveGameRecord315(id string,score int)(bool,error){
+ if !classicGame315(id)||score<0||score>100000000{return false,fmt.Errorf("Invalid game record")}
+ if _,e:=allowLocalGame315(id);e!=nil{return false,e}
+ records315Mu.Lock();defer records315Mu.Unlock()
+ p,e:=records315Path();if e!=nil{return false,e};m,e:=readRecords315(p);if e!=nil{return false,e};if score<=m[id]{return true,nil};m[id]=score
+ b,e:=json.MarshalIndent(m,"","  ");if e!=nil{return false,e};d:=filepath.Dir(p);if e=os.MkdirAll(d,0700);e!=nil{return false,e}
+ f,e:=os.CreateTemp(d,".records-");if e!=nil{return false,e};defer os.Remove(f.Name());_,e=f.Write(b);if e==nil{e=f.Sync()};ce:=f.Close();if e==nil{e=ce};if e!=nil{return false,e};e=os.Rename(f.Name(),p);return e==nil,e
+}

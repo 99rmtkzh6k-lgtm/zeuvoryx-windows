@@ -1,3 +1,9 @@
+## Diagnóstico de Testes copiável — 26/11/2026
+
+A revisão LAB [b90fa60](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/commit/b90fa60) acrescenta ao centro de Relatórios a área Diagnóstico de Testes, com geração e atualização explícita, causas possíveis, verificações, alternativas, impactos, critérios de aceite, cópia para IA e exportação JSON local. Usa dados agregados do relatório selecionado. Caminhos e logs brutos ficam fora da saída. Sem integração remota. Os testes locais de geração, estados e privacidade passaram. Validação do instalador, interface WebView2 e uso físico pendentes.
+
+Esta é uma primeira implementação do diagnóstico, com regras para cancelamento, ClamAV em andamento, limites, bloqueios e inventário parcial. Histórico de tentativas, diagnóstico aprofundado do autoteste e integração de todas as hipóteses ainda pendem. Permanecem abertos watchdog, recuperação, pausa e retomada, ETA por motor, causa da lentidão e validação da varredura completa. As demais frentes continuam no índice cumulativo.
+
 ## P0 — correções cumulativas de varredura Windows — 26/11/2026
 
 O relatório físico do instalador `0295579` confirma a rápida em 123,189 s, com relatório final automático, 259/266 arquivos no scanner próprio e 197 no ClamAV (zero infecções reportadas, 14 erros, nove limites, exit 2). Os campos de volume do ClamAV foram preenchidos: 1.699,84 MiB lidos e 143,10 MiB examinados. Esse pacote não continha as correções da ramificação P0 de finalização.

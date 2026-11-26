@@ -1,3 +1,9 @@
+## Adendo pétreo — autonomia operacional do ZEUVORYX (26/11/2026)
+
+O titular determina que o Codex execute o desenvolvimento e a operação LAB a partir da base funcional mais recente. A atribuição inclui baixar, conferir, instalar e executar no Windows autorizado; automatizar varreduras e testes; manter observador persistente de processos, progresso, erros, relatórios, consumo e motores; executar revisão recorrente; corrigir, testar e compilar quando houver justificativa; preservar o pacote anterior para reversão; preservar identidade Olympus, Defender e segurança; manter evidências e atualizar os registros e links no GitHub. O monitor deve continuar com a tela apagada enquanto a sessão e o Windows estiverem ativos, respeitando suspensão e políticas. A intervenção humana fica reservada a autorização, privilégios ou impedimentos técnicos reais.
+
+A rotina horária **Validação ZEUVORYX — relatórios e motores** foi reativada para evidências operacionais do GitHub, em leitura e separada da auditoria independente. A sessão de execução atual está em Linux na nuvem, portanto instalação e configuração persistente no PC físico ainda requerem conexão a ele. O observador opt-in e a telemetria nova integram o candidato 3.0.20 LAB, em [validação no CI](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45893446138). [Escopo e testes](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/lab-integracao-p0-20261126/OPERACAO_LAB_320.md).
+
 ## Verificação no Windows do titular — 26/11/2026
 
 - Processo local identificado como 3.0.18 LAB, commit embutido `99050aa401ef0fc5ca9aabc2eeb82a03d452b40b`, coerente com o relatório e o manifesto do ZIP local build 20, tentativa 1. O SHA-256 do EXE dentro desse ZIP coincide com o manifesto. Nenhum instalador executado.

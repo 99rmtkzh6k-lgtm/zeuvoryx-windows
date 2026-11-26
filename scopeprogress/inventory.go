@@ -38,3 +38,6 @@ func Enumerate(ctx context.Context,roots []string,exclude func(string)bool,updat
  if update!=nil{update(r)}
  return r
 }
+
+// A returned inventory is not necessarily complete.
+func (r Inventory) Incomplete() bool { return r.State != "ready" || r.Errors != 0 }

@@ -1,4 +1,4 @@
-name: ZEUVORYX 3.0.21 LAB - P0 scan finalization
+name: ZEUVORYX 3.0.22 LAB - P0 scan finalization
 on:
   push:
     branches: [lab-integracao-p0-20261126]
@@ -25,5 +25,8 @@ jobs:
           cache: false
       - name: Five module regression cycles
         run: go test -count=5 ./scriptguard ./behaviorwatch ./changeguard ./auditmetrics ./scopeprogress ./adaptive ./signatureav ./scanretry ./scanplan
+      - name: One hundred inventory and coverage regression cycles
+        run: go test -count=100 -run '^TestP0InventoryCompleteness322    uses: ./.github/workflows/windows-build.yml
+ ./scopeprogress
   windows-build:
     uses: ./.github/workflows/windows-build.yml

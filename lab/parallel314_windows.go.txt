@@ -135,7 +135,7 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
   r.SignatureDurationMS315 = time.Since(signatureStarted).Milliseconds()
   r.SignatureProblem = "ClamAV não confirmou o encerramento após o cancelamento da etapa; cobertura incompleta."
  }
- if !invOK || !bOK || !wOK || r.SignatureState != "finished" { rep.Partial = true }
+ if !invOK || inv.Incomplete() || !bOK || !wOK || r.SignatureState != "finished" { rep.Partial = true }
  rep.WindowsLocal314=w.data;rep.WindowsProblem314=w.problem
  rep.SignatureRoots=append([]string(nil),roots...)
  rep.SignatureActivity=r.SignatureActivity

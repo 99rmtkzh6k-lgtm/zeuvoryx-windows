@@ -23,3 +23,13 @@ func TestP0EmptyDirectoryFinishes(t *testing.T) {
  if r.State!="ready"||r.Files!=0||r.Bytes!=0||r.Errors!=0{t.Fatalf("empty scope: %+v",r)}
  if r.ReadyAt.IsZero(){t.Fatal("completion timestamp missing")}
 }
+
+func TestP0InventoryCompleteness322(t *testing.T) {
+ cases := []struct{ state string; errors int64; want bool }{
+ {"ready",0,false},{"ready",1,true},{"partial",0,true},{"partial",1,true},
+ {"cancelled",0,true},{"unavailable",0,true},{"counting",0,true},{"",0,true},
+ }
+ for _, c := range cases { if got := (Inventory{State:c.state,Errors:c.errors}).Incomplete(); got != c.want { t.Errorf("%+v: got %v",c,got) } }
+ r:=Enumerate(context.Background(),[]string{filepath.Join(t.TempDir(),"missing")},nil,nil)
+ if !r.Incomplete(){t.Fatalf("missing root classified complete: %+v",r)}
+}

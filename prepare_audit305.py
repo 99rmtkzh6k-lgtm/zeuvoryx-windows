@@ -24,7 +24,7 @@ def summary(s):
     s=one(s,'r.EngineVersion = ScanEngineVersion','r.EngineVersion = ScanEngineVersion\n    r.BuildCommit = "'+commit+'"')
     return one(s,'r.Partial = r.Cancelled || r.Skipped > 0 || len(r.Errors) > 0','''if r.ErrorCount < len(r.Errors) { r.ErrorCount = len(r.Errors) }
     r.OmittedErrorDetails = r.ErrorCount - len(r.Errors)
-    r.Partial = r.Cancelled || r.Skipped > 0 || r.ErrorCount > 0 || r.ScanError != ""''')
+    r.Partial = r.Cancelled || r.Skipped > 0 || r.ErrorCount > 0 || r.ScanError != "" || (r.Inventory314.ScannerDone && (r.Partial || r.Inventory314.Incomplete()))''')
 def main(s):
     s=one(s,'import (','import (\n "github.com/zeuvoryx/zeuvoryx/audit"')
     s=rx(s,r'if len\(r\.Errors\) < 30 \{','r.ErrorCount++\nengine.CountScanError(&r,err)\nif len(r.Errors) < 10000 {')

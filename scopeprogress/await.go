@@ -1,0 +1,17 @@
+package scopeprogress
+
+import "time"
+
+// AwaitResult bounds only auxiliary diagnostic waits. The caller must prevent
+// late publication to a completed session. It never fabricates a result.
+func AwaitResult[T any](ch <-chan T, budget time.Duration) (T, bool) {
+ timer := time.NewTimer(budget)
+ defer timer.Stop()
+ select {
+ case value, ok := <-ch:
+  return value, ok
+ case <-timer.C:
+  var zero T
+  return zero, false
+ }
+}

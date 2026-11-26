@@ -1,7 +1,7 @@
-name: ZEUVORYX 3.0.15 LAB - Olympus P0
+name: ZEUVORYX 3.0.15 LAB - P0 scan finalization
 on:
   push:
-    branches: [lab-olympus-report-metrics-20261125]
+    branches: [lab-p0-scan-finalization-20261126]
     paths-ignore: ['**.md']
   workflow_dispatch:
 permissions:

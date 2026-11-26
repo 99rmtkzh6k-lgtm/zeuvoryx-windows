@@ -47,6 +47,8 @@ type Report struct {
  NativeDurationSeconds *float64 `json:"engine_duration_seconds,omitempty"`
  OutputTruncated bool `json:"engine_output_truncated"`
  LimitNotices int `json:"engine_limit_notices"`
+ LimitNoticeReasons map[string]int `json:"engine_limit_notice_reasons,omitempty"`
+ ErrorMessagesByCategory map[string]int `json:"engine_error_messages_by_category,omitempty"`
  Evidence auditmetrics.SignatureEvidence `json:"evidence_315"`
 }
 type bounded struct { b []byte; overflow bool; observer lineObserver314 }
@@ -102,21 +104,31 @@ func DatabaseStatus(v string,now time.Time)string{
 func recentDatabase(v string,now time.Time)bool{return DatabaseStatus(v,now)=="fresh"}
 func parse(r *Report, raw string, code int, overflow bool) {
  r.Raw=raw; r.ExitCode=code; r.Scanned=-1; r.Infected=-1; r.KnownSignatures=-1; r.Errors=-1
+ r.Findings = []Finding{}
+ r.LimitNoticeReasons = nil
+ r.ErrorMessagesByCategory = nil
  r.Partial=overflow; r.OutputTruncated=overflow; r.DataScannedMiB=nil; r.DataReadMiB=nil; r.NativeDurationSeconds=nil; r.LimitNotices=0
  s:=bufio.NewScanner(strings.NewReader(raw));s.Buffer(make([]byte,4096),1<<20)
  summary:=false
  for s.Scan(){
   line:=strings.TrimSpace(s.Text())
   if strings.Contains(line,"SCAN SUMMARY"){summary=true;continue}
-  if strings.HasSuffix(line," FOUND"){
-   v:=strings.TrimSuffix(line," FOUND"); i:=strings.LastIndex(v,": ")
-   if i<=0||i+2>=len(v){r.Partial=true;continue}
-   label:=v[i+2:]; lower:=strings.ToLower(label); kind:="signature_detection"
-   if strings.Contains(lower,"eicar"){kind="test_eicar"}else if strings.Contains(lower,"heuristics.")||strings.Contains(lower,"encrypted"){kind="heuristic_or_limit";r.Partial=true}
-   if strings.HasPrefix(lower,"heuristics.limits.exceeded"){r.LimitNotices++}
-   r.Findings=append(r.Findings,Finding{Path:v[:i],Signature:label,Kind:kind})
+  if strings.HasSuffix(line," FOUND") {
+   finding, ok := parseFinding(line)
+   if !ok { r.Partial = true; continue }
+   if finding.Kind == "heuristic_or_limit" { r.Partial = true }
+   if reason := limitNoticeReason(finding.Signature); reason != "" {
+    r.LimitNotices++
+    if r.LimitNoticeReasons == nil { r.LimitNoticeReasons = make(map[string]int) }
+    r.LimitNoticeReasons[reason]++
+   }
+   r.Findings = append(r.Findings, finding)
   }
-  if strings.HasSuffix(line," ERROR")||strings.HasPrefix(line,"ERROR:")||strings.HasPrefix(line,"WARNING:"){r.Partial=true}
+  if category := errorMessageCategory(line); category != "" {
+   if r.ErrorMessagesByCategory == nil { r.ErrorMessagesByCategory = make(map[string]int) }
+   r.ErrorMessagesByCategory[category]++
+   r.Partial = true
+  }
   if !summary{continue}
   k,v,ok:=strings.Cut(line,":");if !ok{continue}
   switch k {
@@ -133,6 +145,40 @@ func parse(r *Report, raw string, code int, overflow bool) {
  if (code==0&&r.Infected!=0)||(code==1&&r.Infected<=0){r.Partial=true}
  if r.Partial{r.Status="inconclusive_or_partial"}else if code==1{r.Status="detections_reported"}else{r.Status="no_detection_reported"}
 }
+// Counters derived from text describe observed log lines, which can repeat.
+func errorMessageCategory(line string) string {
+ lower := strings.ToLower(line)
+ if !(strings.HasPrefix(lower, "error:") || strings.HasPrefix(lower, "warning:") ||
+      strings.HasPrefix(lower, "libclamav error:") || strings.HasPrefix(lower, "libclamav warning:") ||
+      strings.HasSuffix(lower, " error")) {
+  return ""
+ }
+ switch {
+ case strings.Contains(lower, "getlasterror = 32") || strings.Contains(lower, "getlasterror = 33") ||
+      strings.Contains(lower, "sharing violation") || strings.Contains(lower, "lock violation"):
+  return "file_busy"
+ case strings.Contains(lower, "access is denied") || strings.Contains(lower, "permission denied") ||
+      strings.Contains(lower, "getlasterror = 5"):
+  return "access_denied"
+ default:
+  return "other_engine_message"
+ }
+}
+
+func limitNoticeReason(label string) string {
+ const prefix = "heuristics.limits.exceeded"
+ lower := strings.ToLower(label)
+ switch lower {
+ case prefix + ".maxfilesize": return "max_file_size"
+ case prefix + ".maxscansize": return "max_scan_size"
+ case prefix + ".maxrecursion": return "max_recursion"
+ case prefix + ".maxfiles": return "max_files"
+ case prefix + ".maxscantime": return "max_scan_time"
+ }
+ if lower == prefix || strings.HasPrefix(lower, prefix + ".") { return "other_limit" }
+ return ""
+}
+
 // Legacy ClamAV MB is a binary megabyte; explicit MiB/GiB/KiB/B are normalized to MiB.
 // Unknown units remain unavailable rather than being silently treated as zero.
 func summaryNumber(v,unit string)*float64{
@@ -199,6 +245,6 @@ var _ io.Writer=(*bounded)(nil)
 // Report resource-limit notices separately from confirmed detections and process errors.
 func coverageDetail(r Report)string{
  limits:=0
- for _,f:=range r.Findings{if strings.HasPrefix(strings.ToLower(f.Signature),"heuristics.limits.exceeded."){limits++}}
+ for _,f:=range r.Findings{if limitNoticeReason(f.Signature) != ""{limits++}}
  return fmt.Sprintf("arquivos examinados=%d; avisos de limite=%d; erros informados pelo motor=%d (-1: desconhecido); consulte engine_output; avisos de limite não confirmam malware",r.Scanned,limits,r.Errors)
 }

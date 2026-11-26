@@ -38,7 +38,7 @@ func ensureClam314(ctx context.Context, force bool)(string,error){
  }
  if strings.ContainsAny(db,"\"\r\n"){return "",errors.New("invalid database path")}
  conf:=filepath.Join(dir,"freshclam.conf")
- if e=os.WriteFile(conf,[]byte("DatabaseMirror database.clamav.net\nDatabaseDirectory \""+db+"\"\n"),0600);e!=nil{return fallback(e)}
+ if e=os.WriteFile(conf,[]byte("DatabaseMirror database.clamav.net\nTestDatabases yes\nDatabaseDirectory \""+db+"\"\n"),0600);e!=nil{return fallback(e)}
  // Persist attempt before the network call so repeated scans do not hammer the CDN.
  if e=os.WriteFile(attempt,[]byte(time.Now().UTC().Format(time.RFC3339)),0600);e!=nil{return fallback(e)}
  budget:=15*time.Minute;if !force&&cachedOK{budget=20*time.Second}

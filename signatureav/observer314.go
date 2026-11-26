@@ -11,9 +11,22 @@ func(o *lineObserver314) feed(p []byte){
  }
 }
 func(o *lineObserver314) emit(line string){
- line=strings.TrimSpace(line);if !strings.HasSuffix(line," FOUND"){return}
- v:=strings.TrimSuffix(line," FOUND");i:=strings.LastIndex(v,": ");if i<=0||i+2>=len(v){return}
- label:=v[i+2:];lower:=strings.ToLower(label);kind:="signature_detection"
- if strings.Contains(lower,"eicar"){kind="test_eicar"}else if strings.Contains(lower,"heuristics.")||strings.Contains(lower,"encrypted"){kind="heuristic_or_limit"}
- o.fn(Finding{Path:v[:i],Signature:label,Kind:kind})
+ if finding, ok := parseFinding(strings.TrimSpace(line)); ok { o.fn(finding) }
+}
+
+func parseFinding(line string) (Finding, bool) {
+ if !strings.HasSuffix(line," FOUND") { return Finding{}, false }
+ v := strings.TrimSuffix(line," FOUND")
+ i := strings.LastIndex(v,": ")
+ if i <= 0 || i+2 >= len(v) { return Finding{}, false }
+ label := v[i+2:]
+ lower := strings.ToLower(label)
+ kind := "signature_detection"
+ switch {
+ case strings.HasPrefix(lower,"heuristics.") || strings.Contains(lower,"encrypted"):
+  kind = "heuristic_or_limit"
+ case strings.Contains(lower,"eicar"):
+  kind = "test_eicar"
+ }
+ return Finding{Path:v[:i],Signature:label,Kind:kind}, true
 }

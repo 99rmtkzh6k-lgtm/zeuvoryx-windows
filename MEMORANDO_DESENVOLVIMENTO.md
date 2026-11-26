@@ -1,3 +1,9 @@
+## Limite da etapa ClamAV na varredura completa — 26/11/2026
+
+O segundo teste completo em `9d8b2c82` leu 59.316.183.382 dos 64.835.088.073 bytes inventariados (91,49%). O scanner próprio terminou sua etapa; a sessão foi cancelada após 5 h 16 min 35 s, com ClamAV ativo por cerca de 4 h 59 min, 29 avisos de limite e nenhum resumo final. A origem do segundo cancelamento e a causa interna da lentidão não foram determinadas. O código aplicava prazo apenas ao modo rápido.
+
+O [commit 0295579](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/commit/0295579) limita a etapa do ClamAV, incluindo preparação, a 60 min na completa, 5 min na rápida e 20 min no modo específico. O prazo da etapa é independente do scanner próprio. Ao vencer, preserva a evidência disponível do ClamAV e marca sua cobertura parcial com motivo no painel e no JSON. O teto de 60 min é uma decisão provisória de LAB, não comprova melhora de velocidade nem cobertura total. Cinco ciclos locais passaram em scanplan, signatureav, scanretry, auditmetrics e scopeprogress; testes locais não incluem a execução dos motores em Windows. O instalador anterior não contém esta correção. Validação Windows e física pendentes neste registro. Preservar Defender e limites por arquivo.
+
 ## Consolidação para correções — ZEUVORYX LAB — 25/11/2026
 
 Fontes: memorando central e índice de requisitos da main, auditoria de campo, memorando da ramificação Windows 3.0.15 LAB, memorando Macintosh 3.0.5 LAB, histórico de CI, issues #2 e #4 e os relatórios e decisões recuperados na conversa atual. Conversas anteriores sem registro acessível não foram verificadas. A diretriz vigente é medir antes de corrigir e registrar ideias nesta fase. A consolidação preserva os registros históricos e prepara intervenções em LAB.

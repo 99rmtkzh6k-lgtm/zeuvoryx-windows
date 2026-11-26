@@ -1,0 +1,32 @@
+{
+  "suite": "Security Center classification and generated controls",
+  "platform": "linux",
+  "native_policy_mutations_tested": false,
+  "cycles": [
+    {
+      "cycle": 1,
+      "classification_checks": 16,
+      "status": "passed"
+    },
+    {
+      "cycle": 2,
+      "classification_checks": 16,
+      "status": "passed"
+    },
+    {
+      "cycle": 3,
+      "classification_checks": 16,
+      "status": "passed"
+    },
+    {
+      "cycle": 4,
+      "classification_checks": 16,
+      "status": "passed"
+    },
+    {
+      "cycle": 5,
+      "classification_checks": 16,
+      "status": "passed"
+    }
+  ]
+}

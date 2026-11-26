@@ -1,0 +1,36 @@
+{
+  "suite": "Defender script contracts with mocked cmdlets",
+  "native_windows_tested": false,
+  "cycles": [
+    {
+      "cycle": 1,
+      "confirmed_and_idempotent": 4,
+      "refusal_or_no_confirmation": 5,
+      "status": "passed"
+    },
+    {
+      "cycle": 2,
+      "confirmed_and_idempotent": 4,
+      "refusal_or_no_confirmation": 5,
+      "status": "passed"
+    },
+    {
+      "cycle": 3,
+      "confirmed_and_idempotent": 4,
+      "refusal_or_no_confirmation": 5,
+      "status": "passed"
+    },
+    {
+      "cycle": 4,
+      "confirmed_and_idempotent": 4,
+      "refusal_or_no_confirmation": 5,
+      "status": "passed"
+    },
+    {
+      "cycle": 5,
+      "confirmed_and_idempotent": 4,
+      "refusal_or_no_confirmation": 5,
+      "status": "passed"
+    }
+  ]
+}

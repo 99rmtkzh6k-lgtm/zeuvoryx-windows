@@ -1,0 +1,49 @@
+//go:build windows
+
+package main
+
+import (
+ "encoding/json"
+ "fmt"
+ "os"
+ "path/filepath"
+ "sync"
+ "time"
+)
+var liveBridgeMu316 sync.Mutex
+func bridgeState316(v string, allowed ...string)string{
+ for _,x:=range allowed{if v==x{return x}};return "unknown"
+}
+// Local opt-in snapshots only. No paths, raw logs, credentials, or network.
+func(s *State) liveBridge316(active bool)(string,error){
+ liveBridgeMu316.Lock();defer liveBridgeMu316.Unlock()
+ dir,e:=reportDirectory315();if e!=nil{return "",e}
+ if e=os.MkdirAll(dir,0700);e!=nil{return "",e}
+ now:=time.Now().UTC()
+ data:=map[string]any{"schema":1,"product":"ZEUVORYX","observed_at":now,"sharing_active":active,"stale_after_seconds":15}
+ if active {
+  s.mu.Lock()
+  r:=s.report
+  data["running"]=s.running
+  data["mode"]=bridgeState316(r.ScanMode,"quick","full","custom","auto")
+  data["files"]=s.files;data["bytes"]=s.bytes
+  data["skipped"]=r.Skipped;data["alerts"]=len(r.Findings);data["errors"]=r.ErrorCount
+  data["partial"]=r.Partial;data["cancelled"]=r.Cancelled
+  data["scanner_done"]=r.Inventory314.ScannerDone
+  data["inventory_state"]=bridgeState316(r.Inventory314.State,"counting","ready","partial")
+  data["signature_state"]=bridgeState316(r.SignatureState,"pending","running","finished","partial","unavailable")
+  data["signature_duration_ms"]=r.SignatureDurationMS315
+  data["monitor_enabled"]=r.ChangeMonitor315.Enabled
+  data["scan_started"]=r.Started;data["scan_finished"]=r.Finished
+  data["engine_version"]=r.EngineVersion
+  s.mu.Unlock()
+ }
+ name:=filepath.Join(dir,"zeuvoryx-live-chatgpt.json")
+ tmp,e:=os.CreateTemp(dir,".zeuvoryx-live-*.tmp");if e!=nil{return "",e}
+ path:=tmp.Name();defer os.Remove(path);defer tmp.Close()
+ if e=json.NewEncoder(tmp).Encode(data);e!=nil{return "",e}
+ if e=tmp.Sync();e!=nil{return "",e}
+ if e=tmp.Close();e!=nil{return "",e}
+ if e=os.Rename(path,name);e!=nil{return "",fmt.Errorf("Atualização do diagnóstico local: %w",e)}
+ return name,nil
+}

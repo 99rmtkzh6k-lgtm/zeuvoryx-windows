@@ -117,7 +117,9 @@ with tarfile.open(fileobj=io.BytesIO(blob),mode='r:gz') as tar:
 if '</script' in vendor.lower():raise RuntimeError('Unsafe inline chart script')
 # Keep one script block: existing desktop validation extracts that block.
 p=Path('desktop.html');s=p.read_text(encoding='utf-8')
-s=once(s,'<p id="z310Speed" role="status">—</p>','<p id="z310Speed" role="status">—</p><div style="height:150px;position:relative"><canvas id="z316ScanChart" role="img" aria-label="Histórico real de velocidade da varredura"></canvas></div><p id="z316ChartStatus" class="sub" role="status">Aguardando dados da sessão.</p><details><summary>Licenças dos gráficos</summary><pre style="white-space:pre-wrap">'+html.escape(license)+'</pre></details>')
+import re
+s,n=re.subn(r'(<p id="z310Speed"[^>]*>[^<]*</p>)',lambda match:match.group(1)+'<div style="height:150px;position:relative"><canvas id="z316ScanChart" role="img" aria-label="Histórico real de velocidade da varredura"></canvas></div><p id="z316ChartStatus" class="sub" role="status">Aguardando dados da sessão.</p><details><summary>Licenças dos gráficos</summary><pre style="white-space:pre-wrap">'+html.escape(license)+'</pre></details>',s,count=1)
+if n!=1:raise RuntimeError('Chart speed anchor missing')
 # Inline vendor before first existing app script, not a remote script.
 s=once(s,'<script>','<script>\n'+vendor+'\n;\n')
 p.write_text(s,encoding='utf-8')

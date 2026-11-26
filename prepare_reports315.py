@@ -203,3 +203,30 @@ s=once(s,'</script></body></html>',Path("lab/test_diagnosis.js").read_text(encod
 })();
 </script></body></html>''')
 p.write_text(s,encoding="utf-8")
+
+# Local opt-in diagnostic bridge; no network or ChatGPT credentials.
+Path("livebridge316_windows.go").write_text(Path("lab/livebridge316_windows.go.txt").read_text(encoding="utf-8"),encoding="utf-8")
+p=Path("desktop_windows.go");s=p.read_text(encoding="utf-8")
+s=once(s,'if !bind("openReports315",','if !bind("liveBridge316",s.liveBridge316){return}\n if !bind("openReports315",')
+p.write_text(s,encoding="utf-8")
+p=Path("desktop.html");s=p.read_text(encoding="utf-8")
+s=once(s,'<button id="z315ReportShortcut">Gerar relatório para copiar</button>','<button id="z315ReportShortcut">Gerar relatório para copiar</button><button id="z316BridgeToggle">Ativar diagnóstico ao vivo — ChatGPT</button><p id="z316BridgeStatus" role="status">Desativado. Nenhum envio automático.</p><textarea id="z316BridgePrompt" readonly rows="4" hidden style="width:100%;box-sizing:border-box"></textarea><button id="z316BridgeCopy" hidden>Copiar instrução para ChatGPT</button>')
+s=once(s,'</script></body></html>',r'''
+;(()=>{
+ const toggle=el('z316BridgeToggle'),status=el('z316BridgeStatus'),prompt=el('z316BridgePrompt'),copy=el('z316BridgeCopy');
+ let timer=null,busy=false,active=false;
+ async function update(){
+  if(!active||busy)return;busy=true;
+  try{const path=await window.liveBridge316(true);status.textContent='Diagnóstico local atualizado às '+new Date().toLocaleTimeString()+'. Nenhum envio automático.';
+   prompt.value='No ChatGPT Work deste computador, com minha autorização de acesso local, consulte o arquivo '+path+' durante o teste. Leia novamente quando necessário e verifique observed_at e sharing_active. Se estiver desatualizado, informe. Analise os indicadores reais, sem alterar o computador. Não trate alertas como infecções confirmadas.';prompt.hidden=false;copy.hidden=false;
+  }catch(e){status.textContent='Falha no diagnóstico local: '+String(e)}finally{busy=false}
+ }
+ toggle.onclick=async()=>{
+  if(busy)return;
+  if(active){active=false;clearInterval(timer);timer=null;busy=true;try{await window.liveBridge316(false);status.textContent='Diagnóstico desativado.'}catch(e){status.textContent='Desativado; falha ao marcar arquivo. Verifique o horário.'}finally{busy=false}toggle.textContent='Ativar diagnóstico ao vivo — ChatGPT';prompt.hidden=true;copy.hidden=true;return}
+  active=true;toggle.textContent='Desativar diagnóstico ao vivo';await update();if(active)timer=setInterval(update,5000);
+ };
+ copy.onclick=async()=>{prompt.focus();prompt.select();try{await navigator.clipboard.writeText(prompt.value);status.textContent='Instrução copiada. Cole no ChatGPT Work.'}catch(_){status.textContent=document.execCommand('copy')?'Instrução copiada. Cole no ChatGPT Work.':'Pressione Ctrl+C para copiar a instrução.'}};
+})();
+</script></body></html>''')
+p.write_text(s,encoding="utf-8")

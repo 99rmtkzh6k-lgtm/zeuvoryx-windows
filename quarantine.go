@@ -2,6 +2,7 @@ package engine
 
 import (
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -18,6 +19,7 @@ type QuarantineItem struct {
 	Original string    `json:"original"`
 	When     time.Time `json:"when"`
 	Size     int64     `json:"size"`
+	SHA256   string    `json:"sha256,omitempty"`
 }
 
 type Quarantine struct{ Dir string }
@@ -47,37 +49,31 @@ func (q *Quarantine) IsQuarantined(path string) bool {
 	return e == nil && (rel == "." || (!strings.HasPrefix(rel, ".."+string(os.PathSeparator)) && rel != ".."))
 }
 
-func copyClosed(from, to string) error {
+func copyClosed(from, to, expectedHash string, expectedSize int64) (string, error) {
 	src, e := os.Open(from)
 	if e != nil {
-		return e
+		return "", e
 	}
-
-	dst, e := os.OpenFile(
-		to,
-		os.O_WRONLY|os.O_CREATE|os.O_EXCL,
-		0600,
-	)
+	defer src.Close()
+	dst, e := os.OpenFile(to, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
 	if e != nil {
-		src.Close()
-		return e
+		return "", e
 	}
 
-	_, copyErr := io.Copy(dst, src)
-
+	hash := sha256.New()
+	written, copyErr := io.Copy(io.MultiWriter(dst, hash), src)
+	digest := hex.EncodeToString(hash.Sum(nil))
+	if copyErr == nil && (written != expectedSize || (expectedHash != "" && digest != expectedHash)) {
+		copyErr = errors.New("integridade ou tamanho do arquivo em quarentena não confere")
+	}
 	var syncErr error
 	if copyErr == nil {
 		syncErr = dst.Sync()
 	}
-
-	dstErr := dst.Close()
-	srcErr := src.Close()
-
-	if e = errors.Join(copyErr, syncErr, dstErr, srcErr); e != nil {
-		return errors.Join(e, os.Remove(to))
+	if e := errors.Join(copyErr, syncErr, dst.Close()); e != nil {
+		return "", errors.Join(e, os.Remove(to))
 	}
-
-	return nil
+	return digest, nil
 }
 
 func (q *Quarantine) Add(path string) (QuarantineItem, error) {
@@ -120,13 +116,17 @@ func (q *Quarantine) Add(path string) (QuarantineItem, error) {
 	bin := filepath.Join(q.Dir, id+".bin")
 	metaPath := filepath.Join(q.Dir, id+".json")
 
-	meta, e := json.MarshalIndent(item, "", "  ")
+	item.SHA256, e = copyClosed(abs, bin, "", st.Size())
 	if e != nil {
 		return QuarantineItem{}, e
 	}
-
-	if e = copyClosed(abs, bin); e != nil {
-		return QuarantineItem{}, e
+	latest, e := os.Lstat(abs)
+	if e != nil || !os.SameFile(st, latest) || st.Size() != latest.Size() || !st.ModTime().Equal(latest.ModTime()) {
+		return QuarantineItem{}, errors.Join(errors.New("arquivo de origem mudou durante o isolamento"), e, os.Remove(bin))
+	}
+	meta, e := json.MarshalIndent(item, "", "  ")
+	if e != nil {
+		return QuarantineItem{}, errors.Join(e, os.Remove(bin))
 	}
 
 	if e = os.WriteFile(metaPath, meta, 0600); e != nil {
@@ -220,7 +220,7 @@ func (q *Quarantine) Restore(id string) error {
 		return e
 	}
 
-	if e = copyClosed(bin, item.Original); e != nil {
+	if _, e = copyClosed(bin, item.Original, item.SHA256, item.Size); e != nil {
 		return e
 	}
 

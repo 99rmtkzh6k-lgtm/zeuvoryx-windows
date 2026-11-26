@@ -1,9 +1,0 @@
-const assert=require('node:assert/strict');
-const g=require('./games315_core');const c=require('./classic315_core')(g);
-(function regression(c,assert){
- for(let i=0;i<5;i++){
-  let d=c.domino(()=>0.42);assert(d.hand.length===7&&d.bot.length===7&&d.stock.length===14,'domino deal');let n=0;while(!d.done&&n++<200){const j=d.hand.findIndex(t=>c.fits(d.line,t,'R')||c.fits(d.line,t,'L'));if(j>=0)c.dominoPlay(d,j,c.fits(d.line,d.hand[j],'R')?'R':'L');else c.dominoDraw(d);assert(d.hand.length+d.bot.length+d.stock.length+d.line.length===28,'domino conservation');assert(d.line.every((t,k)=>k===0||d.line[k-1][1]===t[0]),'domino continuity')}assert(!!d.done,'domino end');
-  let s=c.solitaire(()=>0.42);assert(s.stock.length===24&&s.cols.flat().length===28&&s.cols.every(a=>a.filter(x=>x.up).length===1),'solitaire deal');for(let j=0;j<24;j++)assert(c.stockTurn(s),'stock draw');assert(s.waste.length===24&&c.stockTurn(s)&&s.stock.length===24,'stock recycle');s={stock:[],waste:[{rank:1,suit:'♠',up:true}],cols:[[{rank:2,suit:'♥',up:true}],[]],found:[[],[],[],[]],moves:0};assert(!c.solitaireMove(s,{kind:'waste'},{kind:'found',col:1}),'wrong suit');assert(c.solitaireMove(s,{kind:'waste'},{kind:'found',col:0}),'ace foundation');assert(c.solitaireMove(s,{kind:'found',col:0},{kind:'col',col:0}),'alternating color');assert(!c.solitaireMove(s,{kind:'col',col:0,index:1},{kind:'col',col:1}),'empty col only king');
-  let b=c.blocks(()=>0);assert(c.blockMove(b,'rotate',()=>0)&&c.valid(b,b.p,b.x,b.y),'block rotate');b.grid[19].fill(1);for(let j=3;j<7;j++)b.grid[19][j]=0;b.p=[[0,0],[1,0],[2,0],[3,0]];b.x=3;b.y=0;assert(c.blockMove(b,'drop',()=>0)&&b.lines===1&&b.grid.length===20,'clear line');for(let j=0;j<40&&!b.done;j++)c.blockMove(b,'drop',()=>0);assert(b.done,'block game over');
- }
-})(c,(ok,msg)=>assert.ok(ok,msg));console.log('5 cycles: domino, solitaire, blocks passed');

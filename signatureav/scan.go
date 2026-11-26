@@ -32,6 +32,8 @@ type Report struct {
  Started time.Time `json:"started"`
  Finished time.Time `json:"finished"`
  ExitCode int `json:"exit_code"`
+ Termination string `json:"termination,omitempty"`
+ NativeSummaryPresent bool `json:"native_summary_present"`
  Scanned int64 `json:"scanned_files"`
  Infected int64 `json:"engine_reported_infected_files"`
  KnownSignatures int64 `json:"known_signatures"`
@@ -104,6 +106,7 @@ func DatabaseStatus(v string,now time.Time)string{
 func recentDatabase(v string,now time.Time)bool{return DatabaseStatus(v,now)=="fresh"}
 func parse(r *Report, raw string, code int, overflow bool) {
  r.Raw=raw; r.ExitCode=code; r.Scanned=-1; r.Infected=-1; r.KnownSignatures=-1; r.Errors=-1
+ r.NativeSummaryPresent = false
  r.Findings = []Finding{}
  r.LimitNoticeReasons = nil
  r.ErrorMessagesByCategory = nil
@@ -112,7 +115,7 @@ func parse(r *Report, raw string, code int, overflow bool) {
  summary:=false
  for s.Scan(){
   line:=strings.TrimSpace(s.Text())
-  if strings.Contains(line,"SCAN SUMMARY"){summary=true;continue}
+  if strings.Contains(line,"SCAN SUMMARY"){summary=true;r.NativeSummaryPresent=true;continue}
   if strings.HasSuffix(line," FOUND") {
    finding, ok := parseFinding(line)
    if !ok { r.Partial = true; continue }
@@ -233,7 +236,18 @@ func ScanRoots(ctx context.Context, exe string, roots []string, db string) (r Re
  e=cmd.Run();code:=0
  if e!=nil{var ee *exec.ExitError;if errors.As(e,&ee){code=ee.ExitCode()}else{code=-1}}
  parse(&r,string(out.b),code,out.overflow)
- if ctx.Err()!=nil{return r,ctx.Err()}
+ switch {
+ case errors.Is(ctx.Err(), context.DeadlineExceeded):
+  r.Termination = "deadline_exceeded"
+  return r, ctx.Err()
+ case ctx.Err() != nil:
+  r.Termination = "cancelled"
+  return r, ctx.Err()
+ case e == nil || code == 1:
+  r.Termination = "process_exited"
+ default:
+  r.Termination = "process_error"
+ }
  if len(r.UnavailableRoots)>0{return r,errors.New("one or more requested roots inaccessible; batch coverage partial")}
  if e!=nil&&code!=1{return r,fmt.Errorf("ClamAV scan: %w; %s",e,coverageDetail(r))}
  if r.DatabaseStatus!="fresh"{return r,fmt.Errorf("ClamAV: database freshness %s; scan results retained, coverage reduced",r.DatabaseStatus)}

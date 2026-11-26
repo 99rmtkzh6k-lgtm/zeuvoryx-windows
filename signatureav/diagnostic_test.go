@@ -21,7 +21,7 @@ func TestDiagnosticSeparatesLimitsAndRepeatedMessages(t *testing.T) {
 	}, "\n")
 	var r Report
 	parse(&r, raw, 2, false)
-	if !r.Partial || r.Errors != 2 || r.ErrorMessagesByCategory["file_busy"] != 2 || r.ErrorMessagesByCategory["access_denied"] != 1 {
+	if !r.NativeSummaryPresent || !r.Partial || r.Errors != 2 || r.ErrorMessagesByCategory["file_busy"] != 2 || r.ErrorMessagesByCategory["access_denied"] != 1 {
 		t.Fatalf("native count or message categories lost: %+v", r)
 	}
 	if r.LimitNotices != 2 || r.LimitNoticeReasons["max_file_size"] != 1 || r.LimitNoticeReasons["max_recursion"] != 1 {
@@ -31,7 +31,7 @@ func TestDiagnosticSeparatesLimitsAndRepeatedMessages(t *testing.T) {
 		t.Fatalf("findings misclassified: %+v", r.Findings)
 	}
 	parse(&r, "", 2, true)
-	if len(r.Findings) != 0 || r.LimitNoticeReasons != nil || r.ErrorMessagesByCategory != nil {
+	if r.NativeSummaryPresent || len(r.Findings) != 0 || r.LimitNoticeReasons != nil || r.ErrorMessagesByCategory != nil {
 		t.Fatalf("stale diagnostics after reset: %+v", r)
 	}
 }

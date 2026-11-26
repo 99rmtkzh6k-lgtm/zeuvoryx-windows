@@ -1,6 +1,7 @@
 from pathlib import Path
 from html.parser import HTMLParser
 import re
+import json
 def regex_one(s,pattern,replacement):
     s,n=re.subn(pattern,lambda m:replacement(m),s)
     if n!=1:raise RuntimeError('Games regex anchor '+pattern+' count='+str(n))
@@ -25,7 +26,8 @@ p=Path("desktop.html");s=p.read_text(encoding="utf-8")
 s=one(s,'</nav>','<button id="zGamesNav314" type="button" aria-expanded="false">Games · Jogos</button><button id="zFamilyNav314" type="button">Controle parental</button></nav>')
 s=one(s,'</main>',Path("lab/games314.html").read_text(encoding="utf-8")+Path("lab/family314.html").read_text(encoding="utf-8")+'</main>')
 s=one(s,'</style></head>',Path("lab/games314.css").read_text(encoding="utf-8")+'</style></head>')
-s=one(s,'</script></body></html>',Path("lab/games315_core.js").read_text(encoding="utf-8")+Path("lab/classic315_core.js").read_text(encoding="utf-8")+Path("lab/chess315_vendor.js").read_text(encoding="utf-8")+Path("lab/games314.js").read_text(encoding="utf-8")+Path("lab/family314.js").read_text(encoding="utf-8")+'</script></body></html>')
+game = json.dumps(Path("lab/arcade2048/game.html").read_text(encoding="utf-8")).replace("<", r"\u003c")
+s=one(s,'</script></body></html>',";const zArcade2048="+game+";"+Path("lab/games314.js").read_text(encoding="utf-8")+Path("lab/family314.js").read_text(encoding="utf-8")+'</script></body></html>')
 class Check(HTMLParser):
     def __init__(self):super().__init__();self.ids=[]
     def handle_starttag(self,tag,attrs):

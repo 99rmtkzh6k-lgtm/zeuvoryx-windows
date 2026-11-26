@@ -1,6 +1,6 @@
 package main
 import("context";"fmt";"time";"github.com/zeuvoryx/zeuvoryx/familygate")
 var family314 *familygate.Gate
-func localGame315(id string)bool{switch id{case "tic","memory","cards","solitaire","domino","chess","blocks":return true};return false}
+func localGame315(id string)bool{return id=="2048"}
 func allowLocalGame315(id string)(bool,error){if !localGame315(id){return false,fmt.Errorf("Jogo fora do catálogo local")};if family314==nil{return false,fmt.Errorf("Controle familiar indisponível")};if e:=family314.Allowed(id);e!=nil{return false,e};return true,nil}
 func familySystemDNS314(ctx context.Context)familygate.DNSCheck{ctx,cancel:=context.WithTimeout(ctx,18*time.Second);defer cancel();return familygate.CheckSystemDNS(ctx)}

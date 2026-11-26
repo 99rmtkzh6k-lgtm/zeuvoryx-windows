@@ -178,3 +178,23 @@ func Test307BoundedImports(t *testing.T){
   }
  }
 }
+
+
+func TestQuarantineRejectsTamperedCopy(t *testing.T) {
+ dir := t.TempDir()
+ q := &Quarantine{Dir: filepath.Join(dir, "quarantine")}
+ path := filepath.Join(dir, "fixture.txt")
+ data := []byte("benign")
+ if err := os.WriteFile(path, data, 0600); err != nil { t.Fatal(err) }
+ item, err := q.Add(path)
+ if err != nil { t.Fatal(err) }
+ hash := sha256.Sum256(data)
+ if item.SHA256 != hex.EncodeToString(hash[:]) { t.Fatalf("incorrect digest: %q", item.SHA256) }
+ stored := filepath.Join(q.Dir, item.ID+".bin")
+ if err := os.WriteFile(stored, []byte("alterd"), 0600); err != nil { t.Fatal(err) }
+ if err := q.Restore(item.ID); err == nil { t.Fatal("restored modified file") }
+ if _, err := os.Stat(path); !os.IsNotExist(err) { t.Fatalf("restored path remains: %v", err) }
+ if _, err := os.Stat(stored); err != nil { t.Fatal(err) }
+ if err := os.WriteFile(stored, data, 0600); err != nil { t.Fatal(err) }
+ if err := q.Restore(item.ID); err != nil { t.Fatal(err) }
+}

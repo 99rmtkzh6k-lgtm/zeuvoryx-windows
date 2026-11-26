@@ -1,5 +1,7 @@
 // Package scanplan chooses conservative scheduling, not a malware verdict.
 package scanplan
+
+import "time"
 const GiB uint64=1<<30
 // Serial avoids concurrent heavyweight scanners on resource-constrained hosts.
 // Unknown or inconsistent measurements use the conservative path.
@@ -24,3 +26,15 @@ func Workers(cpus int, known bool,total,available uint64)int{
 // Below this physical capacity, keep the own scanner usable and report the
 // optional signature stage as unavailable instead of falsely claiming coverage.
 func ClamCapacity(known bool,total uint64)bool{return !known||total>=3*GiB}
+
+// SignatureBudget limits the independent signature stage without cancelling the own scanner.
+func SignatureBudget(mode string) time.Duration {
+	switch mode {
+	case "quick":
+		return 5 * time.Minute
+	case "full":
+		return time.Hour
+	default:
+		return 20 * time.Minute
+	}
+}

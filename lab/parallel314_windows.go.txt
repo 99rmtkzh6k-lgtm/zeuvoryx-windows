@@ -46,8 +46,9 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
   for{select{case <-watchCtx.Done():win<-latest;return;case <-tick.C:refresh()}}
  }()
  runSignature:=func(){
-  sigCtx:=ctx
-  if mode=="quick"{var cancelSig context.CancelFunc;sigCtx,cancelSig=context.WithTimeout(ctx,5*time.Minute);defer cancelSig()}
+  limit:=scanplan.SignatureBudget(mode)
+  sigCtx,cancelSig:=context.WithTimeout(ctx,limit)
+  defer cancelSig()
   started:=time.Now()
   r:=engine.Report{SignatureRoots:append([]string(nil),roots...),SignatureStartedMS315:started.UnixMilli()}
   finish:=func(){r.SignatureFinishedMS315=time.Now().UnixMilli();r.SignatureDurationMS315=time.Since(started).Milliseconds();s.publishSignatureProgress314(&r);sig<-sigResult314{r}}
@@ -55,7 +56,13 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
   known,total,_:=scanplan.Memory()
   if !scanplan.ClamCapacity(known,total){r.SignatureState="unavailable";r.SignatureProblem="RAM física abaixo da recomendação do ClamAV (3 GiB); scanner próprio executado, cobertura de assinaturas incompleta.";finish();return}
   s.signaturePhase312(sigCtx,&r,"",true)
-  if sigCtx.Err()==context.DeadlineExceeded&&ctx.Err()==nil{r.SignatureState="partial";r.SignatureProblem="ClamAV: limite de 5 minutos da varredura rápida atingido; cobertura incompleta. Execute uma análise completa para continuar.";s.publishSignatureProgress314(&r)}
+  if sigCtx.Err()==context.DeadlineExceeded&&ctx.Err()==nil {
+   r.SignatureState="partial"
+   r.SignatureProblem=fmt.Sprintf("ClamAV: limite de %d minutos da etapa de assinaturas atingido; cobertura incompleta.",int(limit/time.Minute))
+   for i:=range r.SignatureReports {
+    r.SignatureReports[i].Problem=r.SignatureProblem
+   }
+  }
   finish()
  }
  if !serial{go runSignature()}

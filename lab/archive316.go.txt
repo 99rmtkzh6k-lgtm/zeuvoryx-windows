@@ -1,0 +1,12 @@
+package engine
+// ArchiveCoverage316 counts observed events, not unobserved entries.
+type ArchiveCoverage316 struct{
+ Containers uint64 `json:"zip_containers_seen"`
+ EntriesExamined uint64 `json:"zip_entries_examined"`
+ EntriesLimited uint64 `json:"zip_entries_limited"`
+ EntryBudgetStops uint64 `json:"zip_budget_stops"`
+ OpenFailures uint64 `json:"zip_open_failures"`
+ EntryReadFailures uint64 `json:"zip_entry_read_failures"`
+}
+func(c ArchiveCoverage316) Partial()bool{return c.EntriesLimited>0||c.EntryBudgetStops>0||c.OpenFailures>0||c.EntryReadFailures>0}
+func(c *ArchiveCoverage316) Merge(v ArchiveCoverage316){c.Containers+=v.Containers;c.EntriesExamined+=v.EntriesExamined;c.EntriesLimited+=v.EntriesLimited;c.EntryBudgetStops+=v.EntryBudgetStops;c.OpenFailures+=v.OpenFailures;c.EntryReadFailures+=v.EntryReadFailures}

@@ -1,0 +1,11 @@
+package engine
+import("archive/zip";"context";"os";"path/filepath";"testing")
+func TestArchive316ReportsCoverage(t *testing.T){
+ p:=filepath.Join(t.TempDir(),"sample.zip");f,e:=os.Create(p);if e!=nil{t.Fatal(e)}
+ w:=zip.NewWriter(f);for _,name:=range []string{"one.txt","two.txt"}{x,e:=w.Create(name);if e!=nil{t.Fatal(e)};if _,e=x.Write([]byte("benign control"));e!=nil{t.Fatal(e)}};if e=w.Close();e!=nil{t.Fatal(e)};if e=f.Close();e!=nil{t.Fatal(e)}
+ s:=New();s.MaxArchiveEntries=1;r,e:=s.Scan(context.Background(),p,nil);if e!=nil||!r.Partial||r.ArchiveCoverage316.EntriesExamined!=1||r.ArchiveCoverage316.EntryBudgetStops!=1||r.Files!=1{t.Fatal(r,e)}
+ s.MaxArchiveEntries=100;s.MaxArchiveTotal=1;r,e=s.Scan(context.Background(),p,nil);if e!=nil||!r.Partial||r.ArchiveCoverage316.EntriesLimited!=2||r.ArchiveCoverage316.EntriesExamined!=0{t.Fatal(r,e)}
+ s.MaxArchiveTotal=64<<20;r,e=s.Scan(context.Background(),p,nil);if e!=nil||r.ArchiveCoverage316.Partial()||r.ArchiveCoverage316.EntriesExamined!=2{t.Fatal(r,e)}
+ invalid:=filepath.Join(filepath.Dir(p),"broken.zip");if e=os.WriteFile(invalid,[]byte("not a ZIP"),0600);e!=nil{t.Fatal(e)}
+ r,e=s.Scan(context.Background(),invalid,nil);if e!=nil||!r.Partial||r.ArchiveCoverage316.OpenFailures!=1{t.Fatal(r,e)}
+}

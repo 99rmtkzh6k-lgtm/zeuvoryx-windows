@@ -1,0 +1,13 @@
+package engine
+import("os";"path/filepath";"strings";"testing")
+func TestIOC316RejectsPartialUpdate(t *testing.T){
+ s:=New();old:=strings.Repeat("a",64);fresh:=strings.Repeat("b",64);s.IOC[old]="original"
+ path:=filepath.Join(t.TempDir(),"base.txt")
+ if e:=os.WriteFile(path,[]byte(fresh+" valid\n"+old+" replacement\ninvalid\n"),0600);e!=nil{t.Fatal(e)}
+ if e:=s.LoadIOC(path);e==nil{t.Fatal("invalid accepted")}
+ if len(s.IOC)!=1||s.IOC[old]!="original"{t.Fatal("previous base changed")}
+ if e:=os.WriteFile(path,[]byte(strings.ToUpper(fresh)+" valid\n"),0600);e!=nil{t.Fatal(e)}
+ if e:=s.LoadIOC(path);e!=nil||s.IOC[fresh]!="valid"||s.IOC[old]!="original"{t.Fatal(s.IOC,e)}
+ if e:=os.WriteFile(path,[]byte(old+" "+strings.Repeat("x",5000)+"\n"),0600);e!=nil{t.Fatal(e)}
+ if e:=s.LoadIOC(path);e==nil||s.IOC[old]!="original"{t.Fatal("oversized update accepted")}
+}

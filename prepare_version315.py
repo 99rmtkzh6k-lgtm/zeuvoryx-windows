@@ -57,3 +57,36 @@ for name,pattern in (("main.go",r"stabilityWorkers\(runtime\.NumCPU\(\)\)"),("en
     if s.count("import (")!=1:raise RuntimeError("adaptive worker import "+name)
     s=s.replace("import (",'import (\n "github.com/zeuvoryx/zeuvoryx/scanplan"',1)
     p.write_text(s,encoding="utf-8")
+
+
+# Preserve actual archive coverage; the physical ZIP hash remains independent.
+p=Path("engine/scanner.go");s=p.read_text(encoding="utf-8")
+def own316(a,b):
+    global s
+    if s.count(a)!=1:raise RuntimeError("Own motor 316 anchor: "+a[:100])
+    s=s.replace(a,b,1)
+def ownrx316(a,b,n=1):
+    global s
+    s,c=re.subn(a,lambda m:b(m),s)
+    if c!=n:raise RuntimeError("Own motor 316 regex: "+a+" count "+str(c))
+own316('type Report struct {','type Report struct {\n ArchiveCoverage316 ArchiveCoverage316 '+chr(96)+'json:"archive_coverage_316"'+chr(96))
+ownrx316(r'func \(s \*Scanner\) examine\(ctx context\.Context,\s*path string,\s*size int64\)',lambda m:'func (s *Scanner) examine(ctx context.Context, path string, size int64, coverage *ArchiveCoverage316)')
+ownrx316(r's\.examine\(ctx,\s*abs,\s*info\.Size\(\)\)',lambda m:'s.examine(ctx, abs, info.Size(), &report.ArchiveCoverage316)')
+ownrx316(r'(?m)^([ \t]*)hits,\s*e\s*:=\s*s\.examine\(ctx,\s*path,\s*st\.Size\(\)\)',lambda m:m[1]+'var archive316 ArchiveCoverage316\n'+m[1]+'hits,e:=s.examine(ctx,path,st.Size(),&archive316)')
+ownrx316(r'(hits,e:=s\.examine\(ctx,path,st\.Size\(\),&archive316\)\s*mu\.Lock\(\))',lambda m:m[1]+'\n report.ArchiveCoverage316.Merge(archive316)')
+ownrx316(r'(archive,\s*e\s*:=\s*zip\.NewReader\(f,\s*size\))',lambda m:m[1]+'\n coverage.Containers++\n if e!=nil{coverage.OpenFailures++}')
+ownrx316(r'if idx >= maxEntries \{\s*break\s*\}',lambda m:'if idx >= maxEntries { coverage.EntryBudgetStops++; break }')
+ownrx316(r'if z\.FileInfo\(\)\.IsDir\(\) \|\| z\.UncompressedSize64 > uint64\(entryMax\) \|\| z\.UncompressedSize64 > uint64\(totalLimit\)-totalUncompressed \{\s*continue\s*\}',lambda m:'if z.FileInfo().IsDir(){continue}\n if z.UncompressedSize64>uint64(entryMax)||z.UncompressedSize64>uint64(totalLimit)-totalUncompressed{coverage.EntriesLimited++;continue}')
+ownrx316(r'(r,\s*e\s*:=\s*z\.Open\(\)\s*if e != nil \{)\s*continue',lambda m:m[1]+'\n coverage.EntryReadFailures++;continue')
+ownrx316(r'if int64\(len\(data\)\)\s*>\s*allowed\s*\{\s*break\s*\}',lambda m:'if int64(len(data))>allowed{coverage.EntriesLimited++;coverage.EntryBudgetStops++;break}')
+ownrx316(r'(if e != nil \|\| uint64\(len\(data\)\)\s*!=\s*z\.UncompressedSize64 \{)\s*continue',lambda m:m[1]+'\n coverage.EntryReadFailures++;continue')
+own316('sum := sha256.Sum256(data)','coverage.EntriesExamined++\n sum := sha256.Sum256(data)')
+p.write_text(s,encoding="utf-8")
+p=Path("engine/scan_upgrade.go");s=p.read_text(encoding="utf-8")
+ownrx316(r'(?m)^([ \t]*r\.Partial\s*=.*)$',lambda m:m[1]+' || r.ArchiveCoverage316.Partial()')
+p.write_text(s,encoding="utf-8")
+p=Path("main.go");s=p.read_text(encoding="utf-8")
+ownrx316(r'(r\.Findings\s*=\s*append\(r\.Findings,\s*one\.Findings\.\.\.\))',lambda m:m[1]+'\n r.ArchiveCoverage316.Merge(one.ArchiveCoverage316)')
+p.write_text(s,encoding="utf-8")
+for name in ("archive316.go","archive316_test.go","ioc316_test.go"):
+    Path("engine",name).write_text(Path("lab",name+".txt").read_text(encoding="utf-8"),encoding="utf-8")

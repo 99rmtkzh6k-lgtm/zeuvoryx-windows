@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"bufio"
 	"archive/zip"
 	"bytes"
 	"context"
@@ -53,30 +54,34 @@ type Scanner struct {
 func New() *Scanner {
 	return &Scanner{IOC: map[string]string{}, MaxFileBytes: 32 << 20, MaxArchiveEntry: 8 << 20, MaxArchiveEntries: 100, MaxArchiveTotal: 64 << 20}
 }
+// LoadIOC validates the whole candidate before merging it into the active base.
+// As before, callers must serialize base mutations with scans.
 func (s *Scanner) LoadIOC(path string) error {
-	b, e := os.ReadFile(path)
-	if e != nil {
-		return e
-	}
-	for n, line := range strings.Split(string(b), "\n") {
-		line = strings.TrimSpace(line)
-		if line == "" || strings.HasPrefix(line, "#") {
-			continue
-		}
-		parts := strings.Fields(line)
-		if len(parts) < 1 || len(parts[0]) != 64 {
-			return fmt.Errorf("linha IOC %d inválida", n+1)
-		}
-		if _, e := hex.DecodeString(parts[0]); e != nil {
-			return fmt.Errorf("linha IOC %d: %w", n+1, e)
-		}
-		label := "Assinatura SHA-256 conhecida"
-		if len(parts) > 1 {
-			label = strings.Join(parts[1:], " ")
-		}
-		s.IOC[strings.ToLower(parts[0])] = label
-	}
-	return nil
+ f,e:=os.Open(path);if e!=nil{return e};defer f.Close()
+ const maxBaseBytes=64<<20
+ const maxIndicators=1000000
+ st,e:=f.Stat();if e!=nil{return e};if !st.Mode().IsRegular()||st.Size()>maxBaseBytes{return errors.New("base de assinaturas inválida ou acima do limite de importação")}
+ limited:=&io.LimitedReader{R:f,N:maxBaseBytes+1}
+ reader:=bufio.NewScanner(limited);reader.Buffer(make([]byte,4096),4096)
+ pending:=make(map[string]string)
+ n:=0
+ for reader.Scan(){
+  n++
+  line:=strings.TrimSpace(reader.Text())
+  if line==""||strings.HasPrefix(line,"#"){continue}
+  parts:=strings.Fields(line)
+  if len(parts)==0||len(parts[0])!=64{return fmt.Errorf("linha IOC %d inválida",n)}
+  if _,e:=hex.DecodeString(parts[0]);e!=nil{return fmt.Errorf("linha IOC %d: %w",n,e)}
+  label:="Assinatura SHA-256 conhecida";if len(parts)>1{label=strings.Join(parts[1:]," ")}
+  pending[strings.ToLower(parts[0])]=label
+  if len(pending)>maxIndicators{return errors.New("limite de indicadores da importação excedido")}
+ }
+ if e:=reader.Err();e!=nil{return e};if limited.N<=0{return errors.New("base excede limite de leitura")}
+ after,e:=f.Stat();if e!=nil{return e};current,e:=os.Stat(path);if e!=nil{return e}
+ if !os.SameFile(st,after)||!os.SameFile(st,current)||st.Size()!=after.Size()||st.Size()!=current.Size()||!st.ModTime().Equal(after.ModTime())||!st.ModTime().Equal(current.ModTime()){return errors.New("base mudou durante a importação")}
+ if s.IOC==nil{s.IOC=make(map[string]string)}
+ for key,label:=range pending{s.IOC[key]=label}
+ return nil
 }
 
 var doubleExt = regexp.MustCompile(`(?i)\.(pdf|docx?|xlsx?|jpe?g|png|txt|mp4)\.(exe|scr|com|bat|cmd|ps1|vbs|js)$`)

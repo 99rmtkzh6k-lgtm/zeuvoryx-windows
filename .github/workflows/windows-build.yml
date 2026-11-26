@@ -2506,13 +2506,13 @@ jobs:
           if (!$desktop.Contains('ZEUVORYX | 3.0.21 LAB')) { throw 'Incorrect application title' }
           if (!$html.Contains('3.0.21 LAB BETA</div>')) { throw 'Incorrect desktop version' }
           if ($html.Contains('OLYMPUS 3.0.1 BETA</div>')) { throw 'Stale desktop version' }
-          if ($engine -notmatch 'const\s+ScanEngineVersion\s*=\s*"3\.0\.20-lab"') { throw 'Incorrect scan engine version' }
-          if ($updater -notmatch 'const\s+Current\s*=\s*"3\.0\.20"') { throw 'Incorrect updater version' }
+          if ($engine -notmatch 'const\s+ScanEngineVersion\s*=\s*"3\.0\.21-lab"') { throw 'Incorrect scan engine version' }
+          if ($updater -notmatch 'const\s+Current\s*=\s*"3\.0\.21"') { throw 'Incorrect updater version' }
           if (!$desktop.Contains('ZEUVORYX | 3.0.21 LAB') -or !$html.Contains('id="zPerformancePanel"')) { throw 'Missing 3.0.21 performance interface' }
           if (!$html.Contains('id="zStorageCard"') -or !$html.Contains('zHelpOpen') -or !$html.Contains('id="zAIActivity"') -or !$desktop.Contains('zAISelfCheck')) { throw 'Missing integrated UI' }
           if (!$html.Contains('zLayerStatus') -or !$html.Contains('id="zLayerLegend"') -or !$html.Contains('zLayer-green') -or $html.Contains('zCameraPanel')) { throw 'Layered security UI incorrect' }
           $audit = Get-Content -Raw -LiteralPath 'audit/audit.go'
-          if ($audit -notmatch 'const\s+Version\s*=\s*"3\.0\.20"') { throw 'Incorrect audit identity' }
+          if ($audit -notmatch 'const\s+Version\s*=\s*"3\.0\.21"') { throw 'Incorrect audit identity' }
           if ($desktop.Contains('3.0.8 LAB') -or $html.Contains('3.0.8 LAB BETA')) { throw 'Stale 3.0.8 identity' }
           if (!$html.Contains('id="zAIRobot"') -or !$html.Contains('id="zAIOverviewRobot"')) { throw 'Missing live AI robot' }
           if (!$html.Contains('id="zLiveFailures"') -or !$html.Contains('id="zLiveCoverage"') -or !$desktop.Contains('snapshotForExport')) { throw 'Live reporting missing' }

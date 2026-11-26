@@ -1,3 +1,7 @@
+## P0 — ruído heurístico na completa Windows 3.0.15 LAB (26/11/2026)
+
+REQ-003/004/005/008 permanecem abertos. O recorte físico contém 24 alertas consultivos (16 PE, um PowerShell e sete JavaScript), sem detecção confirmada no material recebido. Priorizar correlação de evidências antes de elevar severidade ou habilitar remediação, teste de regressão com corpus legítimo verificado e casos controlados, e conciliação do JSON final com agrupamento por SHA-256 quando disponível. [Evidência e critérios de aceite](MEMORANDO_DESENVOLVIMENTO.md#p0--triagem-de-alertas-heurísticos-na-varredura-completa-windows-lab-26112026).
+
 ## Diagnóstico de Testes no instalador Windows LAB — 26/11/2026
 
 A [CI 45755065493](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45755065493) aprovou os três jobs (regressão Ubuntu, regressão Windows e compilação/instalação Windows) para `b90fa60343be894b436ec7cd1f0971ac8101bd9c`. Esta revisão inclui a finalização cumulativa da varredura, o limite da etapa ClamAV e a área Relatórios → Diagnóstico de Testes, com causas possíveis, alternativas, cópia para IA e exportação JSON. A execução anterior 45754511971, de `b55faec`, foi cancelada.

@@ -1,3 +1,13 @@
+## P0 — triagem de alertas heurísticos na varredura completa Windows LAB (26/11/2026)
+
+Evidência parcial enviada pelo titular durante a validação física da 3.0.15 LAB (candidato de referência `b90fa60`, CI 45755065493). O trecho contém 24 alertas moderados. São 16 executáveis PE com 30/100 por combinação estática de APIs associadas à injeção remota (Chrome, SQLDumper, Copilot, Edge e WebView2), um script PowerShell do Office e sete bundles JavaScript OneDrive/Clipchamp com 35/100 por decodificação Base64. A interface informou Authenticode local válido nos 16 PEs e no PowerShell. Escores auxiliares de IA 21/100 e 22/100 vêm de modelo sintético e não expressam probabilidade de malware. Isolamento bloqueado no teste. O trecho não informa conclusão, cobertura nem resultado final dos motores.
+
+- **REQ-004/005/008 — pendente.** Investigar provável ruído das regras em componentes legítimos. Verificar hashes, proveniência e signatário quando disponível. Usar Authenticode como contexto, sem exclusões automáticas por assinatura, nome ou diretório. Diferenciar imports estáticos de comportamento observado e decodificação Base64 de execução corroborada. Preservar os sinais consultivos no relatório e exigir evidência independente adicional antes de elevar a severidade ou habilitar ações de remediação.
+- **REQ-003/004 — pendente.** Reconciliar o JSON final da completa com este recorte. Conferir estado, cobertura, achados por motor, ações registradas e duplicatas por SHA-256 quando disponível. Agrupar ocorrências idênticas para leitura, preservando contagens e detalhes auditáveis.
+- **Aceite.** Comparar a revisão atual e a futura no mesmo corpus, com componentes legítimos verificados e casos laboratoriais controlados com múltiplos sinais. Repetir os ciclos pertinentes e validar no Windows instalado os motivos, severidades, agrupamento, exportação e ausência de isolamento indevido. Registrar falsos positivos confirmados e regressões antes de aprovar.
+
+Registro documental. Implementação, compilação e validação permanecem pendentes.
+
 ## P0 — gráfico de leitura instantânea e relatório copiável na Central de Segurança (26/11/2026)
 
 Titular está executando a varredura completa física e relata que o gráfico permanece confuso e não atende à finalidade solicitada. Assinatura visual Leonardo A. Botelho também permanece ausente/não corrigida segundo o titular. Nesta etapa, SOMENTE registrar e acumular requisitos; não modificar código, binário, configuração de execução ou iniciar compilação; não interromper a varredura física atual. Preservar a lei pétrea de versionamento sequencial e todos os requisitos anteriores.

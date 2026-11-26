@@ -35,3 +35,7 @@ func TestDiagnosticSeparatesLimitsAndRepeatedMessages(t *testing.T) {
 		t.Fatalf("stale diagnostics after reset: %+v", r)
 	}
 }
+
+func TestDiagnosticWindowsCodeBoundaries(t *testing.T){
+ for _,c:=range []struct{code,want string}{{"32","file_busy"},{"33","file_busy"},{"5","access_denied"},{"320","other_engine_message"},{"50","other_engine_message"}}{if got:=errorMessageCategory("LibClamAV Error: GetLastError = "+c.code);got!=c.want{t.Fatalf("code %s got %s",c.code,got)}}
+}

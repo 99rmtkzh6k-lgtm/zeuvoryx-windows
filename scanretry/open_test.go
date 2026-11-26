@@ -1,6 +1,6 @@
 package scanretry
 
-import("context";"errors";"os";"path/filepath";"testing";"time")
+import("context";"errors";"os";"path/filepath";"testing";"time";"syscall")
 func TestRetryBusyThenSuccess(t *testing.T){
  path:=filepath.Join(t.TempDir(),"benign.txt")
  if e:=os.WriteFile(path,[]byte("benign"),0600);e!=nil{t.Fatal(e)}
@@ -22,3 +22,5 @@ func TestRetryCancellation(t *testing.T){
  if !errors.Is(e,context.Canceled)||n!=1{t.Fatalf("attempts=%d error=%v",n,e)}
  _,e=Open(ctx,"unused");if !errors.Is(e,context.Canceled){t.Fatal(e)}
 }
+
+func TestWindowsRetryClassification(t *testing.T){for _,n:=range []syscall.Errno{32,33,5,2}{e:=&os.PathError{Op:"open",Path:"test",Err:n};if transientWindows(e)!=(n==32||n==33){t.Fatalf("classification %d",n)}}}

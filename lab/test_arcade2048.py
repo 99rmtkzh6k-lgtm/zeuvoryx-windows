@@ -24,8 +24,21 @@ for cycle in range(1, 6):
     assert not re.search(r"@import|\b(?:fetch|XMLHttpRequest|WebSocket)\b", html)
     assert "new GameManager" in html
     assert "frame.setAttribute('sandbox','allow-scripts')" in launcher
-    assert "await window.allowLocalGame315(id)" in launcher
+    assert "await window.allowLocalGame315(id)" in launcher and "!==true" in launcher
     assert "board.replaceChildren()" in launcher
     assert 'return id=="2048"' in binding
     assert "games315_core.js" not in generator and "chess315_vendor.js" not in generator
     print(f"Arcade integration contract {cycle}/5 passed")
+
+import sys
+sys.path.insert(0,str(base.parent))
+from retro21 import load_retro
+for cycle in range(1,6):
+    catalog,docs=load_retro()
+    for item in catalog:
+        id=item["id"]
+        assert ('id=="'+id+'"') in binding
+        assert "connect-src 'none'" in docs[id]
+        assert "zArcadeSessionStore" in docs[id]
+    assert 'zGameRestart21' in launcher and 'zRetroCatalog' in launcher
+    print(f"Retro catalog integrity and isolation {cycle}/5 passed (not gameplay)")

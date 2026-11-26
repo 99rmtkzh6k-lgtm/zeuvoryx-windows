@@ -1,1 +1,4 @@
 lab/arcade2048/game.html text eol=lf
+
+lab/retro21/*.html -text
+lab/retro21/LICENSE.txt -text

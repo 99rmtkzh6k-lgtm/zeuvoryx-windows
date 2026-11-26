@@ -47,7 +47,16 @@ func startChangeWatchers315(ctx context.Context,tr *changeguard.Tracker,workers 
  sub,cancel:=context.WithCancel(ctx)
  for _,root:=range tr.Snapshot().Roots{
   workers.Add(1)
-  go func(root string){defer workers.Done();if e:=changeguard.Watch(sub,root,tr);e!=nil&&sub.Err()==nil{tr.Problem(root,e)}}(root)
+  go func(root string){
+   defer workers.Done()
+   for sub.Err()==nil{
+    e:=changeguard.Watch(sub,root,tr)
+    if sub.Err()!=nil{return}
+    if e!=nil{tr.Problem(root,e)}
+    timer:=time.NewTimer(30*time.Second)
+    select{case <-sub.Done():timer.Stop();return;case <-timer.C:}
+   }
+  }(root)
  }
  return cancel
 }

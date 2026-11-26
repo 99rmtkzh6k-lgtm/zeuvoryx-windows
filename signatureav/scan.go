@@ -158,17 +158,29 @@ func errorMessageCategory(line string) string {
   return ""
  }
  switch {
- case strings.Contains(lower, "getlasterror = 32") || strings.Contains(lower, "getlasterror = 33") ||
+ case windowsErrorCode(lower, "32") || windowsErrorCode(lower, "33") ||
       strings.Contains(lower, "sharing violation") || strings.Contains(lower, "lock violation"):
   return "file_busy"
  case strings.Contains(lower, "access is denied") || strings.Contains(lower, "permission denied") ||
-      strings.Contains(lower, "getlasterror = 5"):
+      windowsErrorCode(lower, "5"):
   return "access_denied"
  default:
   return "other_engine_message"
  }
 }
 
+// Match a complete numeric code, not the prefix of a different Windows error.
+func windowsErrorCode(line, code string) bool {
+ const marker="getlasterror = "
+ for {
+  i:=strings.Index(line,marker)
+  if i<0{return false}
+  line=line[i+len(marker):]
+  end:=0
+  for end<len(line)&&line[end]>='0'&&line[end]<='9'{end++}
+  if line[:end]==code{return true}
+ }
+}
 func limitNoticeReason(label string) string {
  const prefix = "heuristics.limits.exceeded"
  lower := strings.ToLower(label)

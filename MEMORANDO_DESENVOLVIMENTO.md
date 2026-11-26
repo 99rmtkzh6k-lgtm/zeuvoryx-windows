@@ -1,3 +1,7 @@
+## 3.0.21 LAB — recuperação incremental (26/11/2026)
+
+Candidato em preparação/CI ainda não confirmado, baseado na 3.0.20 build 32. Dez jogos retrô independentes licenciados MIT importados, catálogo parental sincronizado, retentativas limitadas de bloqueios Windows 33, recuperação do monitor de alterações e diagnóstico ClamAV de códigos completos. [Auditoria de campo 3.0.21](AUDITORIA_CAMPO_321.md). O último instalador confirmado antes desta revisão continua sendo o [3.0.20 build 32](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45893446138/artifacts/15153411964). Não divulgar a 3.0.21 como aprovada antes do CI, hashes e teste físico. Proteção residente, cobertura integral e causas individuais ainda pendentes. Sem ROMs proprietárias ou alteração de Defender.
+
 ## Verificação no Windows do titular — 26/11/2026
 
 - Processo local identificado como 3.0.18 LAB, commit embutido `99050aa401ef0fc5ca9aabc2eeb82a03d452b40b`, coerente com o relatório e o manifesto do ZIP local build 20, tentativa 1. O SHA-256 do EXE dentro desse ZIP coincide com o manifesto. Nenhum instalador executado.

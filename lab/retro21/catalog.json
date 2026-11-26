@@ -1,0 +1,72 @@
+[
+  {
+    "id": "retro-racer",
+    "category": "Corrida",
+    "title": "Retro Racer",
+    "sha": "5c19b860679175fdfc951a700c0b9547efcc746a",
+    "description": "Jogo retrô independente, coleção 90s-games (MIT)."
+  },
+  {
+    "id": "cartridge-dash",
+    "category": "Plataforma",
+    "title": "Cartridge Dash",
+    "sha": "6a1084492f0b42fbe8c93e13826d08b878334e52",
+    "description": "Jogo retrô independente, coleção 90s-games (MIT)."
+  },
+  {
+    "id": "jump-quest",
+    "category": "Plataforma",
+    "title": "Jump Quest",
+    "sha": "9dd5801b84eb146b5a41c31ee0258bbd7bb74a08",
+    "description": "Jogo retrô independente, coleção 90s-games (MIT)."
+  },
+  {
+    "id": "laser-defender",
+    "category": "Ação",
+    "title": "Laser Defender",
+    "sha": "9d5a242d11ad9fdfb9ff8c403d029286240a6b01",
+    "description": "Jogo retrô independente, coleção 90s-games (MIT)."
+  },
+  {
+    "id": "digital-maze",
+    "category": "Lógica",
+    "title": "Digital Maze",
+    "sha": "4c7d8d2f52c46213ea3da9f6cf83ca5639ff8486",
+    "description": "Jogo retrô independente, coleção 90s-games (MIT)."
+  },
+  {
+    "id": "meteor-strike",
+    "category": "Ação",
+    "title": "Meteor Strike",
+    "sha": "f408bc5f5952699ef8a3b68824ca3cb8e0d735df",
+    "description": "Jogo retrô independente, coleção 90s-games (MIT)."
+  },
+  {
+    "id": "ping-pong-2p",
+    "category": "Esportes",
+    "title": "Ping Pong 2 jogadores",
+    "sha": "faa31e160cf6d27676eac3871f1f30e405054112",
+    "description": "Jogo retrô independente, coleção 90s-games (MIT)."
+  },
+  {
+    "id": "breakout",
+    "category": "Arcade",
+    "title": "Breakout (recriação)",
+    "sha": "d43105618f11f74ba023b8c5d42d21bb8f12a8b9",
+    "description": "Jogo retrô independente, coleção 90s-games (MIT)."
+  },
+  {
+    "id": "snake",
+    "category": "Arcade",
+    "title": "Snake",
+    "sha": "3c530c6d293b1d8f0493682344f058a6c788db7e",
+    "description": "Jogo retrô independente, coleção 90s-games (MIT)."
+  },
+  {
+    "id": "asteroids",
+    "category": "Arcade",
+    "title": "Asteroids (recriação)",
+    "sha": "fc9cf46222f5659d0f28769e10791963387c9814",
+    "description": "Jogo retrô independente, coleção 90s-games (MIT)."
+  }
+]

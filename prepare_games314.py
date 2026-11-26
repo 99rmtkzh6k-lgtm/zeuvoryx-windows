@@ -2,6 +2,8 @@ from pathlib import Path
 from html.parser import HTMLParser
 import re
 import json
+from html import escape
+from retro21 import load_retro
 def regex_one(s,pattern,replacement):
     s,n=re.subn(pattern,lambda m:replacement(m),s)
     if n!=1:raise RuntimeError('Games regex anchor '+pattern+' count='+str(n))
@@ -24,10 +26,19 @@ if !bind("familyDNSCheck314",func()familygate.DNSCheck{return familySystemDNS314
 p.write_text(s,encoding="utf-8")
 p=Path("desktop.html");s=p.read_text(encoding="utf-8")
 s=one(s,'</nav>','<button id="zGamesNav314" type="button" aria-expanded="false">Games · Jogos</button><button id="zFamilyNav314" type="button">Controle parental</button></nav>')
-s=one(s,'</main>',Path("lab/games314.html").read_text(encoding="utf-8")+Path("lab/family314.html").read_text(encoding="utf-8")+'</main>')
+retro, retro_docs = load_retro()
+games_html=Path("lab/games314.html").read_text(encoding="utf-8")
+family_html=Path("lab/family314.html").read_text(encoding="utf-8")
+options='<option value="2048">2048</option>'+''.join('<option value="'+escape(g["id"],quote=True)+'">'+escape(g["title"])+'</option>' for g in retro)
+family_html=regex_one(family_html,r'(?s)(<select id="zFamilyGame">).*?(</select>)',lambda m:m[1]+options+m[2])
+cats=''.join('<option>'+escape(c)+'</option>' for c in sorted({g["category"] for g in retro}))
+games_html=one(games_html,'<option>Quebra-cabeça</option>','<option>Quebra-cabeça</option>'+cats)
+license_notice=escape(Path("lab/retro21/LICENSE.txt").read_text(encoding="utf-8"))
+games_html=one(games_html,'<div id="zGameCatalog"', '<details><summary>Créditos e licença dos jogos retrô</summary><pre style="white-space:pre-wrap">'+license_notice+'</pre></details><div id="zGameCatalog"')
+s=one(s,'</main>',games_html+family_html+'</main>')
 s=one(s,'</style></head>',Path("lab/games314.css").read_text(encoding="utf-8")+'</style></head>')
 game = json.dumps(Path("lab/arcade2048/game.html").read_text(encoding="utf-8")).replace("<", r"\u003c")
-s=one(s,'</script></body></html>',";const zArcade2048="+game+";"+Path("lab/games314.js").read_text(encoding="utf-8")+Path("lab/family314.js").read_text(encoding="utf-8")+'</script></body></html>')
+s=one(s,'</script></body></html>',";const zArcade2048="+game+";const zRetroCatalog="+json.dumps(retro).replace("<",r"\u003c")+";const zRetroDocs="+json.dumps(retro_docs).replace("<",r"\u003c")+";"+Path("lab/games314.js").read_text(encoding="utf-8")+Path("lab/family314.js").read_text(encoding="utf-8")+'</script></body></html>')
 class Check(HTMLParser):
     def __init__(self):super().__init__();self.ids=[]
     def handle_starttag(self,tag,attrs):

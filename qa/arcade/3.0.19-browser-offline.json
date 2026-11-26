@@ -1,0 +1,47 @@
+[
+  {
+    "cycle": 1,
+    "offline": true,
+    "parent_isolated": true,
+    "move": true,
+    "restart": true,
+    "parental_rejection": true,
+    "close": true
+  },
+  {
+    "cycle": 2,
+    "offline": true,
+    "parent_isolated": true,
+    "move": true,
+    "restart": true,
+    "parental_rejection": true,
+    "close": true
+  },
+  {
+    "cycle": 3,
+    "offline": true,
+    "parent_isolated": true,
+    "move": true,
+    "restart": true,
+    "parental_rejection": true,
+    "close": true
+  },
+  {
+    "cycle": 4,
+    "offline": true,
+    "parent_isolated": true,
+    "move": true,
+    "restart": true,
+    "parental_rejection": true,
+    "close": true
+  },
+  {
+    "cycle": 5,
+    "offline": true,
+    "parent_isolated": true,
+    "move": true,
+    "restart": true,
+    "parental_rejection": true,
+    "close": true
+  }
+]

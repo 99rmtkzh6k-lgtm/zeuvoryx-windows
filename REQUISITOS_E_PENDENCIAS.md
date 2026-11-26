@@ -1,3 +1,9 @@
+## Diagnóstico de Testes no instalador Windows LAB — 26/11/2026
+
+A [CI 45755065493](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45755065493) aprovou os três jobs (regressão Ubuntu, regressão Windows e compilação/instalação Windows) para `b90fa60343be894b436ec7cd1f0971ac8101bd9c`. Esta revisão inclui a finalização cumulativa da varredura, o limite da etapa ClamAV e a área Relatórios → Diagnóstico de Testes, com causas possíveis, alternativas, cópia para IA e exportação JSON. A execução anterior 45754511971, de `b55faec`, foi cancelada.
+
+[Baixar o instalador LAB Windows x64](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45755065493/artifacts/15087906503). SHA-256 do ZIP informado pelo GitHub: `1dadd1c43709f8a5ecfa683c5b18d252b6052e0b9be2a472a385e90015a0f017`. Candidato de teste 3.0.15 LAB identificado pelo commit. A cópia e a exportação no WebView2 instalado e a conclusão da varredura completa do C: ainda requerem validação em campo.
+
 ## Diagnóstico de Testes copiável — 26/11/2026
 
 A revisão LAB [b90fa60](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/commit/b90fa60) acrescenta ao centro de Relatórios a área Diagnóstico de Testes, com geração e atualização explícita, causas possíveis, verificações, alternativas, impactos, critérios de aceite, cópia para IA e exportação JSON local. Usa dados agregados do relatório selecionado. Caminhos e logs brutos ficam fora da saída. Sem integração remota. Os testes locais de geração, estados e privacidade passaram. Validação do instalador, interface WebView2 e uso físico pendentes.

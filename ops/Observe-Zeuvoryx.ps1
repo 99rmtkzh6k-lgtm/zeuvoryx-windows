@@ -34,7 +34,7 @@ function Get-LocalSnapshot {
             ForEach-Object {
                 try {
                     $path = $_.Path
-                    if (!$path -or !$path.StartsWith($installation + '\', [StringComparison]::OrdinalIgnoreCase)) {
+                    if (!$path -or !$path.StartsWith($installation + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) {
                         return
                     }
                     [ordered]@{
@@ -85,11 +85,15 @@ $audit = Join-Path $root 'lab305-audit'
 $out = Join-Path $root 'operational-observer'
 New-Item -Path $out -ItemType Directory -Force | Out-Null
 $log = Join-Path $out 'activity.jsonl'
-$lock = [Threading.Mutex]::new($false, 'Local\ZEUVORYX-OperationalObserver')
-$owned = $false
+$lockPath = Join-Path $out 'observer.lock'
 try {
-    try { $owned = $lock.WaitOne(0) } catch [Threading.AbandonedMutexException] { $owned = $true }
-    if (!$owned) { return }
+    $lock = [IO.File]::Open($lockPath, [IO.FileMode]::OpenOrCreate, [IO.FileAccess]::ReadWrite, [IO.FileShare]::None)
+} catch [IO.IOException] {
+    Write-Warning 'O observador já está ativo ou o arquivo de trava está indisponível.'
+    if ($Once) { throw }
+    return
+}
+try {
     do {
         $line = Get-LocalSnapshot | ConvertTo-Json -Depth 5 -Compress
         try {
@@ -104,6 +108,5 @@ try {
         if (!$Once) { Start-Sleep -Seconds 30 }
     } while (!$Once)
 } finally {
-    if ($owned) { $lock.ReleaseMutex() }
     $lock.Dispose()
 }

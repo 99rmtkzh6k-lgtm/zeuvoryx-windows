@@ -2828,22 +2828,23 @@ jobs:
             $new.Refresh()
             if ($new.HasExited) { throw 'Installed desktop not running' }
             Assert-Blocked $portable
+            $observer = Join-Path $dir 'ops/Observe-Zeuvoryx.ps1'
+            $previousAppData = $env:APPDATA
+            try {
+              $env:APPDATA = Join-Path $env:RUNNER_TEMP 'z320-observer-smoke'
+              for ($i=0; $i -lt 5; $i++) { & $observer -Once }
+              $samples = @(Get-Content -LiteralPath (Join-Path $env:APPDATA 'ZEUVORYX/operational-observer/activity.jsonl'))
+              if ($samples.Count -ne 5) { throw 'Unexpected number of local observer samples' }
+              foreach ($sample in $samples) {
+                $parsed = $sample | ConvertFrom-Json
+                if (!$parsed.observed_at_utc -or $parsed.saved_report_state -ne 'absent' -or -not ($parsed.processes | Where-Object { $_.pid -eq $new.Id })) { throw 'Invalid local observer sample or installed process missing' }
+              }
+            } finally { $env:APPDATA = $previousAppData }
           } finally {
             if (!$new.HasExited) { [void]$new.CloseMainWindow(); if (!$new.WaitForExit(15000)) { throw 'Desktop did not close gracefully' } }
           }
           Write-Host '3.0.6 migration, five installation cycles and duplicate guard passed'
-          $observer = Join-Path $dir 'ops/Observe-Zeuvoryx.ps1'
-          $previousAppData = $env:APPDATA
-          try {
-            $env:APPDATA = Join-Path $env:RUNNER_TEMP 'z320-observer-smoke'
-            for ($i=0; $i -lt 5; $i++) { & $observer -Once }
-            $samples = @(Get-Content -LiteralPath (Join-Path $env:APPDATA 'ZEUVORYX/operational-observer/activity.jsonl'))
-            if ($samples.Count -ne 5) { throw 'Unexpected number of local observer samples' }
-            foreach ($sample in $samples) {
-              $parsed = $sample | ConvertFrom-Json
-              if (!$parsed.observed_at_utc -or $parsed.saved_report_state -ne 'absent') { throw 'Invalid local observer sample' }
-            }
-          } finally { $env:APPDATA = $previousAppData }
+
       - name: Five installed application tests using bundled engine without external ClamAV
         shell: pwsh
         run: |

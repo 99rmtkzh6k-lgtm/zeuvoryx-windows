@@ -1,0 +1,22 @@
+package engine
+import ("errors";"strings";"os";"path/filepath";"github.com/zeuvoryx/zeuvoryx/remediation")
+
+// Only a complete, exact EICAR control file is eligible; archive members and
+// files merely containing the marker are not. Reuse the existing protected-root
+// and identity checks in addWithHash. This is not a real-malware efficacy metric.
+func (q *Quarantine) AddEICAR316(hit Finding)(QuarantineItem,error){
+ if hit.Evidence!="test_eicar"||strings.Contains(hit.Path," :: ")||!strings.EqualFold(hit.SHA256,remediation.EICARSHA256){return QuarantineItem{},errors.New("somente controle EICAR integral identificado no relatório")}
+ st,e:=os.Lstat(hit.Path);if e!=nil{return QuarantineItem{},e};if !st.Mode().IsRegular()||st.Size()!=68{return QuarantineItem{},errors.New("controle EICAR não é arquivo comum de 68 bytes")}
+ return q.addWithHash(hit.Path,remediation.EICARSHA256)
+}
+
+func (q *Quarantine) RecordOutcome316(o remediation.Outcome,item QuarantineItem,actionErr error)(remediation.Outcome,error){
+ o.QuarantineID=item.ID
+ if item.SHA256!=""{o.SHA256=item.SHA256}
+ if actionErr==nil&&!validID(item.ID){actionErr=errors.New("identificador de quarentena inválido")}
+ o=remediation.OutcomeForQuarantine(o,filepath.Join(q.Dir,item.ID+".bin"),actionErr)
+ saved,e:=remediation.Record(filepath.Join(q.Dir,"outcomes316"),o)
+ if e!=nil{return o,errors.Join(o.ResultError(),e)}
+ return saved,saved.ResultError()
+}
+func(q *Quarantine) Outcomes316()(remediation.History,error){return remediation.ReadHistory(filepath.Join(q.Dir,"outcomes316"))}

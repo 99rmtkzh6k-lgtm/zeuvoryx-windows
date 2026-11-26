@@ -1,3 +1,9 @@
+## 26/11/2026 — determinação do titular: responsabilidade exclusiva do ChatGPT
+
+O titular determina que, a partir desta data, **a coordenação, auditoria, planejamento, implementação de correções autorizadas, verificação do GitHub, acompanhamento do CI, documentação e realinhamento do ZEUVORYX sejam conduzidos exclusivamente pelo ChatGPT nesta conversa**, sem depender do Codex nem delegar-lhe tarefas. A determinação substitui qualquer protocolo anterior que atribuía execução exclusiva ao Codex. Preservar o histórico, as funcionalidades e a identidade visual aprovadas; não recomeçar do zero.
+
+**Limites e prestação de contas:** a responsabilidade de condução não equivale a acesso permanente ao computador físico nem a execução automática em segundo plano. Operações dependem das ferramentas e permissões efetivamente disponíveis. Toda alteração deve ter commit, evidência e validação; testes físicos não realizados permanecem pendentes. Não alegar 100 ciclos, eficácia antimalware ou instalador aprovado sem comprovação. Continuam válidos os controles de segurança, proteção nativa ativa, licenças, testes, rastreabilidade e autorização de publicação. Sincronizar memorando e índice de requisitos a cada intervenção relevante.
+
 ## 26/11/2026 — atualização de continuidade: CI 3.0.21 e correção visual isolada
 
 **Resultado confirmado:** GitHub Actions run [45900127366](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45900127366), 3.0.21 LAB build 34, passou a estado **completed/success** na consulta posterior. A correção da verificação de identidade 3.0.21 foi registrada no commit funcional c2af68e. O sucesso de CI não certifica instalação no Windows físico, proteção residente, detecção, quarentena ou remoção. Não publicar como versão de produção sem os gates físicos.

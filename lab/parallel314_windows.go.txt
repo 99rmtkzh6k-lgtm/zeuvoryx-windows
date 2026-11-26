@@ -64,9 +64,11 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
  if !serial{go runSignature()}
  go func(){v,e:=behavior313Context(ctx);b:=behaviorResult314{data:v};if e!=nil{b.problem=e.Error()};s.mu.Lock();if s.running&&auxOpen{s.report.BehaviorLocal=b.data;s.report.BehaviorProblem=b.problem};s.mu.Unlock();beh<-b}()
  rep,e:=run()
- cancelInv()
  if serial{go runSignature()}
+ // A completed scanner does not imply a completed inventory. Give inventory a
+ // bounded opportunity to finish naturally; cancel only when it exceeds the budget.
  inv,invOK:=scopeprogress.AwaitResult(invCh,5*time.Second)
+ cancelInv()
  s.mu.Lock();invOpen=false;if !invOK{inv=s.report.Inventory314;inv.State="partial";inv.Errors++};inv.ScannerDone=true;if s.running{s.report.Inventory314=inv};s.mu.Unlock()
  stopWatch()
  b,bOK:=scopeprogress.AwaitResult(beh,10*time.Second);if !bOK{b.problem="Consulta comportamental não terminou no prazo de finalização; cobertura parcial"}

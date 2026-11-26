@@ -128,7 +128,7 @@ s=once(s,'</script></body></html>',r'''
  try{let v;if(kind==='learning'){await window.fieldExport();v=await window.savedReportText315()}else{v=await window.reportText315(kind,id)}
  if(source.value!==kind||(kind==='history'&&id!==el('z315ReportHistory').value)){clear();return}
  if(typeof v!=='string'||!v.trim())throw Error('Relatório vazio');JSON.parse(v);area.value=v;
- status.textContent='Relatório disponível. Clique em Copiar texto JSON ou use Ctrl+A e Ctrl+C.';area.focus();area.select();
+ const snapshot=JSON.parse(v),at=snapshot.snapshot_at||snapshot.finished||snapshot.started;status.textContent='Snapshot '+(at?new Date(at).toLocaleString():'sem horário')+' · '+(snapshot.in_progress?'PARCIAL — clique em Exibir novamente para atualizar':snapshot.cancelled?'CANCELADO':snapshot.partial?'FINAL PARCIAL':'Relatório disponível')+'. Copiar texto JSON copia exatamente este snapshot.';area.focus();area.select();
  }catch(e){status.textContent=String(e);area.value=''}finally{busy=false;z315ReportBusy=false;show.disabled=false;await z315ReportPaint()}};
  el('z315SelectText').onclick=()=>{area.focus();area.select()};
  el('z315CopyText').onclick=async()=>{if(!area.value)return;area.focus();area.select();try{

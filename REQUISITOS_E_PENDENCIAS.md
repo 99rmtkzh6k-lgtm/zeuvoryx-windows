@@ -1,3 +1,7 @@
+## Integração 3.0.16 LAB — 26/11/2026
+
+A ordem de execução de 26/11 autorizou a evolução experimental. [Matriz mestre, critérios e resultados](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/lab-integracao-p0-20261126/MATRIZ_MESTRE_2026-11-26.md). REQ-003/004/025/027/041 abertos para o gate físico. REQ-026 documentado com novo número, CI e hashes. REQ-018/028 com instalador validado em CI e ZIP temporário para piloto. Requisitos anteriores permanecem rastreados. A determinação vigente limita o Arcade a até 100 jogos gratuitos e define a assinatura artística L A Botelho, sem bandeira.
+
 ## Comando de Unificação — 26/11/2026
 
 A [íntegra dos 23 artigos](COMANDO_UNIFICACAO_2026-11-26.md) complementa o Prompt Mestre, as cláusulas pétreas, os registros REQ/EVO e o [protocolo de integração](PROTOCOLO_INTEGRACAO_GITHUB.md). As determinações registradas no iPhone alimentam este histórico. A implementação e a compilação ficam centralizadas na conversa do computador, em uma única evolução, quando houver ordem expressa. A assinatura artística vigente é **Leonardo A. Botelho**, sem bandeira, conforme artigo 15. No Arcade, a primeira etapa aprovada para planejamento é de 20 a 30 jogos completos, com expansão gradual e auditoria.

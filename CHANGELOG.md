@@ -1,3 +1,7 @@
+## 3.0.16 LAB — validação da integração P0
+
+CI aprovou a nova espera limitada após cancelamento da etapa ClamAV no candidato Windows, com teste de instalação e migração. [Detalhes do candidato](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45846486811). Validação física pendente.
+
 
 
 ## Revisão de diagnóstico nativo — 25/11/2026

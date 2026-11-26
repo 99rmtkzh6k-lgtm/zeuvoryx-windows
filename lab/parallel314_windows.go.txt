@@ -49,6 +49,7 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
   if signatureOpen { publishSignature314(f) }
  }
  beh:=make(chan behaviorResult314,1);win:=make(chan windowsResult314,1)
+ firstWindowsAudit := make(chan struct{})
  watchCtx,stopWatch:=context.WithCancel(ctx);defer stopWatch()
  go func(){
   latest:=windowsResult314{problem:"Consulta Windows ainda não concluída"}
@@ -60,6 +61,7 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
    s.mu.Lock();if s.running&&auxOpen{s.report.WindowsLocal314=latest.data;s.report.WindowsProblem314=latest.problem};s.mu.Unlock()
   }
   refresh()
+  close(firstWindowsAudit)
   tick:=time.NewTicker(time.Minute);defer tick.Stop()
   for{select{case <-watchCtx.Done():win<-latest;return;case <-tick.C:refresh()}}
  }()
@@ -106,12 +108,22 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
  inv,invOK:=scopeprogress.AwaitResult(invCh,5*time.Second)
  cancelInv()
  s.mu.Lock();invOpen=false;if !invOK{inv=s.report.Inventory314;inv.State="partial";inv.Errors++};inv.ScannerDone=true;if s.running{s.report.Inventory314=inv};s.mu.Unlock()
- stopWatch()
  b,bOK:=scopeprogress.AwaitResult(beh,10*time.Second);if !bOK{b.problem="Consulta comportamental não terminou no prazo de finalização; cobertura parcial"}
- w,wOK:=scopeprogress.AwaitResult(win,10*time.Second);if !wOK{w.problem="Consulta Windows não terminou no prazo de finalização; cobertura parcial"}
- s.mu.Lock();auxOpen=false;s.mu.Unlock()
  r, signatureOK := scopeprogress.AwaitShutdown(sigCtx, sig, 10*time.Second)
  stopSignature()
+
+ // Keep collecting Windows evidence while engines are active. A very short
+ // scan gives its first read-only query a bounded chance to return as well.
+ auditGrace, stopAuditGrace := context.WithTimeout(ctx, 10*time.Second)
+ select {
+ case <-firstWindowsAudit:
+ case <-auditGrace.Done():
+ }
+ stopAuditGrace()
+ stopWatch()
+ w,wOK:=scopeprogress.AwaitResult(win,5*time.Second)
+ if !wOK { w.problem="Consulta Windows não terminou no prazo de finalização; cobertura parcial" }
+ s.mu.Lock();auxOpen=false;s.mu.Unlock()
  signatureMu.Lock()
  signatureOpen = false
  signatureMu.Unlock()

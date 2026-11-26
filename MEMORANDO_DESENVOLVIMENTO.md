@@ -1,3 +1,9 @@
+## P0 — correções cumulativas de varredura Windows — 26/11/2026
+
+O relatório físico do instalador `0295579` confirma a rápida em 123,189 s, com relatório final automático, 259/266 arquivos no scanner próprio e 197 no ClamAV (zero infecções reportadas, 14 erros, nove limites, exit 2). Os campos de volume do ClamAV foram preenchidos: 1.699,84 MiB lidos e 143,10 MiB examinados. Esse pacote não continha as correções da ramificação P0 de finalização.
+
+A CI 45750382240 aprovou a revisão P0 `a85df421`. O commit cumulativo [b55faec](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/commit/b55faec) usa essa revisão e incorpora o limite do ClamAV de 60 min na completa, 5 min na rápida e 20 min na específica. Inclui espera limitada de inventário e diagnósticos, persistência final fora do mutex de estado, identificação do horário/estado do snapshot e respeito à configuração de suspensão do Windows. Cinco ciclos locais dos módulos scopeprogress, scanplan, signatureav, scanretry e auditmetrics passaram. CI do commit cumulativo e validação física da completa pendentes. Watchdog de leitura bloqueada, política de pausa/retomada por eventos de energia, progresso e ETA por motor, recuperação de sessões e causa da lentidão ClamAV continuam em aberto.
+
 ## Instalador Windows LAB com limite de varredura — 26/11/2026
 
 A [CI 45750072714](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45750072714) aprovou os três jobs para o commit `0295579c9cb02fcec9b94bf400551d04b7d5b941`: regressão Ubuntu, regressão Windows e compilação/instalação Windows, incluindo migração e cinco testes com ClamAV embarcado. [ZIP do instalador Windows x64](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45750072714/artifacts/15085682422): 192.817.395 bytes; SHA-256 registrado pelo GitHub `ce742c68c8c0a54c117f35d57f50d93af9561a5e714d00b07c3b31df33595100`.

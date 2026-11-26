@@ -1,3 +1,9 @@
+## P0 — correções cumulativas de varredura Windows — 26/11/2026
+
+O relatório físico do instalador `0295579` confirma a rápida em 123,189 s, com relatório final automático, 259/266 arquivos no scanner próprio e 197 no ClamAV (zero infecções reportadas, 14 erros, nove limites, exit 2). Os campos de volume do ClamAV foram preenchidos: 1.699,84 MiB lidos e 143,10 MiB examinados. Esse pacote não continha as correções da ramificação P0 de finalização.
+
+A CI 45750382240 aprovou a revisão P0 `a85df421`. O commit cumulativo [b55faec](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/commit/b55faec) usa essa revisão e incorpora o limite do ClamAV de 60 min na completa, 5 min na rápida e 20 min na específica. Inclui espera limitada de inventário e diagnósticos, persistência final fora do mutex de estado, identificação do horário/estado do snapshot e respeito à configuração de suspensão do Windows. Cinco ciclos locais dos módulos scopeprogress, scanplan, signatureav, scanretry e auditmetrics passaram. CI do commit cumulativo e validação física da completa pendentes. Watchdog de leitura bloqueada, política de pausa/retomada por eventos de energia, progresso e ETA por motor, recuperação de sessões e causa da lentidão ClamAV continuam em aberto.
+
 ## Continuidade do Windows 3.0.15 LAB — 25/11/2026
 
 A [CI 45696640691](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45696640691) do commit de código `9d8b2c82eefa8d1c99275cb708429a30ae566a63` aprovou os três jobs (regressão Ubuntu, regressão Windows e compilação/validação Windows). Este candidato acrescenta métricas nativas do ClamAV ao relatório, incluindo bytes lidos e examinados, duração, limites e truncamento. A [CI anterior de cobertura 45691904568](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45691904568), do commit `a48e7eb`, também terminou com sucesso.

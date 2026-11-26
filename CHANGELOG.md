@@ -1,3 +1,7 @@
+## 3.0.22 LAB — realinhamento P0, não homologado
+
+Base 3.0.21 build 34 preservada. Correções de cobertura e gráfico no código, build 35 falhou na configuração, sucessor edf5c84 em validação sem aprovação confirmada. Não instalar. Consulte o memorando.
+
 ## 3.0.19 LAB — integração dos 32 artigos e validação do candidato
 
 Hash e identidade na quarentena, término e resumo nativo do ClamAV no JSON, e 2048 MIT no lugar do Arcade antigo. [CI e testes](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45883312622).

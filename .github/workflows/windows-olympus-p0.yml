@@ -1,4 +1,4 @@
-name: ZEUVORYX 3.0.17 LAB - P0 scan finalization
+name: ZEUVORYX 3.0.18 LAB - P0 scan finalization
 on:
   push:
     branches: [lab-integracao-p0-20261126]

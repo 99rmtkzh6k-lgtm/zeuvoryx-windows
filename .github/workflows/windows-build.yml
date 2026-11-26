@@ -2434,6 +2434,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'External Arcade integration regressions failed' }
           python prepare_games314.py
           if ($LASTEXITCODE -ne 0) { throw '314 games catalog integration failed' }
+          python -m pip install --disable-pip-version-check playwright==1.51.0
+          if ($LASTEXITCODE -ne 0) { throw 'Browser test dependency failed' }
+          python lab/test_arcade2048.py --browser
+          if ($LASTEXITCODE -ne 0) { throw 'Classic gameplay browser regressions failed' }
           go test -count=5 ./auditmetrics ./changeguard
           if ($LASTEXITCODE -ne 0) { throw '3.0.23 engine accounting regressions failed' }
           python prepare_reports315.py
@@ -2489,6 +2493,13 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Layered security color regression failed' }
           node --check desktop-syntax.js
           if ($LASTEXITCODE -ne 0) { throw 'Desktop JavaScript syntax failed' }
+      - name: Upload arcade browser proof (two resolutions)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ZEUVORYX-3.0.23-LAB-arcade-browser-proof
+          path: arcade-proof/*.png
+          if-no-files-found: warn
       - name: Upload Security Center regression JSON
         uses: actions/upload-artifact@v4
         with:

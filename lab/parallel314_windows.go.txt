@@ -100,29 +100,25 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
   }(sigCtx, signatureStarted)
  }
  if !serial { startSignature() }
- go func(){v,e:=behavior313Context(ctx);b:=behaviorResult314{data:v};if e!=nil{b.problem=e.Error()};s.mu.Lock();if s.running&&auxOpen{s.report.BehaviorLocal=b.data;s.report.BehaviorProblem=b.problem};s.mu.Unlock();beh<-b}()
+ behCtx,stopBehavior:=context.WithCancel(ctx);defer stopBehavior()
+ go func(){v,e:=behavior313Context(behCtx);b:=behaviorResult314{data:v};if e!=nil{b.problem=e.Error()};s.mu.Lock();if s.running&&auxOpen{s.report.BehaviorLocal=b.data;s.report.BehaviorProblem=b.problem};s.mu.Unlock();beh<-b}()
  rep,e:=run()
  if serial { startSignature() }
- // A completed scanner does not imply a completed inventory. Give inventory a
- // bounded opportunity to finish naturally; cancel only when it exceeds the budget.
- inv,invOK:=scopeprogress.AwaitResult(invCh,5*time.Second)
- cancelInv()
- s.mu.Lock();invOpen=false;if !invOK{inv=s.report.Inventory314;inv.State="partial";inv.Errors++};inv.ScannerDone=true;if s.running{s.report.Inventory314=inv};s.mu.Unlock()
- b,bOK:=scopeprogress.AwaitResult(beh,10*time.Second);if !bOK{b.problem="Consulta comportamental não terminou no prazo de finalização; cobertura parcial"}
+ // Do not chain diagnostic waits ahead of a still-working signature engine.
+ // Close all auxiliary work together when both file engines return.
  r, signatureOK := scopeprogress.AwaitShutdown(sigCtx, sig, 10*time.Second)
  stopSignature()
-
- // Keep collecting Windows evidence while engines are active. A very short
- // scan gives its first read-only query a bounded chance to return as well.
- auditGrace, stopAuditGrace := context.WithTimeout(ctx, 10*time.Second)
- select {
- case <-firstWindowsAudit:
- case <-auditGrace.Done():
- }
- stopAuditGrace()
+ cancelInv()
+ stopBehavior()
  stopWatch()
- w,wOK:=scopeprogress.AwaitResult(win,5*time.Second)
- if !wOK { w.problem="Consulta Windows não terminou no prazo de finalização; cobertura parcial" }
+ finalizeCtx,stopFinalize:=context.WithTimeout(context.Background(),3*time.Second)
+ defer stopFinalize()
+ inv,invOK:=scopeprogress.AwaitContext(finalizeCtx,invCh)
+ s.mu.Lock();invOpen=false;if !invOK{inv=s.report.Inventory314;inv.State="partial";inv.Errors++};inv.ScannerDone=true;if s.running{s.report.Inventory314=inv};s.mu.Unlock()
+ b,bOK:=scopeprogress.AwaitContext(finalizeCtx,beh)
+ if !bOK||b.problem!=""{if b.problem==""{b.problem="Consulta comportamental interrompida no encerramento; cobertura parcial"}}
+ w,wOK:=scopeprogress.AwaitContext(finalizeCtx,win)
+ if !wOK{w.problem="Consulta Windows não terminou no prazo comum de finalização; cobertura parcial"}
  s.mu.Lock();auxOpen=false;s.mu.Unlock()
  signatureMu.Lock()
  signatureOpen = false

@@ -29,3 +29,10 @@ func AwaitShutdown[T any](ctx context.Context, ch <-chan T, grace time.Duration)
 		return AwaitResult(ch, grace)
 	}
 }
+
+// AwaitContext shares a single deadline among multiple shutdown consumers.
+// Prefer a result already buffered even when the common deadline expired.
+func AwaitContext[T any](ctx context.Context,ch <-chan T)(T,bool){
+ select{case v,ok:=<-ch:return v,ok;default:}
+ select{case v,ok:=<-ch:return v,ok;case <-ctx.Done():var zero T;return zero,false}
+}

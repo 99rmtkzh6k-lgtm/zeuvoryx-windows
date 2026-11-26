@@ -6,7 +6,7 @@ function z310Delta(prev,s,now){
  const active=Boolean(s.running||s.done)&&!!id;
  const same=active&&prev&&prev.id===id;
  const dt=same?(now-prev.now)/1000:0;
- const measurable=same&&s.running&&prev.running&&dt>0&&files>=prev.files&&bytes>=prev.bytes;
+ const measurable=same&&s.running&&prev.running&&dt>0&&files>=prev.files&&bytes>=prev.bytes&&!r.inventory_314?.scanner_done;
  return {state:active?{id,n,files,bytes,now,running:!!s.running}:null,alerts:active?Math.max(0,n-(same?prev.n:0)):0,filesRate:measurable?(files-prev.files)/dt:null,bytesRate:measurable?(bytes-prev.bytes)/dt:null};
 }
 function z310Remaining(used,bytes,mode){return mode==='full'&&Number.isFinite(used)&&used>=0&&Number.isFinite(bytes)&&bytes>=0?Math.max(0,used-bytes):null}

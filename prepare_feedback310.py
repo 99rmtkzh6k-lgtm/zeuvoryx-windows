@@ -19,6 +19,26 @@ s=once(s,'</style></head>','#z310Notice{border:2px solid #b87919;padding:10px;ma
 s=once(s,'</header>','</header><div id="z310Notice" class="card hidden" role="status"><p id="z310AlertText"></p><button id="z310Open">Ver alertas</button></div>')
 s=once(s,'<section id="tools" class="hidden card">','<section id="tools" class="hidden card"><div class="entry" id="z310MaintenancePanel"><h2 id="z310MaintTitle">Central de otimização</h2><p class="sub" id="z310MaintInfo">Ferramentas nativas do Windows. Escolha e confirme ações no Windows.</p><button id="z310Drive">Otimizar SSD/HD</button><button id="z310Clean">Limpeza de disco</button><button id="z310Startup">Programas de inicialização</button><p class="sub" id="z310MaintStatus" role="status"></p></div>')
 js=Path("z310_metrics.js").read_text(encoding="utf-8")+r"""
+
+let z316History=[],z316Chart=null,z316Session='',z316Last=0,z316Ended=false;
+function z316PaintChart(d,s,now){
+ const canvas=document.getElementById('z316ScanChart'),msg=document.getElementById('z316ChartStatus');
+ if(!canvas||!msg||!d.state)return;
+ if(z316Session!==d.state.id){z316History=[];z316Session=d.state.id;z316Last=0;z316Ended=false;}
+ if(z316Ended)return;
+ const finished=!s.running&&s.done;
+ if(finished){z316Ended=true;msg.textContent=s.report?.partial?'Encerrada com cobertura parcial':'Sessão encerrada';}
+ else if(!s.running)return;
+ else if(now-z316Last<1000)return;
+ else{z316Last=now;z316History.push({at:new Date().toLocaleTimeString(),mb:d.bytesRate===null?null:d.bytesRate/1048576,files:d.filesRate});if(z316History.length>120)z316History.shift();
+ msg.textContent=s.report?.inventory_314?.scanner_done?'Scanner próprio concluído; etapa complementar ou finalização.':d.bytesRate===null?'Aguardando medição':d.bytesRate===0&&d.filesRate===0?'Sem avanço na última amostra; verificando etapa.':'Taxas medidas do scanner próprio.';}
+ if(typeof Chart!=='function'){msg.textContent+=' Biblioteca gráfica indisponível.';return;}
+ try{
+ if(!z316Chart)z316Chart=new Chart(canvas,{type:'line',data:{labels:[],datasets:[{label:'MiB/s',data:[],borderColor:'#62dfd1',yAxisID:'y',pointRadius:0},{label:'Arquivos/s',data:[],borderColor:'#ffb760',yAxisID:'y1',pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,animation:false,spanGaps:false,plugins:{legend:{labels:{color:'#b7c6d8'}}},scales:{x:{ticks:{maxTicksLimit:5,color:'#b7c6d8'}},y:{beginAtZero:true,title:{display:true,text:'MiB/s'}},y1:{position:'right',beginAtZero:true,grid:{drawOnChartArea:false},title:{display:true,text:'Arquivos/s'}}}}});
+ z316Chart.data.labels=z316History.map(v=>v.at);z316Chart.data.datasets[0].data=z316History.map(v=>v.mb);z316Chart.data.datasets[1].data=z316History.map(v=>v.files);z316Chart.update('none');
+ }catch(e){msg.textContent+=' Gráfico indisponível: '+String(e).slice(0,150);}
+}
+
 let z310Previous=null,z310Latest=null,z310Used=null,z310SoundAt=-10000;
 function z310Words(){return ({
 'pt-BR':['Velocidade de análise','arquivos/s','Aguardando medição','Parada','Saldo estimado do espaço ocupado','Não é o total real restante','Estimativa indisponível neste escopo','Novos alertas no relatório','Ver alertas','Revise os achados; isolamento exige confirmação após parar ou concluir a análise.'],
@@ -42,7 +62,7 @@ window.z310Storage=n=>{z310Used=n;z310Balance()};
 function z310Paint(s){
  const now=performance.now(),d=z310Delta(z310Previous,s,now),w=z310Words(),z=id=>document.getElementById(id);
  const prior=z310Previous;
- z310Previous=d.state;z310Latest=s;z310Balance();
+ z310Previous=d.state;z310Latest=s;z310Balance();z316PaintChart(d,s,now);
  const win=z('z315WindowsSummary'),native=s.report?.windows_local_314,history=native?.defenderHistory;
  const mon=z('z315ChangeStatus'),m=s.report?.change_monitor_315;if(mon&&m)mon.textContent=(m.enabled?'Monitor de alterações ativo':'Monitor de alterações desativado')+' · '+fmt((m.active_roots||[]).length)+' pastas ativas de '+fmt((m.roots||[]).length)+' · '+fmt(m.change_signals)+' sinais de alteração (não são vírus) · '+fmt(Object.keys(m.problems||{}).length)+' falhas de cobertura.';
  if(win){
@@ -78,3 +98,26 @@ document.getElementById('z310Open').onclick=()=>document.querySelector('[data-pa
 s=once(s,'</script></body></html>',js+'\n</script></body></html>')
 p.write_text(s,encoding="utf-8")
 print("310 feedback integration complete")
+
+# Embed pinned Chart.js directly, with licenses, no runtime CDN/network.
+from urllib.request import urlopen, Request
+import hashlib, base64, tarfile, io, html
+url='https://registry.npmjs.org/chart.js/-/chart.js-4.5.1.tgz'
+with urlopen(Request(url,headers={'User-Agent':'ZEUVORYX-build/1'}),timeout=30) as response:
+    blob=response.read(8*1024*1024+1)
+expected='GIjfiT9dbmHRiYi6Nl2yFCq7kkwdkp1W/lp2J99rX0yo9tgJGn3lKQATztIjb5tVtevcBtIdICNWqlq5+E8/Pw=='
+if len(blob)>8*1024*1024 or base64.b64encode(hashlib.sha512(blob).digest()).decode()!=expected:raise RuntimeError('Chart.js integrity failure')
+with tarfile.open(fileobj=io.BytesIO(blob),mode='r:gz') as tar:
+    def read_member(name,limit):
+        member=tar.getmember(name)
+        if not member.isfile() or member.size>limit:raise RuntimeError('Chart.js invalid member '+name)
+        return tar.extractfile(member).read().decode('utf-8')
+    vendor=read_member('package/dist/chart.umd.min.js',500000)
+    license=read_member('package/LICENSE.md',30000)
+if '</script' in vendor.lower():raise RuntimeError('Unsafe inline chart script')
+# Keep one script block: existing desktop validation extracts that block.
+p=Path('desktop.html');s=p.read_text(encoding='utf-8')
+s=once(s,'<p id="z310Speed" role="status">—</p>','<p id="z310Speed" role="status">—</p><div style="height:150px;position:relative"><canvas id="z316ScanChart" role="img" aria-label="Histórico real de velocidade da varredura"></canvas></div><p id="z316ChartStatus" class="sub" role="status">Aguardando dados da sessão.</p><details><summary>Licenças dos gráficos</summary><pre style="white-space:pre-wrap">'+html.escape(license)+'</pre></details>')
+# Inline vendor before first existing app script, not a remote script.
+s=once(s,'<script>','<script>\n'+vendor+'\n;\n')
+p.write_text(s,encoding='utf-8')

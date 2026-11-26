@@ -57,7 +57,8 @@ func New() *Scanner {
 // LoadIOC validates the whole candidate before merging it into the active base.
 // As before, callers must serialize base mutations with scans.
 func (s *Scanner) LoadIOC(path string) error {
- f,e:=os.Open(path);if e!=nil{return e};defer f.Close()
+ sourcePath:=path
+ f,e:=os.Open(sourcePath);if e!=nil{return e};defer f.Close()
  const maxBaseBytes=64<<20
  const maxIndicators=1000000
  st,e:=f.Stat();if e!=nil{return e};if !st.Mode().IsRegular()||st.Size()>maxBaseBytes{return errors.New("base de assinaturas inválida ou acima do limite de importação")}

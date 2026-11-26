@@ -51,7 +51,9 @@ header{min-height:92px;padding:10px;margin-bottom:10px}
 #overview .hero{margin-top:0}
 #overview .actions{flex-wrap:wrap;gap:8px}
 #overview .chart{margin-top:10px}
-#overview .chart svg{max-height:115px}
+#overview .chart svg{max-height:240px;width:100%;height:auto;overflow:visible}
+#overview .chart{border-radius:12px;padding:12px;background:linear-gradient(180deg,#f5f7f9,#e1e6eb);box-shadow:inset 0 1px 0 #fff9,0 3px 12px #0002}
+#overview .chart svg path{vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-linecap:round}
 #overview .grid{gap:8px}
 @media(max-width:720px){button{min-height:40px}#overview .grid{grid-template-columns:repeat(auto-fit,minmax(120px,1fr))}}
 @media(forced-colors:active){button{box-shadow:none;transform:none}}

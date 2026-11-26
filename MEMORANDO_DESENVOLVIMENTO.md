@@ -1,3 +1,9 @@
+## Instalador Windows LAB com limite de varredura — 26/11/2026
+
+A [CI 45750072714](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45750072714) aprovou os três jobs para o commit `0295579c9cb02fcec9b94bf400551d04b7d5b941`: regressão Ubuntu, regressão Windows e compilação/instalação Windows, incluindo migração e cinco testes com ClamAV embarcado. [ZIP do instalador Windows x64](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45750072714/artifacts/15085682422): 192.817.395 bytes; SHA-256 registrado pelo GitHub `ce742c68c8c0a54c117f35d57f50d93af9561a5e714d00b07c3b31df33595100`.
+
+O pacote é candidato 3.0.15 LAB identificado pelo commit. A varredura completa limita a etapa ClamAV a 60 min, com cobertura parcial declarada ao atingir o prazo. Os testes de instalação não reproduzem a varredura física do C: que durou mais de cinco horas. A causa interna da lentidão e a validação física continuam pendentes.
+
 ## Limite da etapa ClamAV na varredura completa — 26/11/2026
 
 O segundo teste completo em `9d8b2c82` leu 59.316.183.382 dos 64.835.088.073 bytes inventariados (91,49%). O scanner próprio terminou sua etapa; a sessão foi cancelada após 5 h 16 min 35 s, com ClamAV ativo por cerca de 4 h 59 min, 29 avisos de limite e nenhum resumo final. A origem do segundo cancelamento e a causa interna da lentidão não foram determinadas. O código aplicava prazo apenas ao modo rápido.

@@ -2420,6 +2420,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw '3.0.15 durable JSON export failed' }
           python prepare_version315.py
           if ($LASTEXITCODE -ne 0) { throw '3.0.15 version integration failed' }
+          node lab/test_technical_diagnosis.js desktop.html
+          if ($LASTEXITCODE -ne 0) { throw 'Technical diagnosis regressions failed' }
           node lab/test_report_copy315.js desktop.html
           if ($LASTEXITCODE -ne 0) { throw 'Report text UI regression failed' }
           gofmt -w games314_windows.go gamecatalog familygate

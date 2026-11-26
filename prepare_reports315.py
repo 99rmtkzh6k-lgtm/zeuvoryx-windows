@@ -155,3 +155,51 @@ x,n=re.subn(r's\.mu\.Lock\(\)\s*defer s\.mu\.Unlock\(\)\s*(rep\.ScanID\s*=)',lam
 if n!=1:raise RuntimeError("P0 final scan mutex anchor "+str(n))
 x=once(x,"s.report = rep","s.mu.Lock()\n defer s.mu.Unlock()\n s.report = rep")
 s=s[:a]+x+s[b:];p.write_text(s,encoding="utf-8")
+
+# Build the technical diagnosis from a reviewed snapshot using derived facts only.
+p=Path("desktop_windows.go");s=p.read_text(encoding="utf-8")
+s=once(s,'if !bind("savedReportText315",', '''if !bind("saveTechnicalDiagnosis315",func(data string)(string,error){
+ if len(data)>64<<10 || !json.Valid([]byte(data)){return "",fmt.Errorf("Diagnóstico JSON inválido")}
+ return jsonReport315("zeuvoryx-diagnostico-tecnico",json.RawMessage(data))
+ }){return}
+ if !bind("savedReportText315",''')
+if '"encoding/json"' not in s:
+    s=once(s,"import (",'import (\n "encoding/json"')
+p.write_text(s,encoding="utf-8")
+p=Path("desktop.html");s=p.read_text(encoding="utf-8")
+s=once(s,'<div id="z315TextPanel" hidden>', '''<div class="card"><h2>Diagnóstico de Testes</h2><button id="z315BuildDiagnosis">Analisar falha / Atualizar diagnóstico</button><div id="z315DiagnosisPanel" hidden><label for="z315Diagnosis">Causas possíveis e soluções técnicas</label><textarea id="z315Diagnosis" readonly rows="12" style="width:100%;box-sizing:border-box"></textarea><button id="z315CopyDiagnosis">Copiar diagnóstico completo para IA</button><button id="z315SaveDiagnosis">Exportar diagnóstico JSON</button></div><p id="z315DiagnosisStatus" role="status"></p></div><div id="z315TextPanel" hidden>''')
+s=once(s,'</script></body></html>',Path("lab/test_diagnosis.js").read_text(encoding="utf-8")+r'''
+;(()=>{
+ const source=el('z315ReportSource'),history=el('z315ReportHistory'),panel=el('z315DiagnosisPanel'),area=el('z315Diagnosis'),status=el('z315DiagnosisStatus'),build=el('z315BuildDiagnosis');
+ let data='',revision=0;
+ function clear(){revision++;data='';area.value='';panel.hidden=true;status.textContent=''}
+ source.addEventListener('change',clear);history.addEventListener('change',clear);
+ build.onclick=async()=>{
+  clear();const attempt=revision,kind=source.value,id=history.value;build.disabled=true;
+  try{
+   if(!['current','history','diag'].includes(kind))throw Error('Selecione a varredura atual, o histórico ou o diagnóstico de testes.');
+   const raw=await window.reportText315(kind,id);
+   if(attempt!==revision)return;
+   const diagnosis=buildTestDiagnosis(JSON.parse(raw),kind);
+   data=JSON.stringify(diagnosis,null,2);area.value=data;panel.hidden=false;
+   status.textContent='Diagnóstico atualizado a partir do relatório selecionado.';
+  }catch(e){if(attempt===revision)status.textContent=String(e)}
+  finally{build.disabled=false}
+ };
+ el('z315CopyDiagnosis').onclick=async()=>{
+  if(!data)return;
+  area.focus();area.select();
+  try{await navigator.clipboard.writeText(data);status.textContent='Diagnóstico copiado.'}
+  catch(_){status.textContent=document.execCommand('copy')?'Diagnóstico copiado.':'Pressione Ctrl+C para copiar o texto selecionado.'}
+ };
+ const save=el('z315SaveDiagnosis');
+ save.onclick=async()=>{
+  if(!data)return;
+  save.disabled=true;
+  try{status.textContent='Diagnóstico salvo: '+await window.saveTechnicalDiagnosis315(data)}
+  catch(e){status.textContent=String(e)}
+  finally{save.disabled=false}
+ };
+})();
+</script></body></html>''')
+p.write_text(s,encoding="utf-8")

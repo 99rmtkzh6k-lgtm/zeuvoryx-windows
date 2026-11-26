@@ -1,3 +1,9 @@
+## Regra permanente — registrar relatórios de campo e reavaliar falhas (26/11/2026)
+
+Determinação do titular: incorporar ao memorando oficial todo relatório, recorte de tela ou diagnóstico do ZEUVORYX que ele enviar. Registrar versão, commit, horário, sessão, modo, motor e estado quando disponíveis, além de falhas observadas, evidências, hipóteses, possíveis correções e critérios de validação para a próxima atualização. Indicar dados ausentes e distinguir snapshots parciais, relatórios finais e cópias da mesma sessão. Preservar o histórico, registrar divergências e reconciliar evidências posteriores com as anteriores. Omitir dados pessoais e caminhos locais sensíveis do registro público.
+
+Nas revisões seguintes, cruzar os novos relatórios com a auditoria e o índice de pendências, acompanhar a situação de cada falha e registrar o resultado dos testes antes de encerrar a pendência. O recebimento de evidência autoriza o registro e a reavaliação documental. A implementação e a compilação seguem a ordem expressa de execução definida no memorando.
+
 ## P0 — falhas de acesso e detalhes na varredura Windows LAB (26/11/2026)
 
 Evidência da tela “Falhas da análise” enviada pelo titular durante os testes da 3.0.15 LAB: 561 erros, sendo 414 acessos negados, 22 violações de bloqueio e 125 violações de compartilhamento. A soma das categorias fecha em 561. A tela indica 20 detalhes disponíveis, todos de acesso negado no recorte enviado, incluindo logs EVTX do Windows, diretórios temporários do sistema e itens do WinSxS. O recorte não informa ID da sessão, horário do snapshot, quantidade de arquivos únicos afetados, estado final ou cobertura do ClamAV. Os erros indicam falhas de acesso, sem evidência de malware nesse recorte.

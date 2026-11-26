@@ -1,3 +1,7 @@
+## 3.0.19 LAB — integração dos 32 artigos e validação do candidato
+
+Descrição proposta: ZEUVORYX 3.0.19 LAB | Windows x64 | Quarentena com integridade SHA-256, diagnóstico dos motores e Arcade offline. Topics: antivirus, windows, golang, clamav, endpoint-security. Escrita administrativa recusada pela integração (403).
+
 ## 3.0.17 LAB — integração complementar verificada (26/11/2026)
 
 Descrição proposta: ZEUVORYX Antivirus | Olympus Titanium | Windows x64 | 3.0.17 LAB experimental | ClamAV integrado e diagnóstico local | Leonardo A Botelho. Topics: antivirus, windows, golang, clamav, endpoint-security. A escrita administrativa retornou HTTP 403. Homepage e visibilidade pública confirmadas. [CI do candidato](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45850320492).

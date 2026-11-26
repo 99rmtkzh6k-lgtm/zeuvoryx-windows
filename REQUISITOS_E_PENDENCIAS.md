@@ -1,3 +1,7 @@
+## 3.0.19 LAB — integração dos 32 artigos e validação do candidato
+
+O artigo 21 substitui o Arcade anterior. O [controle cumulativo](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/lab-integracao-p0-20261126/RASTREABILIDADE_32_ARTIGOS_2026-11-26.md) registra 32 artigos e vincula as fontes históricas. REQ-003/004/005/007/025/027 permanecem abertos para cobertura, remediação, estabilidade e proteção no Windows físico.
+
 ## 3.0.18 LAB — Central de Segurança do Windows
 
 A determinação complementar foi vinculada aos itens de Windows, proteção residente, relatório e vulnerabilidades. A Central oferece operações suportadas e consultas dirigidas. Validação física de políticas, prevenção autônoma, varredura CVE e testes de navegador seguem abertos. [Registro técnico](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/lab-integracao-p0-20261126/CENTRAL_SEGURANCA_318.md).

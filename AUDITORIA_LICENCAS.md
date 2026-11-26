@@ -1,3 +1,7 @@
+## 3.0.19 LAB — integração dos 32 artigos e validação do candidato
+
+2048 de Gabriele Cirulli distribuído com licença MIT e origem fixa. Fontes e ícones externos foram retirados do pacote. [Proveniência](lab/arcade2048/README.md).
+
 # ZEUVORYX — política de independência financeira e inventário preliminar de terceiros
 
 Revisão 24/11/2026. Referência técnica: Windows 3.0.6 LAB R1, workflow windows-build.yml e THREAT_INTELLIGENCE.md. Não constitui parecer jurídico, licença própria nem aprovação de distribuição.

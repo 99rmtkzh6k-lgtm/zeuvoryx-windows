@@ -1,3 +1,7 @@
+## 3.0.23 LAB — recuperação de cobertura histórica (26/11/2026)
+
+3.0.22 build 36: CI 65/65, candidato não homologado fisicamente. 3.0.23: reconhecimento de ZIP pelo conteúdo e importação validada de IOC; build 37 em validação. Não instalar como proteção principal. Consulte o memorando.
+
 ## 3.0.22 LAB — realinhamento P0, não homologado
 
 Base 3.0.21 build 34 preservada. Correções de cobertura e gráfico no código, build 35 falhou na configuração, sucessor edf5c84 em validação sem aprovação confirmada. Não instalar. Consulte o memorando.

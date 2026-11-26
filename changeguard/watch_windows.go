@@ -14,8 +14,13 @@ func Watch(ctx context.Context,root string,t *Tracker)error{
  if h==0||h==^uintptr(0){return fmt.Errorf("watch unavailable: %v",e)}
  defer closeWatch.Call(h);t.Active(root,true);defer t.Active(root,false)
  for{if ctx.Err()!=nil{return nil}
-  result,e:=syscall.WaitForSingleObject(syscall.Handle(h),500);if e!=nil{return e}
-  switch result{case 0: t.Signal(time.Now());r,_,e:=next.Call(h);if r==0{return fmt.Errorf("watch rearm: %v",e)}
+  result,e:=syscall.WaitForSingleObject(syscall.Handle(h),100);if e!=nil{return e}
+  switch result{case 0:
+   at:=time.Now()
+   if ctx.Err()!=nil{return nil}
+   r,_,e:=next.Call(h);if r==0{return fmt.Errorf("watch rearm: %v",e)}
+   t.Signal(at)
+   if ctx.Err()!=nil{return nil}
   case 258:continue
   default:return fmt.Errorf("unexpected watch wait: %d",result)}
  }

@@ -1,6 +1,6 @@
 # Matriz de rastreabilidade — 32 artigos, 26/11/2026
 
-Este aditamento vincula o comando definitivo de 26/11 à [matriz histórica de 19 fases, 43 requisitos e 23 artigos](MATRIZ_MESTRE_2026-11-26.md), ao [protocolo de integração](PROTOCOLO_INTEGRACAO_GITHUB.md), à [auditoria dos motores](AUDITORIA_MOTORES_2026-11-26.md) e à [Central Windows](CENTRAL_SEGURANCA_318.md). O [protocolo de remediação](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/commit/fa18923c83ecb7da5d8702f88f27111bbe28ccc0) permanece vigente. Relatórios brutos ficam privados. Conversas e anexos externos à sessão só foram considerados quando havia registro acessível.
+Este aditamento vincula a [íntegra do comando definitivo de 26/11](COMANDO_SUPREMO_32_ARTIGOS_2026-11-26.md) à [matriz histórica de 19 fases, 43 requisitos e 23 artigos](MATRIZ_MESTRE_2026-11-26.md), ao [protocolo de integração](PROTOCOLO_INTEGRACAO_GITHUB.md), à [auditoria dos motores](AUDITORIA_MOTORES_2026-11-26.md) e à [Central Windows](CENTRAL_SEGURANCA_318.md). O [protocolo de remediação](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/commit/fa18923c83ecb7da5d8702f88f27111bbe28ccc0) permanece vigente. Relatórios brutos ficam privados. Conversas e anexos externos à sessão só foram considerados quando havia registro acessível.
 
 | Artigo original | Estado anterior | Problema | Tecnologia pesquisada ou referência | Solução escolhida | Implementação | Teste ou evidência | Resultado | Pendências |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |

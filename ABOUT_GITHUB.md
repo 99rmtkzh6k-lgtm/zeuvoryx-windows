@@ -1,3 +1,7 @@
+## 3.0.17 LAB — integração complementar verificada (26/11/2026)
+
+Descrição proposta: ZEUVORYX Antivirus | Olympus Titanium | Windows x64 | 3.0.17 LAB experimental | ClamAV integrado e diagnóstico local | Leonardo A Botelho. Topics: antivirus, windows, golang, clamav, endpoint-security. A escrita administrativa retornou HTTP 403. Homepage e visibilidade pública confirmadas. [CI do candidato](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45850320492).
+
 ## Metadados para o candidato 3.0.16 LAB
 
 Descrição proposta: ZEUVORYX Antivirus | Olympus Titanium | Windows x64 | 3.0.16 LAB experimental, em validação física | ClamAV integrado e diagnóstico local | Leonardo A Botelho.

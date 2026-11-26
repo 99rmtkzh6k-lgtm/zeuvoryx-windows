@@ -1,3 +1,14 @@
+## 3.0.17 LAB — integração complementar verificada (26/11/2026)
+
+O [CI 45850320492](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45850320492) do commit `ec0318ae64c7ccfb96890f4d71f18ca3dac11c2b` aprovou 48 etapas do job Windows, sete das regressões Windows e sete das regressões Ubuntu. Migração, instância única, abertura WebView2, cinco ciclos instalado com ClamAV e o diagnóstico local passaram. As regressões de ZIP com quatro ocorrências de teste passaram também em cinco rodadas locais. A Issue #5 registra o fluxo rápido EICAR da 3.0.15 com cobertura parcial; consulte a [auditoria de motores e limites](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/lab-integracao-p0-20261126/AUDITORIA_MOTORES_2026-11-26.md).
+
+[Instalador Windows x64 para piloto](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45850320492/artifacts/15133868370), build **19**, tentativa **1**, compilado em `2026-11-26T15:41:43.0127069Z` (UTC). Baixado e verificado por CRC, manifesto e ambos os hashes. ZIP com 192819495 bytes e SHA-256 `08bec229301878889da0e1843ae311cba61b078b6790ce36a9ec24c3c855f87b`. Instalador com 193292948 bytes e SHA-256 `8544d25403776df6526b477f9d073482c1edcef66318acaec7907494dc927dbf`. Authenticode ausente. Artefato expira em 03/12/2026 às 12h46 de Brasília.
+
+Medianas nativas ClamAV em cinco ciclos unitários do aplicativo instalado: 3.0.16 → 3.0.17, benigno 7,193 → 8,825 s e EICAR 7,454 → 8,830 s. Nos dois runners o controle benigno não gerou detecção e os cinco controles EICAR foram reconhecidos. O tempo maior na 3.0.17 foi observado em VMs de CI distintas. O experimento não isola a causa nem comprova desempenho em disco completo.
+
+Proteção residente comprovada, retomada, otimização de arquivos grandes, causa individual dos 14 erros e completa física continuam abertos. A classificação permanece LAB experimental, com fluxo positivo de controle EICAR confirmado. O GitHub retornou HTTP 403 na atualização administrativa de About e Topics, com a proposta registrada. O código funcional permanece na branch LAB.
+
+
 # Auditoria complementar de motores — ZEUVORYX 3.0.17 LAB
 
 ## Evidência de campo

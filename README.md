@@ -1,3 +1,7 @@
+## 3.0.17 LAB — integração complementar verificada (26/11/2026)
+
+**[Baixar o instalador Windows x64 para piloto](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45850320492/artifacts/15133868370)**. Build 19, CI Windows e Ubuntu aprovado. [Auditoria complementar](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/lab-integracao-p0-20261126/AUDITORIA_MOTORES_2026-11-26.md). Validação física da completa pendente.
+
 ## 3.0.17 LAB — integração complementar Windows
 
 A mesma branch LAB reúne os ajustes na consulta de segurança do Windows, no diagnóstico do ClamAV e no manifesto de compilação. A evidência funcional EICAR da [Issue #5](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/issues/5) integra a [auditoria complementar](AUDITORIA_MOTORES_2026-11-26.md). A validação experimental está vinculada ao [CI 45850320492](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45850320492).

@@ -1,3 +1,7 @@
+## 3.0.17 LAB — integração complementar verificada (26/11/2026)
+
+Consulta Windows mantida durante a finalização dos motores. O diagnóstico ClamAV separa mensagens, motivos de limite e contagens nativas. FreshClam explicita a validação de carga da base. O ZIP inclui manifesto do build. [CI validado](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45850320492).
+
 ## 3.0.17 LAB — integração complementar Windows
 
 A mesma branch LAB reúne os ajustes na consulta de segurança do Windows, no diagnóstico do ClamAV e no manifesto de compilação. A evidência funcional EICAR da [Issue #5](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/issues/5) integra a [auditoria complementar](AUDITORIA_MOTORES_2026-11-26.md). A validação experimental está vinculada ao [CI 45850320492](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45850320492).

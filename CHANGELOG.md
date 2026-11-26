@@ -1,3 +1,7 @@
+## 3.0.22 LAB — realinhamento P0, não homologado
+
+Base 3.0.21 build 34 preservada. Correções de cobertura e gráfico no código, build 35 falhou na configuração, sucessor edf5c84 em validação sem aprovação confirmada. Não instalar. Consulte o memorando.
+
 ## 3.0.21 LAB — recuperação incremental (26/11/2026)
 
 Candidato em preparação/CI ainda não confirmado, baseado na 3.0.20 build 32. Dez jogos retrô independentes licenciados MIT importados, catálogo parental sincronizado, retentativas limitadas de bloqueios Windows 33, recuperação do monitor de alterações e diagnóstico ClamAV de códigos completos. [Auditoria de campo 3.0.21](AUDITORIA_CAMPO_321.md). O último instalador confirmado antes desta revisão continua sendo o [3.0.20 build 32](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45893446138/artifacts/15153411964). Não divulgar a 3.0.21 como aprovada antes do CI, hashes e teste físico. Proteção residente, cobertura integral e causas individuais ainda pendentes. Sem ROMs proprietárias ou alteração de Defender.

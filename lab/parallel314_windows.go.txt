@@ -13,7 +13,9 @@ type windowsResult314 struct{data map[string]any; problem string}
 // Windows resident protection is not disabled or replaced. No parallel destructive operations.
 func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engine.Report,error))(engine.Report,error){
  resetSignature314()
- publishScope:=func(v scopeprogress.Inventory){s.mu.Lock();defer s.mu.Unlock();if s.running{s.report.Inventory314=v}}
+ auxOpen:=true // guarded by s.mu; late auxiliary results cannot mutate another session
+ invOpen:=true
+ publishScope:=func(v scopeprogress.Inventory){s.mu.Lock();defer s.mu.Unlock();if s.running&&invOpen{s.report.Inventory314=v}}
  publishScope(scopeprogress.Inventory{State:"counting"})
  self,_:=os.Executable()
  // Inventory must not delay the start of the actual scanner or signature engine.
@@ -39,15 +41,16 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
    if watchCtx.Err()!=nil{return}
    latest=windowsResult314{data:v};if e!=nil{latest.problem=e.Error()}
    if latest.data!=nil{latest.data["observedAt"]=time.Now().UTC().Format(time.RFC3339)}
-   s.mu.Lock();if s.running{s.report.WindowsLocal314=latest.data;s.report.WindowsProblem314=latest.problem};s.mu.Unlock()
+   s.mu.Lock();if s.running&&auxOpen{s.report.WindowsLocal314=latest.data;s.report.WindowsProblem314=latest.problem};s.mu.Unlock()
   }
   refresh()
   tick:=time.NewTicker(time.Minute);defer tick.Stop()
   for{select{case <-watchCtx.Done():win<-latest;return;case <-tick.C:refresh()}}
  }()
  runSignature:=func(){
-  sigCtx:=ctx
-  if mode=="quick"{var cancelSig context.CancelFunc;sigCtx,cancelSig=context.WithTimeout(ctx,5*time.Minute);defer cancelSig()}
+  budget:=4*time.Hour
+  if mode=="quick"{budget=5*time.Minute}
+  sigCtx,cancelSig:=context.WithTimeout(ctx,budget);defer cancelSig()
   started:=time.Now()
   r:=engine.Report{SignatureRoots:append([]string(nil),roots...),SignatureStartedMS315:started.UnixMilli()}
   finish:=func(){r.SignatureFinishedMS315=time.Now().UnixMilli();r.SignatureDurationMS315=time.Since(started).Milliseconds();s.publishSignatureProgress314(&r);sig<-sigResult314{r}}
@@ -55,23 +58,22 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
   known,total,_:=scanplan.Memory()
   if !scanplan.ClamCapacity(known,total){r.SignatureState="unavailable";r.SignatureProblem="RAM física abaixo da recomendação do ClamAV (3 GiB); scanner próprio executado, cobertura de assinaturas incompleta.";finish();return}
   s.signaturePhase312(sigCtx,&r,"",true)
-  if sigCtx.Err()==context.DeadlineExceeded&&ctx.Err()==nil{r.SignatureState="partial";r.SignatureProblem="ClamAV: limite de 5 minutos da varredura rápida atingido; cobertura incompleta. Execute uma análise completa para continuar.";s.publishSignatureProgress314(&r)}
+  if sigCtx.Err()==context.DeadlineExceeded&&ctx.Err()==nil{r.SignatureState="partial";r.SignatureProblem=fmt.Sprintf("ClamAV: limite de execução (%s) atingido; cobertura incompleta, não equivale a disco limpo.",budget);s.publishSignatureProgress314(&r)}
   finish()
  }
  if !serial{go runSignature()}
- go func(){v,e:=behavior313Context(ctx);b:=behaviorResult314{data:v};if e!=nil{b.problem=e.Error()};s.mu.Lock();if s.running{s.report.BehaviorLocal=b.data;s.report.BehaviorProblem=b.problem};s.mu.Unlock();beh<-b}()
+ go func(){v,e:=behavior313Context(ctx);b:=behaviorResult314{data:v};if e!=nil{b.problem=e.Error()};s.mu.Lock();if s.running&&auxOpen{s.report.BehaviorLocal=b.data;s.report.BehaviorProblem=b.problem};s.mu.Unlock();beh<-b}()
  rep,e:=run()
  cancelInv()
- inv:=<-invCh
- inv.ScannerDone=true;publishScope(inv)
  if serial{go runSignature()}
- b:=<-beh
- stopWatch();w:=<-win
+ inv,invOK:=scopeprogress.AwaitResult(invCh,5*time.Second)
+ s.mu.Lock();invOpen=false;if !invOK{inv=s.report.Inventory314;inv.State="partial";inv.Errors++};inv.ScannerDone=true;if s.running{s.report.Inventory314=inv};s.mu.Unlock()
+ stopWatch()
+ b,bOK:=scopeprogress.AwaitResult(beh,10*time.Second);if !bOK{b.problem="Consulta comportamental não terminou no prazo de finalização; cobertura parcial"}
+ w,wOK:=scopeprogress.AwaitResult(win,10*time.Second);if !wOK{w.problem="Consulta Windows não terminou no prazo de finalização; cobertura parcial"}
+ s.mu.Lock();auxOpen=false;s.mu.Unlock()
  r:=<-sig
- if ctx.Err()==nil&&w.data==nil{
-  v,e:=windowsSecurityAuditContext(ctx);w=windowsResult314{data:v};if e!=nil{w.problem=e.Error()}
-  if w.data!=nil{w.data["observedAt"]=time.Now().UTC().Format(time.RFC3339)}
- }
+ if !invOK||!bOK||!wOK{rep.Partial=true}
  rep.WindowsLocal314=w.data;rep.WindowsProblem314=w.problem
  rep.SignatureRoots=append([]string(nil),roots...)
  rep.SignatureState=r.report.SignatureState;rep.SignatureProblem=r.report.SignatureProblem;rep.SignatureReports=r.report.SignatureReports

@@ -26,7 +26,6 @@ jobs:
       - name: Five module regression cycles
         run: go test -count=5 ./scriptguard ./behaviorwatch ./changeguard ./auditmetrics ./scopeprogress ./adaptive ./signatureav ./scanretry ./scanplan
       - name: One hundred inventory and coverage regression cycles
-        run: go test -count=100 -run '^TestP0InventoryCompleteness322    uses: ./.github/workflows/windows-build.yml
- ./scopeprogress
+        run: go test -count=100 -run '^TestP0InventoryCompleteness322$' ./scopeprogress
   windows-build:
     uses: ./.github/workflows/windows-build.yml

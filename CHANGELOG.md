@@ -1,3 +1,7 @@
+## 3.0.19 LAB — integração dos 32 artigos e validação do candidato
+
+Hash e identidade na quarentena, término e resumo nativo do ClamAV no JSON, e 2048 MIT no lugar do Arcade antigo. [CI e testes](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45883312622).
+
 ## 3.0.18 LAB — Central de Segurança do Windows
 
 Ações diretas do Defender com confirmação, reconsulta, auditoria seletiva e diagnóstico de serviços, coexistência e políticas. Indicadores corrigidos. [Testes](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45853385995/artifacts/15133844653).

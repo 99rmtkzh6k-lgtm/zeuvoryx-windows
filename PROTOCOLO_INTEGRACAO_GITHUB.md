@@ -1,3 +1,7 @@
+## 3.0.19 LAB — integração dos 32 artigos e validação do candidato
+
+Toda evidência deve vincular sessão, versão e commit. Prazo encerrado sem resumo nativo mantém cobertura parcial. Os jogos externos requerem licença, origem fixada, revisão de dependências e testes de isolamento. [Registro aplicável](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/lab-integracao-p0-20261126/RASTREABILIDADE_32_ARTIGOS_2026-11-26.md).
+
 ## 3.0.17 LAB — integração complementar verificada (26/11/2026)
 
 O candidato Windows vincula cada ZIP do instalador a um manifesto de versão, build, tentativa, data e hora UTC, commit e SHA-256 do EXE. Os totais nativos do ClamAV e os contadores de mensagens têm campos próprios. [Evidência e procedimento](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/lab-integracao-p0-20261126/AUDITORIA_MOTORES_2026-11-26.md).

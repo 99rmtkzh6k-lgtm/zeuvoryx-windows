@@ -1,6 +1,6 @@
 ## ZEUVORYX 3.0.16 LAB — integração P0 (26/11/2026)
 
-Candidato experimental Windows x64 na branch `lab-integracao-p0-20261126`, baseado no pipeline 3.0.15 do commit `b90fa60`. Após o cancelamento da etapa ClamAV, a consolidação aguarda até dez segundos pela evidência final do motor. Se o motor não retornar, o relatório registra cobertura parcial e encerramento do motor sem confirmação. Resultados tardios não entram em outra sessão. O prazo operacional por modalidade permanece igual ao da base. Validação física das varreduras completa e rápida ainda pendente.
+Candidato experimental Windows x64 na branch `lab-integracao-p0-20261126`, baseado no pipeline 3.0.15 do commit `b90fa60`. Após o cancelamento da etapa ClamAV, a consolidação aguarda até dez segundos pela evidência final do motor. Se o motor não retornar, o relatório registra cobertura parcial e encerramento do motor sem confirmação. Resultados tardios não entram em outra sessão. O prazo operacional por modalidade permanece igual ao da base. CI Windows e Ubuntu aprovado. Instalação, migração e testes ClamAV passaram no runner. Validação física das varreduras completa e rápida ainda pendente.
 
 ## Determinação vigente do idealizador — 25/11/2026: Artigo 37 substituído
 

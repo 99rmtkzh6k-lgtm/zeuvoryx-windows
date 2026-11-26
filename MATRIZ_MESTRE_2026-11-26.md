@@ -127,3 +127,42 @@ A documentação do ClamAV explica que ClamScan carrega a base a cada execução
 - Usar o mesmo corpus e escopo por modalidade e revisão. Registrar versão, commit, sessão, máquina, total da RAM, memória disponível, estado da base, fase, latência, bytes, contagens e cobertura por motor. Manter a segurança nativa ativa.
 - Concluir rápida e completa no Windows 10/11 e conferir presença e estado do JSON final. Repetir com cancelamento, arquivo ocupado, erro de acesso, ZIP dentro e fora dos limites e reinício. Conferir que próxima sessão começa com contadores novos e que um snapshot parcial antigo continua distinguível do final.
 - Avaliar residente, web, antirransomware e falso positivo em controles separados. A comprovação de instalação, de consulta Defender, de um alerta sintético ou de uma detecção EICAR cobre apenas o respectivo teste.
+
+## Avaliação comparativa de maturidade
+
+A escala é de 0 a 10 e avalia a evidência disponível, não a taxa de detecção ou a eficácia global. 0 indica ausência de evidência na dimensão avaliada, 2–3 indicam implementação ou observação parcial, 4–5 indicam testes repetíveis de componentes, 6–7 indicam integração demonstrada para o escopo descrito, e 8–10 exigem evidência ampliada em campo e validação independente. A pontuação abaixo vale para o escopo testado, incluindo os limites explicitados em cada linha.
+
+| Dimensão | 3.0.15 | 3.0.16 | Evidência e limite |
+| --- | ---: | ---: | --- |
+| Detecção por assinaturas | 6 | 6 | ClamAV embarcado com controles EICAR e benigno em CI. Taxa real de detecção e cobertura completa em campo pendentes. |
+| Heurística | 4 | 4 | Regressões de PE/ZIP e classificação da base; alerta consultivo no piloto. Calibração em corpus legítimo permanece aberta. |
+| Análise comportamental | 4 | 4 | Testes de correlação e limites de eventos em behaviorwatch. Cenários físicos e prevenção ainda sem validação. |
+| Proteção em tempo real | 2 | 2 | Monitor de alterações e agendamento no código; piloto rápido com monitor próprio inativo, sem teste de bloqueio pré-execução. |
+| Antirransomware | 2 | 2 | Indicadores consultivos e política defensiva em código; nenhum teste de contenção real nesta revisão. |
+| Velocidade | 3 | 3 | Rápida de 134,122 s na referência, sem par de execuções equivalentes para medir ganho na 3.0.16. |
+| Cobertura | 4 | 4 | Contagens por motor e regressões de raiz controlada; ZIPs fora de limite e arquivos bloqueados permanecem explicitados. |
+| Consumo de CPU | 3 | 3 | Medidores e política de workers presentes, sem comparação por processo em campo. |
+| Consumo de RAM | 3 | 3 | Limites e política por capacidade testados; memória e paginação por motor em host de 4 GiB ainda sem série comparável. |
+| Estabilidade | 4 | 5 | Rápida parcial concluída na 3.0.15. Na 3.0.16, cinco repetições do teste de espera/cancelamento e CI integrado. Completa física e watchdog de I/O pendentes. |
+| Quarentena | 5 | 5 | Regressão de isolamento e restauração em corpus controlado; ciclo físico pós-reinício pendente. |
+| Remediação | 4 | 4 | Regressões fail-closed e exclusão de evidência de teste da política; reparação e bloqueio reais sem validação ampliada. |
+| Proteção web | 3 | 3 | Testes de análise de links; bloqueio comprovado pelo navegador e cobertura de DNS criptografado pendentes. |
+| Integração Defender | 4 | 4 | Auditoria e identificação de sinais do Windows; consulta ficou inconclusiva no piloto rápido de referência. |
+| Inteligência artificial | 4 | 4 | Testes de inferência consultiva e diagnóstico; validação sintética, sem medição de eficácia antimalware ou aprendizagem contínua. |
+| Interface | 5 | 5 | Abertura WebView2 e renderização de painel de CPU/RAM em CI; fluxo visual completo e gráfico por motor pendentes. |
+| Relatórios | 5 | 5 | JSON final no piloto rápido e regressões de persistência/snapshot/cópia; conciliação da completa e recuperação seguem abertas. |
+| Otimização | 4 | 4 | Testes de seleção de temporários e mecanismos nativos no código; ganho físico e reversão ampla pendentes. |
+| Jogos | 4 | 4 | Regressões de regras offline, xadrez e catálogo; interface, acessibilidade e consumo por título precisam de teste físico. |
+| Instalador e atualizações | 6 | 6 | Migração e instalação no CI, testes de assinatura do atualizador em fixtures. Authenticode e atualização de produção continuam pendentes. |
+
+Evidências vinculadas ao [CI da 3.0.15](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45755065493), ao [CI da 3.0.16](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45846486811) e à [auditoria de campo](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/a5711f7/AUDITORIA_CAMPO_2026-11-25.md). A classificação é **LAB experimental**. A circulação do ZIP fica restrita a piloto controlado. Distribuição geral depende de conclusão física, cobertura, estabilidade, revisão de licenças e validação do canal assinado.
+
+## Resultado da execução e evidências
+
+A branch `lab-integracao-p0-20261126` integra a correção de espera do ClamAV no [commit funcional 56e0ee2](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/commit/56e0ee2cf1978d8b22845631a8ea48ffd0c11c34). O [CI 45846486811](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45846486811) concluiu com sucesso: regressões Ubuntu e Windows (7/7 etapas em cada job), compilação/validação Windows (48/48 etapas), abertura WebView2, migração, instância única, cinco ciclos de instalação e cinco ciclos instalado com arquivo benigno e controle EICAR do ClamAV. Quinze cenários acumulados de espera (três casos × cinco repetições) passaram na suíte local com detector de corrida, que também aprovou 13 outros módulos.
+
+O [instalador LAB para Windows x64](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45846486811/artifacts/15131069171) foi baixado e conferido. ZIP de 192.818.099 bytes, CRC íntegro, SHA-256 `a8bbcbefd9d11cb0a3ae116132f14bb33eb7758ca4bf44200939ddd5f5e60a16`. Arquivo `ZEUVORYX-LAB-Setup-3.0.16.exe` de 193.291.909 bytes, SHA-256 `db31e5e42ed29a726c1cadfc016d193260de5fc06bd06c06b7fbeecd414cbd5f`. O instalador não possui assinatura Authenticode. Artefato temporário, com vencimento em 03/12/2026 às 12h20 (Brasília).
+
+O [registro de requisitos e aceitação](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/lab-integracao-p0-20261126/MATRIZ_MESTRE_2026-11-26.md) cobre as 19 fases, 43 REQ e 23 artigos de unificação. Permanecem abertos REQ-003/004/025/027/041 para validação da completa física, watchdog de I/O, pausa/retomada, desempenho e cobertura. O limite por modalidade continua 5/60/20 minutos para rápida/completa/personalizada. O CI comprova o candidato experimental para piloto e os testes que executou. Distribuição geral segue pendente de validação física e assinatura. About/Topics administrativos ainda dependem de credencial com acesso para escrita (403). O código do candidato segue na branch LAB.
+
+O código da correção fica nos modelos `lab/parallel314_windows.go.txt`, `lab/signature312_windows.go.txt` e no módulo `scopeprogress/await.go`. A regressão fica em `scopeprogress/shutdown_test.go`. Identidade e pipeline Windows atualizados em `prepare_version315.py`, `.github/workflows/windows-build.yml` e `.github/workflows/windows-olympus-p0.yml`. A comparação antes/depois mede comportamento de encerramento em teste, com velocidade e eficácia de campo ainda sem comparação equivalente.

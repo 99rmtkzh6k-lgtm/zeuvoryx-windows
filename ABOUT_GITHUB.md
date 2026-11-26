@@ -1,3 +1,9 @@
+## Metadados para o candidato 3.0.16 LAB
+
+Descrição proposta: ZEUVORYX Antivirus | Olympus Titanium | Windows x64 | 3.0.16 LAB experimental, em validação física | ClamAV integrado e diagnóstico local | Leonardo A Botelho.
+
+Topics propostos: antivirus, windows, golang, clamav, endpoint-security. Homepage pública confirmada em https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows#readme. Gravação da descrição administrativa recusada pela integração com HTTP 403. O repositório continua público.
+
 ## Determinação vigente do idealizador — 25/11/2026: Artigo 37 substituído
 
 Não há limite interno obrigatório de tamanho para o ZEUVORYX: revogados o teto de 200 MB e a meta numérica de 150 MB. O instalador, ZIP, motores, bases e dependências poderão crescer quando tecnicamente necessários. Priorizar proteção, eficácia, estabilidade e desempenho; continuar medindo e otimizando tamanho, RAM, CPU, disco e downloads sem remover cobertura ou funcionalidades aprovadas apenas para reduzir bytes. Registrar crescimento e justificativa, respeitar limites externos dos canais de distribuição e manter controles de integridade, licenças, gratuidade e validação. Registros anteriores de limites são históricos. Entregar sempre que possível o ZIP completo no ChatGPT para compartilhar pelo WhatsApp, não somente o link GitHub.

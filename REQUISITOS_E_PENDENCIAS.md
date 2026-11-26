@@ -1,3 +1,7 @@
+## Integração 3.0.16 LAB — 26/11/2026
+
+A ordem de execução de 26/11 autorizou a evolução experimental. [Matriz mestre, critérios e resultados](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/lab-integracao-p0-20261126/MATRIZ_MESTRE_2026-11-26.md). REQ-003/004/025/027/041 abertos para o gate físico. REQ-026 documentado com novo número, CI e hashes. REQ-018/028 com instalador validado em CI e ZIP temporário para piloto. Requisitos anteriores permanecem rastreados. A determinação vigente limita o Arcade a até 100 jogos gratuitos e define a assinatura artística L A Botelho, sem bandeira.
+
 ## Diagnóstico de Testes no instalador Windows LAB — 26/11/2026
 
 A [CI 45755065493](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45755065493) aprovou os três jobs (regressão Ubuntu, regressão Windows e compilação/instalação Windows) para `b90fa60343be894b436ec7cd1f0971ac8101bd9c`. Esta revisão inclui a finalização cumulativa da varredura, o limite da etapa ClamAV e a área Relatórios → Diagnóstico de Testes, com causas possíveis, alternativas, cópia para IA e exportação JSON. A execução anterior 45754511971, de `b55faec`, foi cancelada.

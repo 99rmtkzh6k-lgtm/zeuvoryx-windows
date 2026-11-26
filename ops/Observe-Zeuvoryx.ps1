@@ -9,6 +9,7 @@ $taskName = 'ZEUVORYX LAB local observer'
 if ($Mode -ne 'Observe') {
     $identity = [Security.Principal.WindowsIdentity]::GetCurrent().Name
     if ($Mode -eq 'Unregister') {
+        Stop-ScheduledTask -TaskName $taskName
         Unregister-ScheduledTask -TaskName $taskName -Confirm:$false
         return
     }

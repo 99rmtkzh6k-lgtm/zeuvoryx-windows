@@ -16,3 +16,10 @@ func TestInventoryOverflow315(t *testing.T){
  if e:=addFile(&r,1);e==nil||r.Bytes!=max||r.Files!=2{t.Fatal("overflow changed counters",r,e)}
  r=Inventory{Files:max};if e:=addFile(&r,0);e==nil||r.Files!=max{t.Fatal("file counter wrapped",r,e)}
 }
+
+func TestP0EmptyDirectoryFinishes(t *testing.T) {
+ ctx,cancel:=context.WithCancel(context.Background());defer cancel()
+ r:=Enumerate(ctx,[]string{t.TempDir()},nil,nil)
+ if r.State!="ready"||r.Files!=0||r.Bytes!=0||r.Errors!=0{t.Fatalf("empty scope: %+v",r)}
+ if r.ReadyAt.IsZero(){t.Fatal("completion timestamp missing")}
+}

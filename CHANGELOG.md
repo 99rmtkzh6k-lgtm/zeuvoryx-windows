@@ -1,3 +1,7 @@
+## 3.0.17 LAB — integração complementar Windows
+
+A mesma branch LAB reúne os ajustes na consulta de segurança do Windows, no diagnóstico do ClamAV e no manifesto de compilação. A evidência funcional EICAR da [Issue #5](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/issues/5) integra a [auditoria complementar](AUDITORIA_MOTORES_2026-11-26.md). A validação experimental está vinculada ao [CI 45850320492](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45850320492).
+
 ## ZEUVORYX 3.0.16 LAB — integração P0 (26/11/2026)
 
 Candidato experimental Windows x64 na branch `lab-integracao-p0-20261126`, baseado no pipeline 3.0.15 do commit `b90fa60`. Após o cancelamento da etapa ClamAV, a consolidação aguarda até dez segundos pela evidência final do motor. Se o motor não retornar, o relatório registra cobertura parcial e encerramento do motor sem confirmação. Resultados tardios não entram em outra sessão. O prazo operacional por modalidade permanece igual ao da base. CI Windows e Ubuntu aprovado. Instalação, migração e testes ClamAV passaram no runner. Validação física das varreduras completa e rápida ainda pendente.

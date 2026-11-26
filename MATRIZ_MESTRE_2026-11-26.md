@@ -166,3 +166,17 @@ O [instalador LAB para Windows x64](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-
 O [registro de requisitos e aceitação](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/lab-integracao-p0-20261126/MATRIZ_MESTRE_2026-11-26.md) cobre as 19 fases, 43 REQ e 23 artigos de unificação. Permanecem abertos REQ-003/004/025/027/041 para validação da completa física, watchdog de I/O, pausa/retomada, desempenho e cobertura. O limite por modalidade continua 5/60/20 minutos para rápida/completa/personalizada. O CI comprova o candidato experimental para piloto e os testes que executou. Distribuição geral segue pendente de validação física e assinatura. About/Topics administrativos ainda dependem de credencial com acesso para escrita (403). O código do candidato segue na branch LAB.
 
 O código da correção fica nos modelos `lab/parallel314_windows.go.txt`, `lab/signature312_windows.go.txt` e no módulo `scopeprogress/await.go`. A regressão fica em `scopeprogress/shutdown_test.go`. Identidade e pipeline Windows atualizados em `prepare_version315.py`, `.github/workflows/windows-build.yml` e `.github/workflows/windows-olympus-p0.yml`. A comparação antes/depois mede comportamento de encerramento em teste, com velocidade e eficácia de campo ainda sem comparação equivalente.
+
+
+## Determinações complementares — 3.0.17 LAB
+
+| Item | Vinculação | Resultado ou pendência |
+| --- | --- | --- |
+| 1. Evidência de campo | Fases 1, 2 e 19 | Issue #5 revisada e controle compactado preservado em regressão. Original indisponível. |
+| 2–4. Escopos, arquivo grande e bloqueado | Fases 3, 4 e 16 | Finalização preservada, diagnóstico dos limites e mensagens de bloqueio incorporado. Pausa, retomada, suspensão, reagendamento e validação física pendentes. |
+| 5. Falso positivo no workflow | Fases 5–7 | Alerta consultivo. Correlação, validação do artefato original e corpus benigno seguem pendentes. |
+| 6–8. Residente, Windows e motores | Fases 5 e 8 | Consulta Windows ajustada; ClamAV/FreshClam e interfaces auditados. Bloqueio residente próprio segue sem comprovação. |
+| 9–10. Matemática e remediação | Fases 4 e 7 | Denominadores de motores, erros nativos, mensagens e limites separados. Desempenho comparativo e ciclos de remediação em campo seguem pendentes. |
+| 11–12. Otimização e IA | Fases 6 e 11 | Regressões da base, sem novo recurso anunciado; ensaios de disco e modelo independente abertos. |
+| 13–16. Relatórios, testes, GitHub e build | Fases 12, 14, 17–19 | Diagnósticos estruturados e manifesto no artefato do CI. Nenhuma aprovação geral de produção. |
+| 20 itens de auditoria adicional ClamAV | Fases 5, 15–17 | [Configuração, arquitetura, contadores, licenças, alternativas e testes pendentes](AUDITORIA_MOTORES_2026-11-26.md). |

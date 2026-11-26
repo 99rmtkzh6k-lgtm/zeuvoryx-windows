@@ -5,7 +5,7 @@ def once(s,a,b):
 for name,src in [('engine/clam313.go','lab/clam313.go.txt'),('engine/clam313_test.go','lab/clam313_test.go.txt'),('engine/remediation316.go','lab/remediation316.go.txt'),('behavior313_windows.go','lab/behavior313_windows.go.txt')]:
     Path(name).write_text(Path(src).read_text(encoding="utf-8"),encoding="utf-8")
 p=Path("desktop_windows.go");s=p.read_text(encoding="utf-8")
-s=once(s,'import (','import (\\n "github.com/zeuvoryx/zeuvoryx/remediation"')
+s=once(s,'import (','import (\n "github.com/zeuvoryx/zeuvoryx/remediation"')
 a=s.index('if !bind("chooseClamFolder311"')
 s=s[:a]+'''if !bind("behavior313",behavior313){return}
 if !bind("quarantineEICAR316",func(path string)(remediation.Outcome,error){
@@ -33,13 +33,14 @@ if !bind("isolateClam313",func(path,signature string)(string,error){
     s.mu.Lock()
     if s.running {s.mu.Unlock();return "",fmt.Errorf("Aguarde a varredura")}
     found:=false
+    scanStarted:=s.report.Started
     for _,r:=range s.report.SignatureReports{for _,h:=range r.Findings{if h.Path==path&&h.Signature==signature&&h.Kind=="signature_detection"{found=true}}}
     s.mu.Unlock()
     if native.status().Running||!found{return "",fmt.Errorf("Detecção não disponível para revisão")}
     tool,e:=clamExecutable();if e!=nil{return "",e}
     ctx,cancel:=context.WithTimeout(context.Background(),5*time.Minute);defer cancel()
     item,e:=s.quarantine.AddClamRechecked(ctx,tool,path,signature)
-    o,err:=s.quarantine.RecordOutcome316(remediation.Outcome{Path:path,Detector:"ClamAV",Signature:signature,ScanStarted:s.report.Started},item,e)
+    o,err:=s.quarantine.RecordOutcome316(remediation.Outcome{Path:path,Detector:"ClamAV",Signature:signature,ScanStarted:scanStarted},item,e)
     if err!=nil{return "",err}
     return o.QuarantineID,nil
 }){return}

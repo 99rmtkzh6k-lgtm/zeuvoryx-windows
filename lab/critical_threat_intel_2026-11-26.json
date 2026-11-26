@@ -1,0 +1,141 @@
+{
+  "checked": "2026-11-26",
+  "status": "LAB pending CI",
+  "indicators": [
+    {
+      "sha256": "5d2e4fd08f81e3b2eb2f3eaae16eb32ae02e760afc36fa17f4649322f6da53fb",
+      "family": "FrostyGoop",
+      "platform": "Windows",
+      "sector": "industrial/energy",
+      "source": "https://unit42.paloaltonetworks.com/frostygoop-malware-analysis/",
+      "type": "file_sha256",
+      "policy": "exact_match_review"
+    },
+    {
+      "sha256": "a63ba88ad869085f1625729708ba65e87f5b37d7be9153b3db1a1b0e3fed309c",
+      "family": "FrostyGoop",
+      "platform": "Windows",
+      "sector": "industrial/energy",
+      "source": "https://unit42.paloaltonetworks.com/frostygoop-malware-analysis/",
+      "type": "file_sha256",
+      "policy": "exact_match_review"
+    },
+    {
+      "sha256": "2fd9cb69ef30c0d00a61851b2d96350a9be68c7f1f25a31f896082cfbf39559a",
+      "family": "FrostyGoop",
+      "platform": "Windows",
+      "sector": "industrial/energy",
+      "source": "https://unit42.paloaltonetworks.com/frostygoop-malware-analysis/",
+      "type": "file_sha256",
+      "policy": "exact_match_review"
+    },
+    {
+      "sha256": "c64b67c116044708e282d0d1a8caea2360270a7fc679befa5e28d1ca15f6714c",
+      "family": "FrostyGoop",
+      "platform": "Windows",
+      "sector": "industrial/energy",
+      "source": "https://unit42.paloaltonetworks.com/frostygoop-malware-analysis/",
+      "type": "file_sha256",
+      "policy": "exact_match_review"
+    },
+    {
+      "sha256": "91062ed8cc5d92a3235936fb93c1e9181b901ce6fb9d4100cc01167cdc08745f",
+      "family": "FrostyGoop",
+      "platform": "Windows",
+      "sector": "industrial/energy",
+      "source": "https://unit42.paloaltonetworks.com/frostygoop-malware-analysis/",
+      "type": "file_sha256",
+      "policy": "exact_match_review"
+    },
+    {
+      "sha256": "a25f91b6133cb4eb3ecb3e0598bbab16b80baa40059e623e387a6b1082d6f575",
+      "family": "FrostyGoop",
+      "platform": "Windows",
+      "sector": "industrial/energy",
+      "source": "https://unit42.paloaltonetworks.com/frostygoop-malware-analysis/",
+      "type": "file_sha256",
+      "policy": "exact_match_review"
+    },
+    {
+      "sha256": "b452c2da7c012eda25a1403b3313444b5eb7c2c3e25eee489f1bd256f8434735",
+      "family": "DEEPBREATH",
+      "platform": "macOS",
+      "sector": "cryptocurrency",
+      "source": "https://cloud.google.com/blog/topics/threat-intelligence/unc1069-targets-cryptocurrency-ai-social-engineering",
+      "type": "file_sha256",
+      "policy": "exact_match_review"
+    },
+    {
+      "sha256": "1a30d6cdb0b98feed62563be8050db55ae0156ed437701d36a7b46aabf086ede",
+      "family": "SUGARLOADER",
+      "platform": "macOS",
+      "sector": "cryptocurrency",
+      "source": "https://cloud.google.com/blog/topics/threat-intelligence/unc1069-targets-cryptocurrency-ai-social-engineering",
+      "type": "file_sha256",
+      "policy": "exact_match_review"
+    },
+    {
+      "sha256": "b525837273dde06b86b5f93f9aec2c29665324105b0b66f6df81884754f8080d",
+      "family": "WAVESHAPER",
+      "platform": "macOS",
+      "sector": "cryptocurrency",
+      "source": "https://cloud.google.com/blog/topics/threat-intelligence/unc1069-targets-cryptocurrency-ai-social-engineering",
+      "type": "file_sha256",
+      "policy": "exact_match_review"
+    },
+    {
+      "sha256": "c8f7608d4e19f6cb03680941bbd09fe969668bcb09c7ca985048a22e014dffcd",
+      "family": "HYPERCALL",
+      "platform": "macOS",
+      "sector": "cryptocurrency",
+      "source": "https://cloud.google.com/blog/topics/threat-intelligence/unc1069-targets-cryptocurrency-ai-social-engineering",
+      "type": "file_sha256",
+      "policy": "exact_match_review"
+    },
+    {
+      "sha256": "603848f37ab932dccef98ee27e3c5af9221d3b6ccfe457ccf93cb572495ac325",
+      "family": "CHROMEPUSH",
+      "platform": "macOS",
+      "sector": "cryptocurrency",
+      "source": "https://cloud.google.com/blog/topics/threat-intelligence/unc1069-targets-cryptocurrency-ai-social-engineering",
+      "type": "file_sha256",
+      "policy": "exact_match_review"
+    },
+    {
+      "sha256": "c3e5d878a30a6c46e22d1dd2089b32086c91f13f8b9c413aa84e1dbaa03b9375",
+      "family": "SILENCELIFT",
+      "platform": "macOS",
+      "sector": "cryptocurrency",
+      "source": "https://cloud.google.com/blog/topics/threat-intelligence/unc1069-targets-cryptocurrency-ai-social-engineering",
+      "type": "file_sha256",
+      "policy": "exact_match_review"
+    }
+  ],
+  "watchlist": [
+    {
+      "name": "Industroyer / Industroyer2",
+      "source": "https://www.welivesecurity.com/br/2022/04/12/nova-versao-do-malware-industroyer-e-usada-em-ataque-a-fornecedor-de-energia-na-ucrania/",
+      "status": "documented_family_not_yet_verified_as_signature"
+    },
+    {
+      "name": "BlackEnergy, TRITON, PIPEDREAM, Stuxnet, Havex, Fuxnet",
+      "source": "https://www.dragos.com/blog/3-common-cyber-threat-intelligence-cti-challenges-to-overcome-in-ot-cybersecurity",
+      "status": "documented_family_not_yet_verified_as_signature"
+    },
+    {
+      "name": "AppleJeus",
+      "source": "https://attack.mitre.org/software/S0584/",
+      "status": "documented_family_not_yet_verified_as_signature"
+    },
+    {
+      "name": "TraderTraitor",
+      "source": "https://www.fbi.gov/investigate/cyber/alerts/2026/north-korea-responsible-for-6-billion-binance-attack",
+      "status": "documented_family_not_yet_verified_as_signature"
+    },
+    {
+      "name": "FaceStealer",
+      "source": "https://www.fbi.gov/investigate/cyber/facestealer-cryptocurrency-theft-scheme",
+      "status": "documented_family_not_yet_verified_as_signature"
+    }
+  ]
+}

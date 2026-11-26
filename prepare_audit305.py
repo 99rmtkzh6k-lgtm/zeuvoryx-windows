@@ -16,7 +16,7 @@ def scanner(s):
     s=one(s,'type Report struct {','type Report struct {\n'+''.join('    '+a+' '+b+' '+chr(96)+'json:"'+c+'"'+chr(96)+'\n' for a,b,c in fields))
     s=rx(s,r'func\s+\(s\s+\*Scanner\)\s+examine\(ctx\s+context\.Context,\s*path\s+string,\s*size\s+int64\)\s*\(\[\]Finding,\s*error\)\s*\{','func (s *Scanner) examineUnchecked(ctx context.Context, path string, size int64) ([]Finding, error) {')
     s=rx(s,r'if len\(report\.Errors\) < 30 \{','report.ErrorCount++\nRecordSkipped(&report,path,e)\nif len(report.Errors) < 10000 {',2)
-    s=rx(s,r'report\.Skipped\s*=\s*1;report\.Errors=append\(report\.Errors,abs\+": "\+e\.Error\(\)\);report\.Finished=time\.Now\(\);return report,e','''report.Skipped=1;report.ErrorCount++;RecordSkipped(&report,abs,e);report.Errors=append(report.Errors,abs+": "+e.Error());report.Finished=time.Now();report.Summarize();if scanretry.WindowsSkipped(abs,e)!=nil{return report,nil};return report,e''')
+    s=rx(s,r'report\.Skipped\s*=\s*1\s*;?\s*report\.Errors\s*=\s*append\(\s*report\.Errors\s*,\s*abs\s*\+\s*": "\s*\+\s*e\.Error\(\)\s*\)\s*;?\s*report\.Finished\s*=\s*time\.Now\(\)\s*;?\s*return\s+report\s*,\s*e','''report.Skipped=1;report.ErrorCount++;RecordSkipped(&report,abs,e);report.Errors=append(report.Errors,abs+": "+e.Error());report.Finished=time.Now();report.Summarize();if scanretry.WindowsSkipped(abs,e)!=nil{return report,nil};return report,e''')
     return rx(s,r'(if e != nil \|\| !st\.Mode\(\)\.IsRegular\(\) \{\s*mu\.Lock\(\)\s*report\.Skipped\+\+)','''if e != nil || !st.Mode().IsRegular() {
                     mu.Lock()
                     report.Skipped++

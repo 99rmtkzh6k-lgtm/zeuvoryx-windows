@@ -1,5 +1,5 @@
 package main
-import("testing";"time";"context";"os";"path/filepath";"github.com/zeuvoryx/zeuvoryx/engine";"github.com/zeuvoryx/zeuvoryx/signatureav")
+import("testing";"github.com/zeuvoryx/zeuvoryx/scanretry";"time";"context";"os";"path/filepath";"github.com/zeuvoryx/zeuvoryx/engine";"github.com/zeuvoryx/zeuvoryx/signatureav")
 func Test309LiveReportSnapshots(t *testing.T){
  s:=&State{running:true,report:engine.Report{ScanID:"test",ScanMode:"full",Started:time.Now()}}
  raw:=engine.Report{Root:"test",Started:time.Now(),Files:1,Bytes:10,Findings:[]engine.Finding{{Path:"first",Risk:100}},Errors:[]string{"denied"},ErrorCount:1,Skipped:1,ErrorCategories:map[string]int{"access_denied":1}}
@@ -45,4 +45,13 @@ func Test314SignatureReportSurvivesScannerSnapshot(t *testing.T){
  if len(after.SignatureReports)!=2||after.SignatureState!="partial"||len(snap.SignatureReports)!=1{t.Fatal("snapshot changed or missing second root")}
  s.running=false;rep.SignatureState="finished";s.publishSignatureProgress314(&rep)
  if s.report.SignatureState!="partial"{t.Fatal("late report changed finished session")}
+}
+
+func TestP0SkippedSnapshotIsolation(t *testing.T){
+ s:=&State{running:true,report:engine.Report{Started:time.Now()}}
+ raw:=engine.Report{Skipped:1,ErrorCount:1,SkippedDetails:[]scanretry.SkippedError{{Path:"locked.tmp",CodigoWindows:32,Hora:time.Now().UTC(),Motivo:"sharing violation"}}}
+ s.publishLive(raw);raw.SkippedDetails[0].Path="changed"
+ a,_:=s.snapshotForExport();if len(a.SkippedDetails)!=1||a.SkippedDetails[0].Path!="locked.tmp"{t.Fatal(a.SkippedDetails)}
+ a.SkippedDetails[0].Path="changed again"
+ b,_:=s.snapshotForExport();if len(b.SkippedDetails)!=1||b.SkippedDetails[0].Path!="locked.tmp"{t.Fatal(b.SkippedDetails)}
 }

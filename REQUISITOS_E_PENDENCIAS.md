@@ -1,3 +1,7 @@
+## 3.0.18 LAB — Central de Segurança do Windows
+
+A determinação complementar foi vinculada aos itens de Windows, proteção residente, relatório e vulnerabilidades. A Central oferece operações suportadas e consultas dirigidas. Validação física de políticas, prevenção autônoma, varredura CVE e testes de navegador seguem abertos. [Registro técnico](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/lab-integracao-p0-20261126/CENTRAL_SEGURANCA_318.md).
+
 ## 3.0.17 LAB — integração complementar verificada (26/11/2026)
 
 A [auditoria complementar](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/blob/lab-integracao-p0-20261126/AUDITORIA_MOTORES_2026-11-26.md) registra a Issue #5, a revisão dos 20 itens ClamAV e a vinculação à matriz mestre. REQ-003/004/007/025/027/031/041 continuam abertos para validação de campo, proteção residente e cobertura. REQ-018/026/028 com artefato LAB verificável.

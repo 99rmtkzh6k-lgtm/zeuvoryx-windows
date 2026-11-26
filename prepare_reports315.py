@@ -144,3 +144,14 @@ s=once(s,'</script></body></html>',r'''el('z315ReportShortcut').onclick=()=>{doc
 for id in ("z315ShowText","z315Text","z315CopyText","z315ReportShortcut"):
     if s.count('id="'+id+'"')!=1:raise RuntimeError("missing report text control "+id)
 p.write_text(s,encoding="utf-8")
+
+# P0: never hold the scan-state lock during final report serialization or disk IO.
+# State remains running until the audit result is known; the UI and cancel command
+# can still acquire the lock. A storage failure is a separate audit error.
+p=Path("main.go");s=p.read_text(encoding="utf-8")
+a=s.index("func (s *State) startScan(");b=s.index("func main(",a)
+x=s[a:b]
+x,n=re.subn(r's\.mu\.Lock\(\)\s*defer s\.mu\.Unlock\(\)\s*(rep\.ScanID\s*=)',lambda m:m[1],x,count=1)
+if n!=1:raise RuntimeError("P0 final scan mutex anchor "+str(n))
+x=once(x,"s.report = rep","s.mu.Lock()\n defer s.mu.Unlock()\n s.report = rep")
+s=s[:a]+x+s[b:];p.write_text(s,encoding="utf-8")

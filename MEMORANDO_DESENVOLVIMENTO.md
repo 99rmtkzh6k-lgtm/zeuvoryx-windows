@@ -1,3 +1,11 @@
+## P0 — falhas de acesso e detalhes na varredura Windows LAB (26/11/2026)
+
+Evidência da tela “Falhas da análise” enviada pelo titular durante os testes da 3.0.15 LAB: 561 erros, sendo 414 acessos negados, 22 violações de bloqueio e 125 violações de compartilhamento. A soma das categorias fecha em 561. A tela indica 20 detalhes disponíveis, todos de acesso negado no recorte enviado, incluindo logs EVTX do Windows, diretórios temporários do sistema e itens do WinSxS. O recorte não informa ID da sessão, horário do snapshot, quantidade de arquivos únicos afetados, estado final ou cobertura do ClamAV. Os erros indicam falhas de acesso, sem evidência de malware nesse recorte.
+
+**Correções pendentes (REQ-003/004/012/025/027).** Distinguir erro ao enumerar diretório de erro ao abrir ou ler arquivo, registrando etapa, motor, categoria e horário. Informar quantos detalhes estão visíveis e quantos estão disponíveis no relatório, com filtro por categoria e indicação explícita de truncamento quando aplicável. Conciliar UI e JSON para a mesma sessão e snapshot. Testar retry limitado e cancelável apenas para falhas transitórias; preservar permissões e bloqueios do Windows. Manter cobertura parcial quando itens elegíveis ficarem inacessíveis e separar esses erros de detecções. Se consultar logs operacionais por API oficial, tratar a consulta como diagnóstica, com privilégios mínimos, sem contabilizá-la como varredura do arquivo EVTX.
+
+**Aceite.** Reproduzir acesso negado a arquivo e diretório, bloqueio de arquivo, violação de compartilhamento e mais de 20 ocorrências em corpus controlado. Validar totais e filtros na tela, detalhes e limites no JSON, cancelamento e ausência de recontagem indevida em retries. Vincular esta evidência à sessão correta quando houver JSON correspondente. Registro exclusivamente documental.
+
 ## P0 — central de otimização integrada, reputação de rede e histórico de avaliações (26/11/2026)
 
 Determinação do titular durante teste físico: registrar somente no memorando, para futura consolidação no prompt único do computador/Codex. Não implementar, compilar, gerar prompt nesta etapa nem interromper a varredura atual.

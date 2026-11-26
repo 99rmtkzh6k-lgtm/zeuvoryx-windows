@@ -1,0 +1,613 @@
+{
+  "source": "NnopponS/100-games",
+  "commit": "96857ba2d7d3fde6a3cc51e5e34ec808bb920165",
+  "license": "MIT",
+  "games": [
+    {
+      "path": "01-flappy-bird/index.html",
+      "blob": "4c55b3bf81ae24603b07fe6e8f105d28812c0de5",
+      "bytes": 21057,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "02-snake/index.html",
+      "blob": "897669d44f608815720dfde271eaeb70cd542572",
+      "bytes": 20932,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "03-breakout/index.html",
+      "blob": "dc36ecb0a51b2fafe38e06087d15162e3bec0c05",
+      "bytes": 27141,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "04-pong/index.html",
+      "blob": "4ba58ff5a93d19e02c507569eea00abc632dbdf5",
+      "bytes": 17485,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "05-tetris/index.html",
+      "blob": "a0d16ac82e12e1a767da48ef11389b50ee7d7d6a",
+      "bytes": 23931,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "06-memory-match/index.html",
+      "blob": "b5416afa8240764e665e8a163a98ed06c4cfc5a1",
+      "bytes": 20594,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "07-whack-a-mole/index.html",
+      "blob": "6be37822519709f64b5d2b8fb7b2c60ff6670c42",
+      "bytes": 21700,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "08-minesweeper/index.html",
+      "blob": "df25f2ddceeca8499242646c79edb8f09f4c1930",
+      "bytes": 19583,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "09-2048/index.html",
+      "blob": "3fd5ae1d88ecb5738d32c0bef1ae4665dce485ce",
+      "bytes": 23044,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "10-tic-tac-toe-ai/index.html",
+      "blob": "478f7917e2731c0035c8dcc1a3cb428e82788737",
+      "bytes": 16940,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "100-worm-game/index.html",
+      "blob": "48946f10a2c0ec24bae01b70b0dfc8e295d25c1b",
+      "bytes": 17891,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "11-simon-says/index.html",
+      "blob": "1b96cdaa2f9dab4f82d92c5f0c2a8071956b0e9c",
+      "bytes": 12487,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "12-space-invaders/index.html",
+      "blob": "3226e2f16c3a3b54de7449a47a1e243b76406991",
+      "bytes": 20745,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "13-asteroids/index.html",
+      "blob": "f42497c282448481ac03e4d5225cadac2a7056ef",
+      "bytes": 22952,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "14-frogger/index.html",
+      "blob": "a30623c0e08a219525c861e486619df594b8e19c",
+      "bytes": 27374,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "15-doodle-jump/index.html",
+      "blob": "d375136ad581b5fa0f2a08becc9dea55ad5577b3",
+      "bytes": 18278,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "16-missile-command/index.html",
+      "blob": "37344c12e152d2161fce007639e56ecfdbd247f0",
+      "bytes": 15659,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "17-lunar-lander/index.html",
+      "blob": "659e5d5db34ec75e0431dceaded6be2a74e52def",
+      "bytes": 33907,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "18-helicopter/index.html",
+      "blob": "0d94de44566929b1c52e96cfdd7cf0718e5050ab",
+      "bytes": 17476,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "19-stack-tower/index.html",
+      "blob": "75c00d21c5d6ed415e48603f4ba482f2ef1f1ee4",
+      "bytes": 12416,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "20-piano-tiles/index.html",
+      "blob": "a0fa29de5f83de1b699028a5f53b9579a3b564d1",
+      "bytes": 12746,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "21-connect-four/index.html",
+      "blob": "7b10c60469b87208e0e79b10f7e87089ff000085",
+      "bytes": 28452,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "22-hangman/index.html",
+      "blob": "5d70abd75c8f92c6505d2f154c3d4da97de910b6",
+      "bytes": 24253,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "23-wordle-clone/index.html",
+      "blob": "48ea32f48b772525ad28e1885a06c7b85ee21db3",
+      "bytes": 37064,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "24-reaction-timer/index.html",
+      "blob": "332514b203ca53df3c29993126839015b08386dc",
+      "bytes": 18606,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "25-maze-runner/index.html",
+      "blob": "cd2bfd1fd0826db29b7f86963d740bdfc07303ec",
+      "bytes": 19762,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "26-pacman-lite/index.html",
+      "blob": "0dfbd1f1070b0da8e07ac43c8321dc7d04e46f71",
+      "bytes": 30153,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "27-typing-racer/index.html",
+      "blob": "6167fae037badab05ab627cf55e1e86e70a2cbc5",
+      "bytes": 24036,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "28-rock-paper-scissors/index.html",
+      "blob": "af4194fb7671ed8a3b1bf9a9df1d053770cfe38f",
+      "bytes": 20839,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "29-guess-number/index.html",
+      "blob": "ed4e884a2d652df8df940c210904810efce0b3fc",
+      "bytes": 15312,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "30-blackjack/index.html",
+      "blob": "2e24ce7c39132787445fd371f0ffd46d9bc6c0fd",
+      "bytes": 19562,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "31-sliding-puzzle/index.html",
+      "blob": "d6643ce4daec819ff18e920539e7953942e9d6b0",
+      "bytes": 17265,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "32-lights-out/index.html",
+      "blob": "7fbf2059b6dbf847e9dd4487394da14356e2f690",
+      "bytes": 13559,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "33-sudoku/index.html",
+      "blob": "7e1e4f232f6b828130e8b7adcaf32a99f763d949",
+      "bytes": 21744,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "34-battleship/index.html",
+      "blob": "7a31fcdedc3e570a6e2cc7837b2d04cb154ca1a0",
+      "bytes": 25945,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "35-reversi/index.html",
+      "blob": "3773ad1beadc7caaeb5e1a7d3dc4e2fa93dd7e11",
+      "bytes": 16008,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "36-gomoku/index.html",
+      "blob": "3a2b565ea05ca4066860d0b6daa074a076f32a74",
+      "bytes": 18530,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "37-checkers/index.html",
+      "blob": "c1b35de57ee89728c79749ee36ebc21559e3dc9c",
+      "bytes": 19523,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "38-bubble-shooter/index.html",
+      "blob": "766be42be44773a194fd7e92b7988515c92be550",
+      "bytes": 16775,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "39-air-hockey/index.html",
+      "blob": "9b60ec0235e8a8c630620649adf542ef42d4d065",
+      "bytes": 18402,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "40-catch-falling/index.html",
+      "blob": "ae6ee267c9ea79ab1e5f6571977a9b02295b69bc",
+      "bytes": 24201,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "41-dodger/index.html",
+      "blob": "de302eae94d4d1afa7ef8e416e0a6c0a0e2410f4",
+      "bytes": 20930,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "42-endless-runner/index.html",
+      "blob": "62b3cc31e7344fd2bc67740c382b878418ec1294",
+      "bytes": 25643,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "43-ski-slope/index.html",
+      "blob": "d0d8d3f2754409998640d6b78496b29af90ac387",
+      "bytes": 18330,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "44-fishing/index.html",
+      "blob": "96a16677e067bb87cd4a16cf57fd62e2704beeb9",
+      "bytes": 22913,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "45-target-shooter/index.html",
+      "blob": "27bdb2e91a80756a7403b7a10cf81620a6e204f4",
+      "bytes": 19670,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "46-archery/index.html",
+      "blob": "e94b153e275420d1fdd7ac4a9dec8242ae9f5377",
+      "bytes": 19353,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "47-basketball/index.html",
+      "blob": "2a569ab683084d7f7810f10192061ef908d355c3",
+      "bytes": 18913,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "48-penalty-kicks/index.html",
+      "blob": "5df11dec7f7349452ca42c1b14174fcaaed454d3",
+      "bytes": 17529,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "49-mini-golf/index.html",
+      "blob": "1fcf7d7e49f8afd0995db5e2f6694e7ca6a05fa8",
+      "bytes": 24742,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "50-bowling/index.html",
+      "blob": "5b6e52b264583de0d649b0fde4e0f4804a96e6d7",
+      "bytes": 19508,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "51-darts/index.html",
+      "blob": "0ce5470f0cd155437c4f33258aa637a45bbff7bf",
+      "bytes": 20163,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "52-car-dodger/index.html",
+      "blob": "4952f599bd2ffb6118f8f63c3a15ad7f80152d20",
+      "bytes": 17690,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "53-crossy-road/index.html",
+      "blob": "c754146ae731cfb62a46cb93ea7f3ca96b5d4d8c",
+      "bytes": 18386,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "54-submarine/index.html",
+      "blob": "816c24350b21bda5917b259973895eeabe205f92",
+      "bytes": 17248,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "55-balloon-pop/index.html",
+      "blob": "f2bfcfbee0d1d23b10ebf2ea61d7e5cbe6a4dda9",
+      "bytes": 15240,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "56-cookie-clicker/index.html",
+      "blob": "85371c5b34514c1c0123986a3015bdb12d7cf89d",
+      "bytes": 22811,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "57-button-masher/index.html",
+      "blob": "18065f15ffd9374dad027bb49df99f74dbaac206",
+      "bytes": 13911,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "58-rhythm-tap/index.html",
+      "blob": "868a4cd6bd0fb446f6395159497988e1e8cb915a",
+      "bytes": 14916,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "59-dance-arrows/index.html",
+      "blob": "8b58406496a586c32706f177acad8eee94930b0a",
+      "bytes": 49754,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "60-math-sprint/index.html",
+      "blob": "4e2c48ff8ab302ea60331fa554ebd905d0aa7b2e",
+      "bytes": 18355,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "61-word-scramble/index.html",
+      "blob": "6484f3db9c6e3dfb8d6c206bd6f9f48010a95b05",
+      "bytes": 19824,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "62-flags-quiz/index.html",
+      "blob": "f0efc278ea7264f40a77288c8e1ddb0071667ca2",
+      "bytes": 16001,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "63-knight-tour/index.html",
+      "blob": "81ebc5b8ac33e632619090c1ecd4e3bc21972872",
+      "bytes": 22036,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "64-pipe-connect/index.html",
+      "blob": "b42364fcb99662bf8a35165f1d81aae2f59ab7ac",
+      "bytes": 15955,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "65-color-flood/index.html",
+      "blob": "99d153977f1d56b959ce1573e84578bd30414774",
+      "bytes": 16789,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "66-chain-reaction/index.html",
+      "blob": "a3d2d0dd81ca4fcdc02c9e5468dc057ecbe6a1f0",
+      "bytes": 17562,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "67-gravity-flip/index.html",
+      "blob": "9c48957911bb0a8cd034b2a0457f2b65973c6f59",
+      "bytes": 21329,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "68-pixel-painter/index.html",
+      "blob": "0a96cd087678b4e870890143a23bb1f5d56104a8",
+      "bytes": 18224,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "69-etch-sketch/index.html",
+      "blob": "92cd3e5dd0188138338f4fc112a15617f66bd1be",
+      "bytes": 14871,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "70-falling-sand/index.html",
+      "blob": "9492814ded0c517a70b13b66b9bfb1b14366a0cb",
+      "bytes": 17005,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "71-tower-defense/index.html",
+      "blob": "c3adab3c3e70c4fb2105a1be96edff3d5aca74d6",
+      "bytes": 55949,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "72-pinball/index.html",
+      "blob": "aff2b8cb006bac36304048f1092e55d0044a4269",
+      "bytes": 20373,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "73-curling/index.html",
+      "blob": "5777291b53e6bbf207c0f74679693b360b5b726b",
+      "bytes": 19127,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "74-pool-lite/index.html",
+      "blob": "7e4991f54f718be8f299cd7b2cc05eea3277ea5d",
+      "bytes": 22477,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "75-train-switcher/index.html",
+      "blob": "bfd5c0981cda4a27b0650077563b29569a8976a9",
+      "bytes": 16892,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "76-fireworks/index.html",
+      "blob": "9cd5f4e22567efd50ca5b6e034e7d180bb1da93b",
+      "bytes": 23554,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "77-farm-clicker/index.html",
+      "blob": "0ff75c42d0e01bfe4208fed35cab78b7f6943b96",
+      "bytes": 60046,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "78-capitals-quiz/index.html",
+      "blob": "05b9dd67f77d05ea0d31f222c2d10f92ee5147d3",
+      "bytes": 21794,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "79-tangram/index.html",
+      "blob": "7a5898e82aa30cf0d870ca273b04f5994515e894",
+      "bytes": 13970,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "80-jigsaw/index.html",
+      "blob": "f45eae784121c33db6afbb367417237996793860",
+      "bytes": 39065,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "81-orbit-dodge/index.html",
+      "blob": "f142696c93367c8c3cefaa49385d4137d50cfab1",
+      "bytes": 21103,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "82-rocket-escape/index.html",
+      "blob": "a60d888139d9bc012398c22424d5d2fbba289a99",
+      "bytes": 39777,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "83-shadow-guess/index.html",
+      "blob": "ca4cec292de1d9dc8a5a88b45fb28b286c6b17a6",
+      "bytes": 21198,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "84-emoji-match/index.html",
+      "blob": "5fd90e2c4bcfc8439e97bf9b5a80bab2d1672388",
+      "bytes": 49808,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "85-solitaire-golf/index.html",
+      "blob": "bb3ab506d19055a8f8823f4e0e50e3f4a1021d01",
+      "bytes": 29390,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "86-slot-machine/index.html",
+      "blob": "8c870f2e0eb15c2ddbdcbadc98e6eae3ac15ac0a",
+      "bytes": 20721,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "87-dice-battle/index.html",
+      "blob": "a324a98577c9642aaf88e5684b437719098702c5",
+      "bytes": 34046,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "88-snake-maze/index.html",
+      "blob": "de2a65335240bd6460ae9f1fa474c8ad28d515ed",
+      "bytes": 31242,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "89-bounce-ball/index.html",
+      "blob": "fc898f0b78b29afbefb0eaa074f43c857096237a",
+      "bytes": 20228,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "90-ice-breaker/index.html",
+      "blob": "fe387ad018a4d6d1e12c7c006dc758fe7fcd0dc0",
+      "bytes": 61662,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "91-volcano-escape/index.html",
+      "blob": "1dd048c0eb56998ad3c5d69ee6c40d2ad7680559",
+      "bytes": 22773,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "92-treasure-dive/index.html",
+      "blob": "e16725c9c4f95a10d47ab1c443cbd4efab276553",
+      "bytes": 23668,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "93-bug-squash/index.html",
+      "blob": "bb32eef968de08000f47b8940ebee989669d08e5",
+      "bytes": 21232,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "94-ghost-catch/index.html",
+      "blob": "fd1966a58ab0942a4bb05076ca6f733c9bc5f6fe",
+      "bytes": 16908,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "95-laser-reflect/index.html",
+      "blob": "ea3005c70a22f8a1f28d0c8fd97e11e0d340a99e",
+      "bytes": 20097,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "96-uno-colors/index.html",
+      "blob": "b81f3e6a49c94ada4dcdb25b4ab3ea6463171ec5",
+      "bytes": 13374,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "97-math-blocks/index.html",
+      "blob": "30b6c7d5dea9b8d5dd3d4f29d8156780ec5076fa",
+      "bytes": 16551,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "98-planet-defender/index.html",
+      "blob": "9b32d0063848cc76c9915e6ecd1b1b9d1be03192",
+      "bytes": 21840,
+      "status": "candidate_not_approved"
+    },
+    {
+      "path": "99-kite-flyer/index.html",
+      "blob": "4ccd75ac9dd6983e54cfbc8e2c401b9728ec5fd2",
+      "bytes": 20795,
+      "status": "candidate_not_approved"
+    }
+  ],
+  "approved": 0,
+  "solitaire": {
+    "source": "jhatzimalis/solitaire",
+    "commit": "a737d5a60d79d0e5a24f320354709ae35dc4ec7d",
+    "status": "candidate_not_approved"
+  }
+}

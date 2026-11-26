@@ -1,0 +1,4 @@
+# Third-party arcade — staging only
+The owner withdrew all seven internal games. This directory contains unmodified third-party source candidates, not executable or approved features. Do not load into privileged WebView. Verify game and asset rights, offline behavior, network isolation, full gameplay and parental controls before enabling. Collection inventory is not a quality rating. Exclude casino-style titles and independently review branding/IP. Target 100 distinct approved games; no fabricated games.
+
+Sources: https://github.com/NnopponS/100-games/tree/96857ba2d7d3fde6a3cc51e5e34ec808bb920165 (MIT, pinned); https://github.com/jhatzimalis/solitaire/tree/a737d5a60d79d0e5a24f320354709ae35dc4ec7d (MIT, pinned); https://www.chiark.greenend.org.uk/~sgtatham/puzzles/ (MIT, candidate for further selection). Licenses included alongside staged files.

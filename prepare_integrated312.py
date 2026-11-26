@@ -18,7 +18,7 @@ def report(s):
  SignatureReports []signatureav.Report `json:"signature_reports,omitempty"`
 ''')
 def summary(s):
-    return rx(s,r'(r\.Partial\s*=\s*r\.Cancelled[^\n]+)',lambda m:m[1]+' || r.SignatureState == "partial" || r.SignatureState == "unavailable" || r.SignatureState == "running"')
+    return rx(s,r'(r\.Partial\s*=\s*r\.Cancelled[^\n]+)',lambda m:m[1]+' || r.SignatureState == "partial" || r.SignatureState == "unavailable" || r.SignatureState == "running" || r.SignatureState == "pending" || (r.Inventory314.State != "" && r.Inventory314.State != "ready") || r.BehaviorProblem != "" || r.WindowsProblem314 != ""')
 def main(s):
     a=s.index("func (s *State) scanRoots(");b=s.index("func (s *State) quickScan(",a)
     x=s[a:b]

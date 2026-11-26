@@ -1,3 +1,7 @@
+## ZEUVORYX 3.0.16 LAB — integração P0 (26/11/2026)
+
+Candidato experimental Windows x64 na branch `lab-integracao-p0-20261126`, baseado no pipeline 3.0.15 do commit `b90fa60`. Após o cancelamento da etapa ClamAV, a consolidação aguarda até dez segundos pela evidência final do motor. Se o motor não retornar, o relatório registra cobertura parcial e encerramento do motor sem confirmação. Resultados tardios não entram em outra sessão. O prazo operacional por modalidade permanece igual ao da base. Validação física das varreduras completa e rápida ainda pendente.
+
 ## Diagnóstico de Testes no instalador Windows LAB — 26/11/2026
 
 A [CI 45755065493](https://github.com/99rmtkzh6k-lgtm/zeuvoryx-windows/actions/runs/45755065493) aprovou os três jobs (regressão Ubuntu, regressão Windows e compilação/instalação Windows) para `b90fa60343be894b436ec7cd1f0971ac8101bd9c`. Esta revisão inclui a finalização cumulativa da varredura, o limite da etapa ClamAV e a área Relatórios → Diagnóstico de Testes, com causas possíveis, alternativas, cópia para IA e exportação JSON. A execução anterior 45754511971, de `b55faec`, foi cancelada.

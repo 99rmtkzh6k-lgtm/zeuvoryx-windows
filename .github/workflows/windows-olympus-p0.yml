@@ -1,7 +1,7 @@
-name: ZEUVORYX 3.0.15 LAB - P0 scan finalization
+name: ZEUVORYX 3.0.16 LAB - P0 scan finalization
 on:
   push:
-    branches: [lab-p0-scan-finalization-20261126]
+    branches: [lab-integracao-p0-20261126]
     paths-ignore: ['**.md']
   workflow_dispatch:
 permissions:

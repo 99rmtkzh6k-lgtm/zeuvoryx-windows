@@ -1,3 +1,7 @@
+## ZEUVORYX 3.0.16 LAB — integração P0 (26/11/2026)
+
+Candidato experimental Windows x64 na branch `lab-integracao-p0-20261126`, baseado no pipeline 3.0.15 do commit `b90fa60`. Após o cancelamento da etapa ClamAV, a consolidação aguarda até dez segundos pela evidência final do motor. Se o motor não retornar, o relatório registra cobertura parcial e encerramento do motor sem confirmação. Resultados tardios não entram em outra sessão. O prazo operacional por modalidade permanece igual ao da base. Validação física das varreduras completa e rápida ainda pendente.
+
 ## Determinação vigente do idealizador — 25/11/2026: Artigo 37 substituído
 
 Não há limite interno obrigatório de tamanho para o ZEUVORYX: revogados o teto de 200 MB e a meta numérica de 150 MB. O instalador, ZIP, motores, bases e dependências poderão crescer quando tecnicamente necessários. Priorizar proteção, eficácia, estabilidade e desempenho; continuar medindo e otimizando tamanho, RAM, CPU, disco e downloads sem remover cobertura ou funcionalidades aprovadas apenas para reduzir bytes. Registrar crescimento e justificativa, respeitar limites externos dos canais de distribuição e manter controles de integridade, licenças, gratuidade e validação. Registros anteriores de limites são históricos. Entregar sempre que possível o ZIP completo no ChatGPT para compartilhar pelo WhatsApp, não somente o link GitHub.

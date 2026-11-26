@@ -6,22 +6,21 @@ import (
  "github.com/zeuvoryx/zeuvoryx/signatureav"
 )
 // Called once per normal desktop scan, outside the State mutex, before persisting the final report.
-func (s *State) signaturePhase312(ctx context.Context, rep *engine.Report, customPath string, automatic bool) {
+func signaturePhase312(ctx context.Context, rep *engine.Report, publish func(*engine.Report), observe func(signatureav.Finding)) {
  rep.SignatureState="pending"
- defer func(){rep.Finished=time.Now();if ctx.Err()!=nil{rep.Cancelled=true;rep.SignatureState="partial"};s.publishSignatureProgress314(rep)}()
+ defer func(){rep.Finished=time.Now();if ctx.Err()!=nil{rep.Cancelled=true;rep.SignatureState="partial"};publish(rep)}()
  if ctx.Err()!=nil{rep.SignatureState="partial";return}
  tool,e:=clamExecutable()
  if e!=nil{rep.SignatureState="unavailable";rep.SignatureProblem=e.Error();return}
  roots:=rep.SignatureRoots
- if !automatic{roots=[]string{customPath}}
  if len(roots)==0{rep.SignatureState="unavailable";rep.SignatureProblem="No verified roots for signature scan";return}
- rep.SignatureState="running";rep.SignatureProblem="Preparando ou atualizando base de assinaturas ClamAV";s.publishSignatureProgress314(rep)
+ rep.SignatureState="running";rep.SignatureProblem="Preparando ou atualizando base de assinaturas ClamAV";publish(rep)
  baseInfo,e:=ensureClam314(ctx,false);if e!=nil{rep.SignatureState="unavailable";rep.SignatureProblem=e.Error();return}
- rep.SignatureProblem="Base disponível; ClamAV examinando arquivos: "+baseInfo;s.publishSignatureProgress314(rep)
- r,e:=signatureav.ScanRoots(signatureav.WithObserver(ctx,publishSignature314),tool,roots,signatureav.BundledDatabase(tool))
+ rep.SignatureProblem="Base disponível; ClamAV examinando arquivos: "+baseInfo;publish(rep)
+ r,e:=signatureav.ScanRoots(signatureav.WithObserver(ctx,observe),tool,roots,signatureav.BundledDatabase(tool))
  rep.SignatureReports=append(rep.SignatureReports,r)
  if e!=nil||r.Partial{rep.SignatureState="partial";if e!=nil{rep.SignatureProblem=e.Error()+" | "+baseInfo}else{rep.SignatureProblem="ClamAV evidence incomplete | "+baseInfo}}else{rep.SignatureState="finished";rep.SignatureProblem=baseInfo}
- s.publishSignatureProgress314(rep)
+ publish(rep)
 }
 
 // Publish the batch result; the live signal buffer separately supplies partial findings.

@@ -1,12 +1,12 @@
 package main
-import("context";"crypto/sha256";"encoding/json";"fmt";"os";"path/filepath";"time";"unsafe";"github.com/zeuvoryx/zeuvoryx/scanplan";"github.com/zeuvoryx/zeuvoryx/engine";"github.com/zeuvoryx/zeuvoryx/scopeprogress")
+import("context";"crypto/sha256";"encoding/json";"fmt";"os";"path/filepath";"sync";"time";"unsafe";"github.com/zeuvoryx/zeuvoryx/scanplan";"github.com/zeuvoryx/zeuvoryx/engine";"github.com/zeuvoryx/zeuvoryx/scopeprogress";"github.com/zeuvoryx/zeuvoryx/signatureav")
 type parallelKey314 struct{}
 func constrainedScan315()bool{
  m:=pMemory{Length:uint32(unsafe.Sizeof(pMemory{}))}
  ok,_,_:=pMem.Call(uintptr(unsafe.Pointer(&m)))
  return scanplan.Serial(ok!=0,m.Total,m.Available)
 }
-type sigResult314 struct{report engine.Report}
+var signatureStage314 = make(chan struct{}, 1)
 type behaviorResult314 struct{data map[string]any; problem string}
 type windowsResult314 struct{data map[string]any; problem string}
 // One ClamAV process plus the bounded ZEUVORYX worker pool, no per-file process fanout.
@@ -32,7 +32,23 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
  s.mu.Lock();mode:=s.report.ScanMode;if s.running{s.report.SignatureState="pending"};s.mu.Unlock()
  serial:=constrainedScan315()
  if serial{s.mu.Lock();if s.running{s.report.SignatureProblem="Modo de recursos limitados: ClamAV aguardará o scanner próprio"};s.mu.Unlock()}
- sig:=make(chan sigResult314,1);beh:=make(chan behaviorResult314,1);win:=make(chan windowsResult314,1)
+ sig := make(chan engine.Report, 1)
+ var sigCtx context.Context
+ var stopSignature context.CancelFunc
+ var signatureStarted time.Time
+ var signatureMu sync.Mutex
+ signatureOpen := true
+ publishSignature := func(r *engine.Report) {
+  signatureMu.Lock()
+  defer signatureMu.Unlock()
+  if signatureOpen { s.publishSignatureProgress314(r) }
+ }
+ observeSignature := func(f signatureav.Finding) {
+  signatureMu.Lock()
+  defer signatureMu.Unlock()
+  if signatureOpen { publishSignature314(f) }
+ }
+ beh:=make(chan behaviorResult314,1);win:=make(chan windowsResult314,1)
  watchCtx,stopWatch:=context.WithCancel(ctx);defer stopWatch()
  go func(){
   latest:=windowsResult314{problem:"Consulta Windows ainda não concluída"}
@@ -47,30 +63,44 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
   tick:=time.NewTicker(time.Minute);defer tick.Stop()
   for{select{case <-watchCtx.Done():win<-latest;return;case <-tick.C:refresh()}}
  }()
- runSignature:=func(){
-  limit:=scanplan.SignatureBudget(mode)
-  sigCtx,cancelSig:=context.WithTimeout(ctx,limit)
-  defer cancelSig()
-  started:=time.Now()
-  r:=engine.Report{SignatureRoots:append([]string(nil),roots...),SignatureStartedMS315:started.UnixMilli()}
-  finish:=func(){r.SignatureFinishedMS315=time.Now().UnixMilli();r.SignatureDurationMS315=time.Since(started).Milliseconds();s.publishSignatureProgress314(&r);sig<-sigResult314{r}}
-  s.publishSignatureProgress314(&r)
-  known,total,_:=scanplan.Memory()
-  if !scanplan.ClamCapacity(known,total){r.SignatureState="unavailable";r.SignatureProblem="RAM física abaixo da recomendação do ClamAV (3 GiB); scanner próprio executado, cobertura de assinaturas incompleta.";finish();return}
-  s.signaturePhase312(sigCtx,&r,"",true)
-  if sigCtx.Err()==context.DeadlineExceeded&&ctx.Err()==nil {
-   r.SignatureState="partial"
-   r.SignatureProblem=fmt.Sprintf("ClamAV: limite de %d minutos da etapa de assinaturas atingido; cobertura incompleta.",int(limit/time.Minute))
-   for i:=range r.SignatureReports {
-    r.SignatureReports[i].Problem=r.SignatureProblem
+ limit := scanplan.SignatureBudget(mode)
+ startSignature := func() {
+  sigCtx, stopSignature = context.WithTimeout(ctx, limit)
+  signatureStarted = time.Now()
+  go func(stageCtx context.Context, started time.Time) {
+   r := engine.Report{
+    SignatureRoots: append([]string(nil), roots...),
+    SignatureStartedMS315: started.UnixMilli(),
    }
-  }
-  finish()
+   publishSignature(&r)
+   select {
+   case signatureStage314 <- struct{}{}:
+    known, total, _ := scanplan.Memory()
+    if !scanplan.ClamCapacity(known, total) {
+     r.SignatureState = "unavailable"
+     r.SignatureProblem = "RAM física abaixo da recomendação do ClamAV (3 GiB); cobertura de assinaturas incompleta."
+    } else {
+     signaturePhase312(stageCtx, &r, publishSignature, observeSignature)
+    }
+    <-signatureStage314
+   default:
+    r.SignatureState = "unavailable"
+    r.SignatureProblem = "A etapa anterior do ClamAV ainda está encerrando; cobertura de assinaturas incompleta."
+   }
+   if stageCtx.Err() == context.DeadlineExceeded && ctx.Err() == nil {
+    r.SignatureState = "partial"
+    r.SignatureProblem = fmt.Sprintf("ClamAV: limite de %d minutos da etapa de assinaturas atingido; cobertura incompleta.", int(limit/time.Minute))
+   }
+   r.SignatureFinishedMS315 = time.Now().UnixMilli()
+   r.SignatureDurationMS315 = time.Since(started).Milliseconds()
+   publishSignature(&r)
+   sig <- r
+  }(sigCtx, signatureStarted)
  }
- if !serial{go runSignature()}
+ if !serial { startSignature() }
  go func(){v,e:=behavior313Context(ctx);b:=behaviorResult314{data:v};if e!=nil{b.problem=e.Error()};s.mu.Lock();if s.running&&auxOpen{s.report.BehaviorLocal=b.data;s.report.BehaviorProblem=b.problem};s.mu.Unlock();beh<-b}()
  rep,e:=run()
- if serial{go runSignature()}
+ if serial { startSignature() }
  // A completed scanner does not imply a completed inventory. Give inventory a
  // bounded opportunity to finish naturally; cancel only when it exceeds the budget.
  inv,invOK:=scopeprogress.AwaitResult(invCh,5*time.Second)
@@ -80,12 +110,22 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
  b,bOK:=scopeprogress.AwaitResult(beh,10*time.Second);if !bOK{b.problem="Consulta comportamental não terminou no prazo de finalização; cobertura parcial"}
  w,wOK:=scopeprogress.AwaitResult(win,10*time.Second);if !wOK{w.problem="Consulta Windows não terminou no prazo de finalização; cobertura parcial"}
  s.mu.Lock();auxOpen=false;s.mu.Unlock()
- r:=<-sig
- if !invOK||!bOK||!wOK{rep.Partial=true}
+ r, signatureOK := scopeprogress.AwaitShutdown(sigCtx, sig, 10*time.Second)
+ stopSignature()
+ signatureMu.Lock()
+ signatureOpen = false
+ signatureMu.Unlock()
+ if !signatureOK {
+  r.SignatureState = "partial"
+  r.SignatureStartedMS315 = signatureStarted.UnixMilli()
+  r.SignatureDurationMS315 = time.Since(signatureStarted).Milliseconds()
+  r.SignatureProblem = "ClamAV não confirmou o encerramento após o cancelamento da etapa; cobertura incompleta."
+ }
+ if !invOK || !bOK || !wOK || r.SignatureState != "finished" { rep.Partial = true }
  rep.WindowsLocal314=w.data;rep.WindowsProblem314=w.problem
  rep.SignatureRoots=append([]string(nil),roots...)
- rep.SignatureState=r.report.SignatureState;rep.SignatureProblem=r.report.SignatureProblem;rep.SignatureReports=r.report.SignatureReports
- rep.SignatureStartedMS315=r.report.SignatureStartedMS315;rep.SignatureFinishedMS315=r.report.SignatureFinishedMS315;rep.SignatureDurationMS315=r.report.SignatureDurationMS315
+ rep.SignatureState=r.SignatureState;rep.SignatureProblem=r.SignatureProblem;rep.SignatureReports=r.SignatureReports
+ rep.SignatureStartedMS315=r.SignatureStartedMS315;rep.SignatureFinishedMS315=r.SignatureFinishedMS315;rep.SignatureDurationMS315=r.SignatureDurationMS315
  rep.SignatureRecent314=signatureRecentFindings314();rep.SignatureRecentLimit314=100
  rep.BehaviorLocal=b.data;rep.BehaviorProblem=b.problem
  rep.Inventory314=inv

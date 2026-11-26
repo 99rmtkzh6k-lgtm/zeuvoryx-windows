@@ -1,4 +1,5 @@
 package engine
+import("bytes";"path/filepath";"strings")
 // ArchiveCoverage316 counts observed events, not unobserved entries.
 type ArchiveCoverage316 struct{
  Containers uint64 `json:"zip_containers_seen"`
@@ -10,3 +11,12 @@ type ArchiveCoverage316 struct{
 }
 func(c ArchiveCoverage316) Partial()bool{return c.EntriesLimited>0||c.EntryBudgetStops>0||c.OpenFailures>0||c.EntryReadFailures>0}
 func(c *ArchiveCoverage316) Merge(v ArchiveCoverage316){c.Containers+=v.Containers;c.EntriesExamined+=v.EntriesExamined;c.EntriesLimited+=v.EntriesLimited;c.EntryBudgetStops+=v.EntryBudgetStops;c.OpenFailures+=v.OpenFailures;c.EntryReadFailures+=v.EntryReadFailures}
+
+func zipCandidate316(path string, prefix []byte) bool {
+ if strings.EqualFold(filepath.Ext(path),".zip"){return true}
+ // A ZIP local header or empty/spanned archive marker, regardless of extension.
+ // Do not treat a magic match as a successful parse or a malware verdict.
+ return bytes.HasPrefix(prefix,[]byte{'P','K',3,4})||
+ bytes.HasPrefix(prefix,[]byte{'P','K',5,6})||
+ bytes.HasPrefix(prefix,[]byte{'P','K',7,8})
+}

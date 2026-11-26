@@ -74,6 +74,7 @@ ownrx316(r'func \(s \*Scanner\) examine\(ctx context\.Context,\s*path string,\s*
 ownrx316(r's\.examine\(ctx,\s*abs,\s*info\.Size\(\)\)',lambda m:'s.examine(ctx, abs, info.Size(), &report.ArchiveCoverage316)')
 ownrx316(r'(?m)^([ \t]*)hits,\s*e\s*:=\s*s\.examine\(ctx,\s*path,\s*st\.Size\(\)\)',lambda m:m[1]+'var archive316 ArchiveCoverage316\n'+m[1]+'hits,e:=s.examine(ctx,path,st.Size(),&archive316)')
 ownrx316(r'(hits,e:=s\.examine\(ctx,path,st\.Size\(\),&archive316\)\s*mu\.Lock\(\))',lambda m:m[1]+'\n report.ArchiveCoverage316.Merge(archive316)')
+own316('if strings.EqualFold(filepath.Ext(path), ".zip") {','if zipCandidate316(path,b) {')
 ownrx316(r'(archive,\s*e\s*:=\s*zip\.NewReader\(f,\s*size\))',lambda m:m[1]+'\n coverage.Containers++\n if e!=nil{coverage.OpenFailures++}')
 ownrx316(r'if idx >= maxEntries \{\s*break\s*\}',lambda m:'if idx >= maxEntries { coverage.EntryBudgetStops++; break }')
 ownrx316(r'if z\.FileInfo\(\)\.IsDir\(\) \|\| z\.UncompressedSize64 > uint64\(entryMax\) \|\| z\.UncompressedSize64 > uint64\(totalLimit\)-totalUncompressed \{\s*continue\s*\}',lambda m:'if z.FileInfo().IsDir(){continue}\n if z.UncompressedSize64>uint64(entryMax)||z.UncompressedSize64>uint64(totalLimit)-totalUncompressed{coverage.EntriesLimited++;continue}')

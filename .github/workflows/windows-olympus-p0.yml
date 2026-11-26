@@ -1,7 +1,7 @@
 name: ZEUVORYX 3.0.18 LAB - P0 scan finalization
 on:
   push:
-    branches: [lab-integracao-p0-20261126, lab-arcade-field-p0-20261126]
+    branches: [lab-integracao-p0-20261126, lab-arcade-field-p0-20261126, lab-own-engine-coverage-20261126]
     paths-ignore: ['**.md']
   workflow_dispatch:
 permissions:

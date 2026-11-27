@@ -17,31 +17,31 @@ class _Boundaries(HTMLParser):
         self.feed(html)
         self.close()
 
-    def offset(self):
+    def absolute_position(self):
         line, col = self.getpos()
         return self.starts[line - 1] + col
 
     def handle_decl(self, decl):
         if self.decl_end is None:
-            self.decl_end = self.offset() + len(decl) + 3
+            self.decl_end = self.absolute_position() + len(decl) + 3
 
     def handle_starttag(self, tag, attrs):
         if tag == "html" and self.html_open_end is None:
-            self.html_open_end = self.offset() + len(self.get_starttag_text())
+            self.html_open_end = self.absolute_position() + len(self.get_starttag_text())
         elif tag == "head":
             self.in_head = True
         elif tag == "body":
             self.in_head = False
             if self.body_open is None:
-                self.body_open = self.offset()
+                self.body_open = self.absolute_position()
 
     def handle_endtag(self, tag):
         if tag == "style" and self.in_head:
-            self.styles.append(self.offset())
+            self.styles.append(self.absolute_position())
         elif tag == "head":
             self.in_head = False
             if self.head_close is None:
-                self.head_close = self.offset()
+                self.head_close = self.absolute_position()
 
 
 def insert_report_css(html, css):

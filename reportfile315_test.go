@@ -41,3 +41,15 @@ func TestReport315DurableFilePublishAfterWrite(t *testing.T){
  b,e:=os.ReadFile(name);if e!=nil||!json.Valid(b){t.Fatal("invalid published JSON",e)}
  tmp,e:=filepath.Glob(filepath.Join(dir,"*.tmp"));if e!=nil||len(tmp)!=0{t.Fatal("temporary residue",tmp,e)}
 }
+
+func TestReport315DurableFileInvalidJSON(t *testing.T){
+ dir:=t.TempDir()
+ for _,data:=range []string{"{", "{\"partial\":true}{}", "{\"files\":1,}", "[1,]", "null junk", "not JSON"}{
+  if _,e:=writeReport315(dir,"invalid",func(w io.Writer)error{_,e:=io.WriteString(w,data);return e});e==nil{t.Fatalf("published invalid JSON: %q",data)}
+ }
+ files,e:=os.ReadDir(dir);if e!=nil||len(files)!=0{t.Fatalf("invalid JSON residue: %v %v",files,e)}
+ good:="{\"partial\":true,\"findings\":[],\"skipped_details\":[{\"path\":\"C:/test\",\"reason\":\"locked\"}]}\n"
+ p,e:=writeReport315(dir,"good",func(w io.Writer)error{_,e:=io.WriteString(w,good);return e})
+ if e!=nil{t.Fatal(e)}
+ b,e:=os.ReadFile(p);if e!=nil||!json.Valid(b)||string(b)!=good{t.Fatalf("JSON evidence changed: %s %v",b,e)}
+}

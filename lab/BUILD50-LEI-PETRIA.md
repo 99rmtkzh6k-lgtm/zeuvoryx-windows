@@ -40,3 +40,16 @@ Somente commits novos na lab-build50, sem reescrever histórico nem apagar Build
 - lab/build48/launcher.js: confirmação ao iniciar jogo durante varredura já codificada; não pausa varredura e não é controle Win32.
 - updater/check.go: consulta somente Releases e usa Current 3.0.10; atualização Actions ainda não existe.
 - Botões nativos Win32 e atualização transacional ainda pendentes. Não compilar prematuramente.
+
+## REGRA SUPREMA — NÃO ESTRAGAR NADA (ordem do titular, 27/11/2026)
+1. Build 49 SHA f0b136c4b2f0bd285b87f228a2b48fb4db304e73 preservada como base aprovada (9/9 histórico); jamais sobrescrever.
+2. Não alterar main nem Releases.
+3. Não desligar Microsoft Defender.
+4. Não apagar dados do usuário, nem executar quarentena automática ou bloqueio preventivo.
+5. Não apagar, reescrever ou forçar commits existentes; correções por novos commits na lab-build50.
+6. Não promover SHA candidato a aprovado sem validação física.
+7. Preservar imagem atual do Zeus.
+8. Artes/jogos da Cris originais, sem copiar Barbie.
+9. Não publicar sem validação física do titular.
+10. Nunca declarar feito o que não foi feito; distinguir implementação, testes e aprovação.
+Política de risco: em qualquer dúvida que possa comprometer item aprovado, não executar a mudança; informar arquivo, risco, evidências, alternativa segura e avançar em outra pendência. Não parar o planejamento, mas nunca sacrificar integridade. Esta atualização é somente documental e não dispara workflow ou instalador.

@@ -36,11 +36,15 @@ const assert=require('node:assert/strict');
      await tiles.first().waitFor({state:'visible',timeout:5000});
      assert.equal(await tiles.count(),2,'2048 initial board');
      const snapshot=()=>frame.evaluate(()=>Array.from(document.querySelectorAll('.tile-container .tile'),t=>[t.textContent,t.className.match(/tile-position-\d+-\d+/)?.[0]]).map(v=>JSON.stringify(v)).sort().join('|'));
+     // body.press() does not necessarily transfer focus to a sandboxed srcdoc iframe.
+     // Click inside the board as a user would, then require real keyboard delivery.
+     await frame.locator('.game-container').click();
+     assert.equal(await frame.evaluate(()=>document.hasFocus()),true,'2048 iframe must have keyboard focus');
      const before=await snapshot();
      let moved=false;
      for(const key of ['ArrowLeft','ArrowUp','ArrowRight','ArrowDown']){
-       await frame.locator('body').press(key);
-       await frame.waitForFunction(old=>Array.from(document.querySelectorAll('.tile-container .tile'),t=>[t.textContent,t.className.match(/tile-position-\d+-\d+/)?.[0]]).map(v=>JSON.stringify(v)).sort().join('|')!==old,before,{timeout:1000}).then(()=>{moved=true},()=>{});
+       await page.keyboard.press(key);
+       await frame.waitForFunction(old=>Array.from(document.querySelectorAll('.tile-container .tile'),t=>[t.textContent,t.className.match(/tile-position-\d+-\d+/)?.[0]]).map(v=>JSON.stringify(v)).sort().join('|')!==old,before,{timeout:1000}).then(()=>{moved=true},e=>{if(e.name!=='TimeoutError')throw e;});
        if(moved)break;
      }
      assert.ok(moved,'2048 keyboard input did not change board');
@@ -52,7 +56,8 @@ const assert=require('node:assert/strict');
      assert.equal(await frame.evaluate(()=>typeof comprar==='function'&&typeof comprarArma==='function'),true);
    }
    for(let i=0;i<6;i++){
-     if(id==='2048'||id==='snake'){await frame.locator('body').press(['ArrowLeft','ArrowUp','ArrowRight','ArrowDown'][i%4]);}
+     if(id==='2048'){assert.equal(await frame.evaluate(()=>document.hasFocus()),true,'2048 lost keyboard focus');await page.keyboard.press(['ArrowLeft','ArrowUp','ArrowRight','ArrowDown'][i%4]);}
+     else if(id==='snake'){await frame.locator('body').press(['ArrowLeft','ArrowUp','ArrowRight','ArrowDown'][i%4]);}
      else if(id==='blocks'){await frame.locator('#rotate').click();await frame.locator('#down').click();}
      else if(id==='maze'){await frame.locator(['#right','#down','#left','#up'][i%4]).click();}
      else if(id==='guerra'){await frame.evaluate(()=>{minerar();vender();comprar();});}

@@ -39,6 +39,11 @@ assert '<button onclick="abrirJogo(1)">' not in docs["robozinho"]
 assert 'id="z310Startup"' not in s
 assert "refresh();setInterval(refresh,500);" in s
 assert "Varredura cancelada por você" in s and "Motor parado" in s
+assert "chart(s.files,running&&!r.inventory_314?.scanner_done);" in s
+assert "measureSpeed(s.bytes,running&&!r.inventory_314?.scanner_done);" in s
+assert "Date.now()-z48CancelAt>2000" in s
+assert "Volume indisponível" in s and "Volume unavailable" in s and "Volumen no disponible" in s
+assert "local?gib(d.local_total):zT('Volume indisponível')" in s
 for label in ["Scanner complementar. Não substitui o Microsoft Defender.","Verificar procedência C2PA","Não detecta todos os vídeos de IA.","IA auxiliar, não é proteção principal."]:
     assert label in s,label
 launcher=Path("lab/build48/launcher.js").read_text(encoding="utf-8")

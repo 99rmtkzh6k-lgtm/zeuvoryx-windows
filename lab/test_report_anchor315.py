@@ -15,6 +15,9 @@ cases = [
     ("<html><body><main></main></body></html>", "<body>"),
     ("<!DOCTYPE html><html><main></main></html>", "document start fallback"),
     ("<main></main>", "document start fallback"),
+    ("<!DOCTYPE html>\r\n<html><head>\r\n<!-- </style></head> -->\r\n<style>p{content:'ação'}</style>\r\n</head><body>é</body></html>", "</style> in head"),
+    ("<html><head>\n<!-- <style>fake</style> -->\n<title>Relatório</title>\n</head><body></body></html>", "</head>"),
+    ("<html><head><style>p{color:red}</style>\n<style>q{color:blue}</style></head><body></body></html>", "</style> in head"),
 ]
 for source, expected in cases:
     actual, anchor = insert_report_css(source, CSS)

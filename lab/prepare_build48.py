@@ -96,7 +96,7 @@ def patch_html(s):
     s=one(s,"refresh();setInterval(refresh,2000);","refresh();setInterval(refresh,500);")
     s=one(s,"let last=null,series=[],key='',busy=false,confirmResolve=null;",
           "let last=null,series=[],key='',busy=false,confirmResolve=null,z48CancelAt=0,z48LastScan='';")
-    s=one(s,"function volume(n){","function volume(n){n=Number(n);if(!Number.isFinite(n)||n<0)return '0 GiB';")
+    s=one(s,"function volume(n){","function volume(n){if(n===null||n===undefined||n===''||!Number.isFinite(Number(n))||Number(n)<0)return zT('Volume indisponível');n=Number(n);")
     s=one(s,"let running=s.running;zSummary(s);","let running=s.running;if(running&&r.scan_id&&z48LastScan&&r.scan_id!==z48LastScan)z48CancelAt=0;if(r.scan_id)z48LastScan=r.scan_id;zSummary(s);")
     s=one(s,"chart(s.files,running);","chart(s.files,running&&!r.inventory_314?.scanner_done);")
     s=one(s,"measureSpeed(s.bytes,running);","measureSpeed(s.bytes,running&&!r.inventory_314?.scanner_done);")
@@ -113,8 +113,8 @@ def patch_html(s):
     s=one(s,"if(await window.startScan())resetChart();","if(await window.startScan()){z48CancelAt=0;resetChart();}")
     s=one(s,"await window.stopScan();await refresh()","z48CancelAt=Date.now();try{if(await window.stopScan()!==true)z48CancelAt=0;}catch(e){z48CancelAt=0;throw e}await refresh()")
     s=one(s,"const gib=n=>(Number(n)/1073741824).toLocaleString(lang,{maximumFractionDigits:1})+' '+t[12];",
-          "const gib=n=>((Number.isFinite(Number(n))&&Number(n)>=0?Number(n):0)/1073741824).toLocaleString(lang,{maximumFractionDigits:1})+' '+t[12];")
-    s=one(s,"z('zsCapacity').textContent=local?gib(d.local_total):'—';","z('zsCapacity').textContent=local?gib(d.local_total):'0 GiB';")
+          "const gib=n=>n===null||n===undefined||n===''||!Number.isFinite(Number(n))||Number(n)<0?zT('Volume indisponível'):(Number(n)/1073741824).toLocaleString(lang,{maximumFractionDigits:1})+' '+t[12];")
+    s=one(s,"z('zsCapacity').textContent=local?gib(d.local_total):'—';","z('zsCapacity').textContent=local?gib(d.local_total):zT('Volume indisponível');")
     s=one(s,'<button id="z310Startup">Programas de inicialização</button>',"")
     s=one(s,"'z310MaintTitle','z310MaintInfo','z310Drive','z310Clean','z310Startup'",
           "'z310MaintTitle','z310MaintInfo','z310Drive','z310Clean'")
@@ -135,6 +135,7 @@ def patch_html(s):
         "en-US":{"Motor parado":"Scanner stopped","Cancelando varredura":"Canceling scan","Varredura cancelada por você":"Scan canceled by you","Cancelamento solicitado; motor ainda encerrando. Limite de 2 segundos excedido.":"Cancellation requested; scanner still shutting down. Two-second limit exceeded.","Aguardando confirmação de parada do motor.":"Waiting for scanner shutdown confirmation.","IA auxiliar, não é proteção principal.":"Auxiliary AI, not primary protection.","Verificar procedência C2PA":"Verify C2PA provenance"},
         "es-ES":{"Motor parado":"Motor detenido","Cancelando varredura":"Cancelando análisis","Varredura cancelada por você":"Análisis cancelado por usted","Cancelamento solicitado; motor ainda encerrando. Limite de 2 segundos excedido.":"Cancelación solicitada; motor aún cerrándose. Límite de dos segundos superado.","Aguardando confirmação de parada do motor.":"Esperando confirmación de detención del motor.","IA auxiliar, não é proteção principal.":"IA auxiliar, no es protección principal.","Verificar procedência C2PA":"Verificar procedencia C2PA"}}
     for lang,values in translation.items():
+        values["Volume indisponível"]="Volume unavailable" if lang=="en-US" else "Volumen no disponible"
         values["Scanner complementar. Não substitui o Microsoft Defender."]="Complementary scanner. Does not replace Microsoft Defender." if lang=="en-US" else "Escáner complementario. No sustituye a Microsoft Defender."
         values["Arquivos realmente examinados pelo scanner próprio; atualização a cada 500 ms."]="Actual files examined by the local scanner; refresh every 500 ms." if lang=="en-US" else "Archivos realmente examinados por el escáner propio; actualización cada 500 ms."
     s=one(s,"zCaptureStatic();zPaintStatic();","for(const [lang,v] of Object.entries("+js_json(translation)+"))Object.assign(zCatalog[lang],v);zCaptureStatic();zPaintStatic();")

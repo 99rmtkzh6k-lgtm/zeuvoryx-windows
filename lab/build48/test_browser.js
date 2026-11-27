@@ -31,6 +31,20 @@ const assert=require('node:assert/strict');
    assert.equal(await loc.getAttribute('referrerpolicy'),'no-referrer');
    const frame=await (await loc.elementHandle()).contentFrame();
    await frame.locator('body').waitFor();
+   if(id==='2048'){
+     const tiles=frame.locator('.tile-container .tile');
+     await tiles.first().waitFor({state:'visible',timeout:5000});
+     assert.equal(await tiles.count(),2,'2048 initial board');
+     const snapshot=()=>frame.evaluate(()=>Array.from(document.querySelectorAll('.tile-container .tile'),t=>[t.textContent,t.className.match(/tile-position-\d+-\d+/)?.[0]]).map(v=>JSON.stringify(v)).sort().join('|'));
+     const before=await snapshot();
+     let moved=false;
+     for(const key of ['ArrowLeft','ArrowUp','ArrowRight','ArrowDown']){
+       await frame.locator('body').press(key);
+       await frame.waitForFunction(old=>Array.from(document.querySelectorAll('.tile-container .tile'),t=>[t.textContent,t.className.match(/tile-position-\d+-\d+/)?.[0]]).map(v=>JSON.stringify(v)).sort().join('|')!==old,before,{timeout:1000}).then(()=>{moved=true},()=>{});
+       if(moved)break;
+     }
+     assert.ok(moved,'2048 keyboard input did not change board');
+   }
    if(id==='snake')await frame.getByRole('button',{name:'START GAME',exact:true}).click();
    if(id==='guerra'){
      await frame.getByRole('button',{name:'JOGAR (PLAY)',exact:true}).click();
@@ -47,6 +61,11 @@ const assert=require('node:assert/strict');
    }
    assert.ok(Date.now()-start>=60000,id+' duration');
    assert.equal(await page.locator('#zGameBoard iframe').count(),1);
+   if(id==='2048'){
+     await frame.getByText('New Game',{exact:true}).click();
+     await frame.waitForFunction(()=>document.querySelectorAll('.tile-container .tile').length===2&&document.querySelector('.score-container').textContent.trim()==='0',null,{timeout:5000});
+     console.log('Check4 2048: initial board, keyboard movement and restart verified');
+   }
    // The DOM removal is synchronous; Playwright observes frame detachment asynchronously.
    // Register the event before clicking, and still require actual detachment within 2 seconds.
    const detached=page.waitForEvent('framedetached',{predicate:f=>f===frame,timeout:2000});

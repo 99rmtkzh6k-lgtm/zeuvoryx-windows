@@ -1,6 +1,7 @@
 """One Reports destination, no extra windows or repeated export buttons."""
 from pathlib import Path
 import re
+from report_anchor315 import insert_report_css
 def once(s,a,b):
     if s.count(a)!=1:raise RuntimeError("reports anchor "+a[:100])
     return s.replace(a,b,1)
@@ -21,27 +22,10 @@ if len(re.findall(r"'reports315'\]\.forEach\(id=>el\(id\)\.classList\.toggle\('h
     raise RuntimeError("reports navigation registration not verified")
 
 s=once(s,'</main>','''<section id="reports315" class="hidden card"><h2>Central de relatórios</h2><p class="sub">Dados reais do ZEUVORYX e do Windows, salvos localmente. Nenhum envio automático.</p><label for="z315ReportSource">Relatório</label><select id="z315ReportSource"><option value="current">Varredura atual ou última</option><option value="history">Varredura do histórico</option><option value="diag">Diagnóstico gravado</option></select><label for="z315ReportSearch">Pesquisar histórico</label><input id="z315ReportSearch" type="search" placeholder="Data, modo ou identificador"><select id="z315ReportHistory" aria-label="Relatório histórico"><option value="">Selecione uma varredura</option></select><p id="z315ReportPreview" role="status"></p><button id="z315ReportSave" class="primary">Gerar relatório JSON</button><div id="z315Transfer" class="entry" hidden><strong id="z315ReportFile" role="button" tabindex="0" style="cursor:grab;touch-action:none;user-select:none;overflow-wrap:anywhere">Arquivo JSON</strong><p class="sub">Mantenha o botão esquerdo pressionado sobre o arquivo e arraste. Ou copie e cole no destino compatível.</p><button id="z315CopyFile">Copiar arquivo</button></div><p id="z315ReportStatus" role="status" style="overflow-wrap:anywhere"></p><details><summary>Histórico e avaliação</summary><div id="z315ReportAudit"></div></details><details><summary>Diagnóstico técnico</summary><div id="z315ReportDiag"></div></details></section></main>''')
-# CSS insertion: tolerate whitespace, attributes and separate closing tags.
-# Never hide a missing structural anchor: navigation and JS checks remain strict.
+# Insert CSS only at an actual structural HTML boundary (not a string in JS).
 report_css = '#reports315{gap:10px}#reports315 #z315ReportHistory,#reports315 #z315ReportSearch{max-width:100%}#reports315 [hidden]{display:none!important}#reports315 details{margin-top:10px}#reports315 #auditList{max-height:220px;overflow:auto}'
-style_matches = list(re.finditer(r'</style\\s*>', s, flags=re.IGNORECASE))
-head_matches = list(re.finditer(r'</head\\s*>', s, flags=re.IGNORECASE))
-body_matches = list(re.finditer(r'<body\\b', s, flags=re.IGNORECASE))
-if style_matches:
-    pos = style_matches[-1].start()
-    print('anchor encontrada: </style>')
-    s = s[:pos] + report_css + s[pos:]
-elif head_matches:
-    pos = head_matches[-1].start()
-    print('anchor não encontrada, usando fallback </head>')
-    s = s[:pos] + '<style>' + report_css + '</style>' + s[pos:]
-elif body_matches:
-    pos = body_matches[0].start()
-    print('anchor não encontrada, usando fallback <body>')
-    s = s[:pos] + '<style>' + report_css + '</style>' + s[pos:]
-else:
-    print('anchor não encontrada, usando fallback final do documento')
-    s += '<style>' + report_css + '</style>'
+s, anchor = insert_report_css(s, report_css)
+print("reports CSS anchor:", anchor)
 s=once(s,'let h=await window.auditHistory();out.replaceChildren();','let h=await window.auditHistory();z315ReportHistory(h.Events||[]);out.replaceChildren();')
 old="const b=node('button','Exportar relatório salvo');b.onclick=()=>action(async()=>{el('msg').textContent='Relatório salvo em: '+await window.auditExportHistory(v.ScanID)});row.append(b)"
 s=once(s,old,"")

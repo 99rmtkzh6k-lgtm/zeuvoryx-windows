@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'">
+<title>FAMÍLIA BOTELHO VS ZUMBIS</title>
+<style>
+body{background:#0a1a2a;color:white;font-family:Arial;text-align:center}
+button{padding:12px 18px;margin:5px;font-size:16px;border-radius:10px;border:none;cursor:pointer}
+.azul{background:#2196F3;color:white}.verde{background:#4CAF50;color:white}.vermelho{background:#f44336;color:white}.amarelo{background:#FFC107}
+#log{background:black;color:#0f0;padding:10px;height:150px;overflow:auto;text-align:left;margin:10px;border-radius:10px}
+</style></head>
+<body>
+<h1>🛡️ FAMÍLIA BOTELHO VS HORDA ZUMBI 🧟</h1>
+<h3>Criado por L.A.B. | Sem sobrenome, só família</h3>
+<p>💰 OURO: <span id="ouro">100</span> | 💎 DIAMANTE: <span id="diam">0</span> | 🔋 LÍTIO: <span id="litio">0</span> | 🪨 TERRAS RARAS: <span id="raras">0</span></p>
+<p>🪙 BOTECOIN: <span id="bote">50</span> | ❤️ BASE: <span id="vida">100</span> | 🧟 ZUMBIS: <span id="zumbi">0</span></p>
+<p><b>Escolha seu jogador:</b></p>
+<button class="azul" onclick="grito('LEONARDO')">LEONARDO - PRA CIMA! BORA!</button>
+<button class="azul" onclick="grito('CRISTIANE')">CRISTIANE - CUIDADO!</button>
+<button class="azul" onclick="grito('CRISZINHA')">CRISZINHA - EU ACERTEI, PAPAI!</button>
+<button class="azul" onclick="grito('TIAGO')">TIAGO - CARACA!</button>
+<button class="azul" onclick="grito('FELIPE')">FELIPE - URRAAA!</button>
+<br>
+<button class="verde" onclick="minerar()">⛏️ MINERAR - Pegar Minério</button>
+<button class="verde" onclick="vender()">💰 VENDER - Ganhar Botecoin</button>
+<button class="amarelo" onclick="comprar()">🛒 COMPRAR ARMA no Bar do Botelho</button>
+<button class="vermelho" onclick="atacar()">⚔️ ATACAR ZUMBI</button>
+<button class="vermelho" onclick="invasao()">🧟 INVASÃO ZUMBI</button>
+<div id="log">>> FAMÍLIA BOTELHO PRONTA! PRA CIMA! BORA!<br></div>
+<script>
+let ouro=100,diam=0,litio=0,raras=0,bote=50,vida=100,z=0;
+function log(t){const e=document.getElementById('log');e.append(document.createTextNode(t),document.createElement('br'));e.scrollTop=e.scrollHeight;atualiza();}
+function atualiza(){document.getElementById('ouro').innerText=ouro;document.getElementById('diam').innerText=diam;document.getElementById('litio').innerText=litio;document.getElementById('raras').innerText=raras;document.getElementById('bote').innerText=bote;document.getElementById('vida').innerText=vida;document.getElementById('zumbi').innerText=z;}
+function grito(q){
+if(q=='LEONARDO') log("LEONARDO: PRA CIMA! PRA CIMA! BORA! / LET'S GO!");
+if(q=='CRISTIANE') log("CRISTIANE: CUIDADO! VOLTA AQUI! / CAREFUL! COME BACK!");
+if(q=='CRISZINHA') log("CRISZINHA: EU ACERTEI, PAPAI! / I GOT IT, DADDY!");
+if(q=='TIAGO') log("TIAGO: CARACA! CARACA! / WHOA! WHOA!");
+if(q=='FELIPE') log("FELIPE: URRAAA! / URRAAA!");
+}
+function minerar(){ouro+=20;diam+=5;litio+=5;raras+=2;log("⛏️ Você minerou! LEONARDO: OURO! PRA CIMA! BORA! / GOLD!");}
+function vender(){if(ouro>=20){ouro-=20;bote+=30;log("💰 CRISTIANE: CUIDADO! VENDEU BEM! +30 BOTECOIN / GOOD SALE!");}else log("Sem ouro pra vender! Minera primeiro!");}
+function comprar(){if(bote>=20){bote-=20;log("🛒 Bar do Botelho: ARMA NOVA! LEONARDO: PRA CIMA! ARMA NOVA! / NEW WEAPON!");}else log("Sem Botecoin! Vende minério primeiro!");}
+function atacar(){if(z>0){z--;log("⚔️ Você matou 1 zumbi! CRISZINHA: EU ACERTEI, PAPAI! / I GOT IT!");}else log("Sem zumbi pra atacar! Aperta INVASÃO!");}
+function invasao(){z+=3;vida-=10;log("🧟 ZUMBI: Vooou... te... pegaaa... / Gooonna get youuu... +3 Zumbis chegaram! Base -10!");log("CRISTIANE: CUIDADO! TÃO ATACANDO A BASE! / BASE UNDER ATTACK!");if(vida<=0){vida=100;z=0;log("💀 BASE DESTRUÍDA! LEONARDO: PRA CIMA! BORA DE NOVO!");}}
+</script></body></html>

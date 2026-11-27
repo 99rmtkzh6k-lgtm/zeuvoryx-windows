@@ -13,7 +13,10 @@ class Assets(HTMLParser):
 
 base = Path(__file__).resolve().parent
 game = (base / "arcade2048/game.html").read_bytes()
-assert sha256(game).hexdigest() == "d0a8b940891c03d845d5c79d939a187232a7a75741ed45b5d9b9910fb8822ed3"
+approved = (base / "approved_game_hashes.json")
+import json
+records=json.loads(approved.read_text(encoding="utf-8"))
+assert sha256(game).hexdigest() == records["2048"]["sha256"], "2048 hash mismatch; do not silently bless a modified game"
 html = game.decode()
 launcher = (base / "games314.js").read_text(encoding="utf-8")
 shared = (base / 'gamewindow.js').read_text(encoding='utf-8')

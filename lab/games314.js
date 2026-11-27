@@ -4,6 +4,7 @@ const z=id=>document.getElementById(id),panel=z('zGames314'),nav=z('zGamesNav314
 const win=new ZGameWindow314(panel,board,status);
 for(const game of games)win.registerGame(game,game[0]==='2048'?zArcade2048:zRetroDocs[game[0]]);
 let gameTimer=null,visible=false,querying=false,launch=0,currentGame=null;
+function gameDenied(id,e){const entry=games.find(g=>g[0]===id);const title=entry?entry[2]:id;const reason=String(e&&e.message?e.message:e).replace(/^Error:\s*/,'');const msg='Acesso bloqueado: '+title+' · Regra: '+reason;status.textContent=msg;console.warn('[ZEUVORYX GameWindow] autorização negada; jogo='+id+'; motivo='+reason);return msg}
 function closeGame(){launch++;currentGame=null;win.close()}
 function close(){if(gameTimer!==null){clearInterval(gameTimer);gameTimer=null}visible=false;closeGame();panel.classList.add('hidden');nav.classList.remove('active');nav.setAttribute('aria-expanded','false')}
 nav.onclick=()=>{visible=true;if(gameTimer!==null)clearInterval(gameTimer);refreshGameScan();gameTimer=setInterval(refreshGameScan,3000);for(const b of document.querySelectorAll('[data-page]')){b.classList.remove('active');const p=z(b.dataset.page);if(p)p.classList.add('hidden')}panel.classList.remove('hidden');nav.classList.add('active');nav.setAttribute('aria-expanded','true');render()};
@@ -17,7 +18,7 @@ async function start(id){
  const game=games.find(entry=>entry[0]===id);
  if(!game||!visible)return;
  const ticket=++launch;
- try{if(await window.allowLocalGame315(id)!==true)throw Error('Acesso não autorizado')}catch(e){if(ticket===launch)status.textContent='Jogo indisponível: '+String(e);return}
+ try{if(typeof window.allowLocalGame315!=='function')throw Error('Controle familiar indisponível: função de autorização não registrada');if(await window.allowLocalGame315(id)!==true)throw Error('Controle familiar: autorização negada')}catch(e){if(ticket===launch)gameDenied(id,e);return}
  if(!visible||ticket!==launch)return;
  closeGame();try{win.open(id);currentGame=id}catch(e){status.textContent='Jogo indisponível: '+String(e)};
 }

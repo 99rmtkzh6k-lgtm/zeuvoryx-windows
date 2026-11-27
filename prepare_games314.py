@@ -6,10 +6,10 @@ from html import escape
 from retro21 import load_retro
 def regex_one(s,pattern,replacement):
     s,n=re.subn(pattern,lambda m:replacement(m),s)
-    if n!=1:raise RuntimeError('Games regex anchor '+pattern+' count='+str(n))
+    if n!=1:raise RuntimeError('Games insertion point regex='+pattern+' expected=1 observed='+str(n))
     return s
 def one(s,a,b):
-    if s.count(a)!=1:raise RuntimeError("Games anchor "+a[:100])
+    if s.count(a)!=1:raise RuntimeError("Games insertion point="+repr(a[:100])+" expected=1 observed="+str(s.count(a)))
     return s.replace(a,b,1)
 Path("games314_windows.go").write_text(Path("lab/games314_windows.go.txt").read_text(encoding="utf-8"),encoding="utf-8")
 p=Path("desktop_windows.go");s=p.read_text(encoding="utf-8")

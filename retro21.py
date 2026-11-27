@@ -13,7 +13,7 @@ def load_retro():
     for g in manifest:
         assert re.fullmatch(r"[a-z0-9-]+",g["id"])
         raw=(root/(g["id"]+".html")).read_bytes()
-        assert sha1(b"blob "+str(len(raw)).encode()+b"\0"+raw).hexdigest()==g["sha"],g["id"]
+        assert sha1(b"blob "+str(len(raw)).encode()+b"\0"+raw).hexdigest()==g["sha"],"Retro hash mismatch for "+g["id"]+"; update manifest in a reviewed commit"
         html=raw.decode("utf-8")
         assert not re.search(r'<(?:iframe|object|embed|base|form)\b|<script\b[^>]*\bsrc\s*=|<link\b[^>]*\bhref\s*=|(?:fetch|XMLHttpRequest|WebSocket|postMessage|eval)\s*\(|window\.parent|chrome\.webview|document\.cookie|https?://',html,re.I),g["id"]
         html=re.sub(r"\blocalStorage\b","zArcadeSessionStore",html)

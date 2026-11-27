@@ -64,7 +64,7 @@ func (w *bounded) Write(p []byte)(int,error) {
 }
 func command(ctx context.Context, exe string,args ...string)*exec.Cmd {
  c:=exec.CommandContext(ctx,exe,args...)
- c.WaitDelay=5*time.Second
+ c.WaitDelay=time.Second
  c.Dir=filepath.Dir(exe)
  configure(c)
  return c

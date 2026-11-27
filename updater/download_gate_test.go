@@ -21,27 +21,25 @@ func TestDownloadGateRejectsDuplicate(t *testing.T) {
 }
 func TestDownloadGateConcurrent(t *testing.T) {
  var gate DownloadGate
+ owner,ok:=gate.Begin("same")
+ if !ok {t.Fatal("initial reservation failed")}
  var wg sync.WaitGroup
- start := make(chan struct{})
- successes := make(chan bool,64)
- hold := make(chan struct{})
+ rejected:=make(chan bool,64)
  for i:=0;i<64;i++ {
   wg.Add(1)
   go func(){
    defer wg.Done()
-   <-start
-   release,ok:=gate.Begin("same")
-   successes<-ok
-   if ok { <-hold; release() }
+   _,ok:=gate.Begin("same")
+   rejected<-!ok
   }()
  }
- close(start)
- close(hold)
  wg.Wait()
- close(successes)
- count:=0
- for ok:=range successes { if ok { count++ } }
- if count!=1 { t.Fatalf("expected one winner, got %d",count) }
+ close(rejected)
+ for denied:=range rejected {if !denied {t.Fatal("duplicate reservation succeeded")}}
+ owner()
+ next,ok:=gate.Begin("same")
+ if !ok {t.Fatal("reservation not released")}
+ next()
 }
 func TestDownloadGateEmptyID(t *testing.T) {
  var gate DownloadGate

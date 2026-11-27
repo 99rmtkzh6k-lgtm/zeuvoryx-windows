@@ -51,8 +51,15 @@ func stage(ctx context.Context,fetch fetcher,key ed25519.PublicKey,current,targe
  in,e:=os.Open(path);if e!=nil{return result,e};e=releaseguard.VerifyPackage(in,m);ce=in.Close();if e==nil{e=ce};if e!=nil{return result,e}
  ok=true;return staged{path,m},nil
 }
+// stageGate prevents two in-process requests from staging the same installer.
+// It cannot lock Safari, other app instances, or external GitHub downloads.
+var stageGate DownloadGate
+
 func StageAuthorized(ctx context.Context,target string)(staged,error){
  key,e:=ownerKey();if e!=nil{return staged{},e}
+ release,ok:=stageGate.Begin(InstallerName(target))
+ if !ok{return staged{},errors.New(DuplicateDownloadMessage)}
+ defer release()
  return stage(ctx,fetchWith(downloadClient()),key,Current,target,os.TempDir(),time.Now())
 }
 

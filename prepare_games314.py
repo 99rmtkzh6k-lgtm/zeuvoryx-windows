@@ -29,7 +29,7 @@ s=one(s,'</nav>','<button id="zGamesNav314" type="button" aria-expanded="false">
 retro, retro_docs = load_retro()
 # Owner-provided original game, using the existing sandboxed offline launcher.
 family_game_id = "familia-botelho-zumbis"
-family_game = Path("lab/familia-botelho/game.html").read_text(encoding="utf-8")
+family_game = Path("lab/familia-botelho/botelho.html").read_text(encoding="utf-8")
 if "connect-src 'none'" not in family_game or re.search(r"\b(?:fetch|XMLHttpRequest|WebSocket|postMessage)\s*\(|window\.parent|chrome\.webview|https?://", family_game, re.I):
     raise RuntimeError("Family game offline isolation contract failed")
 retro.append({"id": family_game_id, "category": "Estratégia", "title": "Família Botelho vs Horda Zumbi", "description": "Mineração, Botecoin e defesa da base. Criado por L.A.B. · Offline."})

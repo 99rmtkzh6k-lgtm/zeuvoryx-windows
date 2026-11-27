@@ -6,8 +6,8 @@ class _Boundaries(HTMLParser):
     def __init__(self, html):
         super().__init__(convert_charrefs=False)
         self.starts = [0]
-        for line in html.splitlines(keepends=True):
-            self.starts.append(self.starts[-1] + len(line))
+        for line in html.split('\n')[:-1]:
+            self.starts.append(self.starts[-1] + len(line) + 1)
         self.in_head = False
         self.styles = []
         self.head_close = None

@@ -41,3 +41,13 @@ func TestP0CancelledDuringRetry(t *testing.T){
  n:=0;_,err:=openScan(ctx,"locked.tmp",func(string)(*os.File,error){n++;cancel();return nil,syscall.Errno(32)},true)
  if n!=1||!errors.Is(err,context.Canceled){t.Fatal(n,err)}
 }
+
+func TestBuild50AccessReason(t *testing.T) {
+ for _,tc:=range []struct{code syscall.Errno;want string}{
+  {5,"Sem permissão de acesso — não é evidência de vírus"},
+  {32,"Arquivo em uso ou bloqueado por outro programa — não é evidência de vírus"},
+  {33,"Arquivo em uso ou bloqueado por outro programa — não é evidência de vírus"},
+ }{
+  if got:=accessReason(tc.code);got!=tc.want{t.Fatalf("code %d: %q",tc.code,got)}
+ }
+}

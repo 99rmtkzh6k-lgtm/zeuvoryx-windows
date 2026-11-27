@@ -27,13 +27,23 @@ func windowsAccessCode(err error)(syscall.Errno,bool){
  return code,code==5||code==32||code==33
 }
 
+// Access errors describe scan coverage, never evidence of infection.
+// Code 5 alone cannot establish that a path is a system folder.
+func accessReason(code syscall.Errno) string {
+ switch code {
+ case 5: return "Sem permissão de acesso — não é evidência de vírus"
+ case 32,33: return "Arquivo em uso ou bloqueado por outro programa — não é evidência de vírus"
+ default: return "Falha de acesso — não é evidência de vírus"
+ }
+}
+
 // WindowsSkipped preserves an existing timestamp; it does not override ACLs.
 func WindowsSkipped(path string,err error)*SkippedError {
  var skipped *SkippedError
  if errors.As(err,&skipped){return skipped}
  if runtime.GOOS!="windows"{return nil}
  code,ok:=windowsAccessCode(err);if !ok{return nil}
- return &SkippedError{Path:path,Motivo:err.Error(),Hora:time.Now().UTC(),CodigoWindows:uint32(code),cause:err}
+ return &SkippedError{Path:path,Motivo:accessReason(code),Hora:time.Now().UTC(),CodigoWindows:uint32(code),cause:err}
 }
 
 // os.Open on Windows requests read access with FILE_SHARE_READ|FILE_SHARE_WRITE.
@@ -48,7 +58,7 @@ func openScan(ctx context.Context,path string,open func(string)(*os.File,error),
  },[]time.Duration{500*time.Millisecond})
  if err==nil||!windows{return f,err}
  code,ok:=windowsAccessCode(err);if !ok{return f,err}
- return nil,&SkippedError{Path:path,Motivo:err.Error(),Hora:time.Now().UTC(),CodigoWindows:uint32(code),cause:err}
+ return nil,&SkippedError{Path:path,Motivo:accessReason(code),Hora:time.Now().UTC(),CodigoWindows:uint32(code),cause:err}
 }
 
 func transientWindows(err error) bool {return errors.Is(err,syscall.Errno(32))||errors.Is(err,syscall.Errno(33))}

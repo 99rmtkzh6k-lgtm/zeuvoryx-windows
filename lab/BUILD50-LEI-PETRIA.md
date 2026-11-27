@@ -1,0 +1,8 @@
+# ZEUVORYX 3.0.23 LAB Build 50 — trabalho em preparação
+Base imutável: f0b136c4b2f0bd285b87f228a2b48fb4db304e73. Run de referência 46011202194, 3 passagens, 9/9 jobs.
+Branch lab-build50. Não alterar main ou Releases. Não declarar aprovado antes de validação física.
+Modo LAB: apenas informar; Defender ativo; sem bloqueio preventivo, exclusão ou quarentena automática. Não é antivírus homologado; testes sintéticos não provam eficácia contra malware real.
+Progresso deste commit: correção inicial do layout iframe, teste de dimensões 1366x768 com CSS gerado, mensagens de acesso por código Windows e testes unitários associados. Ainda não executados.
+Pendências obrigatórias antes de compilar: controles reais Win32 SC_MINIMIZE/SC_MAXIMIZE/SC_CLOSE (46x32), dimensões normal/maximizadas e DPI na janela nativa, confirmação de varredura concorrente sem simular pausa, contagens reais de falhas por categoria sem somá-las a alertas, ZIP/EICAR/cobertura parcial, identidade e atualização LAB Build 50, trava de download, revisão de vídeos, integração dos três ciclos no workflow e nomes de artefato exclusivos por SHA. Zeus e Cris estacionados.
+Validação: seis jogos com interação, sem cortes; Windows e Linux 8/8 por passagem, 5 ciclos de instalação, scanner, QA20, 50M simulados. Windows 52 etapas aprovadas + 1 ignorada conforme modo autorizado; 9/9 jobs no mesmo SHA, parar na primeira falha. Baixar apenas passagem 3, verificar SHA256 do EXE e testar/filmar no PC do titular, mantendo Defender ligado. Não usar resultados antigos como se fossem Build 50.
+Observação: código 5 não prova que o caminho é pasta de sistema. Contagens 62/13 são exemplos do titular, não constantes de execução. "Não é evidência de vírus" não significa que o arquivo foi examinado ou está limpo.

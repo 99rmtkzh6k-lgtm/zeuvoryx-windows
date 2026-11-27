@@ -61,6 +61,10 @@ section=re.search(r'<section id="zGames314"[\s\S]*?</section>',s)
 assert section
 prefix="""<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><style>.hidden,[hidden]{display:none!important}</style></head><body>
 <button id="zGamesNav314">Games</button><button id="zFamilyNav314">Controle parental</button><button data-page="overview">Visão geral</button><button data-page="alerts">Alertas</button><section id="overview"></section><section id="alerts"></section>"""
+# Exercise the actual generated desktop CSS, including the legacy game board rules.
+styles="".join(re.findall(r"<style\\b[^>]*>[\\s\\S]*?</style>",s,re.I))
+assert "#zGames314 #zGameBoard iframe" in styles, "Build50 layout CSS missing"
+prefix=prefix.replace("</head>",styles+"</head>")
 bridge="""<script>
 window.blockedIds=new Set();window.getScanState=async()=>({running:false,files:0,bytes:0,report:{}});
 window.allowLocalGame315=async id=>!window.blockedIds.has(id);

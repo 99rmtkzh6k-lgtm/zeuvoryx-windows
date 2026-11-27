@@ -5,7 +5,7 @@ const assert=require('node:assert/strict');
 (async()=>{
  const browser=await chromium.launch({channel:'msedge',headless:true});
  try{
-  const page=await browser.newPage();
+  const page=await browser.newPage({viewport:{width:1366,height:768}});
   const errors=[],network=[],popups=[];
   page.on('pageerror',e=>errors.push(String(e)));
   page.on('request',r=>{if(/^https?:/i.test(r.url()))network.push(r.url())});
@@ -27,6 +27,10 @@ const assert=require('node:assert/strict');
    await page.locator('[data-game-id="'+id+'"] button:not(:disabled)').click();
    const loc=page.locator('#zGameBoard iframe');
    await loc.waitFor();
+   const box=await loc.boundingBox();
+   assert.ok(box&&box.width>=900&&box.height>=600,id+' game viewport below 900x600: '+JSON.stringify(box));
+   assert.ok(box.x>=0&&box.x+box.width<=1366,id+' game viewport clipped horizontally');
+   console.log(id+' game viewport '+box.width+'x'+box.height);
    assert.equal(await loc.getAttribute('sandbox'),'allow-scripts');
    assert.equal(await loc.getAttribute('referrerpolicy'),'no-referrer');
    const frame=await (await loc.elementHandle()).contentFrame();

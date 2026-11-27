@@ -1,0 +1,14 @@
+name: ZEUVORYX 3.0.23 LAB Build 52 V3 validation
+on:
+  push:
+    branches: [lab-build52-gamewindow-v3-audit]
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  validate:
+    uses: ./.github/workflows/windows-build.yml
+    with:
+      validation_only: true
+      validation_suffix: '-build52-v3'

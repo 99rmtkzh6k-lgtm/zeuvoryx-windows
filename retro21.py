@@ -21,3 +21,21 @@ def load_retro():
         assert n==1 and "connect-src 'none'" in html
         docs[g["id"]]=html
     return manifest,docs
+
+
+def load_universo():
+    """Build an isolated document from the canonical four-file web project."""
+    root = Path("universo-botelho")
+    index = (root / "index.html").read_text(encoding="utf-8")
+    css = (root / "style.css").read_text(encoding="utf-8")
+    js = (root / "script.js").read_text(encoding="utf-8")
+    style_tag = '<link rel="stylesheet" href="style.css">'
+    script_tag = '<script src="script.js"></script>'
+    assert index.count(style_tag) == index.count(script_tag) == 1
+    assert "</script" not in js.lower() and "</style" not in css.lower()
+    index = index.replace(style_tag, "<style>"+css+"</style>")
+    index = index.replace(script_tag, "<script>"+js+"</script>")
+    index = index.replace("script-src 'self' 'unsafe-inline'", "script-src 'unsafe-inline'").replace("style-src 'self' 'unsafe-inline'", "style-src 'unsafe-inline'")
+    assert "connect-src 'none'" in index
+    assert not re.search(r'<(?:iframe|object|embed|base|form)\b|<script\b[^>]*\bsrc\s*=|<link\b[^>]*\bhref\s*=|(?:fetch|XMLHttpRequest|WebSocket|postMessage)\s*\(|window\.parent|chrome\.webview|https?://|@import', index, re.I)
+    return index

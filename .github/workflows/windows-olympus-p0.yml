@@ -1,7 +1,7 @@
 name: ZEUVORYX 3.0.23 LAB - P0 scan finalization
 on:
   push:
-    branches: [lab-integracao-p0-20261126]
+    branches: [lab-integracao-p0-20261126, fix-build39-relatorio-jogos]
     paths-ignore: ['**.md']
   workflow_dispatch:
 permissions:
@@ -28,4 +28,61 @@ jobs:
       - name: One hundred inventory and coverage regression cycles
         run: go test -count=100 -run '^TestP0InventoryCompleteness322$' ./scopeprogress
   windows-build:
+    needs: module-regression
     uses: ./.github/workflows/windows-build.yml
+    with:
+      validation_suffix: ${{ github.ref == 'refs/heads/fix-build39-relatorio-jogos' && '-check1' || '' }}
+  module-regression-pass2:
+    needs: windows-build
+    if: github.ref == 'refs/heads/fix-build39-relatorio-jogos'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+          cache: false
+      - name: Five module regression cycles
+        run: go test -count=5 ./scriptguard ./behaviorwatch ./changeguard ./auditmetrics ./scopeprogress ./adaptive ./signatureav ./scanretry ./scanplan
+      - name: One hundred inventory and coverage regression cycles
+        run: go test -count=100 -run '^TestP0InventoryCompleteness322$' ./scopeprogress
+  windows-build-pass2:
+    needs: module-regression-pass2
+    if: github.ref == 'refs/heads/fix-build39-relatorio-jogos'
+    uses: ./.github/workflows/windows-build.yml
+    with:
+      validation_suffix: '-check2'
+  module-regression-pass3:
+    needs: windows-build-pass2
+    if: github.ref == 'refs/heads/fix-build39-relatorio-jogos'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+          cache: false
+      - name: Five module regression cycles
+        run: go test -count=5 ./scriptguard ./behaviorwatch ./changeguard ./auditmetrics ./scopeprogress ./adaptive ./signatureav ./scanretry ./scanplan
+      - name: One hundred inventory and coverage regression cycles
+        run: go test -count=100 -run '^TestP0InventoryCompleteness322$' ./scopeprogress
+  windows-build-pass3:
+    needs: module-regression-pass3
+    if: github.ref == 'refs/heads/fix-build39-relatorio-jogos'
+    uses: ./.github/workflows/windows-build.yml
+    with:
+      validation_suffix: '-check3'

@@ -10,6 +10,28 @@ import (
  "sync"
 )
 
+// Validate the complete temporary JSON before publishing it. Stream tokens to
+// avoid loading the entire report into memory; reject trailing JSON values.
+func validateReportJSON315(path string) error {
+ f,e:=os.Open(path);if e!=nil{return e}
+ defer f.Close()
+ d:=json.NewDecoder(f);d.UseNumber()
+ first,e:=d.Token();if e!=nil{return fmt.Errorf("Relatório JSON inválido: %w",e)}
+ depth:=0
+ if delim,ok:=first.(json.Delim);ok&&(delim=='{'||delim=='['){depth=1}
+ for depth>0{
+  token,e:=d.Token();if e!=nil{return fmt.Errorf("Relatório JSON inválido: %w",e)}
+  if delim,ok:=token.(json.Delim);ok{
+   switch delim{case '{','[':depth++;case '}',']':depth--}
+  }
+ }
+ if _,e=d.Token();e!=io.EOF{
+  if e==nil{return fmt.Errorf("Relatório contém mais de um valor JSON")}
+  return fmt.Errorf("Dados extras no relatório JSON: %w",e)
+ }
+ return nil
+}
+
 // Save to a unique real file. No partial file survives a failed write.
 func writeReport315(dir, prefix string, write func(io.Writer) error) (string,error) {
  if e:=os.MkdirAll(dir,0700);e!=nil{return "",e}
@@ -19,6 +41,7 @@ func writeReport315(dir, prefix string, write func(io.Writer) error) (string,err
  if e=write(f);e!=nil{return "",e}
  if e=f.Sync();e!=nil{return "",e}
  if e=f.Close();e!=nil{return "",e}
+ if e=validateReportJSON315(temp);e!=nil{return "",e}
  st,e:=os.Stat(temp);if e!=nil{return "",e};if !st.Mode().IsRegular()||st.Size()==0{return "",fmt.Errorf("Relatório vazio ou inválido")}
  // Publish only after the full write is closed and synced; interrupted writes
  // leave a .tmp, never a misleading completed .json. Same-directory rename.

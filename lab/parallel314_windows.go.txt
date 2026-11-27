@@ -106,10 +106,10 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
  if serial { startSignature() }
  // A completed scanner does not imply a completed inventory. Give inventory a
  // bounded opportunity to finish naturally; cancel only when it exceeds the budget.
- inv,invOK:=scopeprogress.AwaitResult(invCh,5*time.Second)
+ inv,invOK:=scopeprogress.AwaitResultContext(ctx,invCh,5*time.Second)
  cancelInv()
  s.mu.Lock();invOpen=false;if !invOK{inv=s.report.Inventory314;inv.State="partial";inv.Errors++};inv.ScannerDone=true;if s.running{s.report.Inventory314=inv};s.mu.Unlock()
- b,bOK:=scopeprogress.AwaitResult(beh,10*time.Second);if !bOK{b.problem="Consulta comportamental não terminou no prazo de finalização; cobertura parcial"}
+ b,bOK:=scopeprogress.AwaitResultContext(ctx,beh,10*time.Second);if !bOK{b.problem="Consulta comportamental não terminou no prazo de finalização; cobertura parcial"}
  r, signatureOK := scopeprogress.AwaitShutdown(sigCtx, sig, 10*time.Second)
  stopSignature()
 
@@ -122,7 +122,7 @@ func(s *State) concurrent314(ctx context.Context,roots []string,run func()(engin
  }
  stopAuditGrace()
  stopWatch()
- w,wOK:=scopeprogress.AwaitResult(win,5*time.Second)
+ w,wOK:=scopeprogress.AwaitResultContext(ctx,win,5*time.Second)
  if !wOK { w.problem="Consulta Windows não terminou no prazo de finalização; cobertura parcial" }
  s.mu.Lock();auxOpen=false;s.mu.Unlock()
  signatureMu.Lock()

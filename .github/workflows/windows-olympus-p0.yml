@@ -4,6 +4,12 @@ on:
     branches: [lab-integracao-p0-20261126, fix-build39-relatorio-jogos, lab-arcade-nerd-build48, lab-updater-build49, lab-updater-build49-check4]
     paths-ignore: ['**.md']
   workflow_dispatch:
+    inputs:
+      validation_only:
+        description: 'Validate only; set false ONLY with explicit owner authorization to build LAB packages'
+        type: boolean
+        required: true
+        default: true
 permissions:
   contents: read
   actions: read
@@ -31,6 +37,7 @@ jobs:
     needs: module-regression
     uses: ./.github/workflows/windows-build.yml
     with:
+      validation_only: ${{ github.event_name != 'workflow_dispatch' || inputs.validation_only != false }}
       validation_suffix: ${{ github.ref == 'refs/heads/lab-updater-build49-check4' && '-build49-check4-pass1' || github.ref == 'refs/heads/lab-updater-build49' && '-build49-check1' || github.ref == 'refs/heads/lab-arcade-nerd-build48' && '-build48-check1' || (github.ref == 'refs/heads/fix-build39-relatorio-jogos' && '-check1' || '') }}
   module-regression-pass2:
     needs: windows-build
@@ -58,6 +65,7 @@ jobs:
     if: github.ref == 'refs/heads/fix-build39-relatorio-jogos' || github.ref == 'refs/heads/lab-arcade-nerd-build48' || github.ref == 'refs/heads/lab-updater-build49' || github.ref == 'refs/heads/lab-updater-build49-check4'
     uses: ./.github/workflows/windows-build.yml
     with:
+      validation_only: ${{ github.event_name != 'workflow_dispatch' || inputs.validation_only != false }}
       validation_suffix: ${{ github.ref == 'refs/heads/lab-updater-build49-check4' && '-build49-check4-pass2' || github.ref == 'refs/heads/lab-updater-build49' && '-build49-check2' || github.ref == 'refs/heads/lab-arcade-nerd-build48' && '-build48-check2' || '-check2' }}
   module-regression-pass3:
     needs: windows-build-pass2
@@ -85,4 +93,5 @@ jobs:
     if: github.ref == 'refs/heads/fix-build39-relatorio-jogos' || github.ref == 'refs/heads/lab-arcade-nerd-build48' || github.ref == 'refs/heads/lab-updater-build49' || github.ref == 'refs/heads/lab-updater-build49-check4'
     uses: ./.github/workflows/windows-build.yml
     with:
+      validation_only: ${{ github.event_name != 'workflow_dispatch' || inputs.validation_only != false }}
       validation_suffix: ${{ github.ref == 'refs/heads/lab-updater-build49-check4' && '-build49-check4-pass3' || github.ref == 'refs/heads/lab-updater-build49' && '-build49-check3' || github.ref == 'refs/heads/lab-arcade-nerd-build48' && '-build48-check3' || '-check3' }}

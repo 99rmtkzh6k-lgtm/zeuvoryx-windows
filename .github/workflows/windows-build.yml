@@ -8,6 +8,11 @@ on:
         type: string
         required: false
         default: ''
+      validation_only:
+        description: 'Run validation without creating or uploading installer/portable packages'
+        type: boolean
+        required: false
+        default: true
 
 permissions:
   contents: read
@@ -30,6 +35,18 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+      - name: Record package authorization mode
+        shell: pwsh
+        env:
+          VALIDATION_ONLY: ${{ inputs.validation_only }}
+        run: |
+          if ($env:VALIDATION_ONLY -eq 'true') {
+            Write-Host 'VALIDATION ONLY: installer generation, installed-app tests and package uploads are disabled.'
+          } elseif ($env:VALIDATION_ONLY -eq 'false') {
+            Write-Host 'LAB PACKAGING MODE: explicitly requested by workflow caller; no public release.'
+          } else {
+            throw 'Invalid validation_only mode'
+          }
       - name: Verify checked out Competitive source
         shell: pwsh
         run: |
@@ -2741,6 +2758,7 @@ jobs:
             Get-ChildItem $logDir -Filter "session-*-$($p.Id).log" -ErrorAction SilentlyContinue | Copy-Item -Destination desktop-smoke.log
           }
       - name: Prepare portable LAB-only evidence and checksum
+        if: ${{ !inputs.validation_only }}
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -2765,6 +2783,7 @@ jobs:
           path: desktop-smoke.log
           if-no-files-found: ignore
       - name: Upload portable 3.0.23 LAB only for physical quick scan
+        if: ${{ !inputs.validation_only }}
         uses: actions/upload-artifact@v4
         with:
           name: ZEUVORYX-3.0.23-LAB-PORTATIL-TESTE-Windows-x64${{ inputs.validation_suffix }}
@@ -2772,6 +2791,7 @@ jobs:
           if-no-files-found: error
           retention-days: 7
       - name: Build isolated LAB installer with existing installation identity
+        if: ${{ !inputs.validation_only }}
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -2797,13 +2817,14 @@ jobs:
           Write-Host "Installer bytes: $size"
           if($size -le 0){throw 'Installer empty; do not publish'}
       - name: Upload component size evidence
-        if: always()
+        if: ${{ always() && !inputs.validation_only }}
         uses: actions/upload-artifact@v4
         with:
           name: ZEUVORYX-3.0.23-package-size${{ inputs.validation_suffix }}
           path: package-size315.json
           if-no-files-found: ignore
       - name: Verify real 3.0.6 to 3.0.23 migration and duplicate instance protection
+        if: ${{ !inputs.validation_only }}
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -2887,6 +2908,7 @@ jobs:
           Write-Host '3.0.6 migration, five installation cycles and duplicate guard passed'
 
       - name: Five installed application tests using bundled engine without external ClamAV
+        if: ${{ !inputs.validation_only }}
         shell: pwsh
         run: |
           $ErrorActionPreference='Stop'
@@ -2933,12 +2955,13 @@ jobs:
           if($diag.ExitCode -ne 0){Get-Content bundle314-diagnostic.err; if(Test-Path bundle314-diagnostic.json){Get-Content bundle314-diagnostic.json};throw 'Real local diagnostic failed'}
           Write-Host 'Five installed-app cycles and real local diagnostic passed using bundled ClamAV and automatic FreshClam'
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: ${{ always() && !inputs.validation_only }}
         with:
           name: ZEUVORYX-3.0.23-bundled-installed-evidence${{ inputs.validation_suffix }}
           path: bundle314-*.json
           if-no-files-found: ignore
       - name: Upload installer for controlled LAB validation only
+        if: ${{ !inputs.validation_only }}
         uses: actions/upload-artifact@v4
         with:
           name: ZEUVORYX-3.0.23-LAB-SETUP-TESTE-Windows-x64${{ inputs.validation_suffix }}
@@ -2948,6 +2971,18 @@ jobs:
           if-no-files-found: error
           retention-days: 7
       - name: Block public release until integrated physical validation
+        if: ${{ !inputs.validation_only }}
         shell: pwsh
         run: |
           Write-Host 'Installer is a controlled LAB candidate; no public release or signed update.'
+
+      - name: Verify validation-only did not produce an installer
+        if: ${{ always() && inputs.validation_only }}
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (Test-Path -LiteralPath 'installer') {
+            $setups = @(Get-ChildItem -LiteralPath 'installer' -Recurse -File -Filter '*.exe')
+            if ($setups.Count -gt 0) { throw 'Validation-only policy violated: installer executable exists' }
+          }
+          Write-Host 'VALIDATION ONLY: no installer executable generated; package uploads skipped by policy.'

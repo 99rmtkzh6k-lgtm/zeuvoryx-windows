@@ -37,19 +37,19 @@ const zUpdateCopy={
 'en-US':['LAB updates — 3.0.4','Check for updates','Download LAB update','Internal installation requires a signed update.','Checking...','New LAB version: ','No newer release found. LAB packages may be available in Actions.','Check failed. Try again.'],
 'es-ES':['Actualizaciones LAB — 3.0.4','Buscar actualizaciones','Descargar actualización LAB','La instalación interna requiere una actualización firmada.','Consultando...','Nueva versión LAB: ','No hay una versión más reciente en Releases. Puede haber paquetes LAB en Actions.','Error de consulta. Inténtelo de nuevo.']
 };
-let zUpdateBusy=false,zUpdateResult=null,zUpdateError=false,zSigned=false,zCompleted="";
+let zUpdateBusy=false,zUpdateResult=null,zUpdateError=false,zSigned=false,zCompleted="",zUpdatePhase="",zUpdateDuplicate=false;
 function zUpdatePaint(){
  const t=zUpdateCopy[document.documentElement.lang]||zUpdateCopy['pt-BR'];
  const completion=el('zUpdateCompleted');completion.hidden=!zCompleted;completion.textContent=zCompleted?(({'pt-BR':'Atualização concluída. Versão em execução: ','en-US':'Update completed. Running version: ','es-ES':'Actualización completada. Versión en ejecución: '}[document.documentElement.lang]||'Atualização concluída. Versão em execução: ')+zCompleted):'';
  el('zUpdateTitle').textContent=t[0];el('zUpdateCheck').textContent=t[1];el('zUpdateOpen').textContent=zSigned?({'pt-BR':'Atualizar agora','en-US':'Update now','es-ES':'Actualizar ahora'}[document.documentElement.lang]||'Atualizar agora'):t[2];el('zUpdateNote').textContent='Atualize somente pelo botão do programa. Downloads pelo Safari não são bloqueados. '+(zSigned?({'pt-BR':'Instalação assinada sobre a versão atual; finalize as varreduras.','en-US':'Signed in-place update; finish scans first.','es-ES':'Actualización firmada; finalice los análisis.'}[document.documentElement.lang]||t[3]):t[3]);
- el('zUpdateState').textContent=zUpdateBusy?t[4]:zUpdateError?t[7]:zUpdateResult?(zUpdateResult.available?t[5]+zUpdateResult.latest:t[6]):'';
+ el('zUpdateState').textContent=zUpdateDuplicate?'Já está baixando':zUpdatePhase==='install'?'Preparando atualização assinada...':zUpdateBusy?t[4]:zUpdateError?t[7]:zUpdateResult?(zUpdateResult.available?t[5]+zUpdateResult.latest:t[6]):'';
  el('zUpdateOpen').hidden=!(zSigned&&zUpdateResult&&zUpdateResult.available&&!zUpdateError);el('zUpdateCheck').disabled=zUpdateBusy;el('zUpdateOpen').setAttribute('aria-busy',String(zUpdateBusy));
 }
 async function zUpdateRun(){
- if(zUpdateBusy)return;zUpdateBusy=true;zUpdateError=false;zUpdateResult=null;zUpdatePaint();
- try{zSigned=await window.signedUpdateEnabled();zUpdateResult=await window.checkLabRelease()}catch(e){zUpdateError=true}finally{zUpdateBusy=false;zUpdatePaint()}
+ if(zUpdateBusy)return;zUpdateBusy=true;zUpdatePhase='check';zUpdateDuplicate=false;zUpdateError=false;zUpdateResult=null;zUpdatePaint();
+ try{zSigned=await window.signedUpdateEnabled();zUpdateResult=await window.checkLabRelease()}catch(e){zUpdateError=true}finally{zUpdateBusy=false;zUpdatePhase='';zUpdatePaint()}
 }
-el('zUpdateCheck').onclick=zUpdateRun;el('zUpdateOpen').onclick=()=>action(async()=>{if(zUpdateBusy){el('zUpdateState').textContent='Já está baixando';return;}zUpdateBusy=true;el('zUpdateOpen').disabled=true;el('zUpdateState').textContent='Preparando atualização assinada...';try{if(zSigned){const lang=document.documentElement.lang;const text={'pt-BR':'Instalar a atualização assinada e fechar o ZEUVORYX?','en-US':'Install the signed update and close ZEUVORYX?','es-ES':'¿Instalar la actualización firmada y cerrar ZEUVORYX?'};if(await ask(text[lang]||text['pt-BR']))await window.installSignedUpdate()}else throw Error('Atualização assinada indisponível. Nenhuma abertura externa.')}finally{zUpdateBusy=false;el('zUpdateOpen').disabled=false;zUpdatePaint()}});
+el('zUpdateCheck').onclick=zUpdateRun;el('zUpdateOpen').onclick=()=>{if(zUpdateBusy){if(zUpdatePhase==='install'){zUpdateDuplicate=true;zUpdatePaint()}return;}zUpdateBusy=true;zUpdatePhase='install';zUpdateDuplicate=false;zUpdatePaint();return action(async()=>{try{if(zSigned){const lang=document.documentElement.lang;const text={'pt-BR':'Instalar a atualização assinada e fechar o ZEUVORYX?','en-US':'Install the signed update and close ZEUVORYX?','es-ES':'¿Instalar la actualización firmada y cerrar ZEUVORYX?'};if(await ask(text[lang]||text['pt-BR']))await window.installSignedUpdate()}else throw Error('Atualização assinada indisponível. Nenhuma abertura externa.')}finally{zUpdateBusy=false;zUpdatePhase='';zUpdateDuplicate=false;zUpdatePaint()}})};
 new MutationObserver(zUpdatePaint).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});zUpdatePaint();window.completedUpdateVersion().then(v=>{zCompleted=v;zUpdatePaint()}).catch(()=>{});setTimeout(zUpdateRun,1500);
 </script></body></html>''')
 p.write_text(s,encoding="utf-8")

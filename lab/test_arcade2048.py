@@ -44,7 +44,8 @@ for cycle in range(1,6):
     print(f"Retro catalog integrity and isolation {cycle}/5 passed (not gameplay)")
 
 # Family game: source, offline boundary and catalog registration (not gameplay).
-family = (base / "familia-botelho/botelho.html").read_text(encoding="utf-8")
+from retro21 import load_universo
+family = load_universo()
 for cycle in range(1, 6):
     Assets().feed(family)
     assert "default-src 'none'" in family and "connect-src 'none'" in family
@@ -52,7 +53,7 @@ for cycle in range(1, 6):
     assert 'id=="familia-botelho-zumbis"' in binding
     assert 'family_game_id = "familia-botelho-zumbis"' in generator
     assert 'retro_docs[family_game_id] = family_game' in generator
-    for action in ("minerar", "vender", "comprar", "atacar", "invasao"):
+    for action in ("minerar", "vender", "comprarArma", "atacar", "invasao", "catarLixo", "amassarLixo", "colocarNoConteiner", "regarArvore", "trocarCupom", "construirFoguete", "buscarPovo", "darBeijo"):
         assert 'onclick="'+action+'()"' in family and 'function '+action+'()' in family
     print(f"Family game integration contract {cycle}/5 passed (not gameplay)")
 
@@ -61,6 +62,8 @@ import shutil
 import subprocess
 import tempfile
 assert not (base / "familia-botelho/game.html").exists()
+assert not (base / "familia-botelho/botelho.html").exists()
+assert set(p.name for p in (base.parent / "universo-botelho").iterdir()) == {"index.html", "style.css", "script.js", "README.md"}
 for name in ("iniciarJogo","escolherPersonagem","atualizarTela","mostrarVoz","falarPersonagem","falarZumbi","minerar","vender","comprarArma","comprarComida","treinarSoldado","construirPredio","invasaoZumbi","atacarZumbi","verificarObjetivoFase","proximaFase","verificarDerrota","verificarVitoriaFinal","tocarMusica","tocarSom","ligarDesligarMusica","salvarJogo","carregarJogo"):
     assert re.search(r"function\s+" + name + r"\(", family), name
 scripts = re.findall(r"<script>(.*?)</script>", family, re.S)
@@ -72,4 +75,5 @@ with tempfile.TemporaryDirectory() as tmp:
     js = Path(tmp) / "botelho.js"
     js.write_text(scripts[0], encoding="utf-8")
     subprocess.run([node, "--check", str(js)], check=True)
-print("Unified Botelho HTML JavaScript syntax and function contract passed")
+assert 'onclick="abrirJogo(1)"' in family and 'onclick="abrirJogo(2)"' in family
+print("Unified Universo HTML JavaScript syntax and function contract passed")

@@ -20,10 +20,60 @@ async function focusFrame(page,frame){
  await page.locator('#zGameBoard iframe').focus();
  await poll(()=>frame.evaluate(()=>document.hasFocus()),v=>v===true,'iframe keyboard focus');
 }
+async function dumpFocus(page,label){
+ const state=await page.evaluate(()=>{
+  const active=document.activeElement;
+  const fullButton=document.getElementById('zGameFull');
+  const iframe=document.querySelector('#zGameBoard iframe');
+  const fullscreen=document.fullscreenElement;
+  const visible=el=>{
+   if(!el||!el.isConnected)return false;
+   const css=getComputedStyle(el),rect=el.getBoundingClientRect();
+   return css.visibility!=='hidden'&&css.visibility!=='collapse'&&css.display!=='none'&&rect.width>0&&rect.height>0;
+  };
+  const enabled=el=>!!el&&!el.matches(':disabled')&&el.getAttribute('aria-disabled')!=='true'&&!el.closest('[inert]');
+  return {
+   hasFocus:document.hasFocus(),
+   activeId:active?.id||null,
+   activeTag:active?.tagName||null,
+   activeVisible:visible(active),
+   activeEnabled:enabled(active),
+   activeConnected:!!active?.isConnected,
+   fullscreenElement:fullscreen?(fullscreen.id||fullscreen.tagName):null,
+   'zGameFull exists':!!fullButton,
+   'zGameFull visible':visible(fullButton),
+   'zGameFull enabled':enabled(fullButton),
+   iframeFocused:!!active&&(active===iframe||active.tagName==='IFRAME'),
+   'data-window':document.getElementById('zGames314')?.dataset.window||null,
+   'zGameFull connected':!!fullButton?.isConnected
+  };
+ });
+ console.log(label+' | '+Object.entries(state).map(([key,value])=>key+'='+String(value)).join(' | '));
+ return state;
+}
 async function focusHost(page,id){
  const b=page.locator(id);
  await b.focus();
- await poll(()=>b.evaluate(el=>el===document.activeElement&&document.hasFocus()),v=>v===true,'host keyboard focus '+id);
+ await dumpFocus(page,'focusHost BEFORE '+id);
+ let lastDump=Date.now();
+ try{
+  await poll(async()=>{
+   const ok=await b.evaluate(el=>el===document.activeElement&&document.hasFocus());
+   if(!ok&&Date.now()-lastDump>=500){
+    lastDump=Date.now();
+    await dumpFocus(page,'focusHost POLL '+id);
+   }
+   return ok;
+  },v=>v===true,'host keyboard focus '+id);
+ }catch(error){
+  try{
+   const state=await dumpFocus(page,'focusHost FAIL '+id);
+   error.message+=' | hasFocus='+state.hasFocus+' | activeId='+state.activeId+' | activeTag='+state.activeTag+' | fullscreenElement='+state.fullscreenElement;
+  }catch(diagnosticError){console.error('focusHost FAIL dump unavailable: '+String(diagnosticError))}
+  try{await page.screenshot({path:'focus-fail.png',fullPage:false})}
+  catch(screenshotError){console.error('focusHost FAIL screenshot unavailable: '+String(screenshotError))}
+  throw error;
+ }
 }
 async function counterEnter(page,frame,button,label,delta){
  await button.waitFor({state:'visible'});
@@ -243,8 +293,13 @@ async function exerciseWindow(page,frame,id){
  await focusHost(page,'#zGameZoomReset');await page.keyboard.press('Control+0');await waitZoom(page,'100%');
  await bounds(page,id+' zoom reset');
  await page.locator('#zGameFull').click();await waitFull(page,true);await bounds(page,id+' fullscreen button');
+ await dumpFocus(page,'BEFORE exit-fullscreen-click ['+id+']');
  await page.locator('#zGameFull').click();await waitFull(page,false);
- await focusHost(page,'#zGameFull');await page.keyboard.press('Alt+Enter');await waitFull(page,true);
+ await dumpFocus(page,'AFTER exit-fullscreen waitFull=false ['+id+']');
+ await dumpFocus(page,'BEFORE focusHost after exit-fullscreen ['+id+']');
+ await focusHost(page,'#zGameFull');
+ await dumpFocus(page,'AFTER focusHost OK ['+id+']');
+ await page.keyboard.press('Alt+Enter');await waitFull(page,true);
  await focusFrame(page,frame);await page.keyboard.press('F11');await waitFull(page,false);
  await focusFrame(page,frame);await page.keyboard.press('Alt+Enter');await waitFull(page,true);
  await focusHost(page,'#zGameFull');await page.keyboard.press('F11');await waitFull(page,false);

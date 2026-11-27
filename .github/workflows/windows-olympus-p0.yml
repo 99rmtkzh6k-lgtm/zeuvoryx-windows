@@ -1,7 +1,7 @@
 name: ZEUVORYX 3.0.23 LAB - P0 scan finalization
 on:
   push:
-    branches: [lab-integracao-p0-20261126, fix-build39-relatorio-jogos]
+    branches: [lab-integracao-p0-20261126, fix-build39-relatorio-jogos, lab-arcade-nerd-build48]
     paths-ignore: ['**.md']
   workflow_dispatch:
 permissions:
@@ -31,10 +31,10 @@ jobs:
     needs: module-regression
     uses: ./.github/workflows/windows-build.yml
     with:
-      validation_suffix: ${{ github.ref == 'refs/heads/fix-build39-relatorio-jogos' && '-check1' || '' }}
+      validation_suffix: ${{ github.ref == 'refs/heads/lab-arcade-nerd-build48' && '-build48-check1' || (github.ref == 'refs/heads/fix-build39-relatorio-jogos' && '-check1' || '') }}
   module-regression-pass2:
     needs: windows-build
-    if: github.ref == 'refs/heads/fix-build39-relatorio-jogos'
+    if: github.ref == 'refs/heads/fix-build39-relatorio-jogos' || github.ref == 'refs/heads/lab-arcade-nerd-build48'
     strategy:
       fail-fast: false
       matrix:
@@ -55,13 +55,13 @@ jobs:
         run: go test -count=100 -run '^TestP0InventoryCompleteness322$' ./scopeprogress
   windows-build-pass2:
     needs: module-regression-pass2
-    if: github.ref == 'refs/heads/fix-build39-relatorio-jogos'
+    if: github.ref == 'refs/heads/fix-build39-relatorio-jogos' || github.ref == 'refs/heads/lab-arcade-nerd-build48'
     uses: ./.github/workflows/windows-build.yml
     with:
-      validation_suffix: '-check2'
+      validation_suffix: ${{ github.ref == 'refs/heads/lab-arcade-nerd-build48' && '-build48-check2' || '-check2' }}
   module-regression-pass3:
     needs: windows-build-pass2
-    if: github.ref == 'refs/heads/fix-build39-relatorio-jogos'
+    if: github.ref == 'refs/heads/fix-build39-relatorio-jogos' || github.ref == 'refs/heads/lab-arcade-nerd-build48'
     strategy:
       fail-fast: false
       matrix:
@@ -82,7 +82,7 @@ jobs:
         run: go test -count=100 -run '^TestP0InventoryCompleteness322$' ./scopeprogress
   windows-build-pass3:
     needs: module-regression-pass3
-    if: github.ref == 'refs/heads/fix-build39-relatorio-jogos'
+    if: github.ref == 'refs/heads/fix-build39-relatorio-jogos' || github.ref == 'refs/heads/lab-arcade-nerd-build48'
     uses: ./.github/workflows/windows-build.yml
     with:
-      validation_suffix: '-check3'
+      validation_suffix: ${{ github.ref == 'refs/heads/lab-arcade-nerd-build48' && '-build48-check3' || '-check3' }}

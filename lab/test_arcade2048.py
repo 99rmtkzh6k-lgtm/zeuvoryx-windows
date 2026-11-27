@@ -44,7 +44,7 @@ for cycle in range(1,6):
     print(f"Retro catalog integrity and isolation {cycle}/5 passed (not gameplay)")
 
 # Family game: source, offline boundary and catalog registration (not gameplay).
-family = (base / "familia-botelho/game.html").read_text(encoding="utf-8")
+family = (base / "familia-botelho/botelho.html").read_text(encoding="utf-8")
 for cycle in range(1, 6):
     Assets().feed(family)
     assert "default-src 'none'" in family and "connect-src 'none'" in family

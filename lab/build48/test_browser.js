@@ -68,7 +68,18 @@ const assert=require('node:assert/strict');
    assert.equal(await page.locator('#zGameBoard iframe').count(),1);
    if(id==='2048'){
      await frame.getByText('New Game',{exact:true}).click();
-     await frame.waitForFunction(()=>document.querySelectorAll('.tile-container .tile').length===2&&document.querySelector('.score-container').textContent.trim()==='0',null,{timeout:5000});
+     // Poll from the test process, not with an evaluated predicate inside the CSP-restricted iframe.
+     const restartDeadline=Date.now()+5000;
+     let restarted=false;
+     while(Date.now()<restartDeadline){
+       const state=await frame.evaluate(()=>({
+         tiles:document.querySelectorAll('.tile-container .tile').length,
+         score:document.querySelector('.score-container').textContent.trim()
+       }));
+       if(state.tiles===2&&state.score==='0'){restarted=true;break;}
+       await new Promise(resolve=>setTimeout(resolve,50));
+     }
+     assert.ok(restarted,'2048 restart did not restore two tiles and zero score');
      console.log('Check4 2048: initial board, keyboard movement and restart verified');
    }
    // The DOM removal is synchronous; Playwright observes frame detachment asynchronously.

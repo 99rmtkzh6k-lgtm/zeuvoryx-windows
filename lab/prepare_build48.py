@@ -95,14 +95,15 @@ def patch_html(s):
     # Use actual scanner counts, never fabricate a heartbeat or declare completion on request.
     s=one(s,"refresh();setInterval(refresh,2000);","refresh();setInterval(refresh,500);")
     s=one(s,"let last=null,series=[],key='',busy=false,confirmResolve=null;",
-          "let last=null,series=[],key='',busy=false,confirmResolve=null,z48CancelAt=0;")
+          "let last=null,series=[],key='',busy=false,confirmResolve=null,z48CancelAt=0,z48LastScan='';")
     s=one(s,"function volume(n){","function volume(n){n=Number(n);if(!Number.isFinite(n)||n<0)return '0 GiB';")
+    s=one(s,"let running=s.running;zSummary(s);","let running=s.running;if(running&&r.scan_id&&z48LastScan&&r.scan_id!==z48LastScan)z48CancelAt=0;if(r.scan_id)z48LastScan=r.scan_id;zSummary(s);")
     s=one(s,"chart(s.files,running);","chart(s.files,running&&!r.inventory_314?.scanner_done);")
     s=one(s,"measureSpeed(s.bytes,running);","measureSpeed(s.bytes,running&&!r.inventory_314?.scanner_done);")
     s=one(s,"el('activity').textContent=series.length?",
           "el('activity').textContent=!running?zT('Motor parado'):series.length?")
-    s=one(s,"el('speed').textContent=zT('Velocidade: varredura parada.');",
-          "el('speed').textContent=zT('Motor parado');")
+    s=one(s,"el('speed').textContent=zT('Velocidade: varredura parada.')",
+          "el('speed').textContent=zT('Motor parado')")
     s=one(s,"el('stateTitle').textContent=running?zT('Varredura em andamento'):s.error?",
           "el('stateTitle').textContent=running?(z48CancelAt?zT('Cancelando varredura'):zT('Varredura em andamento')):r.cancelled&&z48CancelAt?zT('Varredura cancelada por você'):s.error?")
     s=one(s,"el('stateText').textContent=s.error||",
@@ -127,10 +128,9 @@ def patch_html(s):
     s=s.replace("A falta de credenciais é inconclusiva.","A falta de credenciais é inconclusiva. Não detecta todos os vídeos de IA.")
     s=one(s,'<h2 id="zAITitle">Inteligência artificial — atividade real</h2>',
           '<h2 id="zAITitle">Inteligência artificial — atividade real</h2><p class="sub">IA auxiliar, não é proteção principal.</p>')
-    s=one(s,'<div class="sub" id="zAIOverview" role="status">IA: inicializando modelo</div>',
-          '<div class="sub" id="zAIOverview" role="status">IA: inicializando modelo</div><p class="sub">IA auxiliar, não é proteção principal.</p>')
+    s=one(s,'<div id="zAIOverview" class="sub" role="status">IA: inicializando modelo</div>',
+          '<div id="zAIOverview" class="sub" role="status">IA: inicializando modelo</div><p class="sub">IA auxiliar, não é proteção principal.</p>')
     # Match generated attribute order, not a reserialized DOM.
-    s=regex_one(s,r'(<div\b[^>]*\bid="zAIOverview"[^>]*>[^<]*</div>)',lambda m:m[0]) if False else s
     translation={
         "en-US":{"Motor parado":"Scanner stopped","Cancelando varredura":"Canceling scan","Varredura cancelada por você":"Scan canceled by you","Cancelamento solicitado; motor ainda encerrando. Limite de 2 segundos excedido.":"Cancellation requested; scanner still shutting down. Two-second limit exceeded.","Aguardando confirmação de parada do motor.":"Waiting for scanner shutdown confirmation.","IA auxiliar, não é proteção principal.":"Auxiliary AI, not primary protection.","Verificar procedência C2PA":"Verify C2PA provenance"},
         "es-ES":{"Motor parado":"Motor detenido","Cancelando varredura":"Cancelando análisis","Varredura cancelada por você":"Análisis cancelado por usted","Cancelamento solicitado; motor ainda encerrando. Limite de 2 segundos excedido.":"Cancelación solicitada; motor aún cerrándose. Límite de dos segundos superado.","Aguardando confirmação de parada do motor.":"Esperando confirmación de detención del motor.","IA auxiliar, não é proteção principal.":"IA auxiliar, no es protección principal.","Verificar procedência C2PA":"Verificar procedencia C2PA"}}
@@ -139,6 +139,7 @@ def patch_html(s):
         values["Arquivos realmente examinados pelo scanner próprio; atualização a cada 500 ms."]="Actual files examined by the local scanner; refresh every 500 ms." if lang=="en-US" else "Archivos realmente examinados por el escáner propio; actualización cada 500 ms."
     s=one(s,"zCaptureStatic();zPaintStatic();","for(const [lang,v] of Object.entries("+js_json(translation)+"))Object.assign(zCatalog[lang],v);zCaptureStatic();zPaintStatic();")
     s=one(s,"Fechar partida</button>","Fechar jogo</button>")
+    s=one(s,"w[0]+': '+(!s.running?w[3]:", "w[0]+': '+(!s.running||s.report?.inventory_314?.scanner_done?zT('Motor parado'):")
     s=one(s,"Proteção durante os jogos</strong>","Estado da varredura durante os jogos</strong>")
     s=regex_one(s,r'(<select id="zGameFilter">)[\s\S]*?(</select>)',lambda m:m[1]+'<option value="">Todos</option><option>Puzzle</option><option>Retro</option><option>Ação</option>'+m[2])
     opts='<option value="2048">2048</option>'+''.join('<option value="'+escape(g["id"],quote=True)+'">'+escape(g["title"])+'</option>' for g in CATALOG)

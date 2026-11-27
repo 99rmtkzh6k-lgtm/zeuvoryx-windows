@@ -22,6 +22,16 @@ const assert=require('node:assert/strict');
   assert.equal(await page.locator('#zGameBoard iframe').count(),0);
   await page.evaluate(()=>window.blockedIds.clear());
   await page.locator('#zGameBack').click();await nav.click();
+  await page.evaluate(()=>{window.scanRunning=true;window.gameConsent=false});
+  await page.locator('[data-game-id="snake"] button:not(:disabled)').click();
+  await page.waitForFunction(()=>window.gamePrompts.length===1);
+  assert.equal(await page.locator('#zGameBoard iframe').count(),0,'declined scan warning opened game');
+  await page.evaluate(()=>{window.gameConsent=true});
+  await page.locator('[data-game-id="snake"] button:not(:disabled)').click();
+  await page.locator('#zGameBoard iframe').waitFor();
+  assert.equal(await page.evaluate(()=>window.scanRunning),true,'warning must not fake pausing the scanner');
+  await page.locator('#zGameClose315').click();
+  await page.evaluate(()=>{window.scanRunning=false});
   for(const id of ['2048','snake','blocks','maze','guerra','robozinho']){
    const start=Date.now();
    await page.locator('[data-game-id="'+id+'"] button:not(:disabled)').click();

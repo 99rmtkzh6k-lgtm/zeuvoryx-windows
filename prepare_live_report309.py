@@ -83,8 +83,10 @@ function zLivePaint(s){
  z('zLiveFailureCount').textContent=active?t[4]+': '+fmt(n)+' · '+t[5]+': '+fmt(errors.length):t[8];
  const key=JSON.stringify([errors,r.error_categories,r.scan_error,r.audit_error,s.error]);
  if(out.dataset.key!==key){out.dataset.key=key;out.replaceChildren();
- for(const [k,v] of Object.entries(r.error_categories||{}))out.append(node('p',k+': '+fmt(v)));
- for(const e of errors)out.append(node('p',String(e)));
+ const cats=r.error_categories||{};
+ const labels={'pt-BR':{access_denied:'Sem permissão de acesso (não é evidência de vírus)',sharing_violation:'Arquivo em uso por outro programa (não é evidência de vírus)',lock_violation:'Arquivo bloqueado por outro programa (não é evidência de vírus)'},'en-US':{access_denied:'Access denied (not evidence of malware)',sharing_violation:'File in use (not evidence of malware)',lock_violation:'File locked (not evidence of malware)'},'es-ES':{access_denied:'Acceso denegado (no es evidencia de malware)',sharing_violation:'Archivo en uso (no es evidencia de malware)',lock_violation:'Archivo bloqueado (no es evidencia de malware)'}}[lang]||{};
+ for(const [k,v] of Object.entries(cats))out.append(node('p',(labels[k]||k)+': '+fmt(v)));
+ for(const e of errors){let detail=String(e);if(lang==='pt-BR')detail=detail.replace(/Access is denied\.?/gi,'Sem permissão de acesso').replace(/The process cannot access the file because it is being used by another process\.?/gi,'Arquivo em uso por outro programa').replace(/The process cannot access the file because another process has locked a portion of the file\.?/gi,'Arquivo bloqueado por outro programa');out.append(node('p',detail));}
  for(const e of [r.scan_error,r.audit_error,s.error].filter(Boolean))out.append(node('p',String(e)));
  }
  z('export').textContent=s.running?t[10]:t[11];

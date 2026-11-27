@@ -66,7 +66,8 @@ styles="".join(re.findall(r"<style\\b[^>]*>[\\s\\S]*?</style>",s,re.I))
 assert "#zGames314 #zGameBoard iframe" in styles, "Build50 layout CSS missing"
 prefix=prefix.replace("</head>",styles+"</head>")
 bridge="""<script>
-window.blockedIds=new Set();window.getScanState=async()=>({running:false,files:0,bytes:0,report:{}});
+window.blockedIds=new Set();window.scanRunning=false;window.gameConsent=false;window.gamePrompts=[];window.getScanState=async()=>({running:window.scanRunning,files:0,bytes:0,report:{}});
+function ask(msg){window.gamePrompts.push(msg);return Promise.resolve(window.gameConsent)}
 window.allowLocalGame315=async id=>!window.blockedIds.has(id);
 function node(tag,text){let e=document.createElement(tag);e.textContent=text;return e}
 function volume(n){return n+' B'}

@@ -1,0 +1,1066 @@
+ZEUVORYX — INVENTÁRIO COMPLETO DE FONTES E INTERFACE
+Data de referência: 26/11/2026. Branch lab-integracao-p0-20261126. Snapshot: d7bffff0e071b25c730a32f023ec2ba41a35a884
+Escopo: arquivos rastreados e geradores ativos do Windows. Último build aprovado: 39 (6cb0feda); build 43 (snapshot) falhou na geração de HTML. Não foi executada nova compilação nem modificados módulos para este inventário. Contagens estáticas, não equivalem a uma inspeção da interface em execução. Os 15 jogos MIT solicitados ainda não foram integrados à branch neste snapshot; objetos Git preparados isoladamente não são parte do estado publicado.
+
+1. ÁRVORE COMPLETA DO REPOSITÓRIO (inclui extensões além das solicitadas)
+FILE .gitattributes (93 bytes)
+DIR  .github/
+DIR  .github/workflows/
+FILE .github/workflows/amsi-provider-lab.yml (3832 bytes)
+FILE .github/workflows/drop-seed.yml (744 bytes)
+FILE .github/workflows/link-regression.yml (1353 bytes)
+FILE .github/workflows/macintosh-build.yml (5662 bytes)
+FILE .github/workflows/own-engines-lab.yml (904 bytes)
+FILE .github/workflows/public-ioc-lab.yml (2810 bytes)
+FILE .github/workflows/security-lab.yml (1844 bytes)
+FILE .github/workflows/windows-audit-fix.yml (687 bytes)
+FILE .github/workflows/windows-build-lab-305.yml (445 bytes)
+FILE .github/workflows/windows-build-lab-306.yml (327 bytes)
+FILE .github/workflows/windows-build-lab-307.yml (373 bytes)
+FILE .github/workflows/windows-build-lab-308-active-ai.yml (400 bytes)
+FILE .github/workflows/windows-build-lab-308-integrated.yml (413 bytes)
+FILE .github/workflows/windows-build-lab-308-layered.yml (416 bytes)
+FILE .github/workflows/windows-build-lab-308.yml (367 bytes)
+FILE .github/workflows/windows-build-lab-309-install.yml (420 bytes)
+FILE .github/workflows/windows-build-lab-309-live.yml (399 bytes)
+FILE .github/workflows/windows-build-lab-309.yml (377 bytes)
+FILE .github/workflows/windows-build-lab-310.yml (398 bytes)
+FILE .github/workflows/windows-build-lab-311-signatures.yml (1272 bytes)
+FILE .github/workflows/windows-build-lab-312-integrated.yml (3289 bytes)
+FILE .github/workflows/windows-build-lab-313-consolidated.yml (3291 bytes)
+FILE .github/workflows/windows-build-lab-314-bundled.yml (3348 bytes)
+FILE .github/workflows/windows-build.yml (213461 bytes)
+FILE .github/workflows/windows-olympus-p0.yml (990 bytes)
+FILE ABOUT_GITHUB.md (37421 bytes)
+FILE AGENTS.md (3967 bytes)
+FILE AUDITORIA_CAMPO_2026-11-25.md (54007 bytes)
+FILE AUDITORIA_CAMPO_319.md (7984 bytes)
+FILE AUDITORIA_CAMPO_321.md (1626 bytes)
+FILE AUDITORIA_LICENCAS.md (7074 bytes)
+FILE AUDITORIA_MOTORES_2026-11-26.md (13244 bytes)
+FILE BUNDLED_314_LAB.md (18563 bytes)
+FILE CENTRAL_SEGURANCA_318.md (6094 bytes)
+FILE CHANGELOG.md (59463 bytes)
+FILE CLAMAV_NOTICE_314.txt (602 bytes)
+FILE COMANDO_SUPREMO_32_ARTIGOS_2026-11-26.md (37408 bytes)
+FILE CONSOLIDATED_313_LAB.md (1687 bytes)
+FILE GLOBAL_SECURITY_INTELLIGENCE.md (20781 bytes)
+FILE IDENTIDADE_VISUAL.txt (640 bytes)
+FILE INSTRUCOES_GITHUB.txt (5858 bytes)
+FILE LAB303_BUILD.md (797 bytes)
+FILE LEIA-ME.txt (6213 bytes)
+FILE MAPA_REPOSITORIO.md (4447 bytes)
+FILE MATRIZ_MESTRE_2026-11-26.md (33743 bytes)
+FILE MEMORANDO_DESENVOLVIMENTO.md (239794 bytes)
+FILE OPERACAO_LAB_320.md (4780 bytes)
+FILE PASSO-WORKFLOW.txt (921 bytes)
+FILE POLITICA_EXTENSOES_CLAMAV.md (2140 bytes)
+FILE PROTOCOLO_INTEGRACAO_GITHUB.md (21333 bytes)
+FILE RASTREABILIDADE_32_ARTIGOS_2026-11-26.md (11477 bytes)
+FILE README.md (60145 bytes)
+FILE REQUISITOS_E_PENDENCIAS.md (49255 bytes)
+FILE SECURITY_LAB_3.0.3.md (1972 bytes)
+FILE SIGNATURE_311_LAB.md (1899 bytes)
+FILE SIGNATURE_312_LAB.md (1707 bytes)
+FILE TERMOS_EXTENSOES_ZEUVORYX.txt (1810 bytes)
+FILE THREAT_INTELLIGENCE.md (3989 bytes)
+FILE UPDATE_CENTER.md (24410 bytes)
+DIR  adaptive/
+FILE adaptive/activity.go (1455 bytes)
+FILE adaptive/activity_test.go (620 bytes)
+FILE adaptive/features.go (1394 bytes)
+FILE adaptive/lab.go (4233 bytes)
+FILE adaptive/lab50.go (4585 bytes)
+FILE adaptive/lab50_test.go (1775 bytes)
+FILE adaptive/lab_test.go (989 bytes)
+FILE adaptive/model.go (3264 bytes)
+FILE adaptive/model_test.go (1530 bytes)
+FILE adaptive/review314.go (218 bytes)
+FILE adaptive/review314_test.go (214 bytes)
+FILE adaptive/stress20_test.go (640 bytes)
+FILE alert310_windows.go (192 bytes)
+DIR  audit/
+FILE audit/audit.go (4929 bytes)
+FILE audit/audit_test.go (1308 bytes)
+DIR  auditmetrics/
+FILE auditmetrics/metrics.go (1602 bytes)
+FILE auditmetrics/metrics_test.go (1713 bytes)
+DIR  behaviorwatch/
+FILE behaviorwatch/behavior.go (2452 bytes)
+FILE behaviorwatch/behavior_test.go (1676 bytes)
+FILE behaviorwatch/network.go (1198 bytes)
+FILE behaviorwatch/network_test.go (551 bytes)
+FILE change_monitor315_windows.go (2023 bytes)
+DIR  changeguard/
+FILE changeguard/scheduler.go (1210 bytes)
+FILE changeguard/scheduler_test.go (641 bytes)
+FILE changeguard/tracker.go (1771 bytes)
+FILE changeguard/tracker_test.go (1368 bytes)
+FILE changeguard/watch_windows.go (1115 bytes)
+FILE changeguard/watch_windows_test.go (1007 bytes)
+DIR  cmd/
+DIR  cmd/adaptive-lab/
+FILE cmd/adaptive-lab/main.go (1534 bytes)
+DIR  cmd/adaptive-lab50/
+FILE cmd/adaptive-lab50/main.go (1237 bytes)
+DIR  cmd/drop-seed/
+FILE cmd/drop-seed/main.go (357 bytes)
+DIR  cmd/sign-release/
+FILE cmd/sign-release/main.go (2341 bytes)
+FILE comparar_relatorios.py (1632 bytes)
+FILE driveopt310_windows.go (2825 bytes)
+FILE driveopt310_windows_test.go (336 bytes)
+DIR  engine/
+FILE engine/ai308_integration_test.go (667 bytes)
+FILE engine/live_report309.go (310 bytes)
+FILE engine/scan308_test.go (2097 bytes)
+DIR  familygate/
+FILE familygate/network.go (1487 bytes)
+FILE familygate/network_test.go (1108 bytes)
+FILE familygate/policy.go (4342 bytes)
+FILE familygate/policy_test.go (981 bytes)
+DIR  fieldlearn/
+FILE fieldlearn/evidence.go (3962 bytes)
+FILE fieldlearn/evidence_test.go (2150 bytes)
+FILE fieldlearn_windows.go (3764 bytes)
+DIR  gamecatalog/
+FILE gamecatalog/catalog.go (959 bytes)
+FILE gamecatalog/catalog_test.go (415 bytes)
+FILE gamecatalog/review.go (5860 bytes)
+FILE gamecatalog/review_test.go (1621 bytes)
+DIR  globalintel/
+FILE globalintel/daily314.go (2489 bytes)
+FILE globalintel/daily314_test.go (772 bytes)
+FILE globalintel/feed.go (4459 bytes)
+FILE globalintel/feed_test.go (2124 bytes)
+FILE globalintel/link.go (991 bytes)
+FILE globalintel/link_test.go (775 bytes)
+FILE globalintel/seed.go (1400 bytes)
+DIR  globalintel/seed/
+FILE globalintel/seed/README.txt (101 bytes)
+FILE go.mod (45 bytes)
+FILE help_articles.json (68103 bytes)
+FILE help_search.js (5049 bytes)
+FILE help_search_test.js (1629 bytes)
+DIR  impact/
+FILE impact/snapshot.go (1904 bytes)
+FILE impact/snapshot_test.go (2051 bytes)
+FILE index.html (8701 bytes)
+DIR  lab/
+FILE lab/COMPARATIVE_PROTOCOL_2026-11-25.md (9185 bytes)
+FILE lab/PUBLIC_IOC_2026-11-25.md (1146 bytes)
+DIR  lab/arcade2048/
+FILE lab/arcade2048/LICENSE.txt (1083 bytes)
+FILE lab/arcade2048/README.md (712 bytes)
+FILE lab/arcade2048/game.html (46798 bytes)
+FILE lab/autoreport315_windows.go.txt (2041 bytes)
+FILE lab/behavior313_windows.go.txt (1933 bytes)
+FILE lab/bundle314_windows.go.txt (4948 bytes)
+FILE lab/bundle314_windows_test.go.txt (734 bytes)
+FILE lab/clam311_windows.go.txt (3132 bytes)
+FILE lab/clam313.go.txt (2211 bytes)
+FILE lab/clam313_test.go.txt (484 bytes)
+FILE lab/comparative_test.go.txt (3972 bytes)
+FILE lab/evolution315_test.go.txt (1491 bytes)
+FILE lab/expanded314_windows.go.txt (1337 bytes)
+FILE lab/family314.html (5857 bytes)
+FILE lab/family314.js (3436 bytes)
+FILE lab/games314.css (7497 bytes)
+FILE lab/games314.html (3097 bytes)
+FILE lab/games314.js (20795 bytes)
+FILE lab/games314_windows.go.txt (2490 bytes)
+FILE lab/optional_signatures315_windows.go.txt (1064 bytes)
+FILE lab/optional_signatures315_windows_test.go.txt (461 bytes)
+FILE lab/parallel314_windows.go.txt (9700 bytes)
+FILE lab/public_ioc_2026-11-25.sha256 (1112 bytes)
+FILE lab/public_ioc_test.go.txt (2295 bytes)
+FILE lab/resident_integration_test.go.txt (1647 bytes)
+DIR  lab/retro21/
+FILE lab/retro21/LICENSE.txt (1064 bytes)
+FILE lab/retro21/README.md (468 bytes)
+FILE lab/retro21/asteroids.html (29078 bytes)
+FILE lab/retro21/breakout.html (26657 bytes)
+FILE lab/retro21/cartridge-dash.html (13161 bytes)
+FILE lab/retro21/catalog.json (2218 bytes)
+FILE lab/retro21/digital-maze.html (12123 bytes)
+FILE lab/retro21/jump-quest.html (12259 bytes)
+FILE lab/retro21/laser-defender.html (12789 bytes)
+FILE lab/retro21/meteor-strike.html (11593 bytes)
+FILE lab/retro21/ping-pong-2p.html (9539 bytes)
+FILE lab/retro21/retro-racer.html (11341 bytes)
+FILE lab/retro21/snake.html (28025 bytes)
+FILE lab/signature312_windows.go.txt (2422 bytes)
+FILE lab/test_arcade2048.py (7469 bytes)
+FILE lab/test_diagnosis.js (6541 bytes)
+FILE lab/test_report_copy315.js (1894 bytes)
+FILE lab/test_technical_diagnosis.js (1384 bytes)
+FILE lab/titanium314.css (6672 bytes)
+DIR  labcheck/
+FILE labcheck/check.go (2253 bytes)
+FILE labcheck/check_test.go (195 bytes)
+FILE language_windows.go (1418 bytes)
+FILE language_windows_test.go (552 bytes)
+FILE live_report309.go (3283 bytes)
+FILE live_report309_test.go (4551 bytes)
+DIR  locales/
+FILE locales/ui.tsv (25919 bytes)
+FILE main.go (10849 bytes)
+FILE maintenance310_windows.go (1207 bytes)
+FILE maintenance310_windows_test.go (578 bytes)
+DIR  nativeamsi/
+FILE nativeamsi/scan_integration_windows_test.go (340 bytes)
+FILE nativeamsi/scan_windows.go (3177 bytes)
+FILE nativeamsi/scan_windows_test.go (1005 bytes)
+DIR  ops/
+FILE ops/Observe-Zeuvoryx.ps1 (4651 bytes)
+FILE optimization310_windows.go (4554 bytes)
+FILE optimization310_windows_test.go (1241 bytes)
+FILE pe.go (4564 bytes)
+FILE performance308_windows.go (4321 bytes)
+FILE performance308_windows_test.go (1076 bytes)
+FILE prepare_ai_activity308.py (9398 bytes)
+FILE prepare_app_update.py (5854 bytes)
+FILE prepare_audit305.py (16855 bytes)
+FILE prepare_bundle314.py (4121 bytes)
+FILE prepare_expanded314.py (2354 bytes)
+FILE prepare_feedback310.py (8767 bytes)
+FILE prepare_games314.py (4255 bytes)
+FILE prepare_globalintel.py (3603 bytes)
+FILE prepare_help.py (1157 bytes)
+FILE prepare_integrated312.py (5301 bytes)
+FILE prepare_live_report309.py (10679 bytes)
+FILE prepare_olympus_silver.py (8394 bytes)
+FILE prepare_optimization310.py (8878 bytes)
+FILE prepare_parallel314.py (4294 bytes)
+FILE prepare_performance308.py (9286 bytes)
+FILE prepare_release306.py (3443 bytes)
+FILE prepare_remediation313.py (3858 bytes)
+FILE prepare_reports315.py (23835 bytes)
+FILE prepare_scan_power.py (671 bytes)
+FILE prepare_seed_coverage.py (1913 bytes)
+FILE prepare_signature311.py (2604 bytes)
+FILE prepare_titanium314.py (4455 bytes)
+FILE prepare_version315.py (5318 bytes)
+DIR  qa/
+DIR  qa/arcade/
+FILE qa/arcade/3.0.19-browser-offline.json (823 bytes)
+FILE qa/scanner_quality_test.go.txt (1516 bytes)
+DIR  qa/security-center/
+FILE qa/security-center/3.0.18-defender-contracts.json (775 bytes)
+FILE qa/security-center/3.0.18-ui-regression-local.json (610 bytes)
+FILE qa/security-center/test_contracts.ps1 (3320 bytes)
+FILE qa/stress_native_test.go.txt (663 bytes)
+FILE qa/stress_scanner_test.go.txt (3072 bytes)
+FILE quarantine.go (5116 bytes)
+DIR  releaseguard/
+FILE releaseguard/verify.go (3244 bytes)
+FILE releaseguard/verify_test.go (3872 bytes)
+DIR  remediation/
+FILE remediation/policy.go (1039 bytes)
+FILE remediation/policy_test.go (1066 bytes)
+FILE remediation/stress20_test.go (821 bytes)
+FILE reportfile315.go (5391 bytes)
+FILE reportfile315_test.go (3531 bytes)
+FILE reporttransfer315_windows.go (2868 bytes)
+DIR  research/
+FILE research/ember_benchmark.py (4050 bytes)
+FILE research/test_ember_benchmark.py (1366 bytes)
+FILE retro21.py (1569 bytes)
+FILE scan306_windows_test.go (4212 bytes)
+FILE scan_power_windows.go (2177 bytes)
+FILE scan_power_windows_test.go (1230 bytes)
+FILE scanner.go (11024 bytes)
+FILE scanner_test.go (8287 bytes)
+DIR  scanplan/
+FILE scanplan/current.go (271 bytes)
+FILE scanplan/memory_other.go (90 bytes)
+FILE scanplan/memory_windows.go (465 bytes)
+FILE scanplan/policy.go (1439 bytes)
+FILE scanplan/policy_test.go (1292 bytes)
+DIR  scanretry/
+FILE scanretry/open.go (2422 bytes)
+FILE scanretry/open_test.go (2497 bytes)
+FILE scanretry/open_windows_test.go (871 bytes)
+DIR  scopeprogress/
+FILE scopeprogress/await.go (794 bytes)
+FILE scopeprogress/await_test.go (346 bytes)
+FILE scopeprogress/inventory.go (1891 bytes)
+FILE scopeprogress/inventory_test.go (2061 bytes)
+FILE scopeprogress/shutdown_test.go (991 bytes)
+DIR  scriptguard/
+FILE scriptguard/text.go (2404 bytes)
+FILE scriptguard/text_test.go (2579 bytes)
+FILE setup309.iss (2089 bytes)
+DIR  signatureav/
+FILE signatureav/activity.go (2441 bytes)
+FILE signatureav/activity_test.go (927 bytes)
+FILE signatureav/diagnostic_test.go (1754 bytes)
+FILE signatureav/observer314.go (1295 bytes)
+FILE signatureav/observer314_test.go (358 bytes)
+FILE signatureav/process_other.go (175 bytes)
+FILE signatureav/process_windows.go (1985 bytes)
+FILE signatureav/process_windows_test.go (528 bytes)
+FILE signatureav/scan.go (13147 bytes)
+FILE signatureav/scan_test.go (7074 bytes)
+FILE signatures.sha256 (190 bytes)
+FILE single_instance309_windows.go (1886 bytes)
+FILE single_instance309_windows_test.go (318 bytes)
+FILE stability_windows.go (3246 bytes)
+FILE stability_windows_test.go (591 bytes)
+FILE test_310_metrics.js (1075 bytes)
+FILE test_layer_status308.js (2180 bytes)
+FILE ui.go (188 bytes)
+DIR  updater/
+FILE updater/check.go (3320 bytes)
+FILE updater/check_test.go (3359 bytes)
+FILE updater/install_windows.go (1389 bytes)
+FILE updater/secure.go (4747 bytes)
+FILE updater/secure_test.go (3256 bytes)
+FILE updater/stress20_test.go (778 bytes)
+FILE z310_metrics.js (984 bytes)
+FILE zeuvoryx_adaptive.py (2520 bytes)
+FILE zeuvoryx_brand.jpg (351522 bytes)
+FILE zeuvoryx_brand_assets.py (1360 bytes)
+FILE zeuvoryx_capa_4k.jpg (1655562 bytes)
+FILE zeuvoryx_i18n.py (5422 bytes)
+FILE zeuvoryx_lab303.py (3158 bytes)
+FILE zeuvoryx_painel_4k.jpg (1374242 bytes)
+FILE zeuvoryx_upgrade.py (54422 bytes)
+FILE zip_test.go (2321 bytes)
+Total de pastas: 38; total de arquivos: 286
+.go: 125
+.html: 14
+.css: 2
+.js: 10
+.go.txt: 20
+.py: 33
+
+Arquivos produzidos durante build (não confundir com árvore rastreada): desktop.html, desktop_windows.go, engine/scanner.go, engine/quarantine.go, engine/scan_retry.go, engine/scan_upgrade.go e demais saídas dos geradores; ver lista de comandos abaixo.
+
+2. BOTÕES — OCORRÊNCIAS ESTÁTICAS, INCLUINDO VARIANTES E SUBSTITUIÇÕES
+
+[.github/workflows/windows-build.yml:570] TEXTO: Visão geral | id: (dinâmico/sem id) | tela: overview
+Ação/código: Navegação para overview
+
+[.github/workflows/windows-build.yml:570] TEXTO: Alertas | id: (dinâmico/sem id) | tela: alerts
+Ação/código: Navegação para alerts
+
+[.github/workflows/windows-build.yml:570] TEXTO: Quarentena | id: (dinâmico/sem id) | tela: quarantine
+Ação/código: Navegação para quarantine
+
+[.github/workflows/windows-build.yml:570] TEXTO: Autenticidade de vídeo | id: (dinâmico/sem id) | tela: media
+Ação/código: Navegação para media
+
+[.github/workflows/windows-build.yml:570] TEXTO: Motor e IA | id: (dinâmico/sem id) | tela: engine
+Ação/código: Navegação para engine
+
+[.github/workflows/windows-build.yml:570] TEXTO: Ferramentas | id: (dinâmico/sem id) | tela: tools
+Ação/código: Navegação para tools
+
+[.github/workflows/windows-build.yml:570] TEXTO: Segurança Windows | id: (dinâmico/sem id) | tela: security
+Ação/código: Navegação para security
+
+[.github/workflows/windows-build.yml:570] TEXTO: Motor Defender | id: (dinâmico/sem id) | tela: defender
+Ação/código: Navegação para defender
+
+[.github/workflows/windows-build.yml:570] TEXTO: Links e fraudes | id: (dinâmico/sem id) | tela: links
+Ação/código: Navegação para links
+
+[.github/workflows/windows-build.yml:570] TEXTO: Inteligência de ameaças | id: (dinâmico/sem id) | tela: intel
+Ação/código: Navegação para intel
+
+[.github/workflows/windows-build.yml:570] TEXTO: Minimizar | id: minimize | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml:           	if !bind("minimizeApp", func() bool { w.Dispatch(func(){desktopUser.NewProc("ShowWindow").Call(uintptr(w.Window()),6)}); return true }) { return }
+.github/workflows/windows-build.yml: l" id="badge">Inicializando</div><button id="minimize">Minimizar</button></div></header><section id="overview"><div class="hero" id="hero"><div class="ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="44" fill="none" stroke="#30445d" stroke-width="6"/><circle class="arc" cx="60" cy="60" r="44" fill="none" stroke="#53e4d0" stroke-width="6" stroke-linecap="round"/></svg><span>⌁</span>
+.github/workflows/windows-build.yml: ').click();el('previewCleanup').click()};el('minimize').onclick=()=>action(()=>window.minimizeApp());el('monitor').onchange=()=>action(async()=>{await window.setMonitor(el('monitor').checked);await refresh()});el('previewCleanup').onclick=()=>action(async()=>{const p=await window.previewCleanup();el('cleanupResult').textContent=fmt(p.files)+' arquivos temporários elegíveis · '+volume(p.bytes)
+
+[.github/workflows/windows-build.yml:570] TEXTO: Varredura completa | id: start | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml:               if !bind("startScan", func() (bool,error) { return startLocal("") }) {
+.github/workflows/windows-build.yml:           	if !bind("startQuickScan", func() (bool,error) { return startLocal(":quick:") }) { return }
+.github/workflows/windows-build.yml: camente.</p><div class="actions"><button id="start" disabled>Varredura completa</button><button id="quick" class="primary" disabled>Varredura rápida</button><button id="stop" disabled>Cancelar</button><button id="export" disabled>Exportar relatório</button></div><p class="mode-help">Rápida: locais prioritários. Completa: discos locais acessíveis.</p></div></div><div class="grid"><div class="c
+
+[.github/workflows/windows-build.yml:570] TEXTO: Varredura rápida | id: quick | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml: ", func() (bool,error) { return startLocal(":quick:") }) { return }
+.github/workflows/windows-build.yml: abled>Varredura completa</button><button id="quick" class="primary" disabled>Varredura rápida</button><button id="stop" disabled>Cancelar</button><button id="export" disabled>Exportar relatório</button></div><p class="mode-help">Rápida: locais prioritários. Completa: discos locais acessíveis.</p></div></div><div class="grid"><div class="card"><div class="label">ARQUIVOS ANALISADOS</div><div c
+.github/workflows/windows-build.yml: a análise.';el('start').disabled=running;el('quick').disabled=running;measureSpeed(s.bytes,running);el('stop').disabled=!running;el('export').disabled=running||!s.done;chart(s.files,running);let k=String(r.started)+String(r.finished)+running+String((r.findings||[]).length);if(k!==key){key=k;renderFindings(s)}}catch(e){el('msg').textContent='Interface: '+String(e)}finally{busy=false}}document.
+
+[.github/workflows/windows-build.yml:570] TEXTO: Cancelar | id: stop | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml:           	if !bind("stopScan", func() bool {
+.github/workflows/windows-build.yml: isabled>Varredura rápida</button><button id="stop" disabled>Cancelar</button><button id="export" disabled>Exportar relatório</button></div><p class="mode-help">Rápida: locais prioritários. Completa: discos locais acessíveis.</p></div></div><div class="grid"><div class="card"><div class="label">ARQUIVOS ANALISADOS</div><div class="metric" id="files">0</div></div><div class="card"><div class="l
+.github/workflows/windows-build.yml: ed=running;measureSpeed(s.bytes,running);el('stop').disabled=!running;el('export').disabled=running||!s.done;chart(s.files,running);let k=String(r.started)+String(r.finished)+running+String((r.findings||[]).length);if(k!==key){key=k;renderFindings(s)}}catch(e){el('msg').textContent='Interface: '+String(e)}finally{busy=false}}document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{d
+
+[.github/workflows/windows-build.yml:570] TEXTO: Exportar relatório | id: export | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml:           	if !bind("exportReport", func() (string, error) {
+.github/workflows/windows-build.yml: "stop" disabled>Cancelar</button><button id="export" disabled>Exportar relatório</button></div><p class="mode-help">Rápida: locais prioritários. Completa: discos locais acessíveis.</p></div></div><div class="grid"><div class="card"><div class="label">ARQUIVOS ANALISADOS</div><div class="metric" id="files">0</div></div><div class="card"><div class="label">VOLUME ANALISADO</div><div class="metr
+.github/workflows/windows-build.yml: es,running);el('stop').disabled=!running;el('export').disabled=running||!s.done;chart(s.files,running);let k=String(r.started)+String(r.finished)+running+String((r.findings||[]).length);if(k!==key){key=k;renderFindings(s)}}catch(e){el('msg').textContent='Interface: '+String(e)}finally{busy=false}}document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[da
+
+[.github/workflows/windows-build.yml:570] TEXTO: Revisar limpeza | id: afterCleanup | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml: ios antigos antes de remover.</p><button id="afterCleanup">Revisar limpeza</button></div><div class="card"><h2>Cobertura da análise</h2><p class="sub" id="scope">Discos locais fixos; arquivos protegidos ou inacessíveis podem ser ignorados.</p><p class="sub" id="skipped"></p></div></section><section id="alerts" class="hidden card"><h2>Alertas e resultados</h2><p class="sub">Os resultados compl
+.github/workflows/windows-build.yml: el('refreshQ').onclick=()=>action(loadQ);el('afterCleanup').onclick=()=>{document.querySelector('[data-page=tools]').click();el('previewCleanup').click()};el('minimize').onclick=()=>action(()=>window.minimizeApp());el('monitor').onchange=()=>action(async()=>{await window.setMonitor(el('monitor').checked);await refresh()});el('previewCleanup').onclick=()=>action(async()=>{const p=await window.
+
+[.github/workflows/windows-build.yml:570] TEXTO: Atualizar lista | id: refreshQ | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml: v id="qitems" class="list"></div><button id="refreshQ">Atualizar lista</button></section><section id="media" class="hidden card"><h2>Autenticidade de vídeo</h2><p class="sub">Verificação C2PA de procedência digital, não um detector neural de deepfakes. A análise pode consultar referências remotas de credenciais. A falta de credenciais é inconclusiva.</p><input class="media-field" id="videoPat
+.github/workflows/windows-build.yml: alvo em: '+await window.exportReport()});el('refreshQ').onclick=()=>action(loadQ);el('afterCleanup').onclick=()=>{document.querySelector('[data-page=tools]').click();el('previewCleanup').click()};el('minimize').onclick=()=>action(()=>window.minimizeApp());el('monitor').onchange=()=>action(async()=>{await window.setMonitor(el('monitor').checked);await refresh()});el('previewCleanup').onclick=(
+index.html: ()=>{await api('/api/stop',{});render()};el('refreshQ').onclick=loadQ;el('export').onclick=()=>{location.href='/api/export?token='+encodeURIComponent(token)};render();loadQ();setInterval(render,1500);
+
+[.github/workflows/windows-build.yml:570] TEXTO: Escolher vídeo | id: chooseVideo | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml:           	if !bind("chooseVideo", chooseVideo) { return }
+.github/workflows/windows-build.yml: V" readonly><div class="actions"><button id="chooseVideo">Escolher vídeo</button><button id="checkVideo" class="primary">Verificar procedência</button></div><p id="videoStatus" class="sub" role="status"></p><pre class="media-report" id="videoResult"></pre></section><section id="security" class="hidden card"><h2>Segurança em camadas</h2><p class="sub">Diagnóstico somente leitura do Microsoft D
+.github/workflows/windows-build.yml: ickScan())resetChart();await refresh()});el('chooseVideo').onclick=()=>action(async()=>{const p=await window.chooseVideo();if(p)el('videoPath').value=p});el('checkVideo').onclick=()=>action(async()=>{const p=el('videoPath').value;if(!p)throw Error('Escolha um vídeo primeiro');const b=el('checkVideo');b.disabled=true;el('videoStatus').textContent='Verificando procedência...';el('videoResult').
+
+[.github/workflows/windows-build.yml:570] TEXTO: Verificar procedência | id: checkVideo | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml: oseVideo">Escolher vídeo</button><button id="checkVideo" class="primary">Verificar procedência</button></div><p id="videoStatus" class="sub" role="status"></p><pre class="media-report" id="videoResult"></pre></section><section id="security" class="hidden card"><h2>Segurança em camadas</h2><p class="sub">Diagnóstico somente leitura do Microsoft Defender, firewall e versão do Windows. Não é um 
+.github/workflows/windows-build.yml: seVideo();if(p)el('videoPath').value=p});el('checkVideo').onclick=()=>action(async()=>{const p=el('videoPath').value;if(!p)throw Error('Escolha um vídeo primeiro');const b=el('checkVideo');b.disabled=true;el('videoStatus').textContent='Verificando procedência...';el('videoResult').textContent='';try{const r=await window.verifyVideo(p);el('videoStatus').textContent=r.status;el('videoResult').t
+
+[.github/workflows/windows-build.yml:570] TEXTO: Consultar proteção | id: auditWindows | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml: ="actions" style="margin:15px 0"><button id="auditWindows" class="primary">Consultar proteção</button><button id="securityRecheck">Reavaliar computador</button><button data-native="realtime-on">Ativar proteção em tempo real</button><button data-native="update">Atualizar assinaturas</button><button data-native="remediate">Corrigir ameaças ativas</button><button data-native="network-audit">Audi
+.github/workflows/windows-build.yml:  function refreshSecurityAudit(){const b=el('auditWindows'),box=el('auditReport');if(b.disabled)return;b.disabled=true;el('securityRecheck').disabled=true;box.replaceChildren();el('auditState').textContent='Consultando o Windows...';try{const a=await window.windowsSecurityAudit(),d=a.defender||{},u=a.updates||{};auditRow(box,'Microsoft Defender',stateLabel(d.antivirus));auditRow(box,'Proteção
+.github/workflows/windows-build.yml:           el('auditWindows').onclick=el('securityRecheck').onclick=()=>action(refreshSecurityAudit);
+
+[.github/workflows/windows-build.yml:570] TEXTO: Reavaliar computador | id: securityRecheck | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml: mary">Consultar proteção</button><button id="securityRecheck">Reavaliar computador</button><button data-native="realtime-on">Ativar proteção em tempo real</button><button data-native="update">Atualizar assinaturas</button><button data-native="remediate">Corrigir ameaças ativas</button><button data-native="network-audit">Auditar proteção de rede</button><button data-native="folder-audit">Audit
+.github/workflows/windows-build.yml: t');if(b.disabled)return;b.disabled=true;el('securityRecheck').disabled=true;box.replaceChildren();el('auditState').textContent='Consultando o Windows...';try{const a=await window.windowsSecurityAudit(),d=a.defender||{},u=a.updates||{};auditRow(box,'Microsoft Defender',stateLabel(d.antivirus));auditRow(box,'Proteção em tempo real do Defender',stateLabel(d.realTime));auditRow(box,'Monitorament
+.github/workflows/windows-build.yml:           el('auditWindows').onclick=el('securityRecheck').onclick=()=>action(refreshSecurityAudit);
+
+[.github/workflows/windows-build.yml:570] TEXTO: Ativar proteção em tempo real | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: Não identificada automaticamente; requer inspeção manual.
+
+[.github/workflows/windows-build.yml:570] TEXTO: Atualizar assinaturas | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: Não identificada automaticamente; requer inspeção manual.
+
+[.github/workflows/windows-build.yml:570] TEXTO: Corrigir ameaças ativas | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: Não identificada automaticamente; requer inspeção manual.
+
+[.github/workflows/windows-build.yml:570] TEXTO: Auditar proteção de rede | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: Não identificada automaticamente; requer inspeção manual.
+
+[.github/workflows/windows-build.yml:570] TEXTO: Auditar acesso a pastas | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: Não identificada automaticamente; requer inspeção manual.
+
+[.github/workflows/windows-build.yml:570] TEXTO: Auditar processos filhos do Office | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: Não identificada automaticamente; requer inspeção manual.
+
+[.github/workflows/windows-build.yml:570] TEXTO: Consultar atualizações pendentes | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: Não identificada automaticamente; requer inspeção manual.
+
+[.github/workflows/windows-build.yml:570] TEXTO: Verificação rápida Defender | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: Não identificada automaticamente; requer inspeção manual.
+
+[.github/workflows/windows-build.yml:570] TEXTO: Verificação completa Defender | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: Não identificada automaticamente; requer inspeção manual.
+
+[.github/workflows/windows-build.yml:570] TEXTO: Atualizar assinaturas Defender | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: Não identificada automaticamente; requer inspeção manual.
+
+[.github/workflows/windows-build.yml:570] TEXTO: Histórico de ameaças | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: Não identificada automaticamente; requer inspeção manual.
+
+[.github/workflows/windows-build.yml:570] TEXTO: Consultar atualizações pendentes | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: Não identificada automaticamente; requer inspeção manual.
+
+[.github/workflows/windows-build.yml:570] TEXTO: Tratar ameaças ativas | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: Não identificada automaticamente; requer inspeção manual.
+
+[.github/workflows/windows-build.yml:570] TEXTO: Ativar bloqueio de conexões perigosas | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: Não identificada automaticamente; requer inspeção manual.
+
+[.github/workflows/windows-build.yml:570] TEXTO: Ativar proteção de pastas | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: Não identificada automaticamente; requer inspeção manual.
+
+[.github/workflows/windows-build.yml:570] TEXTO: Examinar endereço | id: checkLink | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml: omplete="off" spellcheck="false"><button id="checkLink" class="primary">Examinar endereço</button><div id="linkReport" class="list" role="status"></div><div class="entry"><h2>Fraudes financeiras e roubo de identidade</h2><p>Triagem local de texto, sem envio a servidores. Não cole senhas, chaves privadas, frases de recuperação, códigos, CPF ou documentos reais. Padrões não comprovam fraude nem
+.github/workflows/windows-build.yml:           el('checkLink').onclick=()=>action(async()=>{const box=el('linkReport');box.replaceChildren();try{const r=await window.assessLink(el('urlCheck').value);auditRow(box,'Domínio interpretado',r.host);auditRow(box,'Avaliação',r.assessment);for(const s of r.signals||[])auditRow(box,'Indicador',s);auditRow(box,'Limitação','Nenhum resultado comprova que o ende
+
+[.github/workflows/windows-build.yml:570] TEXTO: Examinar mensagem | id: fraudCheck | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml: , sem dados pessoais"></textarea><button id="fraudCheck">Examinar mensagem</button><div id="fraudReport" class="list" role="status"></div></div><div class="entry"><h2>Resposta a incidentes</h2><p>Escolha um cenário para receber ações de contenção e recuperação. O roteiro não executa mudanças em contas, carteiras ou rede.</p><div class="actions"><button data-incident="crypto">Criptomoedas</but
+.github/workflows/windows-build.yml:           el('fraudCheck').onclick=()=>action(async()=>{const box=el('fraudReport'),raw=el('fraudInput').value;el('fraudInput').value='';box.replaceChildren();try{const r=await window.assessFraud(raw);auditRow(box,'Avaliação',r.assessment);for(const x of r.signals||[])auditRow(box,'Indicador',x);for(const x of r.actions||[])auditRow(box,'Ação recomendada',x)}cat
+
+[.github/workflows/windows-build.yml:570] TEXTO: Criptomoedas | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: Não identificada automaticamente; requer inspeção manual.
+
+[.github/workflows/windows-build.yml:570] TEXTO: Identidade / contas | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: Não identificada automaticamente; requer inspeção manual.
+
+[.github/workflows/windows-build.yml:570] TEXTO: Malware | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: Não identificada automaticamente; requer inspeção manual.
+
+[.github/workflows/windows-build.yml:570] TEXTO: Ransomware | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: Não identificada automaticamente; requer inspeção manual.
+
+[.github/workflows/windows-build.yml:570] TEXTO: Examinar temporários | id: previewCleanup | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml:               if !bind("previewCleanup", func() (map[string]any,error) {
+.github/workflows/windows-build.yml: cê confirma antes de remover.</p><button id="previewCleanup">Examinar temporários</button><p id="cleanupResult" class="sub"></p></div></section><section id="intel" class="hidden card"><h2>Inteligência de ameaças e vulnerabilidades</h2><p class="sub">Indicadores SHA-256 complementam o Defender. Não são um modelo de IA e não detectam variantes desconhecidas. Nenhuma amostra ou arquivo do PC é e
+.github/workflows/windows-build.yml: unning;el('monitor').checked=!!s.monitor;el('previewCleanup').disabled=running;el('afterScan').classList.toggle('hidden',running||!s.done||!!r.cancelled||!!s.error);el('hero').classList.toggle('scanning',running);el('badge').textContent=running?'Analisando':s.error?'Erro na análise':s.done?'Análise encerrada':'Pronto';el('stateTitle').textContent=running?'Varredura em andamento':s.error?'A an
+
+[.github/workflows/windows-build.yml:570] TEXTO: Consultar e incorporar indicadores | id: intelSync | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml: tocomplete="off" maxlength="256"><button id="intelSync" class="primary">Consultar e incorporar indicadores</button><p id="intelResult" role="status">Aguardando consulta.</p></div><div class="entry"><h2>Importar lista de hashes</h2><p>Cole SHA-256 de uma fonte confiável, um por linha. Correspondências são alertas sujeitos à sua revisão, não exclusões automáticas.</p><textarea id="intelList" cl
+.github/workflows/windows-build.yml:           el('intelSync').onclick=()=>{const k=el('intelKey').value;el('intelKey').value='';return intelRun('intelSync','intelResult',()=>window.syncThreatHashes(k))};
+
+[.github/workflows/windows-build.yml:570] TEXTO: Validar e incorporar | id: intelImport | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml: r="SHA-256 por linha"></textarea><button id="intelImport">Validar e incorporar</button><button id="intelCount">Consultar base ativa</button><p id="intelCountResult" role="status"></p></div><div class="entry"><h2>Reputação de URLs</h2><p>Importe uma lista de URLs de uma fonte confiável, como a lista de texto do URLhaus, uma por linha. Substitui a lista anterior. Não acessa os endereços. Corres
+.github/workflows/windows-build.yml:           el('intelImport').onclick=()=>intelRun('intelImport','intelCountResult',()=>window.importThreatHashes(el('intelList').value));
+
+[.github/workflows/windows-build.yml:570] TEXTO: Consultar base ativa | id: intelCount | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml: rt">Validar e incorporar</button><button id="intelCount">Consultar base ativa</button><p id="intelCountResult" role="status"></p></div><div class="entry"><h2>Reputação de URLs</h2><p>Importe uma lista de URLs de uma fonte confiável, como a lista de texto do URLhaus, uma por linha. Substitui a lista anterior. Não acessa os endereços. Correspondência exata não é bloqueio automático.</p><textare
+.github/workflows/windows-build.yml: Import').onclick=()=>intelRun('intelImport','intelCountResult',()=>window.importThreatHashes(el('intelList').value));
+.github/workflows/windows-build.yml:           el('intelCount').onclick=()=>action(async()=>{const r=await window.intelStatus();el('intelCountResult').textContent='Indicadores ativos: '+r.total+' | URLs: '+r.urls+' | Última gravação: '+r.savedAt+(r.storageError?' | Falha na base: '+r.storageError:'')});
+
+[.github/workflows/windows-build.yml:570] TEXTO: Validar e salvar lista | id: repImport | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml: r="Uma URL por linha"></textarea><button id="repImport">Validar e salvar lista</button><p id="repResult" role="status"></p></div><div class="entry"><h2>Vulnerabilidades exploradas • CISA KEV</h2><p>Pesquise um código CVE conhecido. A consulta não determina se o seu computador possui a vulnerabilidade.</p><input id="cveInput" class="media-field" maxlength="32" placeholder="CVE-2025-1234"><butt
+.github/workflows/windows-build.yml:           el('repImport').onclick=()=>action(async()=>{const b=el('repImport');b.disabled=true;try{if(!await ask('Substituir a lista local de URLs?'))return;const n=await window.importReputation(el('reputationList').value);el('repResult').textContent=n+' URLs validadas e gravadas.';el('reputationList').value=''}finally{b.disabled=false}});
+
+[.github/workflows/windows-build.yml:570] TEXTO: Consultar catálogo oficial | id: cveCheck | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml: "32" placeholder="CVE-2025-1234"><button id="cveCheck">Consultar catálogo oficial</button><div id="cveResult" class="list" role="status"></div></div></section><section id="engine" class="hidden card"><h2>Motor e inteligência artificial</h2><p class="sub">Motor atual: SHA-256, regras heurísticas e análise PE. Modelo treinado de malware: não instalado. Detector neural de vídeo: não instalado. C
+.github/workflows/windows-build.yml:           el('cveCheck').onclick=()=>action(async()=>{const b=el('cveCheck'),box=el('cveResult');b.disabled=true;box.textContent='Consultando catálogo...';try{const r=await window.checkKnownCVE(el('cveInput').value);box.replaceChildren();auditRow(box,'Versão do catálogo',r.version);auditRow(box,'Total no catálogo',String(r.count));auditRow(box,'Resultado',r.foun
+
+[.github/workflows/windows-build.yml:570] TEXTO: Consultar instalação | id: clamCheck | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml: e e não é proteção residente.</p><button id="clamCheck">Consultar instalação</button><button id="clamChoose">Examinar arquivo com ClamAV</button><p id="clamState" role="status"></p><pre id="clamReport" class="media-report"></pre></div><img class="mythic" src="__PANEL__" alt="Arte original do painel mitológico"><p class="sub">A classificação de risco é uma pontuação heurística, não uma probabi
+.github/workflows/windows-build.yml:           el('clamCheck').onclick=()=>action(async()=>{el('clamState').textContent=await window.clamStatus()});
+
+[.github/workflows/windows-build.yml:570] TEXTO: Examinar arquivo com ClamAV | id: clamChoose | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml: ck">Consultar instalação</button><button id="clamChoose">Examinar arquivo com ClamAV</button><p id="clamState" role="status"></p><pre id="clamReport" class="media-report"></pre></div><img class="mythic" src="__PANEL__" alt="Arte original do painel mitológico"><p class="sub">A classificação de risco é uma pontuação heurística, não uma probabilidade de infecção.</p></section><p id="msg" role="s
+.github/workflows/windows-build.yml:           el('clamChoose').onclick=()=>action(async()=>{const b=el('clamChoose');b.disabled=true;try{const p=await window.chooseClamFile();if(!p)return;el('clamState').textContent='ClamAV examinando arquivo...';const r=await window.clamScanFile(p);el('clamState').textContent=r.status;el('clamReport').textContent=r.details||''}catch(e){el('clamState').textContent
+
+[.github/workflows/windows-build.yml:570] TEXTO: Cancelar | id: no | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml:               if !bind("checkKnownCVE",func(id string)(kevResult,error){return fetchKEV(nativeCtx,intelClientInstance,id)}){return}
+.github/workflows/windows-build.yml: abled{opacity:.4;cursor:default}button:hover:not(:disabled){filter:brightness(1.13)}button:focus-visible{outline:3px solid #86b8ff;outline-offset:3px}.shell{display:grid;grid-template-columns:216px minmax(0,1fr);min-height:100vh}aside{background:#0b1425;padding:26px 17px;border-right:1px solid var(--line)}.brand{display:flex;align-items:center;gap:11px;font-size:19px;font-weight:800;letter-sp
+.github/workflows/windows-build.yml: class="brand"><svg viewBox="0 0 64 72" fill="none" aria-hidden="true"><path d="M32 4 58 14v22c0 16-10 27-26 34C16 63 6 52 6 36V14Z" fill="#15384c" stroke="#53e4d0" stroke-width="3"/><path d="M17 23h30L22 48h25" stroke="#e8fffd" stroke-width="6" stroke-linejoin="round"/></svg>ZEUVORYX</div><div class="tag">OLYMPUS 3.0</div><nav class="nav"><button class="active" data-page="overview">Visão gera
+
+[.github/workflows/windows-build.yml:570] TEXTO: Confirmar | id: yes | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml: <button id="no">Cancelar</button><button id="yes" class="primary">Confirmar</button></div></dialog><script>
+.github/workflows/windows-build.yml: rmResolve;confirmResolve=null;if(r)r(ok)}el('yes').onclick=()=>closeConfirm(true);el('no').onclick=()=>closeConfirm(false);el('confirmBox').oncancel=e=>{e.preventDefault();closeConfirm(false)};async function action(fn){try{el('msg').textContent='';await fn()}catch(e){el('msg').textContent=String(e)}}function chart(n,running){if(last!==null&&n<last){series=[];last=null}if(running&&last!==null)
+
+[.github/workflows/windows-build.yml:2347] TEXTO: Inteligência de ameaças | id: (dinâmico/sem id) | tela: intel
+Ação/código: Navegação para intel
+
+[.github/workflows/windows-build.yml:2347] TEXTO: Inteligência de ameaças | id: (dinâmico/sem id) | tela: intel
+Ação/código: Navegação para intel
+
+[.github/workflows/windows-build.yml:2347] TEXTO: Diagnóstico de testes | id: (dinâmico/sem id) | tela: diagnostics
+Ação/código: Navegação para diagnostics
+
+[.github/workflows/windows-build.yml:2349] TEXTO: Iniciar gravação | id: diagBegin | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml: ="margin:16px 0"><button class="primary" id="diagBegin">Iniciar gravação</button><button id="diagEnd" disabled>Encerrar gravação</button><button id="diagSave" disabled>Exportar JSON</button></div><p id="diagState" class="sub" role="status">Gravação desligada.</p><pre id="diagView" class="media-report" aria-label="Métricas técnicas"></pre><p id="diagPath" class="sub" style="overflow-wrap:anywh
+.github/workflows/windows-build.yml: .samples||[],x=rows.at(-1),p=rows.at(-2);el('diagBegin').disabled=r.recording;el('diagEnd').disabled=!r.recording;el('diagSave').disabled=!rows.length;el('diagState').textContent=(r.recording?'Gravando localmente':'Gravação desligada')+' | Amostras: '+fmt(rows.length)+' | Amostras antigas descartadas: '+fmt(r.old_samples_discarded);if(!x){el('diagView').textContent='Nenhuma amostra.';return}c
+.github/workflows/windows-build.yml:           el('diagBegin').onclick=()=>action(async()=>{if(!await ask('Iniciar gravação local? Uma nova sessão substitui a anterior ainda não exportada.'))return;await window.diagStart();el('diagPath').textContent='';await diagRefresh()});
+
+[.github/workflows/windows-build.yml:2349] TEXTO: Encerrar gravação | id: diagEnd | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml: gBegin">Iniciar gravação</button><button id="diagEnd" disabled>Encerrar gravação</button><button id="diagSave" disabled>Exportar JSON</button></div><p id="diagState" class="sub" role="status">Gravação desligada.</p><pre id="diagView" class="media-report" aria-label="Métricas técnicas"></pre><p id="diagPath" class="sub" style="overflow-wrap:anywhere"></p></section>'''
+.github/workflows/windows-build.yml: -2);el('diagBegin').disabled=r.recording;el('diagEnd').disabled=!r.recording;el('diagSave').disabled=!rows.length;el('diagState').textContent=(r.recording?'Gravando localmente':'Gravação desligada')+' | Amostras: '+fmt(rows.length)+' | Amostras antigas descartadas: '+fmt(r.old_samples_discarded);if(!x){el('diagView').textContent='Nenhuma amostra.';return}const dt=p?(Date.parse(x.at_utc)-Date.
+.github/workflows/windows-build.yml:           el('diagEnd').onclick=()=>action(async()=>{await window.diagStop();await diagRefresh()});
+
+[.github/workflows/windows-build.yml:2349] TEXTO: Exportar JSON | id: diagSave | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml: sabled>Encerrar gravação</button><button id="diagSave" disabled>Exportar JSON</button></div><p id="diagState" class="sub" role="status">Gravação desligada.</p><pre id="diagView" class="media-report" aria-label="Métricas técnicas"></pre><p id="diagPath" class="sub" style="overflow-wrap:anywhere"></p></section>'''
+.github/workflows/windows-build.yml: ding;el('diagEnd').disabled=!r.recording;el('diagSave').disabled=!rows.length;el('diagState').textContent=(r.recording?'Gravando localmente':'Gravação desligada')+' | Amostras: '+fmt(rows.length)+' | Amostras antigas descartadas: '+fmt(r.old_samples_discarded);if(!x){el('diagView').textContent='Nenhuma amostra.';return}const dt=p?(Date.parse(x.at_utc)-Date.parse(p.at_utc))/1000:0;const rate=p
+.github/workflows/windows-build.yml:           el('diagSave').onclick=()=>action(async()=>{const path=await window.diagExport();el('diagPath').textContent='Relatório salvo em: '+path+' | Abra essa pasta e envie somente o JSON ao ChatGPT.'});
+
+[.github/workflows/windows-build.yml:571] TEXTO: Isolar arquivo | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: ' :: ')){let b=node('button','Isolar arquivo');b.disabled=s.running;b.onclick=()=>action(async()=>{if(await ask('Mover para quarentena? Isso pode afetar programas legítimos. '+f.path)){await window.isolate(f.path);await loadQ();el('msg').textContent='Arquivo isolado.'}});row.append(b)}box.append(row)}}async functi
+
+[.github/workflows/windows-build.yml:571] TEXTO: Restaurar | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: t-BR')));let b=node('button','Restaurar');b.onclick=()=>action(async()=>{if(await ask('Restaurar arquivo potencialmente perigoso? '+q.original)){await window.restoreItem(q.id);await loadQ()}});row.append(b);let del=node('button','Excluir definitivamente');del.onclick=()=>action(async()=>{if(await ask('Excluir defi
+
+[.github/workflows/windows-build.yml:571] TEXTO: Excluir definitivamente | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: end(b);let del=node('button','Excluir definitivamente');del.onclick=()=>action(async()=>{if(await ask('Excluir definitivamente este item da quarentena? Não será possível restaurar. '+q.original)){await window.deleteQuarantined(q.id);await loadQ();el('msg').textContent='Item excluído da quarentena.'}});row.append(d
+
+[index.html:5] TEXTO: Iniciar análise | id: start | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml:               if !bind("startScan", func() (bool,error) { return startLocal("") }) {
+.github/workflows/windows-build.yml:           	if !bind("startQuickScan", func() (bool,error) { return startLocal(":quick:") }) { return }
+.github/workflows/windows-build.yml: camente.</p><div class="actions"><button id="start" disabled>Varredura completa</button><button id="quick" class="primary" disabled>Varredura rápida</button><button id="stop" disabled>Cancelar</button><button id="export" disabled>Exportar relatório</button></div><p class="mode-help">Rápida: locais prioritários. Completa: discos locais acessíveis.</p></div></div><div class="grid"><div class="c
+
+[index.html:5] TEXTO: Downloads | id: quick | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml: ", func() (bool,error) { return startLocal(":quick:") }) { return }
+.github/workflows/windows-build.yml: abled>Varredura completa</button><button id="quick" class="primary" disabled>Varredura rápida</button><button id="stop" disabled>Cancelar</button><button id="export" disabled>Exportar relatório</button></div><p class="mode-help">Rápida: locais prioritários. Completa: discos locais acessíveis.</p></div></div><div class="grid"><div class="card"><div class="label">ARQUIVOS ANALISADOS</div><div c
+.github/workflows/windows-build.yml: a análise.';el('start').disabled=running;el('quick').disabled=running;measureSpeed(s.bytes,running);el('stop').disabled=!running;el('export').disabled=running||!s.done;chart(s.files,running);let k=String(r.started)+String(r.finished)+running+String((r.findings||[]).length);if(k!==key){key=k;renderFindings(s)}}catch(e){el('msg').textContent='Interface: '+String(e)}finally{busy=false}}document.
+
+[index.html:5] TEXTO: Cancelar | id: stop | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml:           	if !bind("stopScan", func() bool {
+.github/workflows/windows-build.yml: isabled>Varredura rápida</button><button id="stop" disabled>Cancelar</button><button id="export" disabled>Exportar relatório</button></div><p class="mode-help">Rápida: locais prioritários. Completa: discos locais acessíveis.</p></div></div><div class="grid"><div class="card"><div class="label">ARQUIVOS ANALISADOS</div><div class="metric" id="files">0</div></div><div class="card"><div class="l
+.github/workflows/windows-build.yml: ed=running;measureSpeed(s.bytes,running);el('stop').disabled=!running;el('export').disabled=running||!s.done;chart(s.files,running);let k=String(r.started)+String(r.finished)+running+String((r.findings||[]).length);if(k!==key){key=k;renderFindings(s)}}catch(e){el('msg').textContent='Interface: '+String(e)}finally{busy=false}}document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{d
+
+[index.html:5] TEXTO: Exportar relatório JSON | id: export | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml:           	if !bind("exportReport", func() (string, error) {
+.github/workflows/windows-build.yml: "stop" disabled>Cancelar</button><button id="export" disabled>Exportar relatório</button></div><p class="mode-help">Rápida: locais prioritários. Completa: discos locais acessíveis.</p></div></div><div class="grid"><div class="card"><div class="label">ARQUIVOS ANALISADOS</div><div class="metric" id="files">0</div></div><div class="card"><div class="label">VOLUME ANALISADO</div><div class="metr
+.github/workflows/windows-build.yml: es,running);el('stop').disabled=!running;el('export').disabled=running||!s.done;chart(s.files,running);let k=String(r.started)+String(r.finished)+running+String((r.findings||[]).length);if(k!==key){key=k;renderFindings(s)}}catch(e){el('msg').textContent='Interface: '+String(e)}finally{busy=false}}document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[da
+
+[index.html:6] TEXTO: Atualizar | id: refreshQ | tela: não indicada
+Ação/código: .github/workflows/windows-build.yml: v id="qitems" class="list"></div><button id="refreshQ">Atualizar lista</button></section><section id="media" class="hidden card"><h2>Autenticidade de vídeo</h2><p class="sub">Verificação C2PA de procedência digital, não um detector neural de deepfakes. A análise pode consultar referências remotas de credenciais. A falta de credenciais é inconclusiva.</p><input class="media-field" id="videoPat
+.github/workflows/windows-build.yml: alvo em: '+await window.exportReport()});el('refreshQ').onclick=()=>action(loadQ);el('afterCleanup').onclick=()=>{document.querySelector('[data-page=tools]').click();el('previewCleanup').click()};el('minimize').onclick=()=>action(()=>window.minimizeApp());el('monitor').onchange=()=>action(async()=>{await window.setMonitor(el('monitor').checked);await refresh()});el('previewCleanup').onclick=(
+index.html: ()=>{await api('/api/stop',{});render()};el('refreshQ').onclick=loadQ;el('export').onclick=()=>{location.href='/api/export?token='+encodeURIComponent(token)};render();loadQ();setInterval(render,1500);
+
+[prepare_optimization310.py:32] TEXTO: Diagnosticar e otimizar | id: z310Diagnose | tela: não indicada
+Ação/código: prepare_optimization310.py: tus"></p><div id="z310Optimizer"><button id="z310Diagnose">Diagnosticar e otimizar</button><p id="z310Diagnosis" role="status" class="sub"></p><p id="z310PlanSummary" class="sub"></p><div id="z310FileList"></div><button id="z310Apply" disabled>Limpar selecionados</button><p id="z310Result" class="sub" role="status"></p></div>''')
+prepare_optimization310.py: nst a=w();z('z310GoOptimize').textContent=z('z310Diagnose').textContent=a[0];z('z310Apply').textContent=a[1]}
+prepare_optimization310.py: uerySelector('[data-page=tools]').click();z('z310Diagnose').click()};
+
+[prepare_optimization310.py:32] TEXTO: Limpar selecionados | id: z310Apply | tela: não indicada
+Ação/código: prepare_optimization310.py: </p><div id="z310FileList"></div><button id="z310Apply" disabled>Limpar selecionados</button><p id="z310Result" class="sub" role="status"></p></div>''')
+prepare_optimization310.py:  function sync(){z('z310Apply').disabled=busy||!plan||!z('z310FileList').querySelector('input:checked')}
+prepare_optimization310.py: ontent=z('z310Diagnose').textContent=a[0];z('z310Apply').textContent=a[1]}
+
+[prepare_optimization310.py:34] TEXTO: Diagnosticar e otimizar | id: z310GoOptimize | tela: não indicada
+Ação/código: prepare_optimization310.py:  function lang(){const a=w();z('z310GoOptimize').textContent=z('z310Diagnose').textContent=a[0];z('z310Apply').textContent=a[1]}
+prepare_optimization310.py:  z('z310GoOptimize').onclick=()=>{document.querySelector('[data-page=tools]').click();z('z310Diagnose').click()};
+
+[prepare_reports315.py:8] TEXTO: Relatórios | id: (dinâmico/sem id) | tela: reports315
+Ação/código: Navegação para reports315
+
+[prepare_reports315.py:23] TEXTO: Gerar relatório JSON | id: z315ReportSave | tela: não indicada
+Ação/código: prepare_reports315.py: alue,preview=el('z315ReportPreview'),btn=el('z315ReportSave');try{if(kind==='history'){const v=z315Rows.find(x=>x.ScanID===el('z315ReportHistory').value);preview.textContent=v?'Arquivos: '+fmt(v.Files)+' · Alertas: '+fmt(v.Alerts)+' · Falhas: '+fmt(v.ErrorCount):'Selecione uma varredura salva.';btn.disabled=z315ReportBusy||!v;return}if(kind==='diag'){const d=await window.diagReport();if(el('z
+prepare_reports315.py: rce'),status=el('z315ReportStatus'),save=el('z315ReportSave'),section=el('reports315');const legacy=el('export');legacy.hidden=true;section.append(legacy);const transfer=el('z315Transfer'),file=el('z315ReportFile'),copy=el('z315CopyFile');let transferring=false;async function handoff(drag){if(transferring||transfer.hidden)return;transferring=true;copy.disabled=true;try{const ok=drag?await win
+prepare_reports315.py: e;z315ReportBusy=true;show.disabled=true;el('z315ReportSave').disabled=true;clear();panel.hidden=false;status.textContent='Obtendo dados reais do relatório...';
+
+[prepare_reports315.py:23] TEXTO: Copiar arquivo | id: z315CopyFile | tela: não indicada
+Ação/código: prepare_reports315.py: ransfer'),file=el('z315ReportFile'),copy=el('z315CopyFile');let transferring=false;async function handoff(drag){if(transferring||transfer.hidden)return;transferring=true;copy.disabled=true;try{const ok=drag?await window.dragReport315():await window.copyReport315();status.textContent=ok?(drag?'Arquivo entregue ao destino pelo Windows. Confirme o envio no aplicativo de destino.':'Arquivo copiad
+
+[prepare_reports315.py:71] TEXTO: Iniciar observação | id: fieldStart | tela: não indicada
+Ação/código: prepare_reports315.py: e(s,'if !bind("copyReport315",','''if !bind("fieldStart",fieldStart){return}
+prepare_reports315.py: s=once(s,'</script></body></html>',"""el('fieldStart').onclick=async()=>{try{el('fieldStatus').textContent='Iniciada: '+await window.fieldStart();await z315ReportPaint()}catch(e){el('fieldStatus').textContent=String(e)}};
+
+[prepare_reports315.py:71] TEXTO: Cancelar observação | id: fieldCancel | tela: não indicada
+Ação/código: prepare_reports315.py:  if !bind("fieldCancel",fieldCancel){return}
+prepare_reports315.py: el('fieldCancel').onclick=async()=>{try{await window.fieldCancel();el('fieldStatus').textContent='Observação cancelada';await z315ReportPaint()}catch(e){el('fieldStatus').textContent=String(e)}};
+
+[prepare_reports315.py:91] TEXTO: Gerar relatório JSON | id: z315ReportSave | tela: não indicada
+Ação/código: prepare_reports315.py: alue,preview=el('z315ReportPreview'),btn=el('z315ReportSave');try{if(kind==='history'){const v=z315Rows.find(x=>x.ScanID===el('z315ReportHistory').value);preview.textContent=v?'Arquivos: '+fmt(v.Files)+' · Alertas: '+fmt(v.Alerts)+' · Falhas: '+fmt(v.ErrorCount):'Selecione uma varredura salva.';btn.disabled=z315ReportBusy||!v;return}if(kind==='diag'){const d=await window.diagReport();if(el('z
+prepare_reports315.py: rce'),status=el('z315ReportStatus'),save=el('z315ReportSave'),section=el('reports315');const legacy=el('export');legacy.hidden=true;section.append(legacy);const transfer=el('z315Transfer'),file=el('z315ReportFile'),copy=el('z315CopyFile');let transferring=false;async function handoff(drag){if(transferring||transfer.hidden)return;transferring=true;copy.disabled=true;try{const ok=drag?await win
+prepare_reports315.py: e;z315ReportBusy=true;show.disabled=true;el('z315ReportSave').disabled=true;clear();panel.hidden=false;status.textContent='Obtendo dados reais do relatório...';
+
+[prepare_reports315.py:91] TEXTO: Gerar relatório JSON | id: z315ReportSave | tela: não indicada
+Ação/código: prepare_reports315.py: alue,preview=el('z315ReportPreview'),btn=el('z315ReportSave');try{if(kind==='history'){const v=z315Rows.find(x=>x.ScanID===el('z315ReportHistory').value);preview.textContent=v?'Arquivos: '+fmt(v.Files)+' · Alertas: '+fmt(v.Alerts)+' · Falhas: '+fmt(v.ErrorCount):'Selecione uma varredura salva.';btn.disabled=z315ReportBusy||!v;return}if(kind==='diag'){const d=await window.diagReport();if(el('z
+prepare_reports315.py: rce'),status=el('z315ReportStatus'),save=el('z315ReportSave'),section=el('reports315');const legacy=el('export');legacy.hidden=true;section.append(legacy);const transfer=el('z315Transfer'),file=el('z315ReportFile'),copy=el('z315CopyFile');let transferring=false;async function handoff(drag){if(transferring||transfer.hidden)return;transferring=true;copy.disabled=true;try{const ok=drag?await win
+prepare_reports315.py: e;z315ReportBusy=true;show.disabled=true;el('z315ReportSave').disabled=true;clear();panel.hidden=false;status.textContent='Obtendo dados reais do relatório...';
+
+[prepare_reports315.py:91] TEXTO: Abrir pasta dos relatórios | id: z315OpenFolder | tela: não indicada
+Ação/código: prepare_reports315.py: el('z315OpenFolder').onclick=async()=>{try{await window.openReports315()}catch(e){el('z315AutoStatus').textContent='Falha ao abrir pasta: '+String(e)}};
+
+[prepare_reports315.py:118] TEXTO: Gerar relatório JSON | id: z315ReportSave | tela: não indicada
+Ação/código: prepare_reports315.py: alue,preview=el('z315ReportPreview'),btn=el('z315ReportSave');try{if(kind==='history'){const v=z315Rows.find(x=>x.ScanID===el('z315ReportHistory').value);preview.textContent=v?'Arquivos: '+fmt(v.Files)+' · Alertas: '+fmt(v.Alerts)+' · Falhas: '+fmt(v.ErrorCount):'Selecione uma varredura salva.';btn.disabled=z315ReportBusy||!v;return}if(kind==='diag'){const d=await window.diagReport();if(el('z
+prepare_reports315.py: rce'),status=el('z315ReportStatus'),save=el('z315ReportSave'),section=el('reports315');const legacy=el('export');legacy.hidden=true;section.append(legacy);const transfer=el('z315Transfer'),file=el('z315ReportFile'),copy=el('z315CopyFile');let transferring=false;async function handoff(drag){if(transferring||transfer.hidden)return;transferring=true;copy.disabled=true;try{const ok=drag?await win
+prepare_reports315.py: e;z315ReportBusy=true;show.disabled=true;el('z315ReportSave').disabled=true;clear();panel.hidden=false;status.textContent='Obtendo dados reais do relatório...';
+
+[prepare_reports315.py:118] TEXTO: Exibir relatório JSON para copiar | id: z315ShowText | tela: não indicada
+Ação/código: prepare_reports315.py: rce').dispatchEvent(new Event('change'));el('z315ShowText').click()};</script></body></html>''')
+
+[prepare_reports315.py:118] TEXTO: Salvar arquivo JSON | id: z315ReportSave | tela: não indicada
+Ação/código: prepare_reports315.py: alue,preview=el('z315ReportPreview'),btn=el('z315ReportSave');try{if(kind==='history'){const v=z315Rows.find(x=>x.ScanID===el('z315ReportHistory').value);preview.textContent=v?'Arquivos: '+fmt(v.Files)+' · Alertas: '+fmt(v.Alerts)+' · Falhas: '+fmt(v.ErrorCount):'Selecione uma varredura salva.';btn.disabled=z315ReportBusy||!v;return}if(kind==='diag'){const d=await window.diagReport();if(el('z
+prepare_reports315.py: rce'),status=el('z315ReportStatus'),save=el('z315ReportSave'),section=el('reports315');const legacy=el('export');legacy.hidden=true;section.append(legacy);const transfer=el('z315Transfer'),file=el('z315ReportFile'),copy=el('z315CopyFile');let transferring=false;async function handoff(drag){if(transferring||transfer.hidden)return;transferring=true;copy.disabled=true;try{const ok=drag?await win
+prepare_reports315.py: e;z315ReportBusy=true;show.disabled=true;el('z315ReportSave').disabled=true;clear();panel.hidden=false;status.textContent='Obtendo dados reais do relatório...';
+
+[prepare_reports315.py:118] TEXTO: Selecionar tudo | id: z315SelectText | tela: não indicada
+Ação/código: prepare_reports315.py:  el('z315SelectText').onclick=()=>{area.focus();area.select()};
+
+[prepare_reports315.py:118] TEXTO: Copiar texto JSON | id: z315CopyText | tela: não indicada
+Ação/código: prepare_reports315.py:  el('z315CopyText').onclick=async()=>{if(!area.value)return;area.focus();area.select();try{
+
+[prepare_reports315.py:142] TEXTO: Gerar relatório para copiar | id: z315ReportShortcut | tela: não indicada
+Ação/código: prepare_reports315.py: s=once(s,'</script></body></html>',r'''el('z315ReportShortcut').onclick=()=>{document.querySelector('[data-page="reports315"]').click();el('z315ReportSource').value='current';el('z315ReportSource').dispatchEvent(new Event('change'));el('z315ShowText').click()};</script></body></html>''')
+
+[prepare_reports315.py:170] TEXTO: Analisar falha / Atualizar diagnóstico | id: z315BuildDiagnosis | tela: não indicada
+Ação/código: Não identificada automaticamente; requer inspeção manual.
+
+[prepare_reports315.py:170] TEXTO: Copiar diagnóstico completo para IA | id: z315CopyDiagnosis | tela: não indicada
+Ação/código: prepare_reports315.py:  el('z315CopyDiagnosis').onclick=async()=>{
+
+[prepare_reports315.py:170] TEXTO: Exportar diagnóstico JSON | id: z315SaveDiagnosis | tela: não indicada
+Ação/código: Não identificada automaticamente; requer inspeção manual.
+
+[prepare_reports315.py:224] TEXTO: Salvar arquivo JSON | id: z315ReportSave | tela: não indicada
+Ação/código: prepare_reports315.py: alue,preview=el('z315ReportPreview'),btn=el('z315ReportSave');try{if(kind==='history'){const v=z315Rows.find(x=>x.ScanID===el('z315ReportHistory').value);preview.textContent=v?'Arquivos: '+fmt(v.Files)+' · Alertas: '+fmt(v.Alerts)+' · Falhas: '+fmt(v.ErrorCount):'Selecione uma varredura salva.';btn.disabled=z315ReportBusy||!v;return}if(kind==='diag'){const d=await window.diagReport();if(el('z
+prepare_reports315.py: rce'),status=el('z315ReportStatus'),save=el('z315ReportSave'),section=el('reports315');const legacy=el('export');legacy.hidden=true;section.append(legacy);const transfer=el('z315Transfer'),file=el('z315ReportFile'),copy=el('z315CopyFile');let transferring=false;async function handoff(drag){if(transferring||transfer.hidden)return;transferring=true;copy.disabled=true;try{const ok=drag?await win
+prepare_reports315.py: e;z315ReportBusy=true;show.disabled=true;el('z315ReportSave').disabled=true;clear();panel.hidden=false;status.textContent='Obtendo dados reais do relatório...';
+
+[prepare_reports315.py:224] TEXTO: Salvar arquivo JSON | id: z315ReportSave | tela: não indicada
+Ação/código: prepare_reports315.py: alue,preview=el('z315ReportPreview'),btn=el('z315ReportSave');try{if(kind==='history'){const v=z315Rows.find(x=>x.ScanID===el('z315ReportHistory').value);preview.textContent=v?'Arquivos: '+fmt(v.Files)+' · Alertas: '+fmt(v.Alerts)+' · Falhas: '+fmt(v.ErrorCount):'Selecione uma varredura salva.';btn.disabled=z315ReportBusy||!v;return}if(kind==='diag'){const d=await window.diagReport();if(el('z
+prepare_reports315.py: rce'),status=el('z315ReportStatus'),save=el('z315ReportSave'),section=el('reports315');const legacy=el('export');legacy.hidden=true;section.append(legacy);const transfer=el('z315Transfer'),file=el('z315ReportFile'),copy=el('z315CopyFile');let transferring=false;async function handoff(drag){if(transferring||transfer.hidden)return;transferring=true;copy.disabled=true;try{const ok=drag?await win
+prepare_reports315.py: e;z315ReportBusy=true;show.disabled=true;el('z315ReportSave').disabled=true;clear();panel.hidden=false;status.textContent='Obtendo dados reais do relatório...';
+
+[prepare_reports315.py:224] TEXTO: Salvar HTML | id: z315ReportHTML | tela: não indicada
+Ação/código: prepare_reports315.py: cript></body></html>',r''';(()=>{const b=el('z315ReportHTML');b.onclick=async()=>{if(z315ReportBusy)return;z315ReportBusy=true;b.disabled=true;try{const kind=el('z315ReportSource').value,id=el('z315ReportHistory').value;if(!['current','history','diag'].includes(kind))throw Error('Selecione uma varredura ou diagnóstico');el('z315ReportStatus').textContent='HTML salvo: '+await window.exportHTML
+
+[prepare_reports315.py:26] TEXTO: Exportar relatório salvo | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: old="const b=node('button','Exportar relatório salvo');b.onclick=()=>action(async()=>{el('msg').textContent='Relatório salvo em: '+await window.auditExportHistory(v.ScanID)});row.append(b)"
+
+[prepare_games314.py:28] TEXTO: Games · Jogos | id: zGamesNav314 | tela: não indicada
+Ação/código: lab/family314.js: ')}z('zGames314').classList.add('hidden');z('zGamesNav314').classList.remove('active');z('zGamesNav314').setAttribute('aria-expanded','false');p.classList.remove('hidden');n.classList.add('active');load()};
+lab/family314.js: page]'))b.addEventListener('click',close);z('zGamesNav314').addEventListener('click',close);
+
+[prepare_games314.py:28] TEXTO: Controle parental | id: zFamilyNav314 | tela: não indicada
+Ação/código: lab/games314.js: z('zFamilyNav314').addEventListener('click',close);
+
+[lab/games314.html:1] TEXTO: Abrir alertas da proteção | id: zGameAlerts314 | tela: não indicada
+Ação/código: lab/games314.js: z('zGameAlerts314').onclick=()=>{close();document.querySelector('[data-page="alerts"]').click()};
+
+[lab/games314.html:1] TEXTO: Reiniciar partida | id: zGameRestart21 | tela: não indicada
+Ação/código: lab/games314.js: z('zGameRestart21').onclick=()=>{if(currentGame)start(currentGame)};
+
+[lab/games314.html:1] TEXTO: Voltar para Menu | id: zGameClose315 | tela: não indicada
+Ação/código: lab/games314.js: z('zGameClose315').onclick=closeGame;
+
+[lab/games314.html:1] TEXTO: Tela Cheia | id: zGameFullscreen315 | tela: não indicada
+Ação/código: lab/games314.js: eLocal').classList.remove('zGameFull315');z('zGameFullscreen315').textContent='Tela Cheia';launch++;currentGame=null;board.replaceChildren();z('zGameLocal').hidden=true}
+lab/games314.js: z('zGameFullscreen315').onclick=()=>{const e=z('zGameLocal');e.classList.toggle('zGameFull315');z('zGameFullscreen315').textContent=e.classList.contains('zGameFull315')?'Sair da tela cheia':'Tela Cheia'};
+
+[lab/games314.html:1] TEXTO: Voltar à central de segurança | id: zGameBack | tela: não indicada
+Ação/código: lab/games314.js: z('zGameBack').onclick=()=>{close();document.querySelector('[data-page="overview"]').click()};
+
+[lab/games314.js:73] TEXTO: Jogar novamente | id: restart | tela: não indicada
+Ação/código: lab/games314.js:  document.getElementById('restart').onclick=()=>{if(!paused){try{start()}catch(e){fail()}}};try{start()}catch(e){fail()}
+
+[lab/games314.js:35] TEXTO: ← | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: btn('←',()=>move(-1)),btn('→',()=>move(1)),btn('Girar / Espaço',rotate),btn('↓',()=>down(true)),btn('Pausar / P',pause));
+
+[lab/games314.js:35] TEXTO: → | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: btn('→',()=>move(1)),btn('Girar / Espaço',rotate),btn('↓',()=>down(true)),btn('Pausar / P',pause));
+
+[lab/games314.js:35] TEXTO: Girar / Espaço | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: btn('Girar / Espaço',rotate),btn('↓',()=>down(true)),btn('Pausar / P',pause));
+
+[lab/games314.js:35] TEXTO: ↓ | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: btn('↓',()=>down(true)),btn('Pausar / P',pause));
+
+[lab/games314.js:35] TEXTO: Pausar / P | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: btn('Pausar / P',pause));
+
+[lab/games314.js:45] TEXTO: · | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: btn('·',()=>reveal(i));b.oncontextmenu=e=>{e.preventDefault();if(paused||stopped||cells[i].open)return;cells[i].flag=!cells[i].flag;flags+=cells[i].flag?1:-1;paint()};bs.push(b);g.append(b)}
+
+[lab/games314.js:52] TEXTO: ? | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: btn('?',()=>choose(i));bs.push(b);g.append(b)});cleanup=()=>clearInterval(wait);paint();
+
+[lab/games314.js:63] TEXTO: Nova Rodada | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: btn('Nova Rodada',deal));return}actions.append(btn('Check',()=>step(false)),btn('Apostar 25',()=>step(true)),btn('Desistir',()=>{folded=true;street=3;settle()}))}
+
+[lab/games314.js:63] TEXTO: Check | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: btn('Check',()=>step(false)),btn('Apostar 25',()=>step(true)),btn('Desistir',()=>{folded=true;street=3;settle()}))}
+
+[lab/games314.js:63] TEXTO: Apostar 25 | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: btn('Apostar 25',()=>step(true)),btn('Desistir',()=>{folded=true;street=3;settle()}))}
+
+[lab/games314.js:63] TEXTO: Desistir | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: btn('Desistir',()=>{folded=true;street=3;settle()}))}
+
+[lab/games314.js:93] TEXTO: Jogar aqui | id: (dinâmico/sem id) | tela: não indicada
+Ação/código: tegory;const b=node('button','Jogar aqui');b.type='button';b.onclick=()=>start(id);tile.append(node('small',category+' · offline'),node('strong',title),node('small',desc),b);out.append(tile)}status.textContent=n+' jogos locais no filtro. Nenhum abre o navegador.'}
+
+[lab/family314.html:1] TEXTO: Testar bloqueio agora | id: zFamilyDNSCheck | tela: não indicada
+Ação/código: lab/family314.js: z('zFamilyDNSCheck').onclick=async()=>{const b=z('zFamilyDNSCheck'),out=z('zFamilyDNSResult');b.disabled=true;out.textContent='Testando DNS padrão do computador…';try{const r=await window.familyDNSCheck314();const labels={blocked:'resposta 0.0.0.0 (bloqueio observado)',resolved:'endereço retornado',inconclusive:'inconclusivo'};out.textContent=({test_p
+
+[lab/family314.html:1] TEXTO: Salvar regras | id: zFamilySave | tela: não indicada
+Ação/código: lab/family314.js: z('zFamilySave').onclick=async()=>{const b=z('zFamilySave');b.disabled=true;try{const q={enabled:z('zFamilyEnable').checked,max_age:Number(z('zFamilyAge').value)};for(const k of fields)q[k.toLowerCase()]=z('zFamily'+k).checked;await window.familySave314(q,z('zFamilyPassword').value);await load()}catch(e){status.textContent=String(e)}finally{z('zFamily
+
+[lab/family314.html:1] TEXTO: Registrar avaliação com senha | id: zRatingSave | tela: não indicada
+Ação/código: lab/family314.js: z('zRatingSave').onclick=async()=>{if(!z('zRatingConfirm').checked){status.textContent='Confirme a revisão pessoal antes de registrar.';return}const b=z('zRatingSave');b.disabled=true;try{const q={age:Number(z('zRatingAge').value)};for(const k of fields)q[k.toLowerCase()]=z('zRating'+k).checked;await window.familyRate314(z('zFamilyGame').value,q,z('zF
+
+[lab/family314.html:1] TEXTO: Voltar à proteção | id: zFamilyBack | tela: não indicada
+Ação/código: lab/family314.js: z('zFamilyBack').onclick=()=>{close();document.querySelector('[data-page="overview"]').click()};
+
+3. TELAS E SEÇÕES IDENTIFICADAS
+.github/workflows/windows-build.yml:570 | afterScan | Deseja liberar espaço?
+.github/workflows/windows-build.yml:570 | alerts | Alertas e resultados
+.github/workflows/windows-build.yml:570 | quarantine | Arquivos em quarentena
+.github/workflows/windows-build.yml:570 | media | Autenticidade de vídeo
+.github/workflows/windows-build.yml:570 | security | Segurança em camadas
+.github/workflows/windows-build.yml:570 | defender | Motor de proteção Microsoft Defender
+.github/workflows/windows-build.yml:570 | links | Verificação de links e fraudes
+.github/workflows/windows-build.yml:570 | tools | Ferramentas de segurança e manutenção
+.github/workflows/windows-build.yml:570 | intel | Inteligência de ameaças e vulnerabilidades
+.github/workflows/windows-build.yml:570 | engine | Motor e inteligência artificial
+.github/workflows/windows-build.yml:2349 | diagnostics | Diagnóstico de testes
+prepare_integrated312.py:32 | z312Signature | Motor de assinaturas ClamAV
+prepare_reports315.py:23 | reports315 | Central de relatórios
+lab/games314.html:1 | zGameLocal | Jogo local
+lab/family314.html:1 | zFamily314 | ZEUVORYX · Controle parental do computador
+4. PROMESSAS/TERMOS DE PROTEÇÃO — EXTRATOS ESTÁTICOS, INCLUINDO NEGATIVAS E RESSALVAS
+.github/workflows/windows-build.yml:570 | >Discos locais fixos; arquivos protegidos ou inacessíveis podem ser ignorados. <p class=
+.github/workflows/windows-build.yml:570 | >Ativar proteção em tempo real <button data-native=
+.github/workflows/windows-build.yml:570 | >Ativar bloqueio de conexões perigosas <button data-native=
+.github/workflows/windows-build.yml:570 | >Varredura rápida a cada 5 minutos, enquanto o aplicativo estiver aberto, inclusive minimizado. Pausa se houver análise ou alertas pendentes. Não bloqueia malware antes da execução. <input type=
+.github/workflows/windows-build.yml:570 | Análise local de arquivos. Esta versão não bloqueia a execução de malware nem substitui o Microsoft Defender.
+.github/workflows/windows-build.yml:570 | Discos locais fixos; arquivos protegidos ou inacessíveis podem ser ignorados.
+.github/workflows/windows-build.yml:570 | Ativar proteção em tempo real
+.github/workflows/windows-build.yml:570 | Ativar bloqueio de conexões perigosas
+.github/workflows/windows-build.yml:570 | Varredura rápida a cada 5 minutos, enquanto o aplicativo estiver aberto, inclusive minimizado. Pausa se houver análise ou alertas pendentes. Não bloqueia malware antes da execução.
+.github/workflows/windows-build.yml:570 | Importe uma lista de URLs de uma fonte confiável, como a lista de texto do URLhaus, uma por linha. Substitui a lista anterior. Não acessa os endereços. Correspondência exata não é bloqueio automático.
+.github/workflows/windows-build.yml:586 | ,stateLabel(d.antivirus));auditRow(box,
+.github/workflows/windows-build.yml:586 | ,stateLabel(hard.secureBoot));auditRow(box,
+.github/workflows/windows-build.yml:586 | ].includes(hard.diskProtection)?
+.github/workflows/windows-build.yml:586 | ].includes(hard.diskProtection)?
+.github/workflows/windows-build.yml:586 | :hard.diskProtection||
+.github/workflows/windows-build.yml:586 | ,policyLabel(a.policies?.networkProtection));auditRow(box,
+.github/workflows/windows-build.yml:586 | Modo passivo observado; confira o antivírus primário registrado.
+.github/workflows/windows-build.yml:586 | Revise a proteção em tempo real do Defender.
+.github/workflows/windows-build.yml:601 | Verificação da configuração, não um teste de bloqueio real.
+.github/workflows/windows-build.yml:608 | Ativar proteção de rede do Microsoft Defender em modo de bloqueio? Conexões classificadas como perigosas podem ser impedidas.
+.github/workflows/windows-build.yml:608 | Ativar acesso controlado a pastas do Microsoft Defender? Aplicativos legítimos não autorizados também podem ter gravações bloqueadas. Confira as configurações do Windows se necessário.
+.github/workflows/windows-build.yml:608 | Ativar a proteção em tempo real do Microsoft Defender?
+.github/workflows/windows-build.yml:608 | Habilitar o modo de auditoria do Defender? A operação preserva a configuração existente de bloqueio.
+.github/workflows/windows-build.yml:688 | X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
+.github/workflows/windows-build.yml:930 | Registro de antivírus indisponível nesta edição ou sessão
+.github/workflows/windows-build.yml:998 | Defender indisponível como antivírus primário
+.github/workflows/windows-build.yml:998 | Proteção em tempo real confirmada pelo Defender
+.github/workflows/windows-build.yml:1000 | Defender em tempo real indisponivel
+.github/workflows/windows-build.yml:1000 | }; Set-MpPreference -EnableNetworkProtection Enabled -ErrorAction Stop; $after=(Get-MpPreference -ErrorAction Stop).EnableNetworkProtection; if ($null -eq $after -or [int]$after -ne 1) { throw
+.github/workflows/windows-build.yml:1000 | Proteção de rede em modo de bloqueio configurada; eficácia depende do Windows
+.github/workflows/windows-build.yml:1001 | Defender em tempo real indisponivel
+.github/workflows/windows-build.yml:1001 | Proteção de pastas em modo de bloqueio configurada; eficácia depende do Windows
+.github/workflows/windows-build.yml:1651 | taxa de desbloqueio
+.github/workflows/windows-build.yml:1652 | Pressão ou ameaça de bloqueio
+.github/workflows/windows-build.yml:1652 | conta sera bloqueada
+.github/workflows/windows-build.yml:1676 | Em dispositivo limpo, contate a corretora pelo aplicativo oficial e solicite bloqueio de saques ou da conta, se disponível.
+.github/workflows/windows-build.yml:1677 | Contate bancos e serviços pelos canais oficiais, conteste operações e peça bloqueio conforme necessário.
+.github/workflows/windows-build.yml:1688 | Pague taxa de desbloqueio
+.github/workflows/windows-build.yml:2587 | Link safety regression failed
+.github/workflows/windows-build.yml:2729 | ZEUVORYX 3.0.23 LAB - OLYMPUS TITANIUM GLOBAL THREAT DEFENSE - TESTE PORTATIL x64, NAO INSTALADOR
+.github/workflows/windows-build.yml:2808 | Duplicate process not blocked
+.github/workflows/windows-build.yml:2884 | PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
+.github/workflows/windows-build.yml:2892 | Fixture unavailable before launch: $kind cycle $i; check Windows security events without disabling protection
+index.html:4 | >ZEUVORYX • Projeto de Antivírus com Inteligência Artificial <div class=
+index.html:4 | ZEUVORYX • Projeto de Antivírus com Inteligência Artificial
+lab/games314.js:73 | default-src 'none';script-src 'unsafe-inline';style-src 'unsafe-inline';connect-src 'none';base-uri 'none';form-action 'none'
+lab/family314.html:1 | >Testar bloqueio agora <p id=
+lab/family314.html:1 | >Não testado. Nenhum bloqueio confirmado. <p class=
+lab/family314.html:1 | Testar bloqueio agora
+lab/family314.html:1 | Não testado. Nenhum bloqueio confirmado.
+lab/family314.js:13 | ;try{const r=await window.familyDNSCheck314();const labels={blocked:
+lab/family314.js:13 | ,test_not_blocked:
+
+GERADORES NO WORKFLOW ATIVO
+56:             if (Test-Path $f) { Move-Item $f engine/ -Force }
+58:           if (Test-Path ui.go) { Move-Item ui.go ui/ui.go -Force }
+59:           if (Test-Path index.html) { Move-Item index.html ui/index.html -Force }
+61:             if (Test-Path $f) { Move-Item $f ui/assets/ -Force }
+186:           python patch_scan.py
+629:           python zeuvoryx_brand_assets.py
+711:           python make_icon.py
+1624:           python patch_guard.py
+2362:           python prepare_diagnostics.py
+2369:           python zeuvoryx_upgrade.py --apply
+2377:           python zeuvoryx_adaptive.py
+2379:           python zeuvoryx_i18n.py
+2381:           python zeuvoryx_lab303.py
+2383:           python prepare_app_update.py
+2385:           python prepare_audit305.py
+2387:           python prepare_globalintel.py
+2391:           python prepare_olympus_silver.py
+2393:           python prepare_release306.py
+2397:           python prepare_help.py
+2399:           python prepare_scan_power.py
+2401:           python prepare_seed_coverage.py
+2403:           python prepare_ai_activity308.py
+2407:           python prepare_performance308.py
+2411:           python prepare_live_report309.py
+2415:           python prepare_feedback310.py
+2417:           python prepare_optimization310.py
+2419:           python prepare_signature311.py
+2421:           python prepare_integrated312.py
+2423:           python prepare_remediation313.py
+2425:           python prepare_bundle314.py
+2427:           python prepare_parallel314.py
+2429:           python prepare_expanded314.py
+2431:           python prepare_titanium314.py
+2433:           python lab/test_arcade2048.py
+2435:           python prepare_games314.py
+2439:           python lab/test_arcade2048.py --browser
+2443:           python prepare_reports315.py
+2447:           python prepare_version315.py
+2559:           Copy-Item qa/scanner_quality_test.go.txt engine/scanner_quality_test.go -ErrorAction Stop
+2619:           Copy-Item qa/stress_scanner_test.go.txt engine/stress_scanner_test.go
+2620:           Copy-Item qa/stress_native_test.go.txt stress_native_test.go
+
+5. JOGOS — CATÁLOGO ATUAL E CONTROLES INTERNOS
+TOTAL 15 entradas no launcher atual (4 próprios experimentais + 1 2048 + 10 retro). Build 39 verde contém apenas 11 entradas; build 43 com quatro entradas adicionais falhou na etapa 17 por RuntimeError: reports anchor </style></head>. O erro é de integração do gerador, não diagnóstico de falha individual de jogo. Não há prova de funcionamento de todos no aplicativo instalado.
+2048 — Gabriele Cirulli, MIT; cinco ciclos de navegador offline registrados em qa/arcade/3.0.19-browser-offline.json (movimento, reinício, isolamento, bloqueio parental e fechamento). Sem erro individual documentado nesse ensaio; funcionamento instalado atual não reconfirmado.
+Tetris — implementação experimental própria em lab/games314.js; não homologado, sem print; erro individual não apurado.
+Poker — implementação experimental própria, quatro jogadores e fichas fictícias; não homologado, sem print; erro individual não apurado.
+Campo minado — implementação experimental própria, 81 casas; não homologado, sem print; erro individual não apurado.
+Memória — implementação experimental própria, 16 cartas; não homologado, sem print; erro individual não apurado.
+Retro Racer (retro-racer) — MIT, Prateek; integridade e isolamento revisados, jogabilidade instalada não confirmada; nenhum erro individual comprovado. Fonte: lab/retro21/retro-racer.html; blob upstream 5c19b860679175fdfc951a700c0b9547efcc746a.
+Cartridge Dash (cartridge-dash) — MIT, Prateek; integridade e isolamento revisados, jogabilidade instalada não confirmada; nenhum erro individual comprovado. Fonte: lab/retro21/cartridge-dash.html; blob upstream 6a1084492f0b42fbe8c93e13826d08b878334e52.
+Jump Quest (jump-quest) — MIT, Prateek; integridade e isolamento revisados, jogabilidade instalada não confirmada; nenhum erro individual comprovado. Fonte: lab/retro21/jump-quest.html; blob upstream 9dd5801b84eb146b5a41c31ee0258bbd7bb74a08.
+Laser Defender (laser-defender) — MIT, Prateek; integridade e isolamento revisados, jogabilidade instalada não confirmada; nenhum erro individual comprovado. Fonte: lab/retro21/laser-defender.html; blob upstream 9d5a242d11ad9fdfb9ff8c403d029286240a6b01.
+Digital Maze (digital-maze) — MIT, Prateek; integridade e isolamento revisados, jogabilidade instalada não confirmada; nenhum erro individual comprovado. Fonte: lab/retro21/digital-maze.html; blob upstream 4c7d8d2f52c46213ea3da9f6cf83ca5639ff8486.
+Meteor Strike (meteor-strike) — MIT, Prateek; integridade e isolamento revisados, jogabilidade instalada não confirmada; nenhum erro individual comprovado. Fonte: lab/retro21/meteor-strike.html; blob upstream f408bc5f5952699ef8a3b68824ca3cb8e0d735df.
+Ping Pong 2 jogadores (ping-pong-2p) — MIT, Prateek; integridade e isolamento revisados, jogabilidade instalada não confirmada; nenhum erro individual comprovado. Fonte: lab/retro21/ping-pong-2p.html; blob upstream faa31e160cf6d27676eac3871f1f30e405054112.
+Breakout (recriação) (breakout) — MIT, Prateek; integridade e isolamento revisados, jogabilidade instalada não confirmada; nenhum erro individual comprovado. Fonte: lab/retro21/breakout.html; blob upstream d43105618f11f74ba023b8c5d42d21bb8f12a8b9.
+Snake (snake) — MIT, Prateek; integridade e isolamento revisados, jogabilidade instalada não confirmada; nenhum erro individual comprovado. Fonte: lab/retro21/snake.html; blob upstream 3c530c6d293b1d8f0493682344f058a6c788db7e.
+Asteroids (recriação) (asteroids) — MIT, Prateek; integridade e isolamento revisados, jogabilidade instalada não confirmada; nenhum erro individual comprovado. Fonte: lab/retro21/asteroids.html; blob upstream fc9cf46222f5659d0f28769e10791963387c9814.
+
+Controles dos 11 jogos HTML originais (texto estático e ação quando explícita):
+
+lab/arcade2048/game.html
+790: New Game | id=— | classe=restart-button | ação: handler não resolvido na análise estática
+797: Keep going | id=— | classe=keep-playing-button | ação: handler não resolvido na análise estática
+798: Try again | id=— | classe=retry-button | ação: handler não resolvido na análise estática
+
+lab/retro21/retro-racer.html
+135: START RACE | id=startBtn | classe=— | ação: game.start()
+136: RESET | id=— | classe=— | ação: location.reload()
+
+lab/retro21/cartridge-dash.html
+136: START DASH | id=startBtn | classe=— | ação: game.start()
+137: RESET | id=— | classe=— | ação: location.reload()
+
+lab/retro21/jump-quest.html
+93: START GAME | id=— | classe=— | ação: game.start()
+94: NEW GAME | id=— | classe=— | ação: game.restart()
+95: BACK | id=— | classe=— | ação: location.href=
+
+lab/retro21/laser-defender.html
+89: START | id=— | classe=— | ação: game.start()
+90: RESET | id=— | classe=— | ação: game.restart()
+91: BACK | id=— | classe=— | ação: location.href=
+
+lab/retro21/digital-maze.html
+128: PAUSE | id=— | classe=— | ação: togglePause()
+129: RESTART | id=— | classe=— | ação: restartGame()
+130: EXIT | id=— | classe=— | ação: goHome()
+140: RESTART | id=— | classe=— | ação: restartGame()
+141: EXIT | id=— | classe=— | ação: goHome()
+
+lab/retro21/meteor-strike.html
+60: PAUSE | id=— | classe=— | ação: game.togglePause()
+61: BACK | id=— | classe=— | ação: location.href=
+
+lab/retro21/ping-pong-2p.html
+80: NEW GAME | id=— | classe=— | ação: game.reset()
+81: BACK | id=— | classe=— | ação: location.href=
+
+lab/retro21/breakout.html
+85: Easy | id=— | classe=mode-btn | ação: game.setDifficulty(
+86: Medium | id=— | classe=mode-btn active | ação: game.setDifficulty(
+87: Hard | id=— | classe=mode-btn | ação: game.setDifficulty(
+93: START GAME | id=— | classe=— | ação: game.start()
+94: NEW GAME | id=— | classe=— | ação: game.restart()
+95: BACK | id=— | classe=— | ação: location.href=
+
+lab/retro21/snake.html
+98: START GAME | id=— | classe=— | ação: game.start()
+99: NEW GAME | id=— | classe=— | ação: game.restart()
+100: BACK | id=— | classe=— | ação: location.href=
+109: Classic | id=— | classe=mode-btn active | ação: game.setMode(
+110: Wrap Edges | id=— | classe=mode-btn | ação: game.setMode(
+111: Obstacles | id=— | classe=mode-btn | ação: game.setMode(
+
+lab/retro21/asteroids.html
+78: START | id=— | classe=— | ação: game.start()
+79: RESTART | id=— | classe=— | ação: game.restart()
+80: BACK | id=— | classe=— | ação: location.href=
+
+Observação: casas, cartas, tabuleiros e controles gerados em tempo de execução não possuem número estático fixo; não entram no total de controles fixos. O catálogo gera 15 botões Jogar aqui (um por entrada) a partir de um único modelo. Não existe ainda a pasta Zeuvoryx/games/ na branch analisada. Os 15 MIT de nova composição (Paciência, Spider, FreeCell etc.) foram pesquisados e preparados em objetos Git isolados, não aplicados. Não contam como recursos existentes na branch.
+
+
+6. COMPLEMENTO — BOTÕES, TEXTOS E TELAS NOS OUTROS GERADORES ATIVOS
+
+prepare_audit305.py
+
+prepare_live_report309.py
+TEXTO 56: Waiting for the final report. Resident protection depends on Windows.
+TEXTO 56: Partial results update during scanning. Resident protection depends on Windows.
+TELA prepare_live_report309.py:66 | zLiveFailures | Falhas da análise
+BOTÃO DINÂMICO 103: Exportar relatório salvo | node('button','Exportar relatório salvo');b.onclick=()=>action(async()=>{el('msg').textContent='Relatório salvo em: '+await window.auditExportHistory(v.ScanID)});row.append(b)}out.append(row)}")
+
+prepare_performance308.py
+
+prepare_signature311.py
+BOTÃO 21: Examinar pasta ou unidade com ClamAV | id=clamFolder311 | ação: s=s[:a]+'''el('clamFolder311').onclick=()=>action(async()=>{const b=el('clamFolder311');b.disabled=true;try{const p=await window.chooseClamFolder311();if(!p)return;el('clamState').textContent='ClamAV examinando pasta/unidade; pode demorar...';const r=await window.clamScanFile(p);el('clamState').textContent=r.status;el('clamReport').textContent=r.details||''}catch
+BOTÃO 21: Cancelar ClamAV | id=clamCancel311 | ação: el('clamCancel311').onclick=()=>action(async()=>{await window.cancelClam311()});
+
+prepare_parallel314.py
+BOTÃO 50: Testar motores instalados agora | id=z314Diagnostic | ação: html>',"""document.getElementById('z314Diagnostic').onclick=()=>action(async()=>{const b=el('z314Diagnostic'),p=el('z314DiagnosticState'),d=el('z314DiagnosticDetails');b.disabled=true;p.textContent='Executando leitura real, motores e consulta do Windows...';d.textContent='';try{const r=await window.realDiagnostic314();const ok=r.LocalFile&&r.ScannerFiles===1&&r.ScannerAlerts===0&&r.
+
+prepare_bundle314.py
+BOTÃO 21: Conhecer SecuriteInfo | id=zOptionalSecurite315 | ação: ',"""for(const [id,provider] of [['zOptionalSecurite315','securiteinfo'],['zOptionalPatrol315','malwarepatrol']]){el(id).onclick=()=>action(async()=>{const p=el('zOptionalSignatureState315');try{const ok=await window.openOptionalSignature315(provider);p.textContent=ok?'Solicitação de abertura enviada ao navegador. Nenhuma assinatura foi ativada.':'Não foi possível abrir a página.'}c
+BOTÃO 21: Conhecer Malware Patrol | id=zOptionalPatrol315 | ação: onalSecurite315','securiteinfo'],['zOptionalPatrol315','malwarepatrol']]){el(id).onclick=()=>action(async()=>{const p=el('zOptionalSignatureState315');try{const ok=await window.openOptionalSignature315(provider);p.textContent=ok?'Solicitação de abertura enviada ao navegador. Nenhuma assinatura foi ativada.':'Não foi possível abrir a página.'}catch(e){p.textContent=String(e)}});}</sc
+
+prepare_feedback310.py
+BOTÃO 19: Ver alertas | id=z310Open | ação:    z('z310Open').textContent=w[8]; | document.getElementById('z310Open').onclick=()=>document.querySelector('[data-page=alerts]').click();
+BOTÃO 20: Otimizar SSD/HD | id=z310Drive | ação: ['z310MaintTitle','z310MaintInfo','z310Drive','z310Clean','z310Startup'].forEach((id,i)=>z(id).textContent=w[i])}
+BOTÃO 20: Limpeza de disco | id=z310Clean | ação: itle','z310MaintInfo','z310Drive','z310Clean','z310Startup'].forEach((id,i)=>z(id).textContent=w[i])}
+BOTÃO 20: Programas de inicialização | id=z310Startup | ação: aintInfo','z310Drive','z310Clean','z310Startup'].forEach((id,i)=>z(id).textContent=w[i])}
+TELA prepare_feedback310.py:20 | z310MaintenancePanel | Central de otimização
+
+prepare_app_update.py
+BOTÃO 33: Verificar atualizações | id=zUpdateCheck | ação: UpdateTitle').textContent=t[0];el('zUpdateCheck').textContent=t[1];el('zUpdateOpen').textContent=zSigned?({'pt-BR':'Atualizar agora','en-US':'Update now','es-ES':'Actualizar ahora'}[document.documentElement.lang]||'Atualizar agora'):t[2];el('zUpdateNote').textContent=zSigned?({'pt-BR':'Instalação assinada sobre a versão atual; finalize as varreduras.','en-US':'Signed in-place update | el('zUpdateCheck').onclick=zUpdateRun;el('zUpdateOpen').onclick=()=>action(async()=>{if(zUpdateBusy)return;zUpdateBusy=true;el('zUpdateOpen').disabled=true;try{if(zSigned){const lang=document.documentElement.lang;const text={'pt-BR':'Instalar a atualização assinada e fechar o ZEUVORYX?','en-US':'Install the signed update and close ZEUVORYX?','es-ES':'¿
+BOTÃO 33: Baixar atualização LAB | id=zUpdateOpen | ação: UpdateCheck').textContent=t[1];el('zUpdateOpen').textContent=zSigned?({'pt-BR':'Atualizar agora','en-US':'Update now','es-ES':'Actualizar ahora'}[document.documentElement.lang]||'Atualizar agora'):t[2];el('zUpdateNote').textContent=zSigned?({'pt-BR':'Instalação assinada sobre a versão atual; finalize as varreduras.','en-US':'Signed in-place update; finish scans first.','es-ES':'Actu | dateCheck').onclick=zUpdateRun;el('zUpdateOpen').onclick=()=>action(async()=>{if(zUpdateBusy)return;zUpdateBusy=true;el('zUpdateOpen').disabled=true;try{if(zSigned){const lang=document.documentElement.lang;const text={'pt-BR':'Instalar a atualização assinada e fechar o ZEUVORYX?','en-US':'Install the signed update and close ZEUVORYX?','es-ES':'¿Instalar la actualización firmada y ce
+
+prepare_help.py
+TEXTO 16: unsafe script termination
+
+prepare_globalintel.py
+BOTÃO 19: Atualizar DROP | id=zDropRefresh | ação: if !bind("zDropRefresh",func()(globalintel.Status,error){return dropCache.Refresh(nativeCtx)}){return} | d('zDropHelp').textContent=t[0];d('zDropRefresh').textContent=t[1];d('zDropMatch').textContent=t[2]} | d('zDropRefresh').onclick=async()=>{const b=d('zDropRefresh');b.disabled=true;d('zDropStatus').textContent=lang()[6];try{const r=await window.zDropRefresh();show(r)}catch(e){d('zDropStatus').textContent=String(e);}finally{b.disabled=false}};
+BOTÃO 19: Consultar IP | id=zDropMatch | ação: if !bind("zDropMatch",func(ip string)(bool,error){return dropCache.Match(ip,time.Now())}){return} | zDropRefresh').textContent=t[1];d('zDropMatch').textContent=t[2]} | d('zDropMatch').onclick=async()=>{try{const yes=await window.zDropMatch(d('zDropIP').value);d('zDropResult').textContent=lang()[yes?4:5]}catch(_){d('zDropResult').textContent=lang()[3]}};
+TEXTO 22: Base consultiva local, atualização automática diária. Não bloqueia conexões.
+TEXTO 23: No match; does not prove safety
+TEXTO 24: Base consultiva persistente, actualización diaria. No bloquea conexiones.
+
+prepare_version315.py
+TEXTO 66: GLOBAL THREAT DEFENSE · 3.0.23 LAB
+
+zeuvoryx_upgrade.py
+BOTÃO 885: Mostrar mais 50 | id=zAlertMore | ação: el('zAlertMore').onclick=()=>{zLimit+=50;zResults()};
+TEXTO 119: func checkProtected(path string, roots []string) error {\n
+TEXTO 137: isolamento manual bloqueado: diretório protegido do sistema
+TEXTO 141: isolamento manual bloqueado: diretório protegido do sistema
+TEXTO 310: func protectedRoots() ([]string, error) { return nil, nil }\n
+TEXTO 371: func TestUpgradeProtected(t *testing.T) {\n
+TEXTO 384: \tif checkProtected(p, []string{root}) == nil {\n
+TEXTO 387: \tif e := checkProtected(outside, []string{root}); e != nil {\n
+TEXTO 391: \tif os.Symlink(root, alias) == nil && checkProtected(filepath.Join(alias,
+TEXTO 472: \t\tn, _, _ := getDir.Call(uintptr(unsafe.Pointer(&buf[0])),
+TEXTO 490: func protectedRoots() ([]string, error) {\n
+TEXTO 496: \tn, _, _ := proc.Call(uintptr(unsafe.Pointer(&buf[0])), uintptr(len(buf)))\n
+TEXTO 517: Windows Defender Advanced Threat Protection
+TEXTO 561: \tf.Size = uint32(unsafe.Sizeof(f))\n
+TEXTO 566: \td.Size = uint32(unsafe.Sizeof(d))\n
+TEXTO 567: \tresult, _, _ := proc.Call(^uintptr(0), uintptr(unsafe.Pointer(&guid)),
+TEXTO 568: uintptr(unsafe.Pointer(&d)))\n
+TEXTO 570: \t_, _, _ = proc.Call(^uintptr(0), uintptr(unsafe.Pointer(&guid)),
+TEXTO 571: uintptr(unsafe.Pointer(&d)))\n
+BOTÃO DINÂMICO 711: Isolar arquivo | node('button','Isolar arquivo');", "row.append(node('p',f.evidence==='ioc_match'?'Correspondência com indicador local SHA-256':f.evidence==='test_eicar'?'Arquivo de teste EICAR (inofensivo)':'Indício heurístico: não comprova infecção'));if(f.trust)row.append(node('p',f.trust==='authenticode_valid_of
+BOTÃO DINÂMICO 711: Isolar arquivo | node('button','Isolar arquivo');")
+TEXTO 711: Revisão manual: isolamento bloqueado neste teste.
+TELA zeuvoryx_upgrade.py:884 | zSummary | Estado da análise
+
+zeuvoryx_i18n.py
+
+locales/ui.tsv
+LOCALIZAÇÃO 35: Discos locais fixos; arquivos protegidos ou inacessíveis podem ser ignorados.|Fixed local drives; protected or inaccessible files may be skipped.|Discos locales fijos; los archivos protegidos o inaccesibles pueden omitirse.
+LOCALIZAÇÃO 43: Consultar proteção|Check protection|Consultar protección
+LOCALIZAÇÃO 47: Motor de proteção Microsoft Defender|Microsoft Defender protection engine|Motor de protección Microsoft Defender
+LOCALIZAÇÃO 54: Ativar bloqueio de conexões perigosas|Enable dangerous connection blocking|Activar bloqueo de conexiones peligrosas
+LOCALIZAÇÃO 55: Ativar proteção de pastas|Enable folder protection|Activar protección de carpetas
+LOCALIZAÇÃO 138: Análise local de arquivos. Esta versão não bloqueia a execução de malware nem substitui o Microsoft Defender.|Local file scanning. This version does not block malware execution or replace Microsoft Defender.|Análisis local de archivos. Esta versión no bloquea la ejecución de malware ni sustituye a Microsoft Defender.
+LOCALIZAÇÃO 140: ZEUVORYX · Beta experimental · Não desative a proteção do Windows.|ZEUVORYX · Experimental beta · Do not disable Windows protection.|ZEUVORYX · Beta experimental · No desactive la protección de Windows.
+LOCALIZAÇÃO 148: Revisão manual: isolamento bloqueado neste teste.|Manual review: isolation blocked in this test.|Revisión manual: aislamiento bloqueado en esta prueba.
+LOCALIZAÇÃO 155: Proteção residente: consulte o Windows|Resident protection: check Windows|Protección residente: consulte Windows
+LOCALIZAÇÃO 157: Aguardando o relatório final. A proteção residente depende do Windows.|Waiting for the final report. Resident protection depends on Windows.|Esperando el informe final. La protección residente depende de Windows.
+LOCALIZAÇÃO 169: Comandos reais do Windows. O Defender é um motor separado do ZEUVORYX; a proteção residente, a atualização automática e as ações contra malware dependem do estado e das políticas do Windows. Esta tela não ativa nem desativa essas políticas.|Actual Windows commands. Defender is separate from ZEUVORYX; resident protection, automatic updates and malware actions depend on Windows state and policies. This screen does not enable or disable those policies.|Comandos reales de Windows. Defender es un motor separado de ZEUVORYX; la protección residente, las actualizaciones automáticas y las acciones contra malware dependen del estado y las políticas de Windows. Esta pantalla no activa ni desactiva esas políticas.
+LOCALIZAÇÃO 170: As opções de bloqueio exigem Defender ativo e podem exigir abrir ZEUVORYX como administrador. A proteção de pastas pode impedir a gravação por aplicativos legítimos; consulte a Segurança do Windows para revisar as permissões. Não alteramos essas políticas sem sua confirmação.|Blocking options require active Defender and may require administrator privileges. Folder protection may block legitimate applications from writing; review permissions in Windows Security. We do not change these policies without confirmation.|Las opciones de bloqueo requieren Defender activo y pueden requerir permisos de administrador. La protección de carpetas puede impedir la escritura de aplicaciones legítimas; revise los permisos en Seguridad de Windows. No cambiamos estas políticas sin confirmación.
+LOCALIZAÇÃO 172: Examina a estrutura do endereço sem acessar o site, consultar DNS ou enviar dados. Também consulta a lista local importada de URLs. Não é reputação online nem bloqueio automático de phishing. HTTPS não garante que um site seja legítimo.|Checks address structure without visiting the site, querying DNS or sending data. Also checks the imported local URL list. Not online reputation or automatic phishing blocking. HTTPS does not guarantee legitimacy.|Examina la estructura de la dirección sin visitar el sitio, consultar DNS ni enviar datos. También consulta la lista local de URL importada. No es reputación en línea ni bloqueo automático de phishing. HTTPS no garantiza legitimidad.
+LOCALIZAÇÃO 176: Varredura rápida a cada 5 minutos, enquanto o aplicativo estiver aberto, inclusive minimizado. Pausa se houver análise ou alertas pendentes. Não bloqueia malware antes da execução.|Quick scan every 5 minutes while the application is open, even minimized. Pauses during scans or pending alerts. Does not block malware before execution.|Análisis rápido cada 5 minutos mientras la aplicación esté abierta, incluso minimizada. Se pausa durante análisis o alertas pendientes. No bloquea malware antes de la ejecución.
+LOCALIZAÇÃO 181: Importe uma lista de URLs de uma fonte confiável, como a lista de texto do URLhaus, uma por linha. Substitui a lista anterior. Não acessa os endereços. Correspondência exata não é bloqueio automático.|Import URLs from a trusted source such as the URLhaus text list, one per line. Replaces the previous list. Does not visit URLs. An exact match does not automatically block access.|Importe URL de una fuente fiable, como la lista de texto de URLhaus, una por línea. Sustituye la lista anterior. No visita las direcciones. Una coincidencia exacta no implica bloqueo automático.
+LOCALIZAÇÃO 184: Requer instalação oficial separada do ClamAV e assinaturas atualizadas pelo FreshClam. Examina um arquivo por vez; não remove automaticamente e não é proteção residente.|Requires separate official ClamAV installation and up-to-date FreshClam signatures. Scans one file at a time; no automatic removal or resident protection.|Requiere instalación oficial separada de ClamAV y firmas actualizadas mediante FreshClam. Examina un archivo a la vez; no elimina automáticamente ni ofrece protección residente.
+
+7. BIBLIOTECAS, LICENÇAS E ORIGEM — INVENTÁRIO DE TERCEIROS DOCUMENTADO
+Motor Go próprio (go.mod 1.23; CI Go 1.24.13): código ZEUVORYX; licença própria definitiva não comprovada. Biblioteca padrão Go: BSD-3-Clause, https://go.dev/LICENSE.
+ClamAV 1.5.5 e FreshClam: GPL v2, pacote upstream independente, código-fonte correspondente e avisos incluídos; https://github.com/Cisco-Talos/clamav/releases/tag/clamav-1.5.5. CLAMAV_NOTICE_314.txt. Dependências transitivas e termos das bases ainda exigem auditoria.
+YARA: integração operacional não confirmada; não consta como dependência no go.mod rastreado; não atribuir versão instalada. Projeto upstream BSD-3-Clause, https://github.com/VirusTotal/yara (referência, não componente comprovadamente distribuído).
+Microsoft Defender, AMSI, Windows API: componentes nativos proprietários sob termos Microsoft. Interfaces independentes, não licença do ZEUVORYX. Sysmon: integração opcional, termos Microsoft Sysinternals; binário distribuído não comprovado.
+WebView2 Runtime: termos de distribuição Microsoft, https://learn.microsoft.com/microsoft-edge/webview2/concepts/distribution. Go wrapper jchv/go-webview2, MIT, revisão 56598839c808 documentada em AUDITORIA_LICENCAS.md; dependências transitivas e loader precisam de conferência.
+C2PA c2patool 0.29.0: Apache-2.0/MIT, https://github.com/contentauth/c2patool; fonte e avisos transitivos devem ser verificados.
+rsrc v0.10.2: MIT, https://github.com/akavel/rsrc, ferramenta de build. Pillow 12.2.0: HPND/avisos de dependências, https://pypi.org/project/pillow/12.2.0/; somente build, versão e notices do wheel a conferir. Inno Setup 6: licença própria, https://jrsoftware.org/isinfo.php; não presumir MIT. NSIS: alternativa proposta, não comprovada no instalador atual. Python, Node e Playwright: ferramentas de build/teste (Python PSF, Node MIT com avisos transitivos, Playwright Apache-2.0); não distribuídas como requisito do cliente. GitHub Actions: infraestrutura e ações de terceiros, termos e licenças próprias; versões no workflow.
+2048: lab/arcade2048/game.html + LICENSE.txt + README.md; Gabriele Cirulli, MIT, https://github.com/gabrielecirulli/2048/tree/478b6ec346e3787f589e4af751378d06ded4cbbc. HTML/CSS/JS combinados, removidos links externos, fontes e ícones. SHA256 documentado d0a8b940891c03d845d5c79d939a187232a7a75741ed45b5d9b9910fb8822ed3.
+10 HTML em lab/retro21/: Prateek, MIT, https://github.com/prateek121/90s-games/tree/98ca2ade686cb114480e6d359b5f5e2987cacb2f; licença integral lab/retro21/LICENSE.txt, manifesto de hashes catalog.json. Sem ROM ou BIOS proprietária documentada.
+Tetris/Poker/Campo Minado/Memória novos em lab/games314.js: código experimental próprio, licença própria não formalizada. Não atribuir MIT a código sem declaração de licença.
+Arte: zeuvoryx_brand.jpg, zeuvoryx_capa_4k.jpg, zeuvoryx_painel_4k.jpg; autoria declarada Leonardo A Botelho em IDENTIDADE_VISUAL.txt; origem específica das imagens, direitos de uso e processo de geração não demonstrados individualmente. ZEUVORYX.ico/png gerados no build por scripts de arte. Não há prova de licença MIT para as imagens.
+Sons e fontes: nenhum arquivo de áudio ou fonte separado foi encontrado na árvore rastreada. Alguns jogos usam WebAudio/sons gerados por código e fontes do sistema; verificar trechos específicos e avisos upstream. A ausência de arquivos separados não prova a inexistência de conteúdo embutido. Fontes externas removidas do 2048 conforme README. Não atribuir licença MIT a fonte de sistema.
+MalwareBazaar/URLhaus/ThreatFox: dados e API abuse.ch, termos próprios; não autorizados como integração comercial irrestrita. Spamhaus DROP: política fair-use, https://www.spamhaus.org/blocklists/drop-fair-use-policy/. CISA KEV: CC0, https://github.com/cisagov/kev-data/blob/develop/LICENSE. VirusTotal: avaliação, não motor de produção. Referências: AUDITORIA_LICENCAS.md, AUDITORIA_MOTORES_2026-11-26.md, THREAT_INTELLIGENCE.md, GLOBAL_SECURITY_INTELLIGENCE.md.
+EICAR: arquivo de teste oficial inofensivo, https://www.eicar.org/download-anti-malware-testfile/; não malware real. Dados IOC e hashes importados: lab/public_ioc_2026-11-25.sha256 e lab/PUBLIC_IOC_2026-11-25.md; origem e termos específicos requerem leitura individual. Sem atribuição de licença MIT por padrão.
+O inventário não é SBOM do EXE instalado. Não há prova de procedência individual de TODOS os trechos de código, imagens, fontes e dados; arquivo sem fonte atribuída não deve ser tratado como copiado nem como comprovadamente autoral. Conferir go list -m e go version -m no build, arquivos de notices e licenças efetivas antes de distribuição.
+
+8. CONTAGEM E LIMITAÇÕES
+Contagem de ocorrências estáticas distintas por arquivo/linha/id/texto, não de botões simultaneamente visíveis. Inclui modelos dos botões de jogo, links com ação e variantes substituídas; não inclui células de tabuleiro geradas em runtime. Textos de proteção são candidatos lexicais, incluindo avisos de ausência de proteção e traduções, não uma contagem de afirmações positivas confirmadas. O Build 43 não produziu a interface final, portanto não existe uma contagem visual homologada. As cinco áreas solicitadas são distribuídas entre as seções existentes; configurações e Sobre podem ser painéis/controles e não abas autônomas. As ações não resolvidas estaticamente foram explicitadas, não inventadas.
+TOTAL DE BOTÕES: 163 (ocorrências estáticas identificadas)
+TOTAL DE JOGOS: 15 (11 no último build verde; 4 adicionais no código não homologado)
+TOTAL DE PROMESSAS DE PROTEÇÃO: 93 (ocorrências candidatas de textos, incluindo ressalvas; total de promessas afirmativas não comprovado)

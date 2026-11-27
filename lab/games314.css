@@ -66,3 +66,7 @@ body:has(#zGames314[data-window="maximized"]){display:flex!important;flex-direct
 body:has(#zGames314[data-window="maximized"]) nav,body:has(#zGames314[data-window="maximized"]) > :not(main):not(:has(main)){display:none!important}
 body:has(#zGames314[data-window="maximized"]) :has(>main),body:has(#zGames314[data-window="maximized"]) main{display:flex!important;flex-direction:column!important;flex:1!important;width:100%!important;min-width:0!important;min-height:0!important;max-width:100%!important;max-height:100dvh!important;overflow:hidden!important;margin:0!important;padding:0!important;box-sizing:border-box}
 body:has(#zGames314[data-window="maximized"]) main > :not(#zGames314){display:none!important}
+
+/* Native desktop shell: remove the entire sidebar while maximized, not only its nav. */
+body:has(#zGames314[data-window="maximized"]) .shell{display:flex!important;flex-direction:column!important;height:100dvh!important;min-height:0!important;overflow:hidden!important}
+body:has(#zGames314[data-window="maximized"]) .shell > :not(main){display:none!important}

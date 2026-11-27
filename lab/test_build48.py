@@ -4,6 +4,7 @@ from pathlib import Path
 import json
 import re
 from prepare_build48 import IDS, js_json
+from retro21 import load_retro
 
 s=Path("desktop.html").read_text(encoding="utf-8")
 def extract(name):
@@ -71,5 +72,15 @@ function node(tag,text){let e=document.createElement(tag);e.textContent=text;ret
 function volume(n){return n+' B'}
 """
 payload="const zArcade2048="+js_json(arcade)+";const zRetroCatalog="+js_json(catalog)+";const zRetroDocs="+js_json(docs)+";"
-Path("build48-browser-harness.html").write_text(prefix.replace("</style>",Path("lab/games314.css").read_text(encoding="utf-8")+"</style>")+"<main>"+section[0]+"</main>"+bridge+payload+shared+launcher+"</script></body></html>",encoding="utf-8")
+Path("build48-browser-harness.html").write_text(prefix.replace("</style>",re.search(r"<style>([\s\S]*?)</style>",s)[1]+"</style>").replace("<body>","<body><div class=\"shell\"><aside><nav>").replace('<section id="overview"></section><section id="alerts"></section>','</nav></aside><main><section id="overview"></section><section id="alerts"></section>')+section[0]+"</main></div>"+bridge+payload+shared+launcher+"</script></body></html>",encoding="utf-8")
 print("Build48: exact catalog, generated bindings, UI text and isolation contract verified. Browser harness uses mock host authorization only.")
+
+# Exercise the original eleven-entry catalog too, without changing the integrated six-entry catalog.
+original_catalog, original_docs = load_retro()
+original_arcade = Path("lab/arcade2048/game.html").read_text(encoding="utf-8")
+original_launcher = Path("lab/games314.js").read_text(encoding="utf-8")
+original_section = Path("lab/games314.html").read_text(encoding="utf-8")
+original_payload = "const zArcade2048="+js_json(original_arcade)+";const zRetroCatalog="+js_json(original_catalog)+";const zRetroDocs="+js_json(original_docs)+";"
+original_prefix = prefix.replace("</style>",re.search(r"<style>([\s\S]*?)</style>",s)[1]+"</style>").replace("<body>","<body><div class=\"shell\"><aside><nav>").replace('<section id="overview"></section><section id="alerts"></section>','</nav></aside><main><section id="overview"></section><section id="alerts"></section>')
+Path("gamewindow-original-harness.html").write_text(original_prefix+original_section+"</main></div>"+bridge+original_payload+shared+original_launcher+"</script></body></html>",encoding="utf-8")
+print("GameWindow: both catalog paths prepared; no game catalog changed.")

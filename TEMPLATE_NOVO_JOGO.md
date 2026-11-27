@@ -5,3 +5,5 @@
 - Cada jogo deve documentar comandos e fornecer teste de mudança de estado por ação real. Jogos de personagem: seta direita deve mudar a posição; puzzles: estado do tabuleiro; jogos de botões: resultado de ação via teclado. Nenhuma aprovação por simples abertura.
 - Teste GameWindow: foco, maximizar/restaurar, zoom próprio, fullscreen e saída, minimizar/restaurar sem recarga, fechar, bloqueio familiar, troca de jogo, 30 s de interação, DPI/resoluções. Exija evidência física em Windows por jogo; execução Edge em CI não equivale ao WebView2 instalado.
 - O build deve falhar com "Jogo sem GameWindow - correção obrigatória" se um launcher não registrar/abrir pelo componente ou criar iframe próprio.
+
+O loader aceita novos IDs únicos. O teste do catálogo exige incluir a ação semântica e o resultado verificável do jogo novo; registrar sem teste não constitui aprovação. Ping Pong usa setas verticais, labirintos respeitam paredes e jogos de botões usam Enter; não simular movimento que não existe. A aplicação nativa não é substituída pela simulação do navegador.

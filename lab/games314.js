@@ -12,7 +12,7 @@ z('zGameBack').onclick=()=>{close();document.querySelector('[data-page="overview
 z('zGameAlerts314').onclick=()=>{close();document.querySelector('[data-page="alerts"]').click()};
 z('zFamilyNav314').addEventListener('click',close);
 async function refreshGameScan(){if(!visible||querying)return;querying=true;try{const v=await window.getScanState(),r=v.report||{};if(!visible)return;const count=Number(v.files??r.files??0),bytes=Number(v.bytes??r.bytes??0),hits=Number(v.finding_total??0);z('zGameScanState314').textContent=v.running?'Varredura em andamento · '+(r.signature_state||'motor de assinaturas aguardando'):(v.done?'Varredura encerrada':'Nenhuma varredura ativa');z('zGameScanMetrics314').textContent='Arquivos: '+count.toLocaleString('pt-BR')+' · Volume: '+volume(bytes)+' · Indícios do scanner: '+hits;}catch(e){if(visible){z('zGameScanState314').textContent='Progresso indisponível';z('zGameScanMetrics314').textContent=''}}finally{querying=false}}
-function render(){if(!visible)return;const f=z('zGameFilter').value,q=z('zGameSearch').value.trim().toLocaleLowerCase('pt-BR'),out=z('zGameCatalog');out.replaceChildren();let n=0;for(const [id,category,title,desc] of games){if((f&&f!==category)||(q&&!(title+' '+category+' '+desc).toLocaleLowerCase('pt-BR').includes(q)))continue;n++;const tile=document.createElement('article');tile.className='zGameTile';tile.dataset.platform=category;const b=node('button','Jogar aqui');b.type='button';b.onclick=()=>start(id);tile.append(node('small',category+' · offline'),node('strong',title),node('small',desc),b);out.append(tile)}status.textContent=n+' jogos locais no filtro. Nenhum abre o navegador.'}
+function render(){if(!visible)return;const f=z('zGameFilter').value,q=z('zGameSearch').value.trim().toLocaleLowerCase('pt-BR'),out=z('zGameCatalog');out.replaceChildren();let n=0;for(const [id,category,title,desc] of games){if((f&&f!==category)||(q&&!(title+' '+category+' '+desc).toLocaleLowerCase('pt-BR').includes(q)))continue;n++;const tile=document.createElement('article');tile.className='zGameTile';tile.dataset.platform=category;tile.dataset.gameId=id;const b=node('button','Jogar aqui');b.type='button';b.onclick=()=>start(id);tile.append(node('small',category+' · offline'),node('strong',title),node('small',desc),b);out.append(tile)}status.textContent=n+' jogos locais no filtro. Nenhum abre o navegador.'}
 async function start(id){
  const game=games.find(entry=>entry[0]===id);
  if(!game||!visible)return;
@@ -23,6 +23,6 @@ async function start(id){
 }
 z('zGameFilter').onchange=render;
 z('zGameSearch').oninput=render;
-z('zGameClose315').onclick=closeGame;
+z('zGameClose315').onclick=()=>{const id=currentGame;closeGame();const tile=[...z('zGameCatalog').querySelectorAll('[data-game-id]')].find(t=>t.dataset.gameId===id);const b=tile?.querySelector('button');if(b){b.scrollIntoView({block:'nearest'});b.focus({preventScroll:true})}};
 z('zGameRestart21').onclick=()=>{if(currentGame)start(currentGame)};
 })();

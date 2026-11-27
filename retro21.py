@@ -6,7 +6,7 @@ import re
 def load_retro():
     root=Path("lab/retro21")
     manifest=json.loads((root/"catalog.json").read_text(encoding="utf-8"))
-    assert len(manifest)==10 and len({g["id"] for g in manifest})==10
+    assert manifest and len({g["id"] for g in manifest})==len(manifest), "Jogo sem GameWindow - correção obrigatória: catálogo vazio ou ID duplicado"
     docs={}
     storage="""<script>const zArcadeSessionStore=(()=>{const m=new Map();return Object.freeze({getItem:k=>m.has(String(k))?m.get(String(k)):null,setItem:(k,v)=>m.set(String(k),String(v)),removeItem:k=>m.delete(String(k)),clear:()=>m.clear()});})();</script>"""
     policy="""<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; media-src data:; connect-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'">"""

@@ -681,8 +681,10 @@ func (q *Quarantine) addWithHash(path,expected string) (QuarantineItem, error) {
     if e!=nil||!stableFile(abs,st,current){return QuarantineItem{},errors.Join(errors.New("arquivo original mudou"),os.Remove(bin),os.Remove(metaPath))}
     if expected!=""{if e=quarantineHash(abs,expected);e!=nil{return QuarantineItem{},errors.Join(e,os.Remove(bin),os.Remove(metaPath))}}
 \tif e = os.Remove(abs); e != nil {''')
-    s=one(s,'\tif _, e = copyClosed(bin, item.Original, item.SHA256, item.Size); e != nil {','''    if item.SHA256!=""{if e=quarantineHash(bin,item.SHA256);e!=nil{return e}}
-\tif _, e = copyClosed(bin, item.Original, item.SHA256, item.Size); e != nil {''')
+    # Match the verified four-argument restore call, independent of gofmt spacing.
+    restore_pattern = r'(?m)^([ \t]*)if[ \t]+_,[ \t]*e[ \t]*=[ \t]*copyClosed\([ \t]*bin[ \t]*,[ \t]*item\.Original[ \t]*,[ \t]*item\.SHA256[ \t]*,[ \t]*item\.Size[ \t]*\)[ \t]*;[ \t]*e[ \t]*!=[ \t]*nil[ \t]*\{[ \t]*$'
+    s,n=re.subn(restore_pattern, lambda m: m[1]+'if item.SHA256!=""{if e=quarantineHash(bin,item.SHA256);e!=nil{return e}}\n'+m[0], s)
+    if n!=1:raise RuntimeError(f'Expected one verified quarantine restore call, got {n}')
     return s
 
 def main(s):

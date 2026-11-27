@@ -5,7 +5,7 @@
 package main
 
 import (
- "_embed"
+ "embed"
  "runtime"
  "syscall"
  "unsafe"

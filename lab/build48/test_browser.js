@@ -44,7 +44,23 @@ const assert=require('node:assert/strict');
      let moved=false;
      for(const key of ['ArrowLeft','ArrowUp','ArrowRight','ArrowDown']){
        await page.keyboard.press(key);
-       await frame.waitForFunction(old=>Array.from(document.querySelectorAll('.tile-container .tile'),t=>[t.textContent,t.className.match(/tile-position-\d+-\d+/)?.[0]]).map(v=>JSON.stringify(v)).sort().join('|')!==old,before,{timeout:1000}).then(()=>{moved=true},e=>{if(e.name!=='TimeoutError')throw e;});
+       const inicio = Date.now();
+       while (Date.now() - inicio < 1000) {
+         moved = await frame.evaluate((old) => {
+           return Array.from(
+             document.querySelectorAll('.tile-container .tile'),
+             t => [
+               t.textContent,
+               t.className.match(/tile-position-\d+-\d+/)?.[0]
+             ]
+           )
+             .map(v => JSON.stringify(v))
+             .sort()
+             .join('|') !== old;
+         }, before);
+         if (moved) break;
+         await new Promise(resolve => setTimeout(resolve, 50));
+       }
        if(moved)break;
      }
      assert.ok(moved,'2048 keyboard input did not change board');

@@ -47,7 +47,10 @@ const assert=require('node:assert/strict');
    }
    assert.ok(Date.now()-start>=60000,id+' duration');
    assert.equal(await page.locator('#zGameBoard iframe').count(),1);
-   await page.locator('#zGameClose315').click();
+   // The DOM removal is synchronous; Playwright observes frame detachment asynchronously.
+   // Register the event before clicking, and still require actual detachment within 2 seconds.
+   const detached=page.waitForEvent('framedetached',{predicate:f=>f===frame,timeout:2000});
+   await Promise.all([detached,page.locator('#zGameClose315').click()]);
    assert.equal(await page.locator('#zGameBoard iframe').count(),0);
    assert.equal(frame.isDetached(),true);
    console.log('Build48 browser game '+id+': 60 seconds, interaction and iframe teardown confirmed');

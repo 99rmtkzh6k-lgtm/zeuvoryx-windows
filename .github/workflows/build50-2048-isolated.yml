@@ -1,0 +1,38 @@
+name: Build50 2048 isolated Win32 LAB
+on:
+  push:
+    branches: [lab-build50]
+    paths:
+      - 'lab/arcade2048/**'
+      - '.github/workflows/build50-2048-isolated.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  isolated-2048-windows:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.x'
+      - name: Install WebView2 Go binding for isolated build
+        shell: pwsh
+        run: go get github.com/jchv/go-webview2@v0.0.0-20260205173254-56598839c808
+      - name: Compile standalone 2048 only
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          go build -trimpath -o dist/ZEUVORYX-2048-BUILD50-LAB.exe ./lab/arcade2048
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (!(Test-Path dist/ZEUVORYX-2048-BUILD50-LAB.exe)) { throw 'EXE missing' }
+      - name: Hash standalone executable
+        shell: pwsh
+        run: Get-FileHash dist/ZEUVORYX-2048-BUILD50-LAB.exe -Algorithm SHA256 | Format-List
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 2048-win32-lab-${{ github.sha }}
+          path: dist/ZEUVORYX-2048-BUILD50-LAB.exe
+          if-no-files-found: error
+          retention-days: 7

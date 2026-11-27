@@ -1,0 +1,22 @@
+name: ZEUVORYX 3.0.23 LAB - P0 scan finalization
+# Default-branch registration only. Select lab-updater-build49-check4 in Run workflow.
+# No compilation or installer is allowed by this main-branch file.
+on:
+  workflow_dispatch:
+    inputs:
+      validation_only:
+        description: 'Validate only; set false ONLY with explicit owner authorization to build LAB packages'
+        type: boolean
+        required: true
+        default: true
+permissions:
+  contents: read
+jobs:
+  registration-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - name: Refuse to build from the registration workflow
+        run: |
+          echo 'Registration only. Select lab-updater-build49-check4, frozen SHA f0b136c4b2f0bd285b87f228a2b48fb4db304e73.'
+          exit 1

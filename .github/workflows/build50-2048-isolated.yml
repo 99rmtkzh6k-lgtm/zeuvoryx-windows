@@ -1,4 +1,5 @@
 name: Build50 2048 isolated Win32 LAB
+# Explicit push trigger: isolated compilation only; no main app or releases.
 on:
   push:
     branches: [lab-build50]

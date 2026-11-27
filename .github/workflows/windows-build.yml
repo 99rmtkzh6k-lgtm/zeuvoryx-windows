@@ -3,6 +3,11 @@ run-name: ZEUVORYX 3.0.23 LAB Olympus Titanium - Global Threat Defense Windows x
 
 on:
   workflow_call:
+    inputs:
+      validation_suffix:
+        type: string
+        required: false
+        default: ''
 
 permissions:
   contents: read
@@ -10,7 +15,7 @@ permissions:
 
 concurrency:
   group: zeuvoryx-windows-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build-windows:
@@ -2436,8 +2441,12 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw '314 games catalog integration failed' }
           go test -count=5 ./auditmetrics ./changeguard
           if ($LASTEXITCODE -ne 0) { throw '3.0.23 engine accounting regressions failed' }
+          python lab/test_report_anchor315.py
+          if ($LASTEXITCODE -ne 0) { throw 'Report anchor fixtures failed' }
           python prepare_reports315.py
           if ($LASTEXITCODE -ne 0) { throw '3.0.23 report center integration failed' }
+          python lab/test_report_anchor315.py desktop.html
+          if ($LASTEXITCODE -ne 0) { throw 'Generated report structure failed' }
           go test -count=5 -run TestReport315DurableFile reportfile315.go reportfile315_test.go
           if ($LASTEXITCODE -ne 0) { throw '3.0.23 durable JSON export failed' }
           python prepare_version315.py
@@ -2492,7 +2501,7 @@ jobs:
       - name: Upload Security Center regression JSON
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.23-security-center-regressions
+          name: ZEUVORYX-3.0.23-security-center-regressions${{ inputs.validation_suffix }}
           path: security-center-regressions.json
           if-no-files-found: error
       - name: Verify final ZEUVORYX 3.0.23 LAB identity
@@ -2539,7 +2548,7 @@ jobs:
       - name: Upload adaptive training and validation evidence
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.23-Adaptive-Lab-50M
+          name: ZEUVORYX-3.0.23-Adaptive-Lab-50M${{ inputs.validation_suffix }}
           path: lab-results/adaptive-report-50m.json
           if-no-files-found: error
       - name: Install and run static scanner safety regression tests
@@ -2620,7 +2629,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.23-QA20-evidence
+          name: ZEUVORYX-3.0.23-QA20-evidence${{ inputs.validation_suffix }}
           path: qa20-*.log
           if-no-files-found: ignore
       - name: Build Windows desktop EXE
@@ -2729,13 +2738,13 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.23-desktop-smoke
+          name: ZEUVORYX-3.0.23-desktop-smoke${{ inputs.validation_suffix }}
           path: desktop-smoke.log
           if-no-files-found: ignore
       - name: Upload portable 3.0.23 LAB only for physical quick scan
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.23-LAB-PORTATIL-TESTE-Windows-x64
+          name: ZEUVORYX-3.0.23-LAB-PORTATIL-TESTE-Windows-x64${{ inputs.validation_suffix }}
           path: dist/
           if-no-files-found: error
           retention-days: 7
@@ -2768,7 +2777,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.23-package-size
+          name: ZEUVORYX-3.0.23-package-size${{ inputs.validation_suffix }}
           path: package-size315.json
           if-no-files-found: ignore
       - name: Verify real 3.0.6 to 3.0.23 migration and duplicate instance protection
@@ -2903,13 +2912,13 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ZEUVORYX-3.0.23-bundled-installed-evidence
+          name: ZEUVORYX-3.0.23-bundled-installed-evidence${{ inputs.validation_suffix }}
           path: bundle314-*.json
           if-no-files-found: ignore
       - name: Upload installer for controlled LAB validation only
         uses: actions/upload-artifact@v4
         with:
-          name: ZEUVORYX-3.0.23-LAB-SETUP-TESTE-Windows-x64
+          name: ZEUVORYX-3.0.23-LAB-SETUP-TESTE-Windows-x64${{ inputs.validation_suffix }}
           path: |
             installer/ZEUVORYX-LAB-Setup-3.0.23.exe
             installer/build.json

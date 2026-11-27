@@ -1,8 +1,10 @@
 ;(()=>{
 const games=[['2048','Quebra-cabeça','2048','Combine os blocos numerados. Jogo de Gabriele Cirulli, licença MIT.'],...zRetroCatalog.map(g=>[g.id,g.category,g.title,g.description])];
 const z=id=>document.getElementById(id),panel=z('zGames314'),nav=z('zGamesNav314'),status=z('zGameStatus'),board=z('zGameBoard');
+const win=new ZGameWindow314(panel,board,status);
+for(const game of games)win.registerGame(game,game[0]==='2048'?zArcade2048:zRetroDocs[game[0]]);
 let gameTimer=null,visible=false,querying=false,launch=0,currentGame=null;
-function closeGame(){launch++;currentGame=null;board.replaceChildren();z('zGameLocal').hidden=true}
+function closeGame(){launch++;currentGame=null;win.close()}
 function close(){if(gameTimer!==null){clearInterval(gameTimer);gameTimer=null}visible=false;closeGame();panel.classList.add('hidden');nav.classList.remove('active');nav.setAttribute('aria-expanded','false')}
 nav.onclick=()=>{visible=true;if(gameTimer!==null)clearInterval(gameTimer);refreshGameScan();gameTimer=setInterval(refreshGameScan,3000);for(const b of document.querySelectorAll('[data-page]')){b.classList.remove('active');const p=z(b.dataset.page);if(p)p.classList.add('hidden')}panel.classList.remove('hidden');nav.classList.add('active');nav.setAttribute('aria-expanded','true');render()};
 for(const b of document.querySelectorAll('[data-page]'))b.addEventListener('click',close);
@@ -17,19 +19,7 @@ async function start(id){
  const ticket=++launch;
  try{if(await window.allowLocalGame315(id)!==true)throw Error('Acesso não autorizado')}catch(e){if(ticket===launch)status.textContent='Jogo indisponível: '+String(e);return}
  if(!visible||ticket!==launch)return;
- closeGame();
- const frame=document.createElement('iframe');
- frame.title=game[2];
- frame.setAttribute('referrerpolicy','no-referrer');
- frame.setAttribute('sandbox','allow-scripts');
- frame.style.cssText='width:100%;height:680px;border:0;background:#faf8ef;grid-column:1/-1';
- frame.srcdoc=id==='2048'?zArcade2048:zRetroDocs[id];
- currentGame=id;
- z('zGameTitle').textContent=game[2];
- z('zGameInstructions').textContent=game[3];
- z('zGameLocal').hidden=false;
- board.append(frame);
- z('zGameLocal').scrollIntoView({block:'nearest'});
+ closeGame();try{win.open(id);currentGame=id}catch(e){status.textContent='Jogo indisponível: '+String(e)};
 }
 z('zGameFilter').onchange=render;
 z('zGameSearch').oninput=render;

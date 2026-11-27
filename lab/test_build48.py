@@ -47,10 +47,13 @@ assert "local?gib(d.local_total):zT('Volume indisponível')" in s
 for label in ["Scanner complementar. Não substitui o Microsoft Defender.","Verificar procedência C2PA","Não detecta todos os vídeos de IA.","IA auxiliar, não é proteção principal."]:
     assert label in s,label
 launcher=Path("lab/build48/launcher.js").read_text(encoding="utf-8")
-assert launcher in s
-assert "frame.setAttribute('sandbox','allow-scripts')" in launcher
-assert "frame.setAttribute('referrerpolicy','no-referrer')" in launcher
-assert not any(x in launcher for x in ["allow-same-origin","allow-top-navigation","allow-popups","window.open"])
+shared=Path("lab/gamewindow.js").read_text(encoding="utf-8")
+assert shared in s and launcher in s
+assert "win.registerGame(game" in launcher and "win.open(id)" in launcher, "Jogo sem GameWindow - correção obrigatória"
+assert s.count("createElement('iframe')")==1, "Jogo sem GameWindow - correção obrigatória"
+assert "frame.setAttribute('sandbox','allow-scripts')" in shared
+assert "frame.setAttribute('referrerpolicy','no-referrer')" in shared
+assert not any(x in (launcher+shared) for x in ["allow-same-origin","allow-top-navigation","allow-popups","window.open"])
 binding=Path("games314_windows.go").read_text(encoding="utf-8")
 m=re.search(r'func localGame315\(id string\)\s*bool\s*\{([^}]+)\}',binding)
 assert m
@@ -68,5 +71,5 @@ function node(tag,text){let e=document.createElement(tag);e.textContent=text;ret
 function volume(n){return n+' B'}
 """
 payload="const zArcade2048="+js_json(arcade)+";const zRetroCatalog="+js_json(catalog)+";const zRetroDocs="+js_json(docs)+";"
-Path("build48-browser-harness.html").write_text(prefix+section[0]+bridge+payload+launcher+"</script></body></html>",encoding="utf-8")
+Path("build48-browser-harness.html").write_text(prefix.replace("</style>",Path("lab/games314.css").read_text(encoding="utf-8")+"</style>")+"<main>"+section[0]+"</main>"+bridge+payload+shared+launcher+"</script></body></html>",encoding="utf-8")
 print("Build48: exact catalog, generated bindings, UI text and isolation contract verified. Browser harness uses mock host authorization only.")

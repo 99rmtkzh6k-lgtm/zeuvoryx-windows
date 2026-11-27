@@ -16,6 +16,7 @@ game = (base / "arcade2048/game.html").read_bytes()
 assert sha256(game).hexdigest() == "d0a8b940891c03d845d5c79d939a187232a7a75741ed45b5d9b9910fb8822ed3"
 html = game.decode()
 launcher = (base / "games314.js").read_text(encoding="utf-8")
+shared = (base / 'gamewindow.js').read_text(encoding='utf-8')
 binding = (base / "games314_windows.go.txt").read_text(encoding="utf-8")
 generator = (base.parent / "prepare_games314.py").read_text(encoding="utf-8")
 for cycle in range(1, 6):
@@ -23,9 +24,9 @@ for cycle in range(1, 6):
     assert "default-src 'none'" in html and "connect-src 'none'" in html
     assert not re.search(r"@import|\b(?:fetch|XMLHttpRequest|WebSocket)\b", html)
     assert "new GameManager" in html
-    assert "frame.setAttribute('sandbox','allow-scripts')" in launcher
+    assert "frame.setAttribute('sandbox','allow-scripts')" in shared
     assert "await window.allowLocalGame315(id)" in launcher and "!==true" in launcher
-    assert "board.replaceChildren()" in launcher
+    assert "board.replaceChildren()" in shared and "win.registerGame(game" in launcher and "win.open(id)" in launcher
     assert 'return id=="2048"' in binding
     assert "games315_core.js" not in generator and "chess315_vendor.js" not in generator
     print(f"Arcade integration contract {cycle}/5 passed")

@@ -1,0 +1,14 @@
+name: ZEUVORYX 3.0.23 LAB Build 51 GameWindow validation
+on:
+  push:
+    branches: [lab-build51-gamewindow]
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  validate:
+    uses: ./.github/workflows/windows-build.yml
+    with:
+      validation_only: true
+      validation_suffix: '-build51-gamewindow'

@@ -69,7 +69,7 @@ jobs:
           }
           python -m py_compile zeuvoryx_upgrade.py
           if ($LASTEXITCODE -ne 0) { throw 'Upgrade script syntax validation failed' }
-          if ($env:GITHUB_REF -in @('refs/heads/lab-arcade-nerd-build48','refs/heads/lab-updater-build49','refs/heads/lab-updater-build49-check4')) {
+          if ($env:GITHUB_REF -in @('refs/heads/lab-arcade-nerd-build48','refs/heads/lab-updater-build49','refs/heads/lab-updater-build49-check4','refs/heads/lab-build51-gamewindow')) {
             $labPython = @(Get-ChildItem -Path 'lab/*.py' -File | ForEach-Object { $_.FullName })
             if ($labPython.Count -lt 1) { throw 'Build48 Python sources missing' }
             python -m py_compile @labPython
@@ -2474,7 +2474,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw '3.0.23 durable JSON export failed' }
           python prepare_version315.py
           if ($LASTEXITCODE -ne 0) { throw '3.0.23 version integration failed' }
-          if ($env:GITHUB_REF -in @('refs/heads/lab-arcade-nerd-build48','refs/heads/lab-updater-build49','refs/heads/lab-updater-build49-check4')) {
+          if ($env:GITHUB_REF -in @('refs/heads/lab-arcade-nerd-build48','refs/heads/lab-updater-build49','refs/heads/lab-updater-build49-check4','refs/heads/lab-build51-gamewindow')) {
             python lab/prepare_build48.py
             if ($LASTEXITCODE -ne 0) { throw 'Build48 integration failed' }
             python lab/test_build48.py
@@ -2534,7 +2534,7 @@ jobs:
           path: security-center-regressions.json
           if-no-files-found: error
       - name: Build48 acceptance gate on Windows runner (native fixtures and six games)
-        if: github.ref == 'refs/heads/lab-arcade-nerd-build48' || github.ref == 'refs/heads/lab-updater-build49' || github.ref == 'refs/heads/lab-updater-build49-check4'
+        if: github.ref == 'refs/heads/lab-arcade-nerd-build48' || github.ref == 'refs/heads/lab-updater-build49' || github.ref == 'refs/heads/lab-updater-build49-check4' || github.ref == 'refs/heads/lab-build51-gamewindow'
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -2544,6 +2544,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Build48 browser test dependency failed' }
           node lab/build48/test_browser.js
           if ($LASTEXITCODE -ne 0) { throw 'Build48 browser acceptance failed' }
+          if ($env:GITHUB_REF -eq 'refs/heads/lab-build51-gamewindow') {
+            node lab/build48/test_gamewindow.js
+            if ($LASTEXITCODE -ne 0) { throw 'GameWindow regression failed' }
+          }
       - name: Verify final ZEUVORYX 3.0.23 LAB identity
         shell: pwsh
         run: |

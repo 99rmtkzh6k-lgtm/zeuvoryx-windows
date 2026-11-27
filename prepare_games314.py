@@ -27,6 +27,14 @@ p.write_text(s,encoding="utf-8")
 p=Path("desktop.html");s=p.read_text(encoding="utf-8")
 s=one(s,'</nav>','<button id="zGamesNav314" type="button" aria-expanded="false">Games · Jogos</button><button id="zFamilyNav314" type="button">Controle parental</button></nav>')
 retro, retro_docs = load_retro()
+for launcher_path in ("lab/games314.js", "lab/build48/launcher.js"):
+    launcher = Path(launcher_path).read_text(encoding="utf-8")
+    if "win.registerGame(game" not in launcher or "win.open(id)" not in launcher or "createElement('iframe')" in launcher:
+        raise RuntimeError("Jogo sem GameWindow - correção obrigatória")
+shared = Path("lab/gamewindow.js").read_text(encoding="utf-8")
+if shared.count("createElement('iframe')") != 1 or "class GameWindow" not in shared:
+    raise RuntimeError("Jogo sem GameWindow - correção obrigatória")
+
 games_html=Path("lab/games314.html").read_text(encoding="utf-8")
 family_html=Path("lab/family314.html").read_text(encoding="utf-8")
 options='<option value="2048">2048</option>'+''.join('<option value="'+escape(g["id"],quote=True)+'">'+escape(g["title"])+'</option>' for g in retro)
@@ -38,7 +46,7 @@ games_html=one(games_html,'<div id="zGameCatalog"', '<details><summary>Créditos
 s=one(s,'</main>',games_html+family_html+'</main>')
 s=one(s,'</style></head>',Path("lab/games314.css").read_text(encoding="utf-8")+'</style></head>')
 game = json.dumps(Path("lab/arcade2048/game.html").read_text(encoding="utf-8")).replace("<", r"\u003c")
-s=one(s,'</script></body></html>',";const zArcade2048="+game+";const zRetroCatalog="+json.dumps(retro).replace("<",r"\u003c")+";const zRetroDocs="+json.dumps(retro_docs).replace("<",r"\u003c")+";"+Path("lab/games314.js").read_text(encoding="utf-8")+Path("lab/family314.js").read_text(encoding="utf-8")+'</script></body></html>')
+s=one(s,'</script></body></html>',";const zArcade2048="+game+";const zRetroCatalog="+json.dumps(retro).replace("<",r"\u003c")+";const zRetroDocs="+json.dumps(retro_docs).replace("<",r"\u003c")+";"+Path("lab/gamewindow.js").read_text(encoding="utf-8")+Path("lab/games314.js").read_text(encoding="utf-8")+Path("lab/family314.js").read_text(encoding="utf-8")+'</script></body></html>')
 class Check(HTMLParser):
     def __init__(self):super().__init__();self.ids=[]
     def handle_starttag(self,tag,attrs):

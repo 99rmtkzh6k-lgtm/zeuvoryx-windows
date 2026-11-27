@@ -52,6 +52,12 @@ jobs:
           }
           python -m py_compile zeuvoryx_upgrade.py
           if ($LASTEXITCODE -ne 0) { throw 'Upgrade script syntax validation failed' }
+          if ($env:GITHUB_REF -eq 'refs/heads/lab-arcade-nerd-build48') {
+            $labPython = @(Get-ChildItem -Path 'lab/*.py' -File | ForEach-Object { $_.FullName })
+            if ($labPython.Count -lt 1) { throw 'Build48 Python sources missing' }
+            python -m py_compile @labPython
+            if ($LASTEXITCODE -ne 0) { throw 'Build48 Python syntax preflight failed' }
+          }
       - name: Organize project
         shell: pwsh
         run: |
@@ -2451,6 +2457,12 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw '3.0.23 durable JSON export failed' }
           python prepare_version315.py
           if ($LASTEXITCODE -ne 0) { throw '3.0.23 version integration failed' }
+          if ($env:GITHUB_REF -eq 'refs/heads/lab-arcade-nerd-build48') {
+            python lab/prepare_build48.py
+            if ($LASTEXITCODE -ne 0) { throw 'Build48 integration failed' }
+            python lab/test_build48.py
+            if ($LASTEXITCODE -ne 0) { throw 'Build48 generated desktop contract failed' }
+          }
           node lab/test_technical_diagnosis.js desktop.html
           if ($LASTEXITCODE -ne 0) { throw 'Technical diagnosis regressions failed' }
           node lab/test_report_copy315.js desktop.html
@@ -2504,6 +2516,17 @@ jobs:
           name: ZEUVORYX-3.0.23-security-center-regressions${{ inputs.validation_suffix }}
           path: security-center-regressions.json
           if-no-files-found: error
+      - name: Build48 acceptance gate on Windows runner (native fixtures and six games)
+        if: github.ref == 'refs/heads/lab-arcade-nerd-build48'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          go test -v -count=1 -timeout=5m -tags build48gate -run '^TestBuild48' .
+          if ($LASTEXITCODE -ne 0) { throw 'Build48 native acceptance failed' }
+          npm install --no-save --package-lock=false --ignore-scripts 'playwright@1.51.1'
+          if ($LASTEXITCODE -ne 0) { throw 'Build48 browser test dependency failed' }
+          node lab/build48/test_browser.js
+          if ($LASTEXITCODE -ne 0) { throw 'Build48 browser acceptance failed' }
       - name: Verify final ZEUVORYX 3.0.23 LAB identity
         shell: pwsh
         run: |

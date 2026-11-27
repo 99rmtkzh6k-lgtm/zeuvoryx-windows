@@ -55,3 +55,21 @@ for cycle in range(1, 6):
     for action in ("minerar", "vender", "comprar", "atacar", "invasao"):
         assert 'onclick="'+action+'()"' in family and 'function '+action+'()' in family
     print(f"Family game integration contract {cycle}/5 passed (not gameplay)")
+
+# Complete single-file game contract and syntax check.
+import shutil
+import subprocess
+import tempfile
+assert not (base / "familia-botelho/game.html").exists()
+for name in ("iniciarJogo","escolherPersonagem","atualizarTela","mostrarVoz","falarPersonagem","falarZumbi","minerar","vender","comprarArma","comprarComida","treinarSoldado","construirPredio","invasaoZumbi","atacarZumbi","verificarObjetivoFase","proximaFase","verificarDerrota","verificarVitoriaFinal","tocarMusica","tocarSom","ligarDesligarMusica","salvarJogo","carregarJogo"):
+    assert re.search(r"function\s+" + name + r"\(", family), name
+scripts = re.findall(r"<script>(.*?)</script>", family, re.S)
+assert len(scripts) == 1
+node = shutil.which("node")
+if not node:
+    raise RuntimeError("Node required for family game JavaScript syntax check")
+with tempfile.TemporaryDirectory() as tmp:
+    js = Path(tmp) / "botelho.js"
+    js.write_text(scripts[0], encoding="utf-8")
+    subprocess.run([node, "--check", str(js)], check=True)
+print("Unified Botelho HTML JavaScript syntax and function contract passed")

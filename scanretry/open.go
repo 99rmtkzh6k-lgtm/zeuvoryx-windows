@@ -54,7 +54,7 @@ func Open(ctx context.Context,path string)(*os.File,error){
 
 func openScan(ctx context.Context,path string,open func(string)(*os.File,error),windows bool)(*os.File,error){
  f,err:=openWithRetry(ctx,path,open,func(err error)bool{
-  _,ok:=windowsAccessCode(err);return windows&&ok
+  return windows&&transientWindows(err)
  },[]time.Duration{500*time.Millisecond})
  if err==nil||!windows{return f,err}
  code,ok:=windowsAccessCode(err);if !ok{return f,err}

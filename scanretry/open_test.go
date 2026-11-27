@@ -32,7 +32,8 @@ func TestP0OneRetryAndStructuredError(t *testing.T){
    n++;return nil,&os.PathError{Op:"open",Path:path,Err:code}
   },true)
   var skipped *SkippedError
-  if f!=nil||n!=2||time.Since(start)<500*time.Millisecond||!errors.As(err,&skipped)||!errors.Is(err,code){t.Fatalf("attempts=%d err=%v",n,err)}
+  wantAttempts:=2;minWait:=500*time.Millisecond;if code==5{wantAttempts=1;minWait=0}
+  if f!=nil||n!=wantAttempts||time.Since(start)<minWait||!errors.As(err,&skipped)||!errors.Is(err,code){t.Fatalf("attempts=%d err=%v",n,err)}
   if skipped.Path!="locked.tmp"||skipped.CodigoWindows!=uint32(code)||skipped.Hora.IsZero()||skipped.Motivo==""{t.Fatal(skipped)}
  }
 }

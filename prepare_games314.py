@@ -3,7 +3,7 @@ from html.parser import HTMLParser
 import re
 import json
 from html import escape
-from retro21 import load_retro
+from retro21 import load_retro, load_universo
 def regex_one(s,pattern,replacement):
     s,n=re.subn(pattern,lambda m:replacement(m),s)
     if n!=1:raise RuntimeError('Games regex anchor '+pattern+' count='+str(n))
@@ -29,10 +29,10 @@ s=one(s,'</nav>','<button id="zGamesNav314" type="button" aria-expanded="false">
 retro, retro_docs = load_retro()
 # Owner-provided original game, using the existing sandboxed offline launcher.
 family_game_id = "familia-botelho-zumbis"
-family_game = Path("lab/familia-botelho/botelho.html").read_text(encoding="utf-8")
+family_game = load_universo()
 if "connect-src 'none'" not in family_game or re.search(r"\b(?:fetch|XMLHttpRequest|WebSocket|postMessage)\s*\(|window\.parent|chrome\.webview|https?://", family_game, re.I):
     raise RuntimeError("Family game offline isolation contract failed")
-retro.append({"id": family_game_id, "category": "Estratégia", "title": "Família Botelho vs Horda Zumbi", "description": "Mineração, Botecoin e defesa da base. Criado por L.A.B. · Offline."})
+retro.append({"id": family_game_id, "category": "Estratégia", "title": "Universo Botelho", "description": "Duas campanhas: Horda Zumbi e Robozinho Recicla. 20 fases · Offline."})
 retro_docs[family_game_id] = family_game
 games_html=Path("lab/games314.html").read_text(encoding="utf-8")
 family_html=Path("lab/family314.html").read_text(encoding="utf-8")

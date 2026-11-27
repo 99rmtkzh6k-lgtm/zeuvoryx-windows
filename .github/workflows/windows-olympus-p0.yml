@@ -1,7 +1,7 @@
 name: ZEUVORYX 3.0.23 LAB - P0 scan finalization
 on:
   push:
-    branches: [lab-integracao-p0-20261126]
+    branches: [lab-integracao-p0-20261126, lab-familia-botelho-zumbis]
     paths-ignore: ['**.md']
   workflow_dispatch:
 permissions:

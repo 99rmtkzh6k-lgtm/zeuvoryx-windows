@@ -30,3 +30,13 @@ Base aprovada Build 49 SHA f0b136c4b2f0bd285b87f228a2b48fb4db304e73, preservar i
 **Aviso de segurança:** GitHub Actions artifacts podem expirar e o endpoint de download pode exigir autenticação; o aplicativo não deve distribuir token GitHub de titular dentro do EXE. Projetar canal de distribuição autorizado com manifesto confiável e URLs acessíveis antes de habilitar Atualizar. Nunca instalar arquivo não aprovado. Distinguir SHA256 do ZIP do SHA256 do EXE. Nenhuma Release para LAB. Se não houver Build 50 aprovada, botão apenas informa "Build 50 ainda não disponível para atualização"; não afirmar que existe.
 **Gates:** auditoria de todos os botões e estados, Windows 8/8, Linux 8/8, cinco ciclos instalação/atualização/rollback, scanner, QA20, 50M simulados, seis jogos; progressão visual; 52 etapas Windows; 3 passagens 9/9 no mesmo SHA; validação física filmada e Defender permanentemente ativo. Parar em qualquer falha. Manter main e Releases intactas.
 **Diagnóstico atual:** updater/check.go ainda usa Current=3.0.10 e consulta somente /releases; NÃO implementa requisito Actions. Integração de Actions, autenticação segura, manifesto, bloqueio de download, rollback, pause real e auditoria de todos os botões continuam pendentes. Não declarar funcional.
+
+## Protocolo anti-parada — determinação do titular (27/11/2026)
+Ordem: 1) botões Win32; 2) atualização pelo botão; 3) trava de download; 4) EICAR/ZIP/parcial; 5) histórico português; 6) Defender/arte Zeus; 7) Zeus/Cris estacionados; 8) dossiê.
+Em cada bloqueio: (A) correção segura, (B) informar arquivo/botão/erro/tentativas/necessidade e avançar em item independente, (C) pular e retornar. Não inventar resultados. Comunicar TERMINEI ITEM X apenas com critério comprovado, TRAVEI ITEM X VOU PARA Y para bloqueio e DÚVIDA ITEM X para dependência do titular.
+Somente commits novos na lab-build50, sem reescrever histórico nem apagar Build 49; nunca alterar main ou Releases. Em caso de teste falho, preservar o último commit bom e corrigir em novo commit, sem force-push. Testes de código antes de compilação final; nenhuma Build 50 aprovada antes de validação física.
+### Inspeção estática inicial do anti-parada
+- scanretry/open.go e scanretry/open_test.go: import syscall presente, tipo syscall.Errno consistente; teste de códigos 5/32/33 existe, mas NÃO foi executado.
+- lab/build48/launcher.js: confirmação ao iniciar jogo durante varredura já codificada; não pausa varredura e não é controle Win32.
+- updater/check.go: consulta somente Releases e usa Current 3.0.10; atualização Actions ainda não existe.
+- Botões nativos Win32 e atualização transacional ainda pendentes. Não compilar prematuramente.

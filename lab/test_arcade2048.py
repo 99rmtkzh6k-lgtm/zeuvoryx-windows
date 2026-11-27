@@ -42,3 +42,16 @@ for cycle in range(1,6):
         assert "zArcadeSessionStore" in docs[id]
     assert 'zGameRestart21' in launcher and 'zRetroCatalog' in launcher
     print(f"Retro catalog integrity and isolation {cycle}/5 passed (not gameplay)")
+
+# Family game: source, offline boundary and catalog registration (not gameplay).
+family = (base / "familia-botelho/game.html").read_text(encoding="utf-8")
+for cycle in range(1, 6):
+    Assets().feed(family)
+    assert "default-src 'none'" in family and "connect-src 'none'" in family
+    assert not re.search(r"@import|\b(?:fetch|XMLHttpRequest|WebSocket|postMessage)\s*\(|window\.parent|chrome\.webview|https?://", family, re.I)
+    assert 'id=="familia-botelho-zumbis"' in binding
+    assert 'family_game_id = "familia-botelho-zumbis"' in generator
+    assert 'retro_docs[family_game_id] = family_game' in generator
+    for action in ("minerar", "vender", "comprar", "atacar", "invasao"):
+        assert 'onclick="'+action+'()"' in family and 'function '+action+'()' in family
+    print(f"Family game integration contract {cycle}/5 passed (not gameplay)")

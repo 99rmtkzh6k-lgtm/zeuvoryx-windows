@@ -339,8 +339,10 @@ async function denialAfterSwitch(page,next){
  const browser=await chromium.launch({channel:'msedge',headless:true});
  const ids=['robozinho','2048','snake','blocks','maze','guerra'];
  try{
-  for(let cycle=0;cycle<20;cycle++){
-   const size=[[1366,768],[1600,900],[1920,1080]][cycle%3],dpi=[1,1.25,1.5][Math.floor(cycle/3)%3];
+  const cyclesPerGame=20,totalCycles=ids.length*cyclesPerGame;
+  const passedByGame=Object.fromEntries(ids.map(id=>[id,0]));
+  for(let cycle=0;cycle<totalCycles;cycle++){
+   const size=[[1366,768],[1600,900],[1920,1080]][cycle%3],dpi=[1,1.25,1.5,2][Math.floor(cycle/6)%4];
    const page=await browser.newPage({viewport:{width:Math.floor(size[0]/dpi),height:Math.floor(size[1]/dpi)},deviceScaleFactor:dpi});
    const verify=monitor(page),id=ids[cycle%ids.length],next=ids[(cycle+1)%ids.length];
    try{
@@ -350,10 +352,13 @@ async function denialAfterSwitch(page,next){
     await maximize(page,id);
     await semantic(page,frame,id);await interact(page,frame,id);
     await exerciseWindow(page,frame,id);await denialAfterSwitch(page,next);verify();
-    console.log('GameWindow browser cycle '+(cycle+1)+'/20 '+id+' '+size.join('x')+' DPI '+dpi+' : passed; simulated native denial, not physical');
-   }catch(e){console.error('GameWindow integrated cycle '+(cycle+1)+'/20 game '+id);throw e}
+    passedByGame[id]++;
+    console.log('GameWindow browser cycle '+(cycle+1)+'/'+totalCycles+' '+id+' per-game '+passedByGame[id]+'/'+cyclesPerGame+' '+size.join('x')+' DPI '+dpi+' : passed; simulated native denial, not physical');
+   }catch(e){console.error('GameWindow integrated cycle '+(cycle+1)+'/'+totalCycles+' game '+id);throw e}
    finally{await page.close()}
   }
+  for(const id of ids)assert.equal(passedByGame[id],cyclesPerGame,id+' mandatory per-game cycle count');
+  console.log('GameWindow per-game cycle evidence '+JSON.stringify(passedByGame));
   const original=await browser.newPage({viewport:{width:1366,height:768}});
   const verify=monitor(original);
   const originalIds=['2048','retro-racer','cartridge-dash','jump-quest','laser-defender','digital-maze','meteor-strike','ping-pong-2p','breakout','snake','asteroids'];

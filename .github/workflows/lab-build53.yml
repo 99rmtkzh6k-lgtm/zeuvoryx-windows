@@ -1,4 +1,5 @@
 name: ZEUVORYX LAB Build 53
+run-name: ZEUVORYX LAB Build 53 - ${{ github.sha }}
 
 on:
   push:

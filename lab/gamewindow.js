@@ -16,7 +16,7 @@ class GameWindow{
   this.catalog.set(game[0],{game,doc});
  }
  bridge(doc){
-  const js=';(()=>{const command='+command.toString()+';document.addEventListener("keydown",e=>{const c=command(e);if(!c)return;e.preventDefault();e.stopImmediatePropagation();parent.postMessage({channel:"zGameWindow314",command:c},"*")},true);window.addEventListener("load",()=>{if(document.body&&document.activeElement===document.body){document.body.tabIndex=-1;document.body.focus({preventScroll:true})}},{once:true})})();';
+  const js=';(()=>{const command='+command.toString()+';document.addEventListener("keydown",e=>{const c=command(e);if(!c)return;e.preventDefault();e.stopImmediatePropagation();parent.postMessage({channel:"zGameWindow314",command:c},"*")},true);const focusBody=()=>{if(document.body&&document.activeElement===document.body){document.body.tabIndex=-1;document.body.focus({preventScroll:true})}};window.addEventListener("load",focusBody,{once:true});document.addEventListener("pointerdown",e=>{if(!e.target.closest("button,input,select,textarea,a,[tabindex]"))focusBody()},true)})();';
   return doc.replace(/<\/head\s*>/i,()=>'<script>'+js+'<'+'/script></head>');
  }
  setMode(mode){

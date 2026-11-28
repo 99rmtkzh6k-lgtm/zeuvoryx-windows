@@ -106,8 +106,17 @@ async function reset2048(frame){
 async function move2048(page,frame){
  await frame.locator('.tile-container .tile').first().waitFor({state:'visible'});
  await poll(()=>tileState(frame),v=>v.count===2&&v.score==='0','2048 initial board');
+ const snapshot=async label=>{
+  const read=()=>({time:performance.now(),timeOrigin:performance.timeOrigin,hasFocus:document.hasFocus(),active:document.activeElement?.tagName,activeId:document.activeElement?.id,visibility:document.visibilityState,ready:document.readyState,fullscreen:document.fullscreenElement?.id||null});
+  console.log('2048 FOCUS '+JSON.stringify({label,host:await page.evaluate(read),game:await frame.evaluate(read),detached:frame.isDetached()}));
+ };
+ await snapshot('before-click');
  await frame.locator('.game-container').click();
- assert.equal(await frame.evaluate(()=>document.hasFocus()),true,'2048 iframe keyboard focus');
+ const focused=await frame.evaluate(()=>document.hasFocus());
+ if(!focused){
+  try{await snapshot('immediate-failure');await dumpFocus(page,'2048 host failure');await page.screenshot({path:'focus-fail.png'});}catch(e){console.error('2048 diagnostic error '+String(e))}
+ }
+ assert.equal(focused,true,'2048 iframe keyboard focus');
  const before=(await tileState(frame)).board;
  let moved=false;
  for(const key of keys){

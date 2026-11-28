@@ -1,0 +1,111 @@
+name: 2048 focus proof only
+on:
+  push:
+    branches: [diag-2048-focus-proof]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  proof:
+    if: github.ref == 'refs/heads/diag-2048-focus-proof'
+    runs-on: windows-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [headless, headed]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: c57f03d1a1395520f19ee0f6eadf600c52a19004
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prepare and run isolated fixture
+        shell: pwsh
+        env:
+          MODE: ${{ matrix.mode }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force proof | Out-Null
+          git rev-parse HEAD | Set-Content proof/source-sha.txt
+          @'
+          const fs=require('fs'),assert=require('node:assert/strict');
+          const {pathToFileURL}=require('url'),{chromium}=require('playwright');
+          const read=p=>fs.readFileSync(p,'utf8');
+          const json=v=>JSON.stringify(v).replace(/</g,'\\u003c');
+          const mode=process.env.MODE;
+          const log=(kind,data)=>fs.appendFileSync('proof/events.jsonl',JSON.stringify({kind,mode,runnerMonotonicNs:process.hrtime.bigint().toString(),data})+'\n');
+          const game=read('lab/arcade2048/game.html');
+          const host=read('lab/gamewindow.js'),launcher=read('lab/build48/launcher.js');
+          const section=read('lab/games314.html');
+          const css=read('lab/games314.css')+read('lab/titanium314.css');
+          const stub='window.allowLocalGame315=async()=>true;window.getScanState=async()=>({running:false,report:{}});function node(t,s){const e=document.createElement(t);e.textContent=s;return e}function volume(n){return n+" B"}';
+          fs.writeFileSync('proof/fixture.html','<!doctype html><meta charset="utf-8"><style>.hidden,[hidden]{display:none!important}'+css+'</style><div class="shell"><aside><nav><button id="zGamesNav314">Games</button><button id="zFamilyNav314">Family</button><button data-page="overview">Overview</button><button data-page="alerts">Alerts</button></nav></aside><main><section id="overview"></section><section id="alerts"></section>'+section+'</main></div><script>'+stub+';const zArcade2048='+json(game)+';const zRetroCatalog=[];const zRetroDocs={};'+host+launcher+'</script>');
+          fs.copyFileSync('lab/gamewindow.js','proof/gamewindow.js');
+          fs.copyFileSync('lab/arcade2048/game.html','proof/2048-original.html');
+          const snapshot=()=>({time:performance.now(),origin:performance.timeOrigin,focus:document.hasFocus(),active:document.activeElement?.tagName,id:document.activeElement?.id,connected:document.activeElement?.isConnected,visibility:document.visibilityState,ready:document.readyState,fullscreen:!!document.fullscreenElement,width:innerWidth,height:innerHeight});
+          (async()=>{
+            const browser=await chromium.launch({channel:'msedge',headless:mode==='headless'});
+            const ctx=await browser.newContext({viewport:{width:1366,height:768}});
+            await ctx.tracing.start({screenshots:true,snapshots:true,sources:true});
+            await ctx.addInitScript(()=>{
+              const emit=(kind,e)=>{if(e?.type?.startsWith('key')&&e.key!=='ArrowUp')return;const t=e?.target;console.log('PROOF '+JSON.stringify({kind,role:window===top?'host':'iframe',time:performance.now(),origin:performance.timeOrigin,focus:document.hasFocus(),active:document.activeElement?.tagName,activeId:document.activeElement?.id,visibility:document.visibilityState,connected:t?.isConnected,target:t?.tagName,key:e?.key,trusted:e?.isTrusted,cancelled:e?.defaultPrevented,hit:e&&'clientX'in e?document.elementFromPoint(e.clientX,e.clientY)?.tagName:null,width:innerWidth,height:innerHeight}));};
+              for(const name of ['load','focus','blur','focusin','focusout','pointerdown','pointerup','click','keydown','keyup','visibilitychange','fullscreenchange'])addEventListener(name,e=>{emit(name,e);if(name==='pointerdown')queueMicrotask(()=>emit('pointerdown-after',e));},true);
+              if(window!==top){let n=0;const original=Math.random;Math.random=()=>n++<4?0:original();}
+            });
+            const page=await ctx.newPage();
+            page.on('console',m=>{if(m.text().startsWith('PROOF '))log('event',JSON.parse(m.text().slice(6)));});
+            page.on('pageerror',e=>log('pageerror',String(e)));
+            const network=[];page.on('request',r=>{if(/^https?:/i.test(r.url()))network.push(r.url())});
+            try{
+              await page.goto(pathToFileURL(require('path').resolve('proof/fixture.html')).href);
+              await page.locator('#zGamesNav314').click();
+              await page.locator('[data-game-id="2048"] button:not(:disabled)').click();
+              const loc=page.locator('#zGameBoard iframe');
+              await loc.waitFor({state:'visible'});
+              assert.equal(await loc.getAttribute('sandbox'),'allow-scripts');
+              assert.equal(await loc.getAttribute('referrerpolicy'),'no-referrer');
+              const frame=await (await loc.elementHandle()).contentFrame();
+              await frame.locator('.tile-container .tile').first().waitFor({state:'visible'});
+              const state=()=>frame.evaluate(()=>{const s=JSON.parse(window.fakeStorage.getItem('gameState'));return {score:s.score,cells:s.grid.cells,visibleScore:document.querySelector('.score-container')?.firstChild?.textContent}});
+              const before=await state();
+              assert.equal(before.score,0);
+              assert.equal(before.cells[0][0]?.value,2);
+              assert.equal(before.cells[0][1]?.value,2);
+              assert.equal(before.cells.flat().filter(Boolean).length,2);
+              log('before',{board:before,host:await page.evaluate(snapshot),game:await frame.evaluate(snapshot)});
+              await frame.locator('.game-container').click();
+              const immediate=await frame.evaluate(()=>document.hasFocus());
+              const start=process.hrtime.bigint();
+              log('historical-assertion',{focus:immediate});
+              for(const ms of [0,100,500,1000]){
+                const elapsed=Number(process.hrtime.bigint()-start)/1e6;
+                if(ms>elapsed)await new Promise(r=>setTimeout(r,ms-elapsed));
+                log('sample',{targetMs:ms,actualMs:Number(process.hrtime.bigint()-start)/1e6,host:await page.evaluate(snapshot),game:await frame.evaluate(snapshot),detached:frame.isDetached(),bounds:await loc.boundingBox()});
+              }
+              await page.keyboard.press('ArrowUp');
+              await new Promise(r=>setTimeout(r,300));
+              const after=await state();
+              log('after',{board:after,host:await page.evaluate(snapshot),game:await frame.evaluate(snapshot)});
+              assert.deepEqual(network,[]);
+              assert.equal(immediate,true,'2048 iframe keyboard focus');
+              assert.equal(after.score,4,'expected real merge score');
+              assert.equal(after.cells[0][0]?.value,4,'expected merged tile');
+              assert.notDeepEqual(after.cells,before.cells);
+            }catch(e){log('failure',String(e));throw e;}
+            finally{try{await page.screenshot({path:'proof/screenshot.png',fullPage:true});}finally{await ctx.tracing.stop({path:'proof/trace.zip'});await browser.close();}}
+          })().catch(e=>{console.error(e);process.exitCode=1});
+          '@ | Set-Content -Encoding utf8 proof-test.cjs
+          Copy-Item proof-test.cjs proof/test.cjs
+          npm install --no-save --package-lock=false --ignore-scripts playwright@1.51.1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node proof-test.cjs
+          exit $LASTEXITCODE
+      - name: Upload diagnostic evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: focus-2048-${{ matrix.mode }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: proof/
+          if-no-files-found: error

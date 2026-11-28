@@ -2534,7 +2534,6 @@ jobs:
           path: security-center-regressions.json
           if-no-files-found: error
       - name: Build48 acceptance gate on Windows runner (native fixtures and six games)
-        if: github.ref == 'refs/heads/lab-arcade-nerd-build48' || github.ref == 'refs/heads/lab-updater-build49' || github.ref == 'refs/heads/lab-updater-build49-check4' || github.ref == 'refs/heads/lab-build51-gamewindow' || github.ref == 'refs/heads/lab-build51-fix-csp'
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -2544,10 +2543,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Build48 browser test dependency failed' }
           node lab/build48/test_browser.js
           if ($LASTEXITCODE -ne 0) { throw 'Build48 browser acceptance failed' }
-          if ($env:GITHUB_REF -in @('refs/heads/lab-build51-gamewindow','refs/heads/lab-build51-fix-csp')) {
-            node lab/build48/test_gamewindow.js
-            if ($LASTEXITCODE -ne 0) { throw 'GameWindow regression failed' }
-          }
+          node lab/build48/test_gamewindow.js
+          if ($LASTEXITCODE -ne 0) { throw 'GameWindow regression failed' }
       - name: Verify final ZEUVORYX 3.0.23 LAB identity
         shell: pwsh
         run: |
